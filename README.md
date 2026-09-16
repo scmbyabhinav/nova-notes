@@ -36,6 +36,7 @@ flutter run
 
 The Android release pipeline will be added after the core app is functional.
 
+
 ## Build progress
 - ATTACK 1 — foundation
 - ATTACK 2 — premium home UI
@@ -43,6 +44,7 @@ The Android release pipeline will be added after the core app is functional.
 - ATTACK 4 — folders, favorites, tags, archive
 - ATTACK 5 — search + filters
 - ATTACK 7 — files & backup foundation
+
 - ATTACK 8 — Android integration architecture
 - ATTACK 6 — security & privacy foundation
 - ATTACK 9 — polish & performance foundation
