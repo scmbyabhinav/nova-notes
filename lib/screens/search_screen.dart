@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../core/widgets/nova_polish.dart';
 
 import '../data/repositories/note_repository_provider.dart';
+import '../data/repositories/folder_repository_provider.dart';
+import '../models/folder.dart';
 import '../models/note.dart';
 import '../models/search_filter.dart';
 import 'note_editor_screen.dart';
@@ -21,6 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Note> _results = const [];
   SearchFilter _filter = const SearchFilter();
   bool _loading = true;
+  List<NoteFolder> _folders = const [];
 
   @override
   void initState() {
@@ -32,11 +35,14 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _load() async {
     final repository = await NoteRepositoryProvider.instance();
     final notes = await repository.getNotes();
+    final folderRepository = await FolderRepositoryProvider.instance();
+    final folders = await folderRepository.getFolders();
 
     if (!mounted) return;
 
     setState(() {
       _allNotes = notes;
+      _folders = folders;
       _results = notes.where((note) => !note.isArchived).toList();
       _loading = false;
     });
@@ -45,30 +51,59 @@ class _SearchScreenState extends State<SearchScreen> {
   void _search() {
     final query = _controller.text.trim().toLowerCase();
 
-    var results = _allNotes.where((note) {
-      if (!_filter.archivedOnly && note.isArchived) return false;
-      if (_filter.archivedOnly && !note.isArchived) return false;
-      if (_filter.favoritesOnly && !note.isFavorite) return false;
-      if (_filter.pinnedOnly && !note.isPinned) return false;
-      if (_filter.folderId != null && note.folderId != _filter.folderId) {
-        return false;
+    final terms = query
+        .split(RegExp(r'\\s+'))
+        .where((term) => term.isNotEmpty)
+        .toList();
+
+    final ranked = <({Note note, int score})>[];
+
+    for (final note in _allNotes) {
+      if (!_filter.archivedOnly && note.isArchived) continue;
+      if (_filter.archivedOnly && !note.isArchived) continue;
+      if (_filter.favoritesOnly && !note.isFavorite) continue;
+      if (_filter.pinnedOnly && !note.isPinned) continue;
+      if (_filter.folderId != null && note.folderId != _filter.folderId) continue;
+      if (_filter.noteType != null && note.type != _filter.noteType) continue;
+
+      if (terms.isEmpty) {
+        ranked.add((note: note, score: 0));
+        continue;
       }
-      if (_filter.noteType != null && note.type != _filter.noteType) {
-        return false;
+
+      final title = note.title.toLowerCase();
+      final content = note.content.toLowerCase();
+      final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
+      final haystack = [title, content, ...tags].join(' ');
+
+      if (!terms.every(haystack.contains)) continue;
+
+      var score = 0;
+      for (final term in terms) {
+        if (title == term) {
+          score += 1000;
+        } else if (title.contains(term)) {
+          score += 500;
+        }
+        if (tags.any((tag) => tag == term)) {
+          score += 350;
+        } else if (tags.any((tag) => tag.contains(term))) {
+          score += 200;
+        }
+        if (content.contains(term)) score += 100;
       }
 
-      if (query.isEmpty) return true;
+      if (title.startsWith(query)) score += 250;
+      ranked.add((note: note, score: score));
+    }
 
-      final haystack = [
-        note.title,
-        note.content,
-        ...note.tags,
-      ].join(' ').toLowerCase();
+    ranked.sort((a, b) {
+      final score = b.score.compareTo(a.score);
+      if (score != 0) return score;
+      return b.note.updatedAt.compareTo(a.note.updatedAt);
+    });
 
-      return haystack.contains(query);
-    }).toList();
-
-    results.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    final results = ranked.map((item) => item.note).toList();
 
     if (mounted) {
       setState(() => _results = results);
@@ -93,6 +128,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _showFilters() async {
+    var folderId = _filter.folderId;
     var favorites = _filter.favoritesOnly;
     var pinned = _filter.pinnedOnly;
     var archived = _filter.archivedOnly;
@@ -121,6 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     TextButton(
                       onPressed: () {
                         setSheetState(() {
+                          folderId = null;
                           favorites = false;
                           pinned = false;
                           archived = false;
@@ -141,6 +178,25 @@ class _SearchScreenState extends State<SearchScreen> {
                   value: pinned,
                   title: const Text('Pinned only'),
                   onChanged: (value) => setSheetState(() => pinned = value),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String?>(
+                  value: folderId,
+                  decoration: const InputDecoration(labelText: 'Folder'),
+                  items: [
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text('All folders'),
+                    ),
+                    ..._folders.map(
+                      (folder) => DropdownMenuItem<String?>(
+                        value: folder.id,
+                        child: Text(folder.name),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) =>
+                      setSheetState(() => folderId = value),
                 ),
                 SwitchListTile(
                   value: archived,
@@ -188,6 +244,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       Navigator.pop(
                         context,
                         SearchFilter(
+                          folderId: folderId,
                           favoritesOnly: favorites,
                           pinnedOnly: pinned,
                           archivedOnly: archived,
