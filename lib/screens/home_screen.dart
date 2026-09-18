@@ -111,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
           note,
           note.copyWith(isPinned: !note.isPinned, updatedAt: DateTime.now()),
         );
+        return;
       case 'favorite':
         await _updateNote(
           note,
@@ -119,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
             updatedAt: DateTime.now(),
           ),
         );
+        return;
       case 'archive':
         await _updateNote(
           note,
@@ -127,10 +129,12 @@ class _HomeScreenState extends State<HomeScreen> {
             updatedAt: DateTime.now(),
           ),
         );
+        return;
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
         await repository.deleteNote(note.id);
         await _loadNotes();
+        return;
     }
   }
 
