@@ -72,31 +72,56 @@ class LocalNoteRepository implements NoteRepository {
     final normalized = query.trim().toLowerCase();
     final notes = await getNotes();
 
-    final results = notes.where((note) {
-      if (!filter.archivedOnly && note.isArchived) return false;
-      if (filter.archivedOnly && !note.isArchived) return false;
-      if (filter.favoritesOnly && !note.isFavorite) return false;
-      if (filter.pinnedOnly && !note.isPinned) return false;
-      if (filter.folderId != null && note.folderId != filter.folderId) {
-        return false;
+    final terms = normalized
+        .split(RegExp(r'\\s+'))
+        .where((term) => term.isNotEmpty)
+        .toList();
+
+    final ranked = <({Note note, int score})>[];
+
+    for (final note in notes) {
+      if (!filter.archivedOnly && note.isArchived) continue;
+      if (filter.archivedOnly && !note.isArchived) continue;
+      if (filter.favoritesOnly && !note.isFavorite) continue;
+      if (filter.pinnedOnly && !note.isPinned) continue;
+      if (filter.folderId != null && note.folderId != filter.folderId) continue;
+      if (filter.noteType != null && note.type != filter.noteType) continue;
+
+      if (terms.isEmpty) {
+        ranked.add((note: note, score: 0));
+        continue;
       }
-      if (filter.noteType != null && note.type != filter.noteType) {
-        return false;
+
+      final title = note.title.toLowerCase();
+      final content = note.content.toLowerCase();
+      final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
+      final haystack = [title, content, ...tags].join(' ');
+      if (!terms.every(haystack.contains)) continue;
+
+      var score = 0;
+      for (final term in terms) {
+        if (title == term) {
+          score += 1000;
+        } else if (title.contains(term)) {
+          score += 500;
+        }
+        if (tags.any((tag) => tag == term)) {
+          score += 350;
+        } else if (tags.any((tag) => tag.contains(term))) {
+          score += 200;
+        }
+        if (content.contains(term)) score += 100;
       }
+      if (title.startsWith(normalized)) score += 250;
+      ranked.add((note: note, score: score));
+    }
 
-      if (normalized.isEmpty) return true;
-
-      final haystack = [
-        note.title,
-        note.content,
-        ...note.tags,
-      ].join(' ').toLowerCase();
-
-      return haystack.contains(normalized);
-    }).toList();
-
-    results.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-    return results;
+    ranked.sort((a, b) {
+      final score = b.score.compareTo(a.score);
+      if (score != 0) return score;
+      return b.note.updatedAt.compareTo(a.note.updatedAt);
+    });
+    return ranked.map((item) => item.note).toList();
   }
 
   Future<void> _write(List<Note> notes) async {
