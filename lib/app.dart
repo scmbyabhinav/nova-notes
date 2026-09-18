@@ -157,7 +157,7 @@ class _NovaShellState extends State<NovaShell> {
             label: 'Folders',
           ),
           NavigationDestination(
-            icon: Icons.star_outline_rounded,
+            icon: Icon(Icons.star_outline_rounded),
             selectedIcon: Icon(Icons.star_rounded),
             label: 'Favorites',
           ),
