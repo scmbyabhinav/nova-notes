@@ -52,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final query = _controller.text.trim().toLowerCase();
 
     final terms = query
-        .split(RegExp(r'\\s+'))
+        .split(RegExp(r'\s+'))
         .where((term) => term.isNotEmpty)
         .toList();
 
