@@ -216,12 +216,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               switch (value) {
                 case 'favorite':
                   await _setFlag(favorite: !_isFavorite);
+                  return;
                 case 'organize':
                   await _organize();
+                  return;
                 case 'archive':
                   await _setFlag(archived: !_isArchived);
+                  return;
                 case 'delete':
                   await _delete();
+                  return;
               }
             },
             itemBuilder: (context) => [
