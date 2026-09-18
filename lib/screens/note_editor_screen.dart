@@ -14,6 +14,7 @@ class NoteEditorScreen extends StatefulWidget {
     super.key,
     required this.repository,
     this.note,
+    this.initialType = NoteType.text,
   });
 
   final NoteRepository repository;
@@ -30,6 +31,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Timer? _saveTimer;
   late final DateTime _createdAt;
   late String _noteId;
+  late NoteType _noteType;
   bool _saving = false;
   bool _hasChanges = false;
   bool _isPinned = false;
@@ -45,6 +47,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final existing = widget.note;
     _noteId = existing?.id ?? _newId();
     _createdAt = existing?.createdAt ?? DateTime.now();
+    _noteType = existing?.type ?? widget.initialType;
 
     _titleController = TextEditingController(text: existing?.title ?? '');
     _contentController =
@@ -88,7 +91,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       id: _noteId,
       title: title.isEmpty ? 'Untitled note' : title,
       content: content,
-      type: NoteType.text,
+      type: _noteType,
       createdAt: _createdAt,
       updatedAt: DateTime.now(),
       folderId: _folderId,
@@ -213,12 +216,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               switch (value) {
                 case 'favorite':
                   await _setFlag(favorite: !_isFavorite);
+                  return;
                 case 'organize':
                   await _organize();
+                  return;
                 case 'archive':
                   await _setFlag(archived: !_isArchived);
+                  return;
                 case 'delete':
                   await _delete();
+                  return;
               }
             },
             itemBuilder: (context) => [
@@ -320,8 +327,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     minLines: 18,
                     maxLines: null,
                     style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
-                    decoration: const InputDecoration(
-                      hintText: 'Start writing...',
+                    decoration: InputDecoration(
+                      hintText: _noteType == NoteType.checklist
+                          ? 'Add one task per line...'
+                          : 'Start writing...',
                       filled: false,
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
@@ -357,9 +366,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: () {},
                       ),
                       _ToolButton(
-                        icon: Icons.check_box_outlined,
-                        label: 'Checklist',
-                        onPressed: () {},
+                        icon: _noteType == NoteType.checklist
+                            ? Icons.check_box_rounded
+                            : Icons.check_box_outlined,
+                        label: _noteType == NoteType.checklist
+                            ? 'Text note'
+                            : 'Checklist',
+                        onPressed: () {
+                          setState(() {
+                            _noteType = _noteType == NoteType.checklist
+                                ? NoteType.text
+                                : NoteType.checklist;
+                            _hasChanges = true;
+                          });
+                          _save();
+                        },
                       ),
                       _ToolButton(
                         icon: Icons.label_outline_rounded,
