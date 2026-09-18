@@ -8,6 +8,7 @@ import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
 import 'organization_picker_screen.dart';
+import 'export_note_sheet.dart';
 
 class NoteEditorScreen extends StatefulWidget {
   const NoteEditorScreen({
@@ -19,6 +20,7 @@ class NoteEditorScreen extends StatefulWidget {
 
   final NoteRepository repository;
   final Note? note;
+  final NoteType initialType;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -214,6 +216,30 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               switch (value) {
+                case 'export':
+                  await _save();
+                  if (!mounted) return;
+                  await showModalBottomSheet<void>(
+                    context: context,
+                    showDragHandle: true,
+                    isScrollControlled: true,
+                    builder: (_) => ExportNoteSheet(
+                      note: Note(
+                        id: _noteId,
+                        title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
+                        content: _contentController.text,
+                        type: _noteType,
+                        createdAt: _createdAt,
+                        updatedAt: DateTime.now(),
+                        folderId: _folderId,
+                        tags: _tags,
+                        isPinned: _isPinned,
+                        isFavorite: _isFavorite,
+                        isArchived: _isArchived,
+                      ),
+                    ),
+                  );
+                  return;
                 case 'favorite':
                   await _setFlag(favorite: !_isFavorite);
                   return;
@@ -229,6 +255,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'export',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.ios_share_rounded),
+                  title: Text('Export'),
+                ),
+              ),
               PopupMenuItem(
                 value: 'favorite',
                 child: ListTile(
