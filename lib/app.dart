@@ -16,7 +16,7 @@ class NovaNotesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NOVA Notes',
+      title: 'Orah',
       debugShowCheckedModeBanner: false,
       theme: NovaTheme.light(),
       darkTheme: NovaTheme.dark(),
