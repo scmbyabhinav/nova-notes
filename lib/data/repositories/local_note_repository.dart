@@ -93,7 +93,7 @@ class LocalNoteRepository implements NoteRepository {
       }
 
       final title = note.title.toLowerCase();
-      final content = note.content.toLowerCase();
+      final content = [note.content, ...note.checklistItems.map((item) => item.text)].join(' ').toLowerCase();
       final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
       final haystack = [title, content, ...tags].join(' ');
       if (!terms.every(haystack.contains)) continue;
@@ -145,6 +145,7 @@ class LocalNoteRepository implements NoteRepository {
       'isArchived': note.isArchived,
       'isLocked': note.isLocked,
       'attachments': note.attachments,
+      'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
     };
   }
 
@@ -167,7 +168,25 @@ class LocalNoteRepository implements NoteRepository {
       isArchived: map['isArchived'] as bool? ?? false,
       isLocked: map['isLocked'] as bool? ?? false,
       attachments: List<String>.from(map['attachments'] as List? ?? const []),
+      checklistItems: _checklistItemsFromMap(map),
     );
+  }
+
+  List<ChecklistItem> _checklistItemsFromMap(Map<String, dynamic> map) {
+    final raw = map['checklistItems'];
+    if (raw is List && raw.isNotEmpty) {
+      return raw.map((item) => ChecklistItem.fromMap(Map<String, dynamic>.from(item as Map))).toList();
+    }
+    final content = map['content'] as String? ?? '';
+    if (map['type'] == NoteType.checklist.name && content.trim().isNotEmpty) {
+      return content.split(RegExp(r'\\r?\\n')).where((line) => line.trim().isNotEmpty).map((line) {
+        final trimmed = line.trim();
+        final done = trimmed.startsWith('[x]') || trimmed.startsWith('[X]') || trimmed.startsWith('☑');
+        final text = trimmed.replaceFirst(RegExp(r'^(?:\\[[ xX]\\]|☐|☑)\\s*'), '').replaceFirst(RegExp(r'^[-*•]\\s*'), '');
+        return ChecklistItem(id: DateTime.now().microsecondsSinceEpoch.toString() + text.hashCode.toString(), text: text, isDone: done);
+      }).toList();
+    }
+    return const [];
   }
 
   /// Returns a portable JSON backup containing all notes.
