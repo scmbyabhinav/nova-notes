@@ -4,6 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:path/path.dart' as p;
 import '../models/note.dart';
 
 enum NovaExportFormat { pdf, word, excel, text, markdown }
@@ -29,6 +30,8 @@ class UniversalExportService {
     return v.substring(0,v.length.clamp(1,80));
   }
   List<String> _lines(String s)=>s.split(RegExp(r'\r?\n')).map((e)=>e.trim()).where((e)=>e.isNotEmpty).toList();
+  List<File> _existingAttachments(Note n) => n.attachments.map(File.new).where((f)=>f.existsSync()).toList();
+  bool _isImage(String path) => ['.jpg','.jpeg','.png','.webp','.gif','.heic'].contains(p.extension(path).toLowerCase());
   String _text(Note n)=>[
     if(n.title.trim().isNotEmpty)n.title.trim(),if(n.title.trim().isNotEmpty)'',
     if(n.type==NoteType.checklist)...n.checklistItems.map((e)=>(e.isDone?'☑ ':'☐ ')+e.text) else n.content,
@@ -43,16 +46,35 @@ class UniversalExportService {
   Future<List<int>> _pdf(Note n) async {
     final doc=pw.Document();
     final lines=n.type==NoteType.checklist?n.checklistItems.map((e)=>(e.isDone?'☑ ':'☐ ')+e.text).toList():_lines(n.content);
+    final images=<pw.ImageProvider>[];
+    for(final file in _existingAttachments(n)) {
+      if(_isImage(file.path)) {
+        try { images.add(pw.MemoryImage(await file.readAsBytes())); } catch (_) {}
+      }
+    }
     doc.addPage(pw.MultiPage(pageFormat:PdfPageFormat.a4,margin:const pw.EdgeInsets.all(42),build:(_)=>[
       if(n.title.trim().isNotEmpty)pw.Text(n.title.trim(),style:pw.TextStyle(fontSize:24,fontWeight:pw.FontWeight.bold)),
-      pw.SizedBox(height:18),...lines.map((e)=>pw.Padding(padding:const pw.EdgeInsets.only(bottom:8),child:pw.Text(e,style:const pw.TextStyle(fontSize:12)))),
+      pw.SizedBox(height:18),
+      ...lines.map((e)=>pw.Padding(padding:const pw.EdgeInsets.only(bottom:8),child:pw.Text(e,style:const pw.TextStyle(fontSize:12)))),
+      if(images.isNotEmpty) ...[
+        pw.SizedBox(height:12),
+        pw.Text('Attachments',style:pw.TextStyle(fontSize:16,fontWeight:pw.FontWeight.bold)),
+        ...images.map((image)=>pw.Padding(padding:const pw.EdgeInsets.only(top:10,bottom:10),child:pw.Image(image,height:260,fit:pw.BoxFit.contain))),
+      ],
+      if(n.attachments.isNotEmpty)pw.Text('Attachment files: '+n.attachments.map(p.basename).join(', '),style:const pw.TextStyle(fontSize:8)),
       if(n.tags.isNotEmpty)pw.Text('Tags: ${n.tags.join(', ')}',style:const pw.TextStyle(fontSize:9))
     ]));
     return doc.save();
   }
 
   List<int> _docx(Note n){
-    final ps=<String>[if(n.title.trim().isNotEmpty)_p(_xml(n.title.trim()),bold:true,size:32),..._lines(n.content).map((e)=>_p(_xml(e))),if(n.tags.isNotEmpty)_p(_xml('Tags: ${n.tags.join(', ')}'),size:18)];
+    final lines=n.type==NoteType.checklist?n.checklistItems.map((e)=>(e.isDone?'☑ ':'☐ ')+e.text).toList():_lines(n.content);
+    final ps=<String>[
+      if(n.title.trim().isNotEmpty)_p(_xml(n.title.trim()),bold:true,size:32),
+      ...lines.map((e)=>_p(_xml(e))),
+      if(n.attachments.isNotEmpty)_p(_xml('Attachments: '+n.attachments.map(p.basename).join(', ')),size:18),
+      if(n.tags.isNotEmpty)_p(_xml('Tags: ${n.tags.join(', ')}'),size:18)
+    ];
     return _zip({
       '[Content_Types].xml':_types('application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml','/word/document.xml'),
       '_rels/.rels':_rels('http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument','word/document.xml'),
