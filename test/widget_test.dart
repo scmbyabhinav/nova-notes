@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:nova_notes/app.dart';
+import 'package:orah_notes/app.dart';
 
 void main() {
   testWidgets('NOVA Notes launches', (tester) async {
-    await tester.pumpWidget(const NovaNotesApp());
+    await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
     expect(find.text('NOVA'), findsOneWidget);
