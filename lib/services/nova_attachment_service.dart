@@ -44,6 +44,31 @@ class NovaAttachmentService {
     return (await source.rename(target.path)).path;
   }
 
+  Future<List<File>> listAttachments() async {
+    final root = await _attachmentDirectory();
+    if (!await root.exists()) return [];
+    return root.listSync().whereType<File>().toList();
+  }
+
+  Future<int> totalSize() async {
+    var total = 0;
+    for (final file in await listAttachments()) {
+      try { total += await file.length(); } catch (_) {}
+    }
+    return total;
+  }
+
+  Future<int> removeOrphans(Set<String> referencedPaths) async {
+    var removed = 0;
+    final normalized = referencedPaths.map((path) => File(path).absolute.path).toSet();
+    for (final file in await listAttachments()) {
+      if (!normalized.contains(file.absolute.path)) {
+        try { await file.delete(); removed++; } catch (_) {}
+      }
+    }
+    return removed;
+  }
+
   Future<int> size(String path) async {
     final file = File(path);
     return file.existsSync() ? file.length() : 0;
