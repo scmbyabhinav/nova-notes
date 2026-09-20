@@ -1,4 +1,4 @@
-import 'package:nova_notes/models/note.dart';
+import 'package:orah_notes/models/note.dart';
 
 class SearchFilter {
   const SearchFilter({
