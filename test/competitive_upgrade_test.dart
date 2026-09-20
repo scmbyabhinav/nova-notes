@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:nova_notes/data/repositories/local_note_repository.dart';
-import 'package:nova_notes/models/note.dart';
+import 'package:orah_notes/data/repositories/local_note_repository.dart';
+import 'package:orah_notes/models/note.dart';
 
 void main() {
   test('local search ranks title matches ahead of content matches', () async {
