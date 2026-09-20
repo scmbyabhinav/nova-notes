@@ -142,7 +142,7 @@ class SettingsScreen extends StatelessWidget {
         final file = await service.createBackup();
         await Share.shareXFiles([XFile(file.path)], text: 'NOVA Notes portable backup');
       } else {
-        final result = await FilePicker.platform.pickFiles(
+        final result = await FilePicker.pickFiles(
           type: FileType.custom,
           allowedExtensions: ['nova'],
         );
