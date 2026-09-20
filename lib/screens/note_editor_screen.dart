@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -370,6 +371,101 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<void> _shareAttachment(String path) async {
+    final file = File(path);
+    if (!await file.exists()) return;
+    await Share.shareXFiles([XFile(path)], subject: p.basename(path));
+  }
+
+  Future<void> _renameAttachment(String path) async {
+    final controller = TextEditingController(text: p.basenameWithoutExtension(path));
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rename attachment'),
+        content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Rename')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (name == null || name.trim().isEmpty) return;
+    try {
+      final renamed = await const NovaAttachmentService().rename(path, name.trim());
+      setState(() {
+        _attachments = _attachments.map((item) => item == path ? renamed : item).toList();
+        _hasChanges = true;
+      });
+      await _save();
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not rename attachment: ' + e.toString())));
+    }
+  }
+
+  Future<void> _showAttachmentDetails(String path) async {
+    final file = File(path);
+    if (!await file.exists() || !mounted) return;
+    final bytes = await file.length();
+    final stat = await file.stat();
+    if (!mounted) return;
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(p.basename(path)),
+        content: Text('Size: ' + _formatBytes(bytes) + '\nModified: ' + stat.modified.toLocal().toString()),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+      ),
+    );
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes < 1024) return bytes.toString() + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toStringAsFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toStringAsFixed(1) + ' MB';
+  }
+
+  void _previewAttachment(String path) {
+    final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic'].contains(p.extension(path).toLowerCase());
+    if (!isImage) {
+      _shareAttachment(path);
+      return;
+    }
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(12),
+        child: Stack(
+          children: [
+            InteractiveViewer(minScale: 0.5, maxScale: 4, child: ClipRRect(borderRadius: BorderRadius.circular(18), child: Image.file(File(path), fit: BoxFit.contain))),
+            Positioned(top: 4, right: 4, child: IconButton.filledTonal(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAttachmentActions(String path) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(leading: const Icon(Icons.visibility_outlined), title: const Text('Preview'), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
+            ListTile(leading: const Icon(Icons.ios_share_outlined), title: const Text('Share'), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
+            ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: const Text('Rename'), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
+            ListTile(leading: const Icon(Icons.info_outline), title: const Text('Details'), onTap: () { Navigator.pop(sheetContext); _showAttachmentDetails(path); }),
+            ListTile(leading: const Icon(Icons.delete_outline), title: const Text('Remove from note'), onTap: () { Navigator.pop(sheetContext); _removeAttachment(path); }),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showAttachmentMenu() {
     showModalBottomSheet<void>(
       context: context,
@@ -606,7 +702,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           ),
                           clipBehavior: Clip.antiAlias,
                           child: isImage
-                              ? Image.file(File(path), fit: BoxFit.cover)
+                              ? GestureDetector(onTap: () => _previewAttachment(path), child: Image.file(File(path), fit: BoxFit.cover))
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -631,8 +727,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           child: IconButton.filledTonal(
                             tooltip: 'Remove',
                             visualDensity: VisualDensity.compact,
-                            onPressed: () => _removeAttachment(path),
-                            icon: const Icon(Icons.close_rounded, size: 16),
+                            onPressed: () => _showAttachmentActions(path),
+                            icon: const Icon(Icons.more_horiz_rounded, size: 16),
                           ),
                         ),
                       ],
