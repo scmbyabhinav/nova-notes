@@ -10,7 +10,7 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 
-class NovaNotesApp extends StatelessWidget {
+class OrahApp extends StatelessWidget {
   const NovaNotesApp({super.key});
 
   @override
