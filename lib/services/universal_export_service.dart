@@ -31,18 +31,18 @@ class UniversalExportService {
   List<String> _lines(String s)=>s.split(RegExp(r'\r?\n')).map((e)=>e.trim()).where((e)=>e.isNotEmpty).toList();
   String _text(Note n)=>[
     if(n.title.trim().isNotEmpty)n.title.trim(),if(n.title.trim().isNotEmpty)'',
-    if(n.type==NoteType.checklist)..._lines(n.content).map((e)=>'☐ $e') else n.content,
+    if(n.type==NoteType.checklist)...n.checklistItems.map((e)=>(e.isDone?'☑ ':'☐ ')+e.text) else n.content,
     if(n.tags.isNotEmpty)'',if(n.tags.isNotEmpty)'Tags: ${n.tags.join(', ')}'
   ].join('\n');
   String _markdown(Note n)=>[
     if(n.title.trim().isNotEmpty)'# ${n.title.trim()}',if(n.title.trim().isNotEmpty)'',
-    if(n.type==NoteType.checklist)..._lines(n.content).map((e)=>'- [ ] $e') else n.content,
+    if(n.type==NoteType.checklist)...n.checklistItems.map((e)=>'- ['+(e.isDone?'x':' ')+'] '+e.text) else n.content,
     if(n.tags.isNotEmpty)'',if(n.tags.isNotEmpty)'Tags: ${n.tags.join(', ')}'
   ].join('\n');
 
   Future<List<int>> _pdf(Note n) async {
     final doc=pw.Document();
-    final lines=n.type==NoteType.checklist?_lines(n.content).map((e)=>'☐ $e').toList():_lines(n.content);
+    final lines=n.type==NoteType.checklist?n.checklistItems.map((e)=>(e.isDone?'☑ ':'☐ ')+e.text).toList():_lines(n.content);
     doc.addPage(pw.MultiPage(pageFormat:PdfPageFormat.a4,margin:const pw.EdgeInsets.all(42),build:(_)=>[
       if(n.title.trim().isNotEmpty)pw.Text(n.title.trim(),style:pw.TextStyle(fontSize:24,fontWeight:pw.FontWeight.bold)),
       pw.SizedBox(height:18),...lines.map((e)=>pw.Padding(padding:const pw.EdgeInsets.only(bottom:8),child:pw.Text(e,style:const pw.TextStyle(fontSize:12)))),
@@ -64,7 +64,7 @@ class UniversalExportService {
     final rows=<List<String>>[];
     if(n.type==NoteType.checklist){
       rows.add(['Done','Item']);
-      for(final e in _lines(n.content))rows.add([_checked(e)?'Yes':'No',e.replaceFirst(RegExp(r'^[-*•]\s*'),'')]);
+      for(final e in n.checklistItems)rows.add([e.isDone?'Yes':'No',e.text]);
     }else{
       rows.add(['Field','Value']);rows.add(['Title',n.title]);rows.add(['Content',n.content]);
       if(n.tags.isNotEmpty)rows.add(['Tags',n.tags.join(', ')]);
