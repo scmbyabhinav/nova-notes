@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:orah_notes/app.dart';
 
 void main() {
-  testWidgets('NOVA Notes launches', (tester) async {
+  testWidgets('Orah launches', (tester) async {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
