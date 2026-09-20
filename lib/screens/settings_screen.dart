@@ -7,6 +7,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../services/nova_backup_service.dart';
+import '../services/nova_attachment_service.dart';
+import '../data/repositories/note_repository_provider.dart';
 
 import '../core/localization/nova_localizations.dart';
 import 'security_settings_screen.dart';
@@ -160,5 +162,36 @@ class SettingsScreen extends StatelessWidget {
         );
       }
     }
+  }
+  Future<void> _storageMaintenance(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final repo = await NoteRepositoryProvider.instance();
+    final notes = await repo.getNotes();
+    final referenced = notes.expand((n) => n.attachments).toSet();
+    final service = const NovaAttachmentService();
+    final attachmentFiles = await service.listAttachments();
+    final bytes = await service.totalSize();
+    if (!context.mounted) return;
+    final orphanCount = attachmentFiles.where((f) => !referenced.contains(f.path)).length;
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(title: const Text('Storage maintenance'), subtitle: Text('${attachmentFiles.length} attachments • ${_formatBytes(bytes)}')),
+          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: const Text('Clean orphan attachments'), subtitle: Text('$orphanCount unused files found'), onTap: () => Navigator.pop(context, 'clean')),
+        ]),
+      ),
+    );
+    if (!context.mounted || action != 'clean') return;
+    final removed = await service.removeOrphans(referenced);
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removed $removed orphan attachment${removed == 1 ? '' : 's'}.')));
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 }
