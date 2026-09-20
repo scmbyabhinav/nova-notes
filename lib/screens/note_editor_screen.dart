@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../data/repositories/folder_repository.dart';
 import '../data/repositories/folder_repository_provider.dart';
@@ -41,6 +42,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isArchived = false;
   String? _folderId;
   List<String> _tags = const [];
+  bool _previewMode = false;
 
   @override
   void initState() {
@@ -164,6 +166,74 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+
+  String _renderableContent() {
+    if (_noteType != NoteType.checklist) return _contentController.text;
+    return _contentController.text
+        .split(RegExp(r'\r?\n'))
+        .where((line) => line.trim().isNotEmpty)
+        .map((line) => '- [ ] ' + line.replaceFirst(RegExp(r'^[-*•]\s*'), ''))
+        .join('\n');
+  }
+
+  void _wrapSelection(String before, String after) {
+    final value = _contentController.value;
+    final selection = value.selection;
+    if (!selection.isValid) return;
+    final selected = selection.textInside(value.text);
+    final replacement = before + selected + after;
+    _contentController.value = value.replaced(selection, replacement);
+    _contentController.selection =
+        TextSelection.collapsed(offset: selection.start + replacement.length);
+    _contentFocus.requestFocus();
+  }
+
+  void _insertPrefix(String prefix) {
+    final value = _contentController.value;
+    final selection = value.selection;
+    final start = selection.isValid ? selection.start : value.text.length;
+    final lineStart = value.text.lastIndexOf('\n', start - 1) + 1;
+    _contentController.value = value.replaced(
+      TextSelection.collapsed(offset: lineStart),
+      prefix,
+    );
+    _contentController.selection =
+        TextSelection.collapsed(offset: start + prefix.length);
+    _contentFocus.requestFocus();
+  }
+
+  Future<void> _insertLink() async {
+    final url = await _textDialog('Insert link', 'https://example.com');
+    if (url == null || url.isEmpty) return;
+    final value = _contentController.value;
+    final selected = value.selection.textInside(value.text);
+    _contentController.value = value.replaced(
+      value.selection,
+      selected.isEmpty ? '[link](' + url + ')' : '[' + selected + '](' + url + ')',
+    );
+    _contentFocus.requestFocus();
+  }
+
+  Future<String?> _textDialog(String title, String hint) async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: hint),
+          keyboardType: TextInputType.url,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Insert')),
+        ],
+      ),
+    );
+  }
+
   Future<void> _delete() async {
     await widget.repository.deleteNote(_noteId);
 
@@ -204,6 +274,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: _previewMode ? 'Edit' : 'Preview',
+            onPressed: () => setState(() => _previewMode = !_previewMode),
+            icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
+          ),
           IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
@@ -333,45 +408,48 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 ),
               ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
-                children: [
-                  TextField(
-                    controller: _titleController,
-                    textCapitalization: TextCapitalization.sentences,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
+              child: _previewMode
+                  ? ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        if (_titleController.text.trim().isNotEmpty)
+                          Text(
+                            _titleController.text.trim(),
+                            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        const SizedBox(height: 12),
+                        MarkdownBody(data: _renderableContent(), selectable: true),
+                      ],
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        TextField(
+                          controller: _titleController,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                          decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: _contentController,
+                          textCapitalization: TextCapitalization.sentences,
+                          keyboardType: TextInputType.multiline,
+                          focusNode: _contentFocus,
+                          textInputAction: TextInputAction.newline,
+                          minLines: 18,
+                          maxLines: null,
+                          style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
+                          decoration: InputDecoration(
+                            hintText: _noteType == NoteType.checklist ? 'Add one task per line...' : 'Start writing...',
+                            filled: false,
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ],
                     ),
-                    decoration: const InputDecoration(
-                      hintText: 'Title',
-                      filled: false,
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _contentController,
-                    textCapitalization: TextCapitalization.sentences,
-                    keyboardType: TextInputType.multiline,
-              focusNode: _contentFocus,
-              textInputAction: TextInputAction.newline,
-                    minLines: 18,
-                    maxLines: null,
-                    style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
-                    decoration: InputDecoration(
-                      hintText: _noteType == NoteType.checklist
-                          ? 'Add one task per line...'
-                          : 'Start writing...',
-                      filled: false,
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ],
-              ),
             ),
             Material(
               elevation: 4,
@@ -387,17 +465,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       _ToolButton(
                         icon: Icons.format_bold_rounded,
                         label: 'Bold',
-                        onPressed: () {},
+                        onPressed: () => _wrapSelection('**', '**'),
                       ),
                       _ToolButton(
                         icon: Icons.format_italic_rounded,
                         label: 'Italic',
-                        onPressed: () {},
+                        onPressed: () => _wrapSelection('*', '*'),
                       ),
                       _ToolButton(
                         icon: Icons.format_underlined_rounded,
                         label: 'Underline',
-                        onPressed: () {},
+                        onPressed: () => _wrapSelection('<u>', '</u>'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.title_rounded,
+                        label: 'Heading',
+                        onPressed: () => _insertPrefix('## '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_bulleted_rounded,
+                        label: 'Bullets',
+                        onPressed: () => _insertPrefix('- '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_numbered_rounded,
+                        label: 'Numbered list',
+                        onPressed: () => _insertPrefix('1. '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_quote_rounded,
+                        label: 'Quote',
+                        onPressed: () => _insertPrefix('> '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.link_rounded,
+                        label: 'Link',
+                        onPressed: _insertLink,
                       ),
                       _ToolButton(
                         icon: _noteType == NoteType.checklist
