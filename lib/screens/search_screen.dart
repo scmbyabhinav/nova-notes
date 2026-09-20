@@ -307,7 +307,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: SearchBar(
                       controller: _controller,
                       focusNode: _focusNode,
-                      autofocus: true,
                       hintText: 'Search title, content or tags...',
                       leading: const Icon(Icons.search_rounded),
                       trailing: [
