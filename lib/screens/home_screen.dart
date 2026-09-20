@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _gridView = true;
   bool _loading = true;
+  String _sort = 'updated';
   List<Note> _notes = const [];
 
   @override
@@ -144,7 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final pinned = _notes
         .where((note) => note.isPinned && !note.isArchived)
         .toList();
-    final recent = _notes.where((note) => !note.isArchived).toList();
+    final recent = _notes.where((note) => !note.isArchived).toList()
+      ..sort((a, b) {
+        if (_sort == 'created') return b.createdAt.compareTo(a.createdAt);
+        if (_sort == 'title') return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+        return b.updatedAt.compareTo(a.updatedAt);
+      });
+    final completed = recent.where((n) => n.type == NoteType.checklist && n.checklistItems.isNotEmpty && n.checklistProgress == 1).length;
 
     return SafeArea(
       child: RefreshIndicator(
@@ -262,7 +269,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w800,
                         ),
                       ),
-                      const Spacer(),
+                      if (recent.isNotEmpty)
+                        Text(
+                          '\${completed} done',
+                          style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        ),
+                      const SizedBox(width: 4),
+                      PopupMenuButton<String>(
+                        tooltip: 'Sort notes',
+                        initialValue: _sort,
+                        onSelected: (value) => setState(() => _sort = value),
+                        itemBuilder: (_) => const [
+                          PopupMenuItem(value: 'updated', child: Text('Recently updated')),
+                          PopupMenuItem(value: 'created', child: Text('Recently created')),
+                          PopupMenuItem(value: 'title', child: Text('Title A–Z')),
+                        ],
+                        icon: const Icon(Icons.sort_rounded),
+                      ),
                       IconButton(
                         tooltip: _gridView ? 'List view' : 'Grid view',
                         onPressed: () =>
@@ -384,6 +407,10 @@ class _NoteCard extends StatelessWidget {
                       children: [
                         if (note.isFavorite)
                           const Icon(Icons.star_rounded, size: 16),
+                        if (note.attachments.isNotEmpty)
+                          const Icon(Icons.attach_file_rounded, size: 16),
+                        if (note.isPinned)
+                          const Icon(Icons.push_pin_rounded, size: 16),
                         if (note.tags.isNotEmpty)
                           Text(
                             '#${note.tags.first}',
@@ -469,15 +496,23 @@ class _NoteText extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 7),
-        Text(
-          note.content.isEmpty ? 'No content' : note.content,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodySmall?.copyWith(
-            height: 1.35,
-            color: theme.colorScheme.onSurfaceVariant,
+        if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
+          Text(
+            '${note.completedChecklistItems}/${note.checklistItems.length} completed',
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600),
           ),
-        ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(value: note.checklistProgress, minHeight: 5),
+          ),
+        ] else
+          Text(
+            note.content.isEmpty ? 'No content' : note.content,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(height: 1.35, color: theme.colorScheme.onSurfaceVariant),
+          ),
       ],
     );
   }
