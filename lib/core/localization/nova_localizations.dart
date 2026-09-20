@@ -22,7 +22,7 @@ class NovaLocalizations {
   static NovaLocalizations of(BuildContext context) =>
       Localizations.of<NovaLocalizations>(context, NovaLocalizations)!;
 
-  String get appName => 'NOVA Notes';
+  String get appName => 'Orah';
 
   String get notes => _value('Notes', 'नोट्स');
   String get folders => _value('Folders', 'फ़ोल्डर');

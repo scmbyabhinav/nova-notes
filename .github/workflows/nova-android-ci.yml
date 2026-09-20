@@ -1,4 +1,4 @@
-name: NOVA Android CI
+name: Orah Android CI
 
 on:
   push:
@@ -60,5 +60,5 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: nova-debug-apk
+          name: orah-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk

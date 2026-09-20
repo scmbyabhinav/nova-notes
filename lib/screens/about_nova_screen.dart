@@ -8,7 +8,7 @@ class AboutNovaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('About NOVA')),
+      appBar: AppBar(title: const Text('About Orah')),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -29,7 +29,7 @@ class AboutNovaScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'NOVA Notes',
+            'Orah',
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
@@ -65,7 +65,7 @@ class AboutNovaScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'NOVA is built to stay out of the way: open, capture, organize, find.',
+            'Orah is built to stay out of the way: open, capture, organize, find.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),

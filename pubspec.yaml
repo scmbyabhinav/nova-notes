@@ -1,5 +1,5 @@
-name: nova_notes
-description: NOVA Notes — a fast, private, offline-first note-taking app.
+name: orah_notes
+description: Orah — a fast, private, offline-first note-taking app.
 publish_to: "none"
 version: 1.0.0+1
 environment:
