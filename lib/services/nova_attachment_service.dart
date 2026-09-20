@@ -27,6 +27,28 @@ class NovaAttachmentService {
     if (await file.exists()) await file.delete();
   }
 
+  Future<String> rename(String sourcePath, String newName) async {
+    final source = File(sourcePath);
+    if (!await source.exists()) throw const FileSystemException('Attachment not found');
+    final directory = source.parent.path;
+    final safe = p.basename(newName).replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
+    if (safe.isEmpty) throw const FileSystemException('Invalid file name');
+    final extension = p.extension(source.path);
+    final desired = p.extension(safe).isEmpty ? '$safe$extension' : safe;
+    final target = File(p.join(directory, desired));
+    if (target.path == source.path) return source.path;
+    if (await target.exists()) {
+      final unique = _uniqueName(directory, desired);
+      return (await source.rename(p.join(directory, unique))).path;
+    }
+    return (await source.rename(target.path)).path;
+  }
+
+  Future<int> size(String path) async {
+    final file = File(path);
+    return file.existsSync() ? file.length() : 0;
+  }
+
   Future<Directory> _attachmentDirectory() async {
     final root = await getApplicationDocumentsDirectory();
     final dir = Directory(p.join(root.path, 'attachments'));
