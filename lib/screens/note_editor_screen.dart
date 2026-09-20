@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -10,6 +15,7 @@ import '../models/folder.dart';
 import '../models/note.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
+import '../services/nova_attachment_service.dart';
 
 class NoteEditorScreen extends StatefulWidget {
   const NoteEditorScreen({
@@ -42,6 +48,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isArchived = false;
   String? _folderId;
   List<String> _tags = const [];
+  List<String> _attachments = const [];
   bool _previewMode = false;
 
   @override
@@ -62,6 +69,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _isArchived = existing?.isArchived ?? false;
     _folderId = existing?.folderId;
     _tags = [...(existing?.tags ?? const [])];
+    _attachments = [...(existing?.attachments ?? const [])];
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
@@ -101,6 +109,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             updatedAt: DateTime.now(),
             folderId: _folderId,
             tags: _tags,
+            attachments: _attachments,
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
@@ -112,6 +121,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             updatedAt: DateTime.now(),
             folderId: _folderId,
             tags: _tags,
+            attachments: _attachments,
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
@@ -246,6 +256,102 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
+
+  Future<void> _addImage(ImageSource source) async {
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: 92,
+      );
+      if (picked == null) return;
+      final path = await const NovaAttachmentService().importXFile(picked);
+      setState(() {
+        _attachments = [..._attachments, path];
+        _hasChanges = true;
+      });
+      await _save();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add image: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _addFiles() async {
+    try {
+      final files = await FilePicker.pickFiles(allowMultiple: true);
+      if (files.isEmpty) return;
+      final imported = <String>[];
+      for (final file in files) {
+        if (file.path == null) continue;
+        imported.add(
+          await const NovaAttachmentService().importFile(file.path!),
+        );
+      }
+      if (imported.isEmpty) return;
+      setState(() {
+        _attachments = [..._attachments, ...imported];
+        _hasChanges = true;
+      });
+      await _save();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add files: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeAttachment(String path) async {
+    await const NovaAttachmentService().delete(path);
+    setState(() {
+      _attachments = _attachments.where((item) => item != path).toList();
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  void _showAttachmentMenu() {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Take a photo'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.attach_file_rounded),
+              title: const Text('Attach files'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addFiles();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _delete() async {
     await widget.repository.deleteNote(_noteId);
 
@@ -316,6 +422,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
                         content: _contentController.text,
                         type: _noteType,
+                        attachments: _attachments,
                         createdAt: _createdAt,
                         updatedAt: DateTime.now(),
                         folderId: _folderId,
@@ -417,6 +524,63 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+            if (_attachments.isNotEmpty)
+              SizedBox(
+                height: 112,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _attachments.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final path = _attachments[index];
+                    final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic']
+                        .contains(p.extension(path).toLowerCase());
+                    return Stack(
+                      children: [
+                        Container(
+                          width: 104,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: theme.colorScheme.surfaceContainerHighest,
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: isImage
+                              ? Image.file(File(path), fit: BoxFit.cover)
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.insert_drive_file_outlined, size: 30),
+                                    const SizedBox(height: 6),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: Text(
+                                        p.basename(path),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.labelSmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: IconButton.filledTonal(
+                            tooltip: 'Remove',
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => _removeAttachment(path),
+                            icon: const Icon(Icons.close_rounded, size: 16),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             Expanded(
@@ -537,9 +701,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: _organize,
                       ),
                       _ToolButton(
-                        icon: Icons.image_outlined,
-                        label: 'Image',
-                        onPressed: () {},
+                        icon: Icons.attach_file_rounded,
+                        label: 'Add image or file',
+                        onPressed: _showAttachmentMenu,
                       ),
                     ],
                   ),
