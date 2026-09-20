@@ -1,5 +1,12 @@
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../services/nova_backup_service.dart';
 
 import '../core/localization/nova_localizations.dart';
 import 'security_settings_screen.dart';
@@ -52,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
                   title: const Text('Backup & Export'),
                   subtitle: const Text('Local backup and portable data'),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => _showBackupInfo(context),
+                  onTap: () => _showBackup(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -102,36 +109,56 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showBackupInfo(BuildContext context) {
-    showModalBottomSheet<void>(
+  Future<void> _showBackup(BuildContext context) async {
+    final action = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Backup & Export',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'NOVA keeps your data local-first. Native file save, restore and '
-                'sharing will use Android system storage and sharing surfaces.',
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.check),
-                label: const Text('Got it'),
-              ),
-            ],
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const ListTile(
+            title: Text('Portable Backup'),
+            subtitle: Text('Notes, folders and attached files in one .nova package.'),
           ),
-        ),
+          ListTile(
+            leading: const Icon(Icons.upload_file_rounded),
+            title: const Text('Create backup'),
+            onTap: () => Navigator.pop(context, 'create'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.restore_rounded),
+            title: const Text('Restore backup'),
+            onTap: () => Navigator.pop(context, 'restore'),
+          ),
+        ]),
       ),
     );
+    if (!context.mounted || action == null) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final service = NovaBackupService(prefs);
+      if (action == 'create') {
+        final file = await service.createBackup();
+        await Share.shareXFiles([XFile(file.path)], text: 'NOVA Notes portable backup');
+      } else {
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['nova'],
+        );
+        final path = result?.files.single.path;
+        if (path == null) return;
+        final count = await service.restoreBackup(File(path));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Restored $count notes successfully.')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Backup error: $e')),
+        );
+      }
+    }
   }
 }
