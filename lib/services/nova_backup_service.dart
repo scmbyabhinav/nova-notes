@@ -46,7 +46,7 @@ class NovaBackupService {
     final encoded = ZipEncoder().encode(archive) ?? <int>[];
     final dir = await getTemporaryDirectory();
     final stamp = DateTime.now().toIso8601String().replaceAll(RegExp(r'[:.]'), '-');
-    final file = File(p.join(dir.path, 'NOVA_Backup_\$stamp.nova'));
+    final file = File(p.join(dir.path, 'Orah_Backup_\$stamp.nova'));
     await file.writeAsBytes(encoded, flush: true);
     return file;
   }
@@ -54,9 +54,9 @@ class NovaBackupService {
   Future<int> restoreBackup(File backup) async {
     final archive = ZipDecoder().decodeBytes(await backup.readAsBytes());
     final notesFile = archive.findFile('data/notes.json');
-    if (notesFile == null) throw const FormatException('Invalid NOVA backup: notes.json missing.');
+    if (notesFile == null) throw const FormatException('Invalid Orah backup: notes.json missing.');
     final raw = jsonDecode(utf8.decode(notesFile.content as List<int>));
-    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid NOVA portable backup.');
+    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid Orah portable backup.');
     final extracted = <String, String>{};
     final root = await _attachmentDirectory();
     for (final file in archive.files) {
