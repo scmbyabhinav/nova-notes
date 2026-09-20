@@ -11,7 +11,7 @@ import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 
 class OrahApp extends StatelessWidget {
-  const NovaNotesApp({super.key});
+  const OrahApp({super.key});
 
   @override
   Widget build(BuildContext context) {
