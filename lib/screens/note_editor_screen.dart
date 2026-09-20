@@ -91,19 +91,31 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       return;
     }
 
-    final note = Note(
-      id: _noteId,
-      title: title.isEmpty ? 'Untitled note' : title,
-      content: content,
-      type: _noteType,
-      createdAt: _createdAt,
-      updatedAt: DateTime.now(),
-      folderId: _folderId,
-      tags: _tags,
-      isPinned: _isPinned,
-      isFavorite: _isFavorite,
-      isArchived: _isArchived,
-    );
+    final note = widget.note == null
+        ? Note(
+            id: _noteId,
+            title: title.isEmpty ? 'Untitled note' : title,
+            content: content,
+            type: _noteType,
+            createdAt: _createdAt,
+            updatedAt: DateTime.now(),
+            folderId: _folderId,
+            tags: _tags,
+            isPinned: _isPinned,
+            isFavorite: _isFavorite,
+            isArchived: _isArchived,
+          )
+        : widget.note!.copyWith(
+            title: title.isEmpty ? 'Untitled note' : title,
+            content: content,
+            type: _noteType,
+            updatedAt: DateTime.now(),
+            folderId: _folderId,
+            tags: _tags,
+            isPinned: _isPinned,
+            isFavorite: _isFavorite,
+            isArchived: _isArchived,
+          );
 
     await widget.repository.saveNote(note);
     _hasChanges = false;
@@ -473,9 +485,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: () => _wrapSelection('*', '*'),
                       ),
                       _ToolButton(
-                        icon: Icons.format_underlined_rounded,
-                        label: 'Underline',
-                        onPressed: () => _wrapSelection('<u>', '</u>'),
+                        icon: Icons.strikethrough_s_rounded,
+                        label: 'Strikethrough',
+                        onPressed: () => _wrapSelection('~~', '~~'),
                       ),
                       _ToolButton(
                         icon: Icons.title_rounded,
