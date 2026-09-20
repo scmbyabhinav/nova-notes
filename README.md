@@ -32,3 +32,6 @@ flutter run
 ## Global product audit
 
 See `GLOBAL_PRODUCT_AUDIT.md` for localization, accessibility, privacy, Unicode, timezone, offline and international-release requirements.
+
+
+CI build trigger: Orah Android validation and APK packaging.
