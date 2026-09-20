@@ -183,6 +183,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             folderId: _folderId,
             tags: _tags,
             attachments: _attachments,
+            checklistItems: _checklistItems,
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
@@ -505,6 +506,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _delete() async {
+    for (final path in _attachments) {
+      await const NovaAttachmentService().delete(path);
+    }
     await widget.repository.deleteNote(_noteId);
 
     if (!mounted) return;
