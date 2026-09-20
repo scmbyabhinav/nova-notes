@@ -82,7 +82,7 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.info_outline_rounded),
-              title: const Text('About NOVA'),
+              title: const Text('About Orah'),
               subtitle: const Text('Product information and privacy approach'),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
@@ -92,7 +92,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'NOVA Notes 1.0.0',
+            'Orah 1.0.0',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -140,7 +140,7 @@ class SettingsScreen extends StatelessWidget {
       final service = NovaBackupService(prefs);
       if (action == 'create') {
         final file = await service.createBackup();
-        await Share.shareXFiles([XFile(file.path)], text: 'NOVA Notes portable backup');
+        await Share.shareXFiles([XFile(file.path)], text: 'Orah portable backup');
       } else {
         final result = await FilePicker.pickFiles(
           type: FileType.custom,
