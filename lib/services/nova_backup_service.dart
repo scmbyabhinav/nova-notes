@@ -1,0 +1,88 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:archive/archive.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../data/repositories/local_note_repository.dart';
+
+class NovaBackupService {
+  const NovaBackupService(this.preferences);
+  final SharedPreferences preferences;
+  static const format = 'nova_notes_portable_backup';
+  static const version = 2;
+
+  Future<File> createBackup() async {
+    final notes = LocalNoteRepository(preferences);
+    final rawNotes = jsonDecode(await notes.exportJson()) as Map<String, dynamic>;
+    final files = <String, List<int>>{};
+    final foldersRaw = preferences.getString('nova_folders_v1');
+    if (foldersRaw != null) files['data/folders.json'] = utf8.encode(foldersRaw);
+    final manifest = <Map<String, String>>[];
+    final root = await _attachmentDirectory();
+    final list = rawNotes['notes'] as List<dynamic>? ?? [];
+    for (final raw in list) {
+      final map = Map<String, dynamic>.from(raw as Map);
+      final attachments = List<String>.from(map['attachments'] as List? ?? const []);
+      final portable = <String>[];
+      for (final path in attachments) {
+        final file = File(path);
+        if (!await file.exists()) continue;
+        final archiveName = 'attachments/\${p.basename(path)}';
+        files[archiveName] = await file.readAsBytes();
+        portable.add(archiveName);
+        manifest.add({'source': path, 'archive': archiveName});
+      }
+      map['attachments'] = portable;
+    }
+    rawNotes['format'] = format;
+    rawNotes['version'] = version;
+    rawNotes['attachments'] = manifest;
+    files['data/notes.json'] = utf8.encode(jsonEncode(rawNotes));
+    final archive = Archive();
+    for (final e in files.entries) archive.addFile(ArchiveFile(e.key, e.value.length, e.value));
+    final encoded = ZipEncoder().encode(archive) ?? <int>[];
+    final dir = await getTemporaryDirectory();
+    final stamp = DateTime.now().toIso8601String().replaceAll(RegExp(r'[:.]'), '-');
+    final file = File(p.join(dir.path, 'NOVA_Backup_\$stamp.nova'));
+    await file.writeAsBytes(encoded, flush: true);
+    return file;
+  }
+
+  Future<int> restoreBackup(File backup) async {
+    final archive = ZipDecoder().decodeBytes(await backup.readAsBytes());
+    final notesFile = archive.findFile('data/notes.json');
+    if (notesFile == null) throw const FormatException('Invalid NOVA backup: notes.json missing.');
+    final raw = jsonDecode(utf8.decode(notesFile.content as List<int>));
+    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid NOVA portable backup.');
+    final extracted = <String, String>{};
+    final root = await _attachmentDirectory();
+    for (final file in archive.files) {
+      if (!file.isFile || !file.name.startsWith('attachments/')) continue;
+      final name = p.basename(file.name);
+      final target = File(p.join(root.path, name));
+      await target.writeAsBytes(file.content as List<int>, flush: true);
+      extracted[file.name] = target.path;
+    }
+    final noteList = (raw['notes'] as List<dynamic>? ?? []).map((item) {
+      final map = Map<String, dynamic>.from(item as Map);
+      final paths = List<String>.from(map['attachments'] as List? ?? const []);
+      map['attachments'] = paths.map((x) => extracted[x]).whereType<String>().toList();
+      return map;
+    }).toList();
+    final payload = {'format': 'nova_notes_backup', 'version': 1, 'exportedAt': raw['exportedAt'] ?? DateTime.now().toIso8601String(), 'notes': noteList};
+    final count = await LocalNoteRepository(preferences).importJson(jsonEncode(payload));
+    final foldersFile = archive.findFile('data/folders.json');
+    if (foldersFile != null) await preferences.setString('nova_folders_v1', utf8.decode(foldersFile.content as List<int>));
+    return count;
+  }
+
+  Future<Directory> _attachmentDirectory() async {
+    final root = await getApplicationDocumentsDirectory();
+    final dir = Directory(p.join(root.path, 'attachments'));
+    if (!await dir.exists()) await dir.create(recursive: true);
+    return dir;
+  }
+}
