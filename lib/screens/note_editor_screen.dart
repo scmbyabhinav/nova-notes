@@ -49,6 +49,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String? _folderId;
   List<String> _tags = const [];
   List<String> _attachments = const [];
+  List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
 
   @override
@@ -70,9 +71,67 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _folderId = existing?.folderId;
     _tags = [...(existing?.tags ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
+    _checklistItems = [...(existing?.checklistItems ?? const [])];
+    if (_noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
+  }
+
+  List<ChecklistItem> _parseChecklistContent(String content) {
+    return content.split(RegExp(r'\r?\n')).where((line) => line.trim().isNotEmpty).map((line) {
+      final trimmed = line.trim();
+      final done = trimmed.startsWith('[x]') || trimmed.startsWith('[X]') || trimmed.startsWith('☑');
+      final text = trimmed.replaceFirst(RegExp(r'^(?:\[[ xX]\]|☐|☑)\s*'), '').replaceFirst(RegExp(r'^[-*•]\s*'), '');
+      return ChecklistItem(id: text.hashCode.toString(), text: text, isDone: done);
+    }).toList();
+  }
+
+  String _checklistContent() => _checklistItems.map((item) => (item.isDone ? '[x] ' : '[ ] ') + item.text).join('\n');
+
+  Future<void> _addChecklistItem() async {
+    final controller = TextEditingController();
+    final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
+      title: const Text('Add task'),
+      content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done, decoration: const InputDecoration(hintText: 'What needs to be done?')),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Add'))],
+    ));
+    controller.dispose();
+    if (text == null || text.trim().isEmpty) return;
+    setState(() { _checklistItems = [..._checklistItems, ChecklistItem(id: _newId(), text: text.trim())]; _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _editChecklistItem(int index) async {
+    final controller = TextEditingController(text: _checklistItems[index].text);
+    final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
+      title: const Text('Edit task'), content: TextField(controller: controller, autofocus: true),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Save'))],
+    ));
+    controller.dispose();
+    if (text == null || text.trim().isEmpty) return;
+    setState(() { _checklistItems[index] = _checklistItems[index].copyWith(text: text.trim()); _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _toggleChecklistItem(int index, bool value) async {
+    setState(() { _checklistItems[index] = _checklistItems[index].copyWith(isDone: value); _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _removeChecklistItem(int index) async {
+    setState(() { _checklistItems.removeAt(index); _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _reorderChecklist(int oldIndex, int newIndex) async {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _checklistItems.removeAt(oldIndex);
+      _checklistItems.insert(newIndex, item);
+      _hasChanges = true;
+    });
+    await _save();
   }
 
   String _newId() =>
@@ -92,7 +151,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (mounted) setState(() => _saving = true);
 
     final title = _titleController.text.trim();
-    final content = _contentController.text;
+    final content = _noteType == NoteType.checklist ? _checklistContent() : _contentController.text;
 
     if (title.isEmpty && content.trim().isEmpty) {
       if (mounted) setState(() => _saving = false);
@@ -110,6 +169,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             folderId: _folderId,
             tags: _tags,
             attachments: _attachments,
+            checklistItems: _checklistItems,
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
@@ -191,11 +251,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   String _renderableContent() {
     if (_noteType != NoteType.checklist) return _contentController.text;
-    return _contentController.text
-        .split(RegExp(r'\r?\n'))
-        .where((line) => line.trim().isNotEmpty)
-        .map((line) => '- [ ] ' + line.replaceFirst(RegExp(r'^[-*•]\s*'), ''))
-        .join('\n');
+    return _checklistItems.map((item) => '- [' + (item.isDone ? 'x' : ' ') + '] ' + item.text).join('\n');
   }
 
   void _wrapSelection(String before, String after) {
@@ -423,6 +479,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         content: _contentController.text,
                         type: _noteType,
                         attachments: _attachments,
+                        checklistItems: _checklistItems,
                         createdAt: _createdAt,
                         updatedAt: DateTime.now(),
                         folderId: _folderId,
@@ -608,22 +665,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           maxLines: 2,
                         ),
                         const SizedBox(height: 8),
-                        TextField(
-                          controller: _contentController,
-                          textCapitalization: TextCapitalization.sentences,
-                          keyboardType: TextInputType.multiline,
-                          focusNode: _contentFocus,
-                          textInputAction: TextInputAction.newline,
-                          minLines: 18,
-                          maxLines: null,
-                          style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
-                          decoration: InputDecoration(
-                            hintText: _noteType == NoteType.checklist ? 'Add one task per line...' : 'Start writing...',
-                            filled: false,
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
+                        if (_noteType == NoteType.checklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                        else
+                          TextField(
+                            controller: _contentController,
+                            textCapitalization: TextCapitalization.sentences,
+                            keyboardType: TextInputType.multiline,
+                            focusNode: _contentFocus,
+                            textInputAction: TextInputAction.newline,
+                            minLines: 18,
+                            maxLines: null,
+                            style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
+                            decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           ),
-                        ),
                       ],
                     ),
             ),
@@ -714,6 +769,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
       ),
     );
+  }
+}
+
+class _ChecklistEditor extends StatelessWidget {
+  const _ChecklistEditor({required this.items, required this.onAdd, required this.onToggle, required this.onEdit, required this.onDelete, required this.onReorder});
+  final List<ChecklistItem> items;
+  final VoidCallback onAdd;
+  final Future<void> Function(int, bool) onToggle;
+  final Future<void> Function(int) onEdit;
+  final Future<void> Function(int) onDelete;
+  final Future<void> Function(int, int) onReorder;
+
+  @override
+  Widget build(BuildContext context) {
+    final done = items.where((item) => item.isDone).length;
+    final progress = items.isEmpty ? 0.0 : done / items.length;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (items.isNotEmpty) Row(children: [Expanded(child: LinearProgressIndicator(value: progress)), const SizedBox(width: 12), Text('$done/${items.length}')]),
+      if (items.isNotEmpty) const SizedBox(height: 12),
+      if (items.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 36), child: Column(children: [
+        Icon(Icons.checklist_rounded, size: 52, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(height: 12), const Text('Your checklist is empty'), const SizedBox(height: 8),
+        FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add first task')),
+      ]))
+      else ReorderableListView.builder(
+        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: items.length, onReorder: onReorder,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return ListTile(key: ValueKey(item.id), contentPadding: EdgeInsets.zero,
+            leading: Checkbox(value: item.isDone, onChanged: (value) => onToggle(index, value ?? false)),
+            title: Text(item.text, style: TextStyle(decoration: item.isDone ? TextDecoration.lineThrough : null)),
+            onTap: () => onToggle(index, !item.isDone), onLongPress: () => onEdit(index),
+            trailing: IconButton(tooltip: 'Delete task', onPressed: () => onDelete(index), icon: const Icon(Icons.delete_outline_rounded)));
+        }),
+      if (items.isNotEmpty) Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add task'))),
+    ]);
   }
 }
 
