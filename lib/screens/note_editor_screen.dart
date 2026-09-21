@@ -873,7 +873,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 }
 
 class _ChecklistEditor extends StatelessWidget {
-  const _ChecklistEditor({required this.items, required this.onAdd, required this.onToggle, required this.onEdit, required this.onDelete, required this.onReorder});
+  const _ChecklistEditor({
+    required this.items,
+    required this.onAdd,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onReorder,
+  });
+
   final List<ChecklistItem> items;
   final VoidCallback onAdd;
   final Future<void> Function(int, bool) onToggle;
@@ -885,26 +893,137 @@ class _ChecklistEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final done = items.where((item) => item.isDone).length;
     final progress = items.isEmpty ? 0.0 : done / items.length;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (items.isNotEmpty) Row(children: [Expanded(child: LinearProgressIndicator(value: progress)), const SizedBox(width: 12), Text('$done/${items.length}')]),
-      if (items.isNotEmpty) const SizedBox(height: 12),
-      if (items.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 36), child: Column(children: [
-        Icon(Icons.checklist_rounded, size: 52, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 12), const Text('Your checklist is empty'), const SizedBox(height: 8),
-        FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add first task')),
-      ]))
-      else ReorderableListView.builder(
-        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: items.length, onReorder: onReorder,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return ListTile(key: ValueKey(item.id), contentPadding: EdgeInsets.zero,
-            leading: Checkbox(value: item.isDone, onChanged: (value) => onToggle(index, value ?? false)),
-            title: Text(item.text, style: TextStyle(decoration: item.isDone ? TextDecoration.lineThrough : null)),
-            onTap: () => onToggle(index, !item.isDone), onLongPress: () => onEdit(index),
-            trailing: IconButton(tooltip: 'Delete task', onPressed: () => onDelete(index), icon: const Icon(Icons.delete_outline_rounded)));
-        }),
-      if (items.isNotEmpty) Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add task'))),
-    ]);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (items.isNotEmpty)
+          Row(
+            children: [
+              Expanded(child: LinearProgressIndicator(value: progress)),
+              const SizedBox(width: 12),
+              Text('$done/${items.length}'),
+            ],
+          ),
+        if (items.isNotEmpty) const SizedBox(height: 12),
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 36),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.checklist_rounded,
+                  size: 52,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 12),
+                const Text('Your checklist is empty'),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add first task'),
+                ),
+              ],
+            ),
+          )
+        else
+          Column(
+            children: [
+              for (var index = 0; index < items.length; index++)
+                _ChecklistRow(
+                  key: ValueKey(items[index].id),
+                  item: items[index],
+                  canMoveUp: index > 0,
+                  canMoveDown: index < items.length - 1,
+                  onToggle: (value) => onToggle(index, value),
+                  onEdit: () => onEdit(index),
+                  onDelete: () => onDelete(index),
+                  onMoveUp: index > 0
+                      ? () => onReorder(index, index - 1)
+                      : null,
+                  onMoveDown: index < items.length - 1
+                      ? () => onReorder(index, index + 1)
+                      : null,
+                ),
+            ],
+          ),
+        if (items.isNotEmpty)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: onAdd,
+              icon: const Icon(Icons.add),
+              label: const Text('Add task'),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ChecklistRow extends StatelessWidget {
+  const _ChecklistRow({
+    super.key,
+    required this.item,
+    required this.canMoveUp,
+    required this.canMoveDown,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onMoveUp,
+    required this.onMoveDown,
+  });
+
+  final ChecklistItem item;
+  final bool canMoveUp;
+  final bool canMoveDown;
+  final ValueChanged<bool> onToggle;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback? onMoveUp;
+  final VoidCallback? onMoveDown;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 6),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        leading: Checkbox(
+          value: item.isDone,
+          onChanged: (value) => onToggle(value ?? false),
+        ),
+        title: Text(
+          item.text,
+          style: TextStyle(
+            decoration: item.isDone ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        onTap: () => onToggle(!item.isDone),
+        onLongPress: onEdit,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'Move up',
+              onPressed: canMoveUp ? onMoveUp : null,
+              icon: const Icon(Icons.keyboard_arrow_up_rounded),
+            ),
+            IconButton(
+              tooltip: 'Move down',
+              onPressed: canMoveDown ? onMoveDown : null,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            IconButton(
+              tooltip: 'Delete task',
+              onPressed: onDelete,
+              icon: const Icon(Icons.delete_outline_rounded),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
