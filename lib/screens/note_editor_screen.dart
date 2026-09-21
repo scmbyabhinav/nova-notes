@@ -339,10 +339,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _addFiles() async {
     try {
-      final result = await FilePicker.pickFiles(allowMultiple: true);
-      if (result == null || result.files.isEmpty) return;
+      final result = await FilePicker.pickFiles();
+      if (result.isEmpty) return;
       final imported = <String>[];
-      for (final file in result.files) {
+      for (final file in result) {
         if (file.path == null) continue;
         imported.add(
           await const NovaAttachmentService().importFile(file.path!),
