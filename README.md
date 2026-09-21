@@ -35,3 +35,5 @@ See `GLOBAL_PRODUCT_AUDIT.md` for localization, accessibility, privacy, Unicode,
 
 
 CI build trigger: Orah Android validation and APK packaging.
+
+CI validation marker for Attack 39.
