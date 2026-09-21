@@ -10,7 +10,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   shared_preferences: ^2.5.3
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^11.2.0
   local_auth: ^2.3.0
   crypto: ^3.0.6
   intl: ^0.20.3
