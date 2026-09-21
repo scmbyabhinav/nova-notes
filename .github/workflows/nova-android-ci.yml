@@ -1,4 +1,5 @@
 name: Orah Android CI
+run-name: Orah Android build
 
 on:
   push:
