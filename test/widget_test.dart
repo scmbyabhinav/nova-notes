@@ -5,7 +5,7 @@ import 'package:orah_notes/app.dart';
 void main() {
   testWidgets('Orah launches', (tester) async {
     await tester.pumpWidget(const OrahApp());
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Orah'), findsOneWidget);
     expect(find.text('Recent Notes'), findsOneWidget);
