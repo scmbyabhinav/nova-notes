@@ -146,7 +146,7 @@ class SettingsScreen extends StatelessWidget {
           type: FileType.custom,
           allowedExtensions: ['nova'],
         );
-        final path = result?.files.single.path;
+        final path = result.isEmpty ? null : result.single.path;
         if (path == null) return;
         final count = await service.restoreBackup(File(path));
         if (context.mounted) {
