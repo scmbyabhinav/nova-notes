@@ -378,8 +378,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       IconButton(
                         tooltip: _gridView ? 'List view' : 'Grid view',
-                        onPressed: () =>
-                            setState(() => _gridView = !_gridView); _savePreferences(),
+                        onPressed: () async {
+                          setState(() => _gridView = !_gridView);
+                          await _savePreferences();
+                        },
                         icon: Icon(
                           _gridView
                               ? Icons.view_list_rounded
