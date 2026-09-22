@@ -18,6 +18,7 @@ import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/orah_ocr_service.dart';
 import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
@@ -242,6 +243,28 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     });
 
     await _save();
+  }
+
+  Future<void> _scanTextFromImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked == null || !mounted) return;
+    try {
+      final text = await OrahOcrService.instance.extractText(File(picked.path));
+      if (!mounted) return;
+      if (text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No readable text found.')));
+        return;
+      }
+      final current = _contentController.text.trim();
+      final combined = current.isEmpty ? text : '$current\n\n$text';
+      _contentController.value = TextEditingValue(
+        text: combined,
+        selection: TextSelection.collapsed(offset: combined.length),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Text extracted from image.')));
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not read text from that image.')));
+    }
   }
 
   Future<void> _setNoteColor(Color? color) async {
@@ -640,6 +663,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               switch (value) {
+                case 'ocr': await _scanTextFromImage(); return;
                 case 'template': await _showTemplates(); return;
                 case 'reminder': await _setDueDate(); return;
                 case 'clear_reminder': await _clearDueDate(); return;
@@ -709,6 +733,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ),
                 ),
               ),
+              const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
               const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
               PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
               if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
