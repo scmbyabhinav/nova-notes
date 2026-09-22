@@ -182,6 +182,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isFavorite: _isFavorite,
             isArchived: _isArchived,
             color: _noteColor,
+            dueAt: _dueAt,
           )
         : widget.note!.copyWith(
             title: title.isEmpty ? 'Untitled note' : title,
@@ -196,6 +197,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isFavorite: _isFavorite,
             isArchived: _isArchived,
             color: _noteColor,
+            dueAt: _dueAt,
           );
 
     await widget.repository.saveNote(note);
