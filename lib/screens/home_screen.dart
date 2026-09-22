@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
 
     setState(() {
-      _notes = notes;
+      _notes = notes.where((note) => !note.isTrashed).toList();
       _loading = false;
     });
   }
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline_rounded),
-              title: const Text('Delete'),
+              title: const Text('Move to Trash'),
               onTap: () => Navigator.pop(context, 'delete'),
             ),
           ],
@@ -188,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
-        await repository.deleteNote(note.id);
+        await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
         await _loadNotes();
         return;
     }
