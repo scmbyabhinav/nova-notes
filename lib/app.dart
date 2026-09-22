@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'core/localization/nova_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
+import 'core/theme/orah_theme_controller.dart';
 import 'data/repositories/note_repository_provider.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
@@ -10,30 +11,57 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 
-class OrahApp extends StatelessWidget {
+class OrahApp extends StatefulWidget {
   const OrahApp({super.key});
 
   @override
+  State<OrahApp> createState() => _OrahAppState();
+}
+
+class _OrahAppState extends State<OrahApp> {
+  final OrahThemeController _theme = OrahThemeController();
+
+  @override
+  void initState() {
+    super.initState();
+    _theme.addListener(_onThemeChanged);
+    _theme.load();
+  }
+
+  void _onThemeChanged() => setState(() {});
+
+  @override
+  void dispose() {
+    _theme.removeListener(_onThemeChanged);
+    _theme.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final light = NovaTheme.light(seed: Color(_theme.accent));
+    final dark = NovaTheme.dark(seed: Color(_theme.accent));
     return MaterialApp(
       title: 'Orah',
       debugShowCheckedModeBanner: false,
-      theme: NovaTheme.light(),
-      darkTheme: NovaTheme.dark(),
-      themeMode: ThemeMode.system,
+      theme: light,
+      darkTheme: dark,
+      themeMode: _theme.mode,
       localizationsDelegates: const [
         NovaLocalizationsDelegate(),
         DefaultMaterialLocalizations.delegate,
         DefaultWidgetsLocalizations.delegate,
       ],
       supportedLocales: NovaLocalizations.supportedLocales,
-      home: const NovaShell(),
+      home: NovaShell(themeController: _theme),
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key});
+  const NovaShell({super.key, required this.themeController});
+
+  final OrahThemeController themeController;
 
   @override
   State<NovaShell> createState() => _NovaShellState();

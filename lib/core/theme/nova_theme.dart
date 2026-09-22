@@ -5,9 +5,9 @@ import '../constants/nova_constants.dart';
 class NovaTheme {
   NovaTheme._();
 
-  static ThemeData light() {
+  static ThemeData light({Color? seed}) {
     final scheme = ColorScheme.fromSeed(
-      seedColor: const Color(NovaConstants.primaryBlue),
+      seedColor: seed ?? const Color(NovaConstants.primaryBlue),
       brightness: Brightness.light,
     );
 
@@ -55,9 +55,9 @@ class NovaTheme {
     );
   }
 
-  static ThemeData dark() {
+  static ThemeData dark({Color? seed}) {
     final scheme = ColorScheme.fromSeed(
-      seedColor: const Color(NovaConstants.primaryBlue),
+      seedColor: seed ?? const Color(NovaConstants.primaryBlue),
       brightness: Brightness.dark,
     );
 
