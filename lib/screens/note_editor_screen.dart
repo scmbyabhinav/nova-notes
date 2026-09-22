@@ -17,6 +17,8 @@ import '../models/note.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
+import '../services/orah_reminder_service.dart';
+import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
   const NoteEditorScreen({
@@ -47,6 +49,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isPinned = false;
   bool _isFavorite = false;
   bool _isArchived = false;
+  DateTime? _dueAt;
   int? _noteColor;
   String? _folderId;
   List<String> _tags = const [];
@@ -70,6 +73,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
     _isArchived = existing?.isArchived ?? false;
+    _dueAt = existing?.dueAt;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _tags = [...(existing?.tags ?? const [])];
@@ -194,6 +198,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           );
 
     await widget.repository.saveNote(note);
+    if (_dueAt != null) { await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!); } else { await OrahReminderService.instance.cancel(_noteId); }
     _hasChanges = false;
 
     if (mounted) setState(() => _saving = false);
@@ -282,6 +287,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _setDueDate() async {
+    final now = DateTime.now();
+    final initial = _dueAt ?? now.add(const Duration(hours: 1));
+    final picked = await showDatePicker(context: context, initialDate: initial.isBefore(now) ? now : initial, firstDate: now, lastDate: DateTime(now.year + 10));
+    if (picked == null || !mounted) return;
+    final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
+    if (time == null) return;
+    setState(() { _dueAt = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute); _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _clearDueDate() async { setState(() { _dueAt = null; _hasChanges = true; }); await _save(); }
+
+  Future<void> _showTemplates() async {
+    final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
+    final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
+    if (choice == null || !mounted) return;
+    setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _hasChanges = true; });
+    await _save();
   }
 
   Future<void> _setFlag({
@@ -614,6 +640,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               switch (value) {
+                case 'template': await _showTemplates(); return;
+                case 'reminder': await _setDueDate(); return;
+                case 'clear_reminder': await _clearDueDate(); return;
                 case 'color':
                   await _showNoteColorPicker();
                   return;
@@ -680,6 +709,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ),
                 ),
               ),
+              const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
+              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
+              if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
               const PopupMenuItem(
                 value: 'color',
                 child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
