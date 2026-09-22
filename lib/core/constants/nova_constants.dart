@@ -1,7 +1,7 @@
 class NovaConstants {
   NovaConstants._();
 
-  static const appName = 'NOVA Notes';
+  static const appName = 'Orah';
   static const tagline = 'Think it. Write it. Keep it.';
 
   static const primaryBlue = 0xFF2563EB;
