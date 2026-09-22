@@ -42,6 +42,42 @@ jobs:
           cache: true
       - name: Generate Android project
         run: flutter create --platforms=android .
+      - name: Enable Android core library desugaring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("android/app/build.gradle.kts")
+          text = path.read_text()
+
+          old_android = """android {
+    namespace = "com.example.orah_notes"
+    compileSdk = flutter.compileSdkVersion
+"""
+          new_android = """android {
+    namespace = "com.example.orah_notes"
+    compileSdk = flutter.compileSdkVersion
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
+"""
+          if old_android not in text:
+              raise SystemExit("Expected android/app/build.gradle.kts structure not found")
+          text = text.replace(old_android, new_android, 1)
+
+          old_dependencies = """dependencies {
+"""
+          new_dependencies = """dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+"""
+          if old_dependencies not in text:
+              text += "\n" + new_dependencies
+          else:
+              text = text.replace(old_dependencies, new_dependencies, 1)
+
+          path.write_text(text)
+          PY
       - name: Get dependencies
         run: flutter pub get
       - name: Build debug APK

@@ -21,7 +21,10 @@ dependencies:
   archive: ^4.0.7
   flutter_markdown_plus: ^1.0.12
   image_picker: ^1.2.3
+  google_mlkit_text_recognition: ^0.15.0
   file_picker: ^13.1.0
+  flutter_local_notifications: ^22.3.1
+  timezone: ^0.11.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
