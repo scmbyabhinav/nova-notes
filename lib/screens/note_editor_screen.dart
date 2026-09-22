@@ -618,6 +618,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   void dispose() {
     _saveTimer?.cancel();
+    OrahOcrService.instance.dispose();
     _titleController.dispose();
     _contentController.dispose();
     _contentFocus.dispose();
