@@ -19,6 +19,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/orah_reminder_service.dart';
 import '../services/orah_ocr_service.dart';
+import '../services/orah_smart_detection.dart';
 import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
@@ -244,6 +245,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _hasChanges = true;
     });
 
+    await _save();
+  }
+
+  Future<void> _detectSmartInfo() async {
+    final text = _titleController.text + '\n' + _contentController.text + '\n' + _checklistItems.map((item) => item.text).join('\n');
+    final dates = OrahSmartDetection.dates(text);
+    final amounts = OrahSmartDetection.amounts(text);
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Smart details'),
+        content: Text(OrahSmartDetection.summary(text)),
+        actions: [
+          if (dates.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _setDetectedReminder(dates.first);
+              },
+              child: const Text('Use first date as reminder'),
+            ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done')),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _setDetectedReminder(DateTime date) async {
+    final now = DateTime.now();
+    if (date.isBefore(now)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Detected date is already in the past.')));
+      return;
+    }
+    setState(() { _dueAt = date; _hasChanges = true; });
     await _save();
   }
 
@@ -738,6 +774,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 ),
               ),
               const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
+              const PopupMenuItem(value: 'smart', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Detect dates & amounts'))),
               const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
               PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
               if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
