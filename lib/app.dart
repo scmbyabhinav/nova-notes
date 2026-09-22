@@ -10,17 +10,32 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 
-class OrahApp extends StatelessWidget {
+class OrahApp extends StatefulWidget {
   const OrahApp({super.key});
 
   @override
+  State<OrahApp> createState() => _OrahAppState();
+}
+
+class _OrahAppState extends State<OrahApp> {
+  final _theme = OrahThemeController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _theme.load();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return AnimatedBuilder(
+      animation: _theme,
+      builder: (context, _) => MaterialApp(
       title: 'Orah',
       debugShowCheckedModeBanner: false,
-      theme: NovaTheme.light(),
-      darkTheme: NovaTheme.dark(),
-      themeMode: ThemeMode.system,
+      theme: NovaTheme.light(seedColor: _theme.seedColor),
+      darkTheme: NovaTheme.dark(seedColor: _theme.seedColor, amoled: _theme.amoled),
+      themeMode: _theme.mode,
       localizationsDelegates: const [
         NovaLocalizationsDelegate(),
         DefaultMaterialLocalizations.delegate,
