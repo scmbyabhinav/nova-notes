@@ -156,6 +156,8 @@ class _HomeScreenState extends State<HomeScreen> {
           isFavorite: false,
           isArchived: false,
           isLocked: false,
+          isTrashed: false,
+          dueAt: duplicate.dueAt,
         ));
         await _loadNotes();
         return;
@@ -223,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
     if (!mounted) return;
+    // A dismissed sheet returns null too; only clear when the user explicitly chose reset.
     if (color == null && note.color == null) return;
     final repository = await NoteRepositoryProvider.instance();
     await repository.saveNote(note.copyWith(color: color?.value, clearColor: color == null, updatedAt: DateTime.now()));

@@ -694,6 +694,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         isPinned: _isPinned,
                         isFavorite: _isFavorite,
                         isArchived: _isArchived,
+                        isTrashed: false,
+                        dueAt: _dueAt,
                       ),
                     ),
                   );
