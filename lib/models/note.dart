@@ -3,21 +3,24 @@ class ChecklistItem {
     required this.id,
     required this.text,
     this.isDone = false,
+    this.dueAt,
   });
 
   final String id;
   final String text;
   final bool isDone;
+  final DateTime? dueAt;
 
-  ChecklistItem copyWith({String? text, bool? isDone}) =>
-      ChecklistItem(id: id, text: text ?? this.text, isDone: isDone ?? this.isDone);
+  ChecklistItem copyWith({String? text, bool? isDone, DateTime? dueAt, bool clearDueAt = false}) =>
+      ChecklistItem(id: id, text: text ?? this.text, isDone: isDone ?? this.isDone, dueAt: clearDueAt ? null : (dueAt ?? this.dueAt));
 
-  Map<String, dynamic> toMap() => {'id': id, 'text': text, 'isDone': isDone};
+  Map<String, dynamic> toMap() => {'id': id, 'text': text, 'isDone': isDone, 'dueAt': dueAt?.toIso8601String()};
 
   factory ChecklistItem.fromMap(Map<String, dynamic> map) => ChecklistItem(
         id: map['id'] as String? ?? DateTime.now().microsecondsSinceEpoch.toString(),
         text: map['text'] as String? ?? '',
         isDone: map['isDone'] as bool? ?? false,
+        dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
       );
 }
 
@@ -46,6 +49,7 @@ class Note {
     this.isFavorite = false,
     this.isArchived = false,
     this.isLocked = false,
+    this.dueAt,
   });
 
   final String id;
@@ -63,6 +67,7 @@ class Note {
   final bool isFavorite;
   final bool isArchived;
   final bool isLocked;
+  final DateTime? dueAt;
 
   int get completedChecklistItems =>
       checklistItems.where((item) => item.isDone).length;
@@ -88,6 +93,8 @@ class Note {
     bool? isFavorite,
     bool? isArchived,
     bool? isLocked,
+    DateTime? dueAt,
+    bool clearDueAt = false,
   }) {
     return Note(
       id: id,
@@ -105,6 +112,7 @@ class Note {
       isFavorite: isFavorite ?? this.isFavorite,
       isArchived: isArchived ?? this.isArchived,
       isLocked: isLocked ?? this.isLocked,
+      dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
     );
   }
 }
