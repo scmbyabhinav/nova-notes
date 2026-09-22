@@ -47,6 +47,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isPinned = false;
   bool _isFavorite = false;
   bool _isArchived = false;
+  int? _noteColor;
   String? _folderId;
   List<String> _tags = const [];
   List<String> _attachments = const [];
@@ -69,6 +70,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
     _isArchived = existing?.isArchived ?? false;
+    _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _tags = [...(existing?.tags ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
@@ -174,6 +176,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            color: _noteColor,
           )
         : widget.note!.copyWith(
             title: title.isEmpty ? 'Untitled note' : title,
@@ -187,6 +190,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            color: _noteColor,
           );
 
     await widget.repository.saveNote(note);
@@ -233,6 +237,51 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     });
 
     await _save();
+  }
+
+  Future<void> _setNoteColor(Color? color) async {
+    setState(() {
+      _noteColor = color?.value;
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _showNoteColorPicker() async {
+    const colors = <Color?>[null, Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+          child: Wrap(
+            spacing: 14,
+            runSpacing: 14,
+            children: [
+              for (final color in colors)
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _setNoteColor(color);
+                  },
+                  borderRadius: BorderRadius.circular(28),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: color ?? Theme.of(sheetContext).colorScheme.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: _noteColor == color?.value ? Theme.of(sheetContext).colorScheme.primary : Theme.of(sheetContext).colorScheme.outlineVariant, width: 2),
+                    ),
+                    child: color == null ? const Icon(Icons.format_color_reset_outlined) : null,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _setFlag({
@@ -565,6 +614,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               switch (value) {
+                case 'color':
+                  await _showNoteColorPicker();
+                  return;
                 case 'export':
                   await _save();
                   if (!mounted) return;
@@ -627,6 +679,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     _isFavorite ? 'Remove favorite' : 'Add to favorites',
                   ),
                 ),
+              ),
+              const PopupMenuItem(
+                value: 'color',
+                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
               ),
               const PopupMenuItem(
                 value: 'organize',
