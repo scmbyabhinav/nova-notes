@@ -37,11 +37,12 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: Column(
               children: [
-                const ListTile(
-                  leading: Icon(Icons.palette_outlined),
-                  title: Text('Appearance'),
-                  subtitle: Text('System theme'),
-                  trailing: Icon(Icons.chevron_right_rounded),
+                ListTile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: const Text('Appearance'),
+                  subtitle: Text(_appearanceSummary()),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _showAppearance(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -107,6 +108,117 @@ class SettingsScreen extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+
+  String _appearanceSummary() {
+    final c = OrahThemeController.instance;
+    if (c.amoled) return 'AMOLED • ' + _colorName(c.seedColor);
+    final mode = c.mode == ThemeMode.light ? 'Light' : c.mode == ThemeMode.dark ? 'Dark' : 'System';
+    return mode + ' • ' + _colorName(c.seedColor);
+  }
+
+  String _colorName(Color color) {
+    const names = <int, String>{
+      0xFF2563EB: 'Blue',
+      0xFF7C3AED: 'Purple',
+      0xFF059669: 'Green',
+      0xFFF97316: 'Orange',
+      0xFFDC2626: 'Red',
+      0xFF0D9488: 'Teal',
+    };
+    return names[color.value] ?? 'Custom';
+  }
+
+  Future<void> _showAppearance(BuildContext context) async {
+    final controller = OrahThemeController.instance;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          final mode = controller.amoled
+              ? OrahThemeMode.amoled
+              : controller.mode == ThemeMode.light
+                  ? OrahThemeMode.light
+                  : controller.mode == ThemeMode.dark
+                      ? OrahThemeMode.dark
+                      : OrahThemeMode.system;
+          const colors = <Color>[
+            Color(0xFF2563EB),
+            Color(0xFF7C3AED),
+            Color(0xFF059669),
+            Color(0xFFF97316),
+            Color(0xFFDC2626),
+            Color(0xFF0D9488),
+          ];
+          return SafeArea(
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              children: [
+                Text('Appearance', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+                const SizedBox(height: 16),
+                const Text('Theme', style: TextStyle(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                for (final entry in [
+                  (OrahThemeMode.system, 'System', Icons.brightness_auto_outlined),
+                  (OrahThemeMode.light, 'Light', Icons.light_mode_outlined),
+                  (OrahThemeMode.dark, 'Dark', Icons.dark_mode_outlined),
+                  (OrahThemeMode.amoled, 'AMOLED', Icons.contrast_outlined),
+                ])
+                  RadioListTile<OrahThemeMode>(
+                    value: entry.$1,
+                    groupValue: mode,
+                    title: Text(entry.$2),
+                    secondary: Icon(entry.$3),
+                    onChanged: (value) async {
+                      if (value == null) return;
+                      await controller.setMode(value);
+                      setSheetState(() {});
+                    },
+                  ),
+                const SizedBox(height: 8),
+                const Text('Accent color', style: TextStyle(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 14,
+                  runSpacing: 12,
+                  children: [
+                    for (final color in colors)
+                      InkWell(
+                        onTap: () async {
+                          await controller.setAccent(color);
+                          setSheetState(() {});
+                        },
+                        borderRadius: BorderRadius.circular(24),
+                        child: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: controller.seedColor.value == color.value ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
+                              width: 3,
+                            ),
+                          ),
+                          child: controller.seedColor.value == color.value
+                              ? const Icon(Icons.check, color: Colors.white)
+                              : null,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text('Selected: ' + _colorName(controller.seedColor), style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
