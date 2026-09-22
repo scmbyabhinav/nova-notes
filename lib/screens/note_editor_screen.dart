@@ -146,11 +146,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
+    // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
+    // focus stable and avoids inherited-widget churn during autosave.
     _hasChanges = true;
     _saveTimer?.cancel();
     _saveTimer = Timer(const Duration(milliseconds: 600), _save);
-
-    if (mounted) setState(() {});
   }
 
   Future<void> _save() async {
