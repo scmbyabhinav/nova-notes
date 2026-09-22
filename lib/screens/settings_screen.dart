@@ -15,6 +15,7 @@ import '../core/theme/orah_theme_controller.dart';
 import 'security_settings_screen.dart';
 import 'android_features_screen.dart';
 import 'about_nova_screen.dart';
+import 'trash_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.themeController});
@@ -66,6 +67,14 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: const Text('Local backup and portable data'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showBackup(context),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.delete_outline_rounded),
+                  title: const Text('Trash'),
+                  subtitle: const Text('Restore or permanently delete notes'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TrashScreen())),
                 ),
                 const Divider(height: 1),
                 ListTile(
