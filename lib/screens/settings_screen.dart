@@ -11,12 +11,15 @@ import '../services/nova_attachment_service.dart';
 import '../data/repositories/note_repository_provider.dart';
 
 import '../core/localization/nova_localizations.dart';
+import '../core/theme/orah_theme_controller.dart';
 import 'security_settings_screen.dart';
 import 'android_features_screen.dart';
 import 'about_nova_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, required this.themeController});
+
+  final OrahThemeController themeController;
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +40,12 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: Column(
               children: [
-                const ListTile(
-                  leading: Icon(Icons.palette_outlined),
-                  title: Text('Appearance'),
-                  subtitle: Text('System theme'),
-                  trailing: Icon(Icons.chevron_right_rounded),
+                ListTile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: const Text('Appearance'),
+                  subtitle: Text(_appearanceLabel()),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _showAppearance(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
@@ -109,6 +113,40 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _appearanceLabel() {
+    final mode = switch (themeController.mode) {
+      ThemeMode.system => 'System theme',
+      ThemeMode.light => 'Light theme',
+      ThemeMode.dark => 'Dark theme',
+    };
+    return '$mode • ' + Color(themeController.accent).value.toRadixString(16).toUpperCase();
+  }
+
+  Future<void> _showAppearance(BuildContext context) async {
+    final mode = await showModalBottomSheet<ThemeMode>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheet) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const ListTile(title: Text('Theme')),
+          for (final value in ThemeMode.values)
+            RadioListTile<ThemeMode>(value: value, groupValue: themeController.mode, title: Text(switch (value) { ThemeMode.system => 'System', ThemeMode.light => 'Light', ThemeMode.dark => 'Dark' }), onChanged: (v) => Navigator.pop(sheet, v)),
+        ]),
+      ),
+    );
+    if (mode != null) await themeController.setMode(mode);
+    if (!context.mounted) return;
+    final accent = await showModalBottomSheet<Color>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheet) {
+        const colors = [Color(0xFF2563EB), Color(0xFF7C3AED), Color(0xFF059669), Color(0xFFEA580C), Color(0xFFDB2777), Color(0xFF0891B2)];
+        return SafeArea(child: Padding(padding: const EdgeInsets.all(20), child: Wrap(spacing: 16, runSpacing: 16, children: [for (final color in colors) InkWell(onTap: () => Navigator.pop(sheet, color), borderRadius: BorderRadius.circular(30), child: CircleAvatar(radius: 25, backgroundColor: color, child: color.value == themeController.accent ? const Icon(Icons.check, color: Colors.white) : null))])));
+      },
+    );
+    if (accent != null) await themeController.setAccent(accent);
   }
 
   Future<void> _showBackup(BuildContext context) async {
