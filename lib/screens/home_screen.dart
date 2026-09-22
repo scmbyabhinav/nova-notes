@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../core/widgets/nova_polish.dart';
 
 import '../data/repositories/note_repository.dart';
@@ -23,7 +24,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _loadPreferences();
     _loadNotes();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _gridView = prefs.getBool('orah_grid_view') ?? true;
+      _sort = prefs.getString('orah_note_sort') ?? 'updated';
+    });
+  }
+
+  Future<void> _savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('orah_grid_view', _gridView);
+    await prefs.setString('orah_note_sort', _sort);
   }
 
   Future<void> _loadNotes() async {
@@ -95,6 +112,16 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
+              leading: const Icon(Icons.copy_outlined),
+              title: const Text('Duplicate note'),
+              onTap: () => Navigator.pop(context, 'duplicate'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.palette_outlined),
+              title: const Text('Note color'),
+              onTap: () => Navigator.pop(context, 'color'),
+            ),
+            ListTile(
               leading: const Icon(Icons.delete_outline_rounded),
               title: const Text('Delete'),
               onTap: () => Navigator.pop(context, 'delete'),
@@ -107,6 +134,34 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted || action == null) return;
 
     switch (action) {
+      case 'duplicate':
+        final repository = await NoteRepositoryProvider.instance();
+        final duplicate = note.copyWith(
+          title: '${note.title} (Copy)',
+          updatedAt: DateTime.now(),
+        );
+        await repository.saveNote(Note(
+          id: '${DateTime.now().microsecondsSinceEpoch}_copy',
+          title: duplicate.title,
+          content: duplicate.content,
+          type: duplicate.type,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          folderId: duplicate.folderId,
+          tags: duplicate.tags,
+          attachments: const [],
+          checklistItems: duplicate.checklistItems,
+          color: duplicate.color,
+          isPinned: false,
+          isFavorite: false,
+          isArchived: false,
+          isLocked: false,
+        ));
+        await _loadNotes();
+        return;
+      case 'color':
+        await _showColorPicker(note);
+        return;
       case 'pin':
         await _updateNote(
           note,
@@ -137,6 +192,41 @@ class _HomeScreenState extends State<HomeScreen> {
         await _loadNotes();
         return;
     }
+  }
+
+  Future<void> _showColorPicker(Note note) async {
+    const colors = <Color?>[null, Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
+    final color = await showModalBottomSheet<Color?>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+          child: Wrap(
+            spacing: 14,
+            runSpacing: 14,
+            children: [for (final color in colors) InkWell(
+              onTap: () => Navigator.pop(context, color),
+              borderRadius: BorderRadius.circular(28),
+              child: Container(
+                width: 50, height: 50,
+                decoration: BoxDecoration(
+                  color: color ?? Theme.of(context).colorScheme.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: note.color == color?.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                ),
+                child: color == null ? const Icon(Icons.format_color_reset_outlined) : null,
+              ),
+            )],
+          ),
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (color == null && note.color == null) return;
+    final repository = await NoteRepositoryProvider.instance();
+    await repository.saveNote(note.copyWith(color: color?.value, clearColor: color == null, updatedAt: DateTime.now()));
+    await _loadNotes();
   }
 
   @override
@@ -278,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       PopupMenuButton<String>(
                         tooltip: 'Sort notes',
                         initialValue: _sort,
-                        onSelected: (value) => setState(() => _sort = value),
+                        onSelected: (value) async { setState(() => _sort = value); await _savePreferences(); },
                         itemBuilder: (_) => const [
                           PopupMenuItem(value: 'updated', child: Text('Recently updated')),
                           PopupMenuItem(value: 'created', child: Text('Recently created')),
@@ -289,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       IconButton(
                         tooltip: _gridView ? 'List view' : 'Grid view',
                         onPressed: () =>
-                            setState(() => _gridView = !_gridView),
+                            setState(() => _gridView = !_gridView); _savePreferences(),
                         icon: Icon(
                           _gridView
                               ? Icons.view_list_rounded

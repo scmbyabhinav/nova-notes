@@ -144,6 +144,7 @@ class LocalNoteRepository implements NoteRepository {
       'isFavorite': note.isFavorite,
       'isArchived': note.isArchived,
       'isLocked': note.isLocked,
+      'dueAt': note.dueAt?.toIso8601String(),
       'attachments': note.attachments,
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
     };
@@ -167,6 +168,7 @@ class LocalNoteRepository implements NoteRepository {
       isFavorite: map['isFavorite'] as bool? ?? false,
       isArchived: map['isArchived'] as bool? ?? false,
       isLocked: map['isLocked'] as bool? ?? false,
+      dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
       attachments: List<String>.from(map['attachments'] as List? ?? const []),
       checklistItems: _checklistItemsFromMap(map),
     );
