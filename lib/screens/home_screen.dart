@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       if (recent.isNotEmpty)
                         Text(
-                          '\${completed} done',
+                          '${completed} done',
                           style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         ),
                       const SizedBox(width: 4),
