@@ -80,6 +80,7 @@ class LocalNoteRepository implements NoteRepository {
     final ranked = <({Note note, int score})>[];
 
     for (final note in notes) {
+      if (note.isTrashed) continue;
       if (!filter.archivedOnly && note.isArchived) continue;
       if (filter.archivedOnly && !note.isArchived) continue;
       if (filter.favoritesOnly && !note.isFavorite) continue;
@@ -144,6 +145,7 @@ class LocalNoteRepository implements NoteRepository {
       'isFavorite': note.isFavorite,
       'isArchived': note.isArchived,
       'isLocked': note.isLocked,
+      'isTrashed': note.isTrashed,
       'dueAt': note.dueAt?.toIso8601String(),
       'attachments': note.attachments,
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
@@ -168,6 +170,7 @@ class LocalNoteRepository implements NoteRepository {
       isFavorite: map['isFavorite'] as bool? ?? false,
       isArchived: map['isArchived'] as bool? ?? false,
       isLocked: map['isLocked'] as bool? ?? false,
+      isTrashed: map['isTrashed'] as bool? ?? false,
       dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
       attachments: List<String>.from(map['attachments'] as List? ?? const []),
       checklistItems: _checklistItemsFromMap(map),
