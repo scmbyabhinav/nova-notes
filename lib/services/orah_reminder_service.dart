@@ -30,12 +30,12 @@ class OrahReminderService {
 
   Future<void> schedule({required String noteId, required String title, required DateTime when}) async {
     if (!_initialized) await initialize();
-    if (when.isBefore(DateTime.now())) return;
+    if (!when.isAfter(DateTime.now())) return;
     await _plugin.zonedSchedule(
       id: _notificationId(noteId),
       title: 'Orah reminder',
       body: title,
-      scheduledDate: tz.TZDateTime.from(when, tz.local),
+      scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'orah_reminders',
