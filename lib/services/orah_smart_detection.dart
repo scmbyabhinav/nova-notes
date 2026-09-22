@@ -20,7 +20,11 @@ class OrahSmartDetection {
         } else {
           var year = parts[2]!;
           if (year < 100) year += 2000;
-          date = DateTime(year, parts[1]!, parts[0]!);
+          final month = parts[1]!;
+          final day = parts[0]!;
+          if (month >= 1 && month <= 12 && day >= 1 && day <= DateTime(year, month + 1, 0).day) {
+            date = DateTime(year, month, day);
+          }
         }
       }
       if (date != null) result.add(date);
