@@ -49,6 +49,7 @@ class Note {
     this.isFavorite = false,
     this.isArchived = false,
     this.isLocked = false,
+    this.isTrashed = false,
     this.dueAt,
   });
 
@@ -67,6 +68,7 @@ class Note {
   final bool isFavorite;
   final bool isArchived;
   final bool isLocked;
+  final bool isTrashed;
   final DateTime? dueAt;
 
   int get completedChecklistItems =>
@@ -93,6 +95,7 @@ class Note {
     bool? isFavorite,
     bool? isArchived,
     bool? isLocked,
+    bool? isTrashed,
     DateTime? dueAt,
     bool clearDueAt = false,
   }) {
@@ -112,6 +115,7 @@ class Note {
       isFavorite: isFavorite ?? this.isFavorite,
       isArchived: isArchived ?? this.isArchived,
       isLocked: isLocked ?? this.isLocked,
+      isTrashed: isTrashed ?? this.isTrashed,
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
     );
   }
