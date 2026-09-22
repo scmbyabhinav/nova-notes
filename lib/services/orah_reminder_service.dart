@@ -36,5 +36,5 @@ class OrahReminderService {
     );
   }
 
-  Future<void> cancel(String noteId) async => _plugin.cancel(noteId.hashCode & 0x7fffffff);
+  Future<void> cancel(String noteId) async => _plugin.cancel(id: noteId.hashCode & 0x7fffffff);
 }
