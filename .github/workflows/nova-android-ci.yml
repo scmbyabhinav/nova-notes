@@ -86,6 +86,13 @@ jobs:
         run: flutter build apk --release
       - name: Build release AAB
         run: flutter build appbundle --release
+      - name: Verify release artifacts
+        run: |
+          set -e
+          test -s build/app/outputs/flutter-apk/app-release.apk
+          test -s build/app/outputs/bundle/release/app-release.aab
+          echo "Release APK: $(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)"
+          echo "Release AAB: $(du -h build/app/outputs/bundle/release/app-release.aab | cut -f1)"
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
