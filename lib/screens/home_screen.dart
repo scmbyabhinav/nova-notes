@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
 
 import '../data/repositories/note_repository.dart';
@@ -79,20 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await _loadNotes();
   }
 
-  Future<void> _restoreFromTrash(Note note) async {
-    final repository = await NoteRepositoryProvider.instance();
-    await repository.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
-    if (note.dueAt != null && note.dueAt!.isAfter(DateTime.now())) {
-      await OrahReminderService.instance.schedule(noteId: note.id, title: note.title, when: note.dueAt!);
-    }
-    for (final item of note.checklistItems) {
-      if (item.dueAt != null && !item.isDone && item.dueAt!.isAfter(DateTime.now())) {
-        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: note.id);
-      }
-    }
-    await _loadNotes();
-  }
-
   Future<void> _showNoteMenu(Note note) async {
     final action = await showModalBottomSheet<String>(
       context: context,
@@ -155,12 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
           title: '${note.title} (Copy)',
           updatedAt: DateTime.now(),
         );
-        final duplicateId = '${DateTime.now().microsecondsSinceEpoch}_copy';
-        final duplicateItems = note.checklistItems.map((item) => ChecklistItem(
-          id: '${duplicateId}_${item.id}', text: item.text, isDone: item.isDone, dueAt: item.dueAt,
-        )).toList();
         await repository.saveNote(Note(
-          id: duplicateId,
+          id: '${DateTime.now().microsecondsSinceEpoch}_copy',
           title: duplicate.title,
           content: duplicate.content,
           type: duplicate.type,
@@ -169,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
           folderId: duplicate.folderId,
           tags: duplicate.tags,
           attachments: const [],
-          checklistItems: duplicateItems,
+          checklistItems: duplicate.checklistItems,
           color: duplicate.color,
           isPinned: false,
           isFavorite: false,
@@ -178,14 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
           isTrashed: false,
           dueAt: duplicate.dueAt,
         ));
-        if (duplicate.dueAt != null) {
-          await OrahReminderService.instance.schedule(noteId: duplicateId, title: duplicate.title, when: duplicate.dueAt!);
-        }
-        for (final item in duplicateItems) {
-          if (item.dueAt != null && !item.isDone) {
-            await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId);
-          }
-        }
         await _loadNotes();
         return;
       case 'color':
@@ -218,25 +191,14 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
         await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
-        await OrahReminderService.instance.cancel(note.id);
-        for (final item in note.checklistItems) {
-          await OrahReminderService.instance.cancel('checklist:${item.id}');
-        }
         await _loadNotes();
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Moved to Trash'),
-            action: SnackBarAction(label: 'Undo', onPressed: () => _restoreFromTrash(note)),
-          ),
-        );
         return;
     }
   }
 
   Future<void> _showColorPicker(Note note) async {
-    const colors = <Color?>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
-    final selected = await showModalBottomSheet<int>(
+    const colors = <Color?>[null, Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
+    final color = await showModalBottomSheet<Color?>(
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
@@ -245,39 +207,28 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Wrap(
             spacing: 14,
             runSpacing: 14,
-            children: [InkWell(
-              onTap: () => Navigator.pop(context, -1),
+            children: [for (final color in colors) InkWell(
+              onTap: () => Navigator.pop(context, color),
               borderRadius: BorderRadius.circular(28),
               child: Container(
                 width: 50, height: 50,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: color ?? Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(color: note.color == null ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                  border: Border.all(color: note.color == color?.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
                 ),
-                child: const Icon(Icons.format_color_reset_outlined),
+                child: color == null ? const Icon(Icons.format_color_reset_outlined) : null,
               ),
-            ), ...[for (final color in colors) InkWell(
-              onTap: () => Navigator.pop(context, color.value),
-              borderRadius: BorderRadius.circular(28),
-              child: Container(
-                width: 50, height: 50,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: note.color == color.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
-                ),
-              ),
-            )]],
+            )],
           ),
         ),
       ),
     );
     if (!mounted) return;
-    if (selected == null) return;
+    // A dismissed sheet returns null too; only clear when the user explicitly chose reset.
+    if (color == null && note.color == null) return;
     final repository = await NoteRepositoryProvider.instance();
-    final color = selected == -1 ? null : selected;
-    await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
+    await repository.saveNote(note.copyWith(color: color?.value, clearColor: color == null, updatedAt: DateTime.now()));
     await _loadNotes();
   }
 
@@ -531,12 +482,6 @@ class _NoteCard extends StatelessWidget {
                     _NoteIcon(type: note.type),
                     const SizedBox(width: 14),
                     Expanded(child: _NoteText(note: note)),
-                    if (note.dueAt != null)
-                      _SmartBadge(icon: Icons.notifications_active_outlined, label: _dueLabel(note.dueAt!)),
-                    if (note.type == NoteType.checklist && note.checklistItems.any((item) => item.dueAt != null && !item.isDone && item.dueAt!.isBefore(DateTime.now())))
-                      const _SmartBadge(icon: Icons.warning_amber_rounded, label: 'Overdue'),
-                    if (note.isLocked)
-                      const _SmartBadge(icon: Icons.lock_outline_rounded, label: 'Private'),
                     if (note.isFavorite)
                       const Padding(
                         padding: EdgeInsets.only(left: 6),
@@ -553,16 +498,8 @@ class _NoteCard extends StatelessWidget {
                     _NoteText(note: note),
                     const SizedBox(height: 8),
                     Wrap(
-                      spacing: 6,
-                      runSpacing: 4,
+                      spacing: 4,
                       children: [
-                        if (note.dueAt != null)
-                          _SmartBadge(
-                            icon: Icons.notifications_active_outlined,
-                            label: _dueLabel(note.dueAt!),
-                          ),
-                        if (note.type == NoteType.checklist && note.checklistItems.any((item) => item.dueAt != null && !item.isDone && item.dueAt!.isBefore(DateTime.now())))
-                          const _SmartBadge(icon: Icons.warning_amber_rounded, label: 'Overdue'),
                         if (note.isFavorite)
                           const Icon(Icons.star_rounded, size: 16),
                         if (note.attachments.isNotEmpty)
@@ -593,15 +530,6 @@ class _NoteCard extends StatelessWidget {
     );
   }
 
-  String _dueLabel(DateTime date) {
-    final now = DateTime.now();
-    if (date.isBefore(now)) return 'Overdue';
-    final difference = date.difference(now);
-    if (difference.inHours < 24) return 'Today';
-    if (difference.inHours < 48) return 'Tomorrow';
-    return '${date.day}/${date.month}';
-  }
-
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     if (date.year == now.year &&
@@ -610,21 +538,6 @@ class _NoteCard extends StatelessWidget {
       return 'Today';
     }
     return '${date.day}/${date.month}/${date.year}';
-  }
-}
-
-class _SmartBadge extends StatelessWidget {
-  const _SmartBadge({required this.icon, required this.label});
-  final IconData icon;
-  final String label;
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-      decoration: BoxDecoration(color: scheme.primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(999)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 13, color: scheme.primary), const SizedBox(width: 4), Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: scheme.primary))]),
-    );
   }
 }
 
@@ -670,7 +583,7 @@ class _NoteText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
+          note.title.isEmpty ? 'Untitled note' : note.title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleSmall?.copyWith(
@@ -678,9 +591,7 @@ class _NoteText extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 7),
-        if (note.isLocked) ...[
-          Text('Locked content', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        ] else if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
+        if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
           Text(
             '${note.completedChecklistItems}/${note.checklistItems.length} completed',
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600),
