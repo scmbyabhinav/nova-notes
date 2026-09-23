@@ -89,6 +89,9 @@ class LocalNoteRepository implements NoteRepository {
         .split(RegExp(r'\s+'))
         .where((term) => term.isNotEmpty)
         .toList();
+    if (terms.length > 200) {
+      throw const FormatException('Search query contains too many terms.');
+    }
 
     final ranked = <({Note note, int score})>[];
 
