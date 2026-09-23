@@ -6,7 +6,7 @@ import '../data/repositories/folder_repository_provider.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
 import '../models/search_filter.dart';
-import 'note_editor_screen.dart';
+import 'note_editor_screen.dart' show NoteEditorScreen;
 import '../services/orah_feature_gate.dart';
 import 'orah_pro_screen.dart';
 
