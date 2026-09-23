@@ -66,6 +66,9 @@ jobs:
           p.write_text(s)
           PY
 
+      - name: Release source audit
+        run: python3 tool/release_audit.py
+
       - name: Get dependencies
         run: flutter pub get
 
