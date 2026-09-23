@@ -5,6 +5,7 @@ import 'app.dart';
 import 'services/orah_reminder_service.dart';
 import 'services/nova_attachment_service.dart';
 import 'services/orah_share_intake_service.dart';
+import 'services/orah_android_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,5 +15,6 @@ Future<void> main() async {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     OrahReminderService.instance.openPendingNotification();
     OrahShareIntakeService.instance.initialize();
+    OrahAndroidService.instance.initialize();
   });
 }
