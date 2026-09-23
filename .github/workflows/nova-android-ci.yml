@@ -180,6 +180,16 @@ jobs:
           flutter pub deps --style=compact >/tmp/orah-deps.txt
           test -s /tmp/orah-deps.txt
 
+      - name: Verify Android Gradle project
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd android
+          ./gradlew tasks --no-daemon >/tmp/orah-gradle-tasks.log 2>&1 || {
+            tail -n 250 /tmp/orah-gradle-tasks.log
+            exit 1
+          }
+
       - name: Build debug APK
         run: flutter build apk --debug
 
