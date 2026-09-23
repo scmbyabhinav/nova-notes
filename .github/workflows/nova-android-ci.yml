@@ -79,6 +79,22 @@ jobs:
                   s=s.rstrip() + "\n\ndependencies {\n    " + dependency + "\n}\n"
           p.write_text(s)
           PY
+      - name: Android Gradle preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd android
+          ./gradlew --version
+          ./gradlew tasks --no-daemon >/tmp/orah-gradle-tasks.log 2>&1 || { tail -n 250 /tmp/orah-gradle-tasks.log; exit 1; }
+      - name: Validate automation scripts
+        run: python3 -m py_compile tool/release_audit.py tool/prepare_android_host.py tool/configure_release_signing.py
+      - name: Release source audit
+        run: python3 tool/release_audit.py
+      - name: Flutter dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get --verbose >/tmp/orah-pub-get.log 2>&1 || { tail -n 250 /tmp/orah-pub-get.log; exit 1; }
       - name: Align legacy Android plugin JVM targets
         shell: bash
         run: |
@@ -109,22 +125,6 @@ jobs:
           p.write_text(s)
           print(f"Aligned JVM target for {p}")
           PY
-      - name: Android Gradle preflight
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd android
-          ./gradlew --version
-          ./gradlew tasks --no-daemon >/tmp/orah-gradle-tasks.log 2>&1 || { tail -n 250 /tmp/orah-gradle-tasks.log; exit 1; }
-      - name: Validate automation scripts
-        run: python3 -m py_compile tool/release_audit.py tool/prepare_android_host.py tool/configure_release_signing.py
-      - name: Release source audit
-        run: python3 tool/release_audit.py
-      - name: Flutter dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter pub get --verbose >/tmp/orah-pub-get.log 2>&1 || { tail -n 250 /tmp/orah-pub-get.log; exit 1; }
       - name: Verify dependency lockfile
         run: |
           test -f pubspec.lock
