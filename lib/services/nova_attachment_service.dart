@@ -7,7 +7,11 @@ import '../data/repositories/note_repository_provider.dart';
 class NovaAttachmentService {
   const NovaAttachmentService();
 
+  static const maxAttachmentBytes = 100 * 1024 * 1024;
+
   Future<String> importXFile(XFile source) async {
+    final length = await source.length();
+    if (length > maxAttachmentBytes) throw const FileSystemException('Attachment is too large');
     final root = await _attachmentDirectory();
     final name = _uniqueName(root.path, p.basename(source.path));
     final target = File(p.join(root.path, name));
@@ -18,6 +22,7 @@ class NovaAttachmentService {
   Future<String> importFile(String sourcePath) async {
     final source = File(sourcePath);
     if (!await source.exists()) throw const FileSystemException('Source attachment not found');
+    if (await source.length() > maxAttachmentBytes) throw const FileSystemException('Attachment is too large');
     final root = await _attachmentDirectory();
     final name = _uniqueName(root.path, p.basename(sourcePath));
     final target = File(p.join(root.path, name));
