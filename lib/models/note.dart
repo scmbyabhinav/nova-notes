@@ -71,6 +71,51 @@ class Note {
   final bool isTrashed;
   final DateTime? dueAt;
 
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'title': title,
+        'content': content,
+        'type': type.name,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'folderId': folderId,
+        'tags': tags,
+        'attachments': attachments,
+        'checklistItems': checklistItems.map((item) => item.toMap()).toList(),
+        'color': color,
+        'isPinned': isPinned,
+        'isFavorite': isFavorite,
+        'isArchived': isArchived,
+        'isLocked': isLocked,
+        'isTrashed': isTrashed,
+        'dueAt': dueAt?.toIso8601String(),
+      };
+
+  factory Note.fromMap(Map<String, dynamic> map) => Note(
+        id: map['id'] as String? ?? DateTime.now().microsecondsSinceEpoch.toString(),
+        title: map['title'] as String? ?? '',
+        content: map['content'] as String? ?? '',
+        type: NoteType.values.firstWhere(
+          (value) => value.name == map['type'],
+          orElse: () => NoteType.text,
+        ),
+        createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
+        updatedAt: DateTime.tryParse(map['updatedAt'] as String? ?? '') ?? DateTime.now(),
+        folderId: map['folderId'] as String?,
+        tags: List<String>.from(map['tags'] as List? ?? const []),
+        attachments: List<String>.from(map['attachments'] as List? ?? const []),
+        checklistItems: (map['checklistItems'] as List? ?? const [])
+            .map((item) => ChecklistItem.fromMap(Map<String, dynamic>.from(item as Map)))
+            .toList(),
+        color: map['color'] as int?,
+        isPinned: map['isPinned'] as bool? ?? false,
+        isFavorite: map['isFavorite'] as bool? ?? false,
+        isArchived: map['isArchived'] as bool? ?? false,
+        isLocked: map['isLocked'] as bool? ?? false,
+        isTrashed: map['isTrashed'] as bool? ?? false,
+        dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
+      );
+
   int get completedChecklistItems =>
       checklistItems.where((item) => item.isDone).length;
 
