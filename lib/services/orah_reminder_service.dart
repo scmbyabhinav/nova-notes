@@ -64,5 +64,5 @@ class OrahReminderService {
     );
   }
 
-  Future<void> cancel(String noteId) async => _plugin.cancel(id: _notificationId('note:$noteId'));
+  Future<void> cancel(String noteId) async {\n    if (!_initialized) await initialize();\n    await Future.wait([\n      _plugin.cancel(id: _notificationId('note:$noteId')),\n      // Clear reminders created by older Orah builds before IDs were namespaced.\n      _plugin.cancel(id: _notificationId(noteId)),\n    ]);\n  }
 }
