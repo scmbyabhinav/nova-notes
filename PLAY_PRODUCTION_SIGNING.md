@@ -21,5 +21,11 @@ Add the four values as repository Actions secrets. Do not put them in YAML, sour
 ## Google Play App Signing
 Google Play App Signing uses a protected app-signing key and a separate upload key. This workflow handles the upload-key signing side. Initial Play Console enrollment and certificate registration still require the publisher account.
 
+## Final artifact rule
+
+The release APK and AAB must be produced by the same release commit used for
+the Play candidate. A checksum/manifest should be retained alongside the CI
+artifacts so the exact binaries can be identified.
+
 ## Important
 Until the four secrets exist, normal CI remains usable, but a production-release dispatch intentionally cannot create a signed Play-uploadable AAB.
