@@ -80,6 +80,9 @@ class LocalNoteRepository implements NoteRepository {
     SearchFilter filter = const SearchFilter(),
   }) async {
     final normalized = query.trim().toLowerCase();
+    if (normalized.length > 200) {
+      throw const FormatException('Search query is too long.');
+    }
     final notes = await getNotes();
 
     final terms = normalized
