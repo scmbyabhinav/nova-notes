@@ -49,37 +49,79 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _search() {
-    final query = _controller.text.trim().toLowerCase();
+    final rawQuery = _controller.text.trim().toLowerCase();
+    final tokens = rawQuery.split(RegExp(r'\\s+')).where((t) => t.isNotEmpty).toList();
 
-    final terms = query
-        .split(RegExp(r'\s+'))
-        .where((term) => term.isNotEmpty)
-        .toList();
+    bool? pinned;
+    bool? favorite;
+    bool? locked;
+    bool? archived;
+    bool? reminder;
+    String? folderTerm;
+    String? tagTerm;
+    String? typeTerm;
+    DateTime? before;
+    DateTime? after;
+    bool hasAttachment = false;
+
+    final terms = <String>[];
+    for (final token in tokens) {
+      if (token == 'is:pinned') { pinned = true; continue; }
+      if (token == 'is:favorite' || token == 'is:favourite') { favorite = true; continue; }
+      if (token == 'is:locked' || token == 'is:private') { locked = true; continue; }
+      if (token == 'is:archived') { archived = true; continue; }
+      if (token == 'is:active') { archived = false; continue; }
+      if (token == 'has:reminder' || token == 'has:due') { reminder = true; continue; }
+      if (token == 'has:attachment' || token == 'has:image' || token == 'has:file') { hasAttachment = true; continue; }
+      if (token.startsWith('tag:')) { tagTerm = token.substring(4); continue; }
+      if (token.startsWith('folder:')) { folderTerm = token.substring(7); continue; }
+      if (token.startsWith('type:')) { typeTerm = token.substring(5); continue; }
+      if (token.startsWith('before:')) { before = DateTime.tryParse(token.substring(7)); continue; }
+      if (token.startsWith('after:')) { after = DateTime.tryParse(token.substring(6)); continue; }
+      terms.add(token);
+    }
 
     final ranked = <({Note note, int score})>[];
 
+    String folderName(String? id) {
+      if (id == null) return '';
+      for (final folder in _folders) {
+        if (folder.id == id) return folder.name.toLowerCase();
+      }
+      return '';
+    }
+
+    bool typeMatches(Note note) {
+      if (typeTerm == null || typeTerm!.isEmpty) return true;
+      return note.type.name.toLowerCase() == typeTerm ||
+          (typeTerm == 'task' && note.type == NoteType.checklist);
+    }
+
     for (final note in _allNotes) {
       if (note.isTrashed) continue;
-      if (note.isLocked && terms.isNotEmpty) continue;
-      if (!_filter.archivedOnly && note.isArchived) continue;
-      if (_filter.archivedOnly && !note.isArchived) continue;
-      if (_filter.favoritesOnly && !note.isFavorite) continue;
-      if (_filter.pinnedOnly && !note.isPinned) continue;
-      if (_filter.folderId != null && note.folderId != _filter.folderId) continue;
-      if (_filter.noteType != null && note.type != _filter.noteType) continue;
+      if (locked == true && !note.isLocked) continue;
+      if (locked != true && note.isLocked && terms.isNotEmpty) continue;
+      if (pinned == true && !note.isPinned) continue;
+      if (favorite == true && !note.isFavorite) continue;
+      if (archived == true && !note.isArchived) continue;
+      if (archived == false && note.isArchived) continue;
+      if (reminder == true && note.dueAt == null && !note.checklistItems.any((item) => item.dueAt != null)) continue;
+      if (hasAttachment && note.attachments.isEmpty) continue;
+      if (!typeMatches(note)) continue;
+      if (before != null && !note.updatedAt.isBefore(before!)) continue;
+      if (after != null && !note.updatedAt.isAfter(after!)) continue;
 
-      if (terms.isEmpty) {
-        ranked.add((note: note, score: 0));
-        continue;
-      }
+      final noteFolder = folderName(note.folderId);
+      if (folderTerm != null && noteFolder != folderTerm && note.folderId != folderTerm) continue;
+      if (tagTerm != null && !note.tags.any((tag) => tag.toLowerCase() == tagTerm || tag.toLowerCase().contains(tagTerm))) continue;
 
       final title = note.title.toLowerCase();
       final content = note.content.toLowerCase();
       final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
       final checklist = note.checklistItems.map((item) => item.text.toLowerCase()).toList();
-      final haystack = [title, content, ...tags, ...checklist].join(' ');
+      final haystack = [title, content, ...tags, ...checklist, noteFolder].join(' ');
 
-      if (!terms.every(haystack.contains)) continue;
+      if (terms.isNotEmpty && !terms.every(haystack.contains)) continue;
 
       var score = 0;
       for (final term in terms) {
@@ -88,16 +130,12 @@ class _SearchScreenState extends State<SearchScreen> {
         } else if (title.contains(term)) {
           score += 500;
         }
-        if (tags.any((tag) => tag == term)) {
-          score += 350;
-        } else if (tags.any((tag) => tag.contains(term))) {
-          score += 200;
-        }
+        if (tags.any((tag) => tag == term)) score += 350;
+        if (tags.any((tag) => tag.contains(term))) score += 200;
         if (content.contains(term)) score += 100;
         if (checklist.any((item) => item.contains(term))) score += 125;
       }
-
-      if (title.startsWith(query)) score += 250;
+      if (terms.isNotEmpty && title.startsWith(terms.join(' '))) score += 250;
       ranked.add((note: note, score: score));
     }
 
@@ -107,11 +145,7 @@ class _SearchScreenState extends State<SearchScreen> {
       return b.note.updatedAt.compareTo(a.note.updatedAt);
     });
 
-    final results = ranked.map((item) => item.note).toList();
-
-    if (mounted) {
-      setState(() => _results = results);
-    }
+    if (mounted) setState(() => _results = ranked.map((item) => item.note).toList());
   }
 
   Future<void> _open(Note note) async {
