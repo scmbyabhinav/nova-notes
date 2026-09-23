@@ -98,7 +98,7 @@ class OrahReminderService {
     if (noteId == null || noteId.isEmpty) return;
     final repository = await NoteRepositoryProvider.instance();
     final note = await repository.getNote(noteId);
-    if (note == null || note.isTrashed) return;
+    if (note == null || note.isTrashed || note.isLocked) return;
     final navigator = orahNavigatorKey.currentState;
     if (navigator == null) return;
     navigator.push(MaterialPageRoute(builder: (_) => NoteEditorScreen(repository: repository, note: note)));
