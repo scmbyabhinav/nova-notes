@@ -162,7 +162,12 @@ class OrahReminderService {
     try {
       final raw = jsonDecode(payload);
       if (raw is Map) {
-        return _ReminderTarget(noteId: raw['noteId'] as String?, checklistId: raw['checklistId'] as String?);
+        final noteId = raw['noteId'];
+        final checklistId = raw['checklistId'];
+        return _ReminderTarget(
+          noteId: noteId is String ? noteId : null,
+          checklistId: checklistId is String ? checklistId : null,
+        );
       }
     } catch (_) {}
     return _ReminderTarget(noteId: payload);
