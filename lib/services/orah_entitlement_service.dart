@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,25 +15,33 @@ class OrahEntitlementService extends ChangeNotifier {
   static const lifetimeId = 'orah_pro_lifetime';
   static const _entitlementKey = 'orah_entitlement';
   static const _purchaseDateKey = 'orah_purchase_date';
+  static const _expiryKey = 'orah_entitlement_expiry';
 
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   List<ProductDetails> products = const [];
   OrahPlan plan = OrahPlan.free;
+  DateTime? expiresAt;
   bool loading = true;
   String? error;
 
-  bool get isPremium => plan != OrahPlan.free;
+  bool get isPremium {
+    if (plan == OrahPlan.lifetime) return true;
+    if (plan == OrahPlan.free) return false;
+    return expiresAt == null || expiresAt!.isAfter(DateTime.now());
+  }
+
+  bool get isLifetime => plan == OrahPlan.lifetime;
+  String get planLabel => switch (plan) {
+    OrahPlan.monthly => 'Pro Monthly',
+    OrahPlan.yearly => 'Pro Yearly',
+    OrahPlan.lifetime => 'Pro Lifetime',
+    OrahPlan.free => 'Free',
+  };
 
   Future<void> initialize() async {
     if (!loading) return;
     final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString(_entitlementKey);
-    plan = switch (stored) {
-      'monthly' => OrahPlan.monthly,
-      'yearly' => OrahPlan.yearly,
-      'lifetime' => OrahPlan.lifetime,
-      _ => OrahPlan.free,
-    };
+    _loadCachedEntitlement(prefs);
 
     _subscription = InAppPurchase.instance.purchaseStream.listen(
       _handlePurchases,
@@ -50,12 +59,32 @@ class OrahEntitlementService extends ChangeNotifier {
         );
         products = response.productDetails;
         if (response.error != null) error = response.error!.message;
+        await InAppPurchase.instance.restorePurchases();
       }
     } catch (e) {
       error = e.toString();
     } finally {
       loading = false;
       notifyListeners();
+    }
+  }
+
+  void _loadCachedEntitlement(SharedPreferences prefs) {
+    final stored = prefs.getString(_entitlementKey);
+    plan = switch (stored) {
+      'monthly' => OrahPlan.monthly,
+      'yearly' => OrahPlan.yearly,
+      'lifetime' => OrahPlan.lifetime,
+      _ => OrahPlan.free,
+    };
+    final rawExpiry = prefs.getString(_expiryKey);
+    expiresAt = rawExpiry == null ? null : DateTime.tryParse(rawExpiry);
+    if (plan != OrahPlan.lifetime && expiresAt != null &&
+        !expiresAt!.isAfter(DateTime.now())) {
+      plan = OrahPlan.free;
+      expiresAt = null;
+      prefs.remove(_entitlementKey);
+      prefs.remove(_expiryKey);
     }
   }
 
@@ -67,6 +96,7 @@ class OrahEntitlementService extends ChangeNotifier {
   }
 
   Future<void> buy(String productId) async {
+    if (loading) await initialize();
     final item = product(productId);
     if (item == null) {
       error = 'This plan is not available in the current store.';
@@ -74,10 +104,23 @@ class OrahEntitlementService extends ChangeNotifier {
       return;
     }
     final param = PurchaseParam(productDetails: item);
-    await InAppPurchase.instance.buyNonConsumable(purchaseParam: param);
+    final launched = await InAppPurchase.instance.buyNonConsumable(
+      purchaseParam: param,
+    );
+    if (!launched) {
+      error = 'The store could not start this purchase.';
+      notifyListeners();
+    }
   }
 
-  Future<void> restore() => InAppPurchase.instance.restorePurchases();
+  Future<void> restore() async {
+    try {
+      await InAppPurchase.instance.restorePurchases();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
 
   Future<void> _handlePurchases(List<PurchaseDetails> purchases) async {
     final prefs = await SharedPreferences.getInstance();
@@ -88,12 +131,25 @@ class OrahEntitlementService extends ChangeNotifier {
           monthlyId => OrahPlan.monthly,
           yearlyId => OrahPlan.yearly,
           lifetimeId => OrahPlan.lifetime,
-          _ => plan,
+          _ => OrahPlan.free,
         };
         if (next != OrahPlan.free) {
+          final now = DateTime.now();
           plan = next;
+          expiresAt = switch (next) {
+            OrahPlan.monthly => now.add(const Duration(days: 31)),
+            OrahPlan.yearly => now.add(const Duration(days: 366)),
+            OrahPlan.lifetime => null,
+            OrahPlan.free => null,
+          };
           await prefs.setString(_entitlementKey, next.name);
-          await prefs.setString(_purchaseDateKey, DateTime.now().toIso8601String());
+          await prefs.setString(_purchaseDateKey, now.toIso8601String());
+          if (expiresAt == null) {
+            await prefs.remove(_expiryKey);
+          } else {
+            await prefs.setString(_expiryKey, expiresAt!.toIso8601String());
+          }
+          error = null;
         }
       } else if (purchase.status == PurchaseStatus.error) {
         error = purchase.error?.message ?? 'Purchase failed.';
@@ -104,13 +160,6 @@ class OrahEntitlementService extends ChangeNotifier {
     }
     notifyListeners();
   }
-
-  String get planLabel => switch (plan) {
-    OrahPlan.monthly => 'Pro Monthly',
-    OrahPlan.yearly => 'Pro Yearly',
-    OrahPlan.lifetime => 'Pro Lifetime',
-    OrahPlan.free => 'Free',
-  };
 
   @override
   void dispose() {
