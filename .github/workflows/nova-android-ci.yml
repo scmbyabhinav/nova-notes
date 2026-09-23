@@ -14,10 +14,12 @@ jobs:
   verify:
     name: Analyze and test
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
@@ -34,21 +36,31 @@ jobs:
     name: Build Android artifacts
     needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
       - name: Generate Android project
-        run: flutter create --platforms=android --org com.orah .
-      - name: Enable desugaring
+        shell: bash
+        run: |
+          if [ ! -d android ]; then
+            flutter create --platforms=android --org com.orah --project-name orah_notes .
+          fi
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Enable Android desugaring
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path("android/app/build.gradle.kts")
+          if not p.exists():
+              raise SystemExit("android/app/build.gradle.kts was not generated")
           s = p.read_text()
           if "isCoreLibraryDesugaringEnabled" not in s:
               s = s.replace(
@@ -57,12 +69,13 @@ jobs:
                   1,
               )
           if "coreLibraryDesugaring(" not in s:
-              marker = "dependencies {"
-              s = s.replace(marker, marker + '\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")', 1)
+              s = s.replace(
+                  "dependencies {",
+                  'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',
+                  1,
+              )
           p.write_text(s)
           PY
-      - name: Get dependencies
-        run: flutter pub get
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Build release APK
@@ -74,7 +87,7 @@ jobs:
           test -s build/app/outputs/flutter-apk/app-debug.apk
           test -s build/app/outputs/flutter-apk/app-release.apk
           test -s build/app/outputs/bundle/release/app-release.aab
-      - name: Upload APK
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
           name: orah-apks
