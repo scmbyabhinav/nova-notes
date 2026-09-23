@@ -139,6 +139,14 @@ jobs:
       - name: Configure production signing in Gradle
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
+      - name: Verify release build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f android/app/build.gradle.kts
+          test -f android/app/src/main/AndroidManifest.xml
+          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
+
       - name: Build release AAB
         run: flutter build appbundle --release
 
