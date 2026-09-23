@@ -210,6 +210,12 @@ jobs:
           echo "ORAH version: $version"
           test "$version" = "1.0.0+1"
 
+      - name: Verify Android application ID before release
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
+
       - name: Build release APK
         run: flutter build apk --release
 
