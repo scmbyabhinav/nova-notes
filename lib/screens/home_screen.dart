@@ -202,8 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _showColorPicker(Note note) async {
-    const colors = <Color?>[null, Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
-    final color = await showModalBottomSheet<Color?>(
+    const colors = <Color?>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
+    final selected = await showModalBottomSheet<int>(
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
@@ -212,28 +212,39 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Wrap(
             spacing: 14,
             runSpacing: 14,
-            children: [for (final color in colors) InkWell(
-              onTap: () => Navigator.pop(context, color),
+            children: [InkWell(
+              onTap: () => Navigator.pop(context, -1),
               borderRadius: BorderRadius.circular(28),
               child: Container(
                 width: 50, height: 50,
                 decoration: BoxDecoration(
-                  color: color ?? Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(color: note.color == color?.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                  border: Border.all(color: note.color == null ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
                 ),
-                child: color == null ? const Icon(Icons.format_color_reset_outlined) : null,
+                child: const Icon(Icons.format_color_reset_outlined),
               ),
-            )],
+            ), ...[for (final color in colors) InkWell(
+              onTap: () => Navigator.pop(context, color.value),
+              borderRadius: BorderRadius.circular(28),
+              child: Container(
+                width: 50, height: 50,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: note.color == color.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                ),
+              ),
+            )]],
           ),
         ),
       ),
     );
     if (!mounted) return;
-    // A dismissed sheet returns null too; only clear when the user explicitly chose reset.
-    if (color == null && note.color == null) return;
+    if (selected == null) return;
     final repository = await NoteRepositoryProvider.instance();
-    await repository.saveNote(note.copyWith(color: color?.value, clearColor: color == null, updatedAt: DateTime.now()));
+    final color = selected == -1 ? null : selected;
+    await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
     await _loadNotes();
   }
 
