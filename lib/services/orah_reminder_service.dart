@@ -142,7 +142,7 @@ class OrahReminderService {
     await _plugin.zonedSchedule(
       id: _notificationId('note:$noteId'),
       title: 'ORAH reminder',
-      body: title,
+      body: safeTitle,
       scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
       notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
