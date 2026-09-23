@@ -101,8 +101,8 @@ class LocalFolderRepository implements FolderRepository {
       id: map['id'] as String? ?? '',
       name: map['name'] as String? ?? 'Folder',
       createdAt: createdAt,
-      iconCodePoint: map['iconCodePoint'] as int?,
-      color: map['color'] as int?,
+      iconCodePoint: map['iconCodePoint'] is int ? map['iconCodePoint'] as int : null,
+      color: map['color'] is int ? map['color'] as int : null,
     );
   }
 }
