@@ -109,7 +109,12 @@ class NovaAttachmentService {
 
   String _uniqueName(String directory, String original) {
     final safe = p.basename(original).replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
-    final stamp = DateTime.now().microsecondsSinceEpoch;
-    return '$stamp-$safe';
+    var counter = 0;
+    while (true) {
+      final stamp = DateTime.now().microsecondsSinceEpoch;
+      final candidate = counter == 0 ? '$stamp-$safe' : '$stamp-$counter-$safe';
+      if (!File(p.join(directory, candidate)).existsSync()) return candidate;
+      counter++;
+    }
   }
 }
