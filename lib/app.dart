@@ -10,6 +10,7 @@ import 'screens/folders_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
+import 'core/navigation/orah_navigation.dart';
 
 class OrahApp extends StatefulWidget {
   const OrahApp({super.key});
@@ -53,6 +54,7 @@ class _OrahAppState extends State<OrahApp> {
         DefaultWidgetsLocalizations.delegate,
       ],
       supportedLocales: NovaLocalizations.supportedLocales,
+      navigatorKey: orahNavigatorKey,
       home: NovaShell(themeController: _theme),
     );
   }
