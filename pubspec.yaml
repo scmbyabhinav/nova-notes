@@ -28,7 +28,7 @@ dependencies:
   in_app_purchase: ^3.3.1
   home_widget: ^0.10.0
   quick_actions: ^1.1.1
-  receive_sharing_intent: ^1.9.0
+  receive_sharing_intent: 1.8.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
