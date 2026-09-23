@@ -40,6 +40,17 @@ jobs:
       - name: Prepare ORAH Android host
         run: python3 tool/prepare_android_host.py
 
+      - name: Verify generated Android host
+        shell: bash
+        run: |
+          set -e
+          test -f android/app/build.gradle.kts
+          grep -q 'namespace = "com.orah.orah_notes"' android/app/build.gradle.kts
+          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
+          grep -q 'class MainActivity' android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
+          grep -q 'OrahQuickWidgetProvider' android/app/src/main/AndroidManifest.xml
+          grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
+
       - name: Enable core library desugaring
         shell: bash
         run: |
