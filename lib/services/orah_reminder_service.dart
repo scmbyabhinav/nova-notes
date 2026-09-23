@@ -116,6 +116,7 @@ class OrahReminderService {
   }) async {
     if (!_initialized) await initialize();
     if (!when.isAfter(DateTime.now())) return;
+    if (title.trim().isEmpty) return;
     final payload = jsonEncode({
       'noteId': payloadNoteId ?? noteId,
       if (payloadChecklistId != null) 'checklistId': payloadChecklistId,
