@@ -44,6 +44,23 @@ checklist = ROOT / "RELEASE_CHECKLIST.md"
 if checklist.exists() and "NOVA Notes" in checklist.read_text():
     errors.append("RELEASE_CHECKLIST.md still contains the old NOVA Notes product name.")
 
+android_host = ROOT / "tool/prepare_android_host.py"
+if not android_host.exists():
+    errors.append("Android host preparation script is missing.")
+else:
+    host_text = android_host.read_text()
+    required_host_markers = (
+        "package com.orah.orah_notes",
+        "class MainActivity",
+        "OrahQuickWidgetProvider",
+        "android.app.shortcuts",
+        "android.intent.action.SEND",
+        "android.intent.action.SEND_MULTIPLE",
+    )
+    for marker in required_host_markers:
+        if marker not in host_text:
+            errors.append(f"Android host preparation is missing required marker: {marker}")
+
 workflow = ROOT / ".github/workflows/nova-android-ci.yml"
 if not workflow.exists():
     errors.append("Android CI workflow is missing.")
@@ -53,8 +70,14 @@ else:
         if required not in workflow_text:
             errors.append(f"Android CI is missing required step: {required}")
 
-if not (ROOT / "PRIVACY_POLICY.md").exists():
+privacy = ROOT / "PRIVACY_POLICY.md"
+if not privacy.exists():
     warnings.append("PRIVACY_POLICY.md is not present; a public privacy-policy URL is still required before Play production release.")
+else:
+    privacy_text = privacy.read_text().lower()
+    for marker in ("local-first", "in-app purchase", "google ml kit", "notifications", "share"):
+        if marker not in privacy_text:
+            warnings.append(f"PRIVACY_POLICY.md should explicitly document: {marker}.")
 
 print("ORAH release audit")
 print("=================")
