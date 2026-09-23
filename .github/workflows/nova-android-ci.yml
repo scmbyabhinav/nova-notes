@@ -156,6 +156,13 @@ jobs:
           grep -q '^name: orah_notes
         run: flutter pub get
 
+      - name: Verify pubspec lockfile state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f pubspec.lock
+          grep -q '^packages:' pubspec.lock
+
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
