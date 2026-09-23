@@ -86,7 +86,7 @@ class LocalNoteRepository implements NoteRepository {
     final notes = await getNotes();
 
     final terms = normalized
-        .split(RegExp(r'\\s+'))
+        .split(RegExp(r'\s+'))
         .where((term) => term.isNotEmpty)
         .toList();
 
