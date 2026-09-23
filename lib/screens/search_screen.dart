@@ -8,7 +8,6 @@ import '../models/note.dart';
 import '../models/search_filter.dart';
 import 'note_editor_screen.dart';
 import '../services/orah_feature_gate.dart';
-import '../services/orah_premium_gate.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
