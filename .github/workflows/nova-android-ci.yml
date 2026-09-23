@@ -232,6 +232,12 @@ jobs:
           ls -lh build/app/outputs/flutter-apk/*.apk
           ls -lh build/app/outputs/bundle/release/app-release.aab
 
+      - name: Print final artifact paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
+
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
