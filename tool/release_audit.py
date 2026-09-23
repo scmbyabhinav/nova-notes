@@ -66,6 +66,8 @@ if not workflow.exists():
     errors.append("Android CI workflow is missing.")
 else:
     workflow_text = workflow.read_text()
+    if workflow_text.count("workflow_dispatch:") != 1:
+        errors.append("Android CI must contain exactly one workflow_dispatch trigger.")
     for required in ("flutter analyze", "flutter test", "flutter build apk --release", "flutter build appbundle --release"):
         if required not in workflow_text:
             errors.append(f"Android CI is missing required step: {required}")
