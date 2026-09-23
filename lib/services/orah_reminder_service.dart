@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
@@ -26,15 +27,29 @@ class OrahReminderService {
     await _plugin.initialize(settings: settings, onDidReceiveNotificationResponse: _onNotificationResponse);
     final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     await android?.requestNotificationsPermission();
+    final launch = await _plugin.getNotificationAppLaunchDetails();
+    if (launch?.didNotificationLaunchApp ?? false) {
+      _pendingLaunchPayload = launch?.notificationResponse?.payload;
+    }
     _initialized = true;
   }
 
   Future<void> _onNotificationResponse(NotificationResponse response) async {
-    final noteId = response.payload;
+    await openPayload(response.payload);
+  }
+
+  Future<void> openPendingNotification() async {
+    final payload = _pendingLaunchPayload;
+    _pendingLaunchPayload = null;
+    if (payload != null && payload.isNotEmpty) await openPayload(payload);
+  }
+
+  Future<void> openPayload(String? payload) async {
+    final noteId = payload;
     if (noteId == null || noteId.isEmpty) return;
     final repository = await NoteRepositoryProvider.instance();
     final note = await repository.getNote(noteId);
-    if (note == null) return;
+    if (note == null || note.isTrashed) return;
     final navigator = orahNavigatorKey.currentState;
     if (navigator == null) return;
     navigator.push(MaterialPageRoute(builder: (_) => NoteEditorScreen(repository: repository, note: note)));
