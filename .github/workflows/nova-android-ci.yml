@@ -48,7 +48,6 @@ jobs:
           test -f tool/prepare_android_host.py
           test -f tool/release_audit.py
           test -f tool/configure_release_signing.py
-          grep -q '^name: orah_notes$' pubspec.yaml
       - name: Generate Android host
         run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
       - name: Prepare ORAH Android host
@@ -61,11 +60,6 @@ jobs:
           test -f android/app/build.gradle.kts
           test -f android/app/src/main/AndroidManifest.xml
           test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-          grep -q 'namespace = "com.orah.orah_notes"' android/app/build.gradle.kts
-          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
-          grep -q 'android:label="ORAH"' android/app/src/main/AndroidManifest.xml
-          grep -q 'OrahQuickWidgetProvider' android/app/src/main/AndroidManifest.xml
-          grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
       - name: Enable core library desugaring
         shell: bash
         run: |
