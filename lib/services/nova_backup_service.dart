@@ -32,6 +32,8 @@ class NovaBackupService {
       for (final path in attachments) {
         final file = File(path);
         if (!await file.exists()) continue;
+        final absolute = file.absolute.path;
+        if (absolute != rootPath && !p.isWithin(rootPath, absolute)) continue;
         final archiveName = 'attachments/${map['id']}-${p.basename(path)}';
         files[archiveName] = await file.readAsBytes();
         portable.add(archiveName);
