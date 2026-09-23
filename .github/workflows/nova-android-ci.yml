@@ -86,6 +86,9 @@ jobs:
       - name: Release source audit
         run: python3 tool/release_audit.py
 
+      - name: Clean generated build state
+        run: flutter clean
+
       - name: Get dependencies
         run: flutter pub get
 
@@ -137,6 +140,8 @@ jobs:
           test -s build/app/outputs/flutter-apk/app-debug.apk
           test -s build/app/outputs/flutter-apk/app-release.apk
           test -s build/app/outputs/bundle/release/app-release.aab
+          ls -lh build/app/outputs/flutter-apk/*.apk
+          ls -lh build/app/outputs/bundle/release/app-release.aab
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
