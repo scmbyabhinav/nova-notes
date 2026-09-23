@@ -45,6 +45,7 @@ class LocalNoteRepository implements NoteRepository {
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
 
+    if (note.id.trim().isEmpty) throw const FormatException('Note ID cannot be empty.');
     if (index == -1) {
       notes.add(note);
     } else {
