@@ -76,7 +76,7 @@ class _NovaShellState extends State<NovaShell> {
     HomeScreen(),
     FoldersScreen(),
     FavoritesScreen(),
-    SettingsScreen(),
+    SettingsScreen(themeController: widget.themeController),
   ];
 
   Future<void> _openEditor(NoteType type) async {
