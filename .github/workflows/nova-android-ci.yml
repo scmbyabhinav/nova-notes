@@ -49,7 +49,7 @@ jobs:
           test -f tool/release_audit.py
           test -f tool/configure_release_signing.py
           grep -q '^name: orah_notes$' pubspec.yaml
-          grep -q '^version: 1.0.0+1$' pubspec.yaml
+          grep -Fq 'version: 1.0.0+1' pubspec.yaml
       - name: Generate Android host
         run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
       - name: Prepare ORAH Android host
