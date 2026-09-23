@@ -142,6 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
           updatedAt: DateTime.now(),
         );
         final duplicateId = '${DateTime.now().microsecondsSinceEpoch}_copy';
+        final duplicateItems = note.checklistItems.map((item) => ChecklistItem(
+          id: '${duplicateId}_${item.id}', text: item.text, isDone: item.isDone, dueAt: item.dueAt,
+        )).toList();
         await repository.saveNote(Note(
           id: duplicateId,
           title: duplicate.title,
@@ -152,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
           folderId: duplicate.folderId,
           tags: duplicate.tags,
           attachments: const [],
-          checklistItems: duplicate.checklistItems,
+          checklistItems: duplicateItems,
           color: duplicate.color,
           isPinned: false,
           isFavorite: false,
@@ -164,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (duplicate.dueAt != null) {
           await OrahReminderService.instance.schedule(noteId: duplicateId, title: duplicate.title, when: duplicate.dueAt!);
         }
-        for (final item in duplicate.checklistItems) {
+        for (final item in duplicateItems) {
           if (item.dueAt != null && !item.isDone) {
             await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId);
           }
