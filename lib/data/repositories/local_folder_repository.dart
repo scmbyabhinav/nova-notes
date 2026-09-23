@@ -90,10 +90,11 @@ class LocalFolderRepository implements FolderRepository {
   }
 
   NoteFolder _fromMap(Map<String, dynamic> map) {
+    final createdAt = DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now();
     return NoteFolder(
       id: map['id'] as String,
       name: map['name'] as String? ?? 'Folder',
-      createdAt: DateTime.parse(map['createdAt'] as String),
+      createdAt: createdAt,
       iconCodePoint: map['iconCodePoint'] as int?,
       color: map['color'] as int?,
     );
