@@ -15,6 +15,7 @@ import '../core/theme/orah_theme_controller.dart';
 import 'security_settings_screen.dart';
 import 'android_features_screen.dart';
 import 'about_nova_screen.dart';
+import 'orah_pro_screen.dart';
 import 'trash_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -47,6 +48,16 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: Text(_appearanceLabel()),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showAppearance(context),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.workspace_premium_outlined),
+                  title: const Text('ORAH Pro'),
+                  subtitle: const Text('Subscription or lifetime — unlock advanced features'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const OrahProScreen()),
+                  ),
                 ),
                 const Divider(height: 1),
                 ListTile(
