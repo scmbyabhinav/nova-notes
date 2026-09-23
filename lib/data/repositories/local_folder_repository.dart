@@ -22,21 +22,9 @@ class LocalFolderRepository implements FolderRepository {
 
     try {
       final decoded = jsonDecode(raw) as List<dynamic>;
-      if (decoded.length > 10000) {
-        throw const FormatException('Too many folders.');
-      }
-      final folders = <NoteFolder>[];
-      final ids = <String>{};
-      for (final item in decoded) {
-        if (item is! Map) continue;
-        try {
-          final folder = _fromMap(Map<String, dynamic>.from(item));
-          if (folder.id.trim().isEmpty || !ids.add(folder.id)) continue;
-          folders.add(folder);
-        } catch (_) {
-          // Skip one malformed folder without losing valid folders.
-        }
-      }
+      final folders = decoded
+          .map((item) => _fromMap(Map<String, dynamic>.from(item as Map)))
+          .toList();
 
       folders.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       return folders;
@@ -50,13 +38,8 @@ class LocalFolderRepository implements FolderRepository {
     final folders = await getFolders();
     final index = folders.indexWhere((item) => item.id == folder.id);
 
-    if (folder.id.trim().isEmpty) throw const FormatException('Folder ID cannot be empty.');
-    if (folder.name.trim().isEmpty) throw const FormatException('Folder name cannot be empty.');
-    final normalizedName = folder.name.trim();
-    if (normalizedName.length > 80) throw const FormatException('Folder name is too long.');
-    final normalizedFolder = folder.name == normalizedName ? folder : folder.copyWith(name: normalizedName);
     if (index == -1) {
-      folders.add(normalizedFolder);
+      folders.add(folder);
     } else {
       folders[index] = folder;
     }
@@ -101,13 +84,12 @@ class LocalFolderRepository implements FolderRepository {
   }
 
   NoteFolder _fromMap(Map<String, dynamic> map) {
-    final createdAt = DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now();
     return NoteFolder(
-      id: map['id'] as String? ?? '',
+      id: map['id'] as String,
       name: map['name'] as String? ?? 'Folder',
-      createdAt: createdAt,
-      iconCodePoint: map['iconCodePoint'] is int ? map['iconCodePoint'] as int : null,
-      color: map['color'] is int ? map['color'] as int : null,
+      createdAt: DateTime.parse(map['createdAt'] as String),
+      iconCodePoint: map['iconCodePoint'] as int?,
+      color: map['color'] as int?,
     );
   }
 }
