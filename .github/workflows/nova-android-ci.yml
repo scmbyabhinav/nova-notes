@@ -9,12 +9,10 @@ on:
         default: false
         type: boolean
   push:
-    branches:
-      - main
+    branches: [main, attack-125-ci-fix]
   pull_request:
     types: [opened, synchronize, reopened]
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: read
@@ -31,193 +29,95 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
-      - name: Configure Git safe directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-
-      - name: Verify Java
-        run: java -version
-
-      - name: Flutter version
-        run: flutter --version
-
-      - name: Generate Android host project
-        run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
-
-      - name: Prepare ORAH Android host
-        run: python3 tool/prepare_android_host.py
-
-      - name: Verify repository state
+      - name: Verify repository
         shell: bash
         run: |
           set -euo pipefail
-          git status --short
-          git rev-parse HEAD
           test -f pubspec.yaml
+          test -f pubspec.lock
           test -f tool/prepare_android_host.py
-
-      - name: Verify generated Android host
-        shell: bash
-        run: |
-          set -e
-          test -f android/app/build.gradle.kts
-          grep -q 'namespace = "com.orah.orah_notes"' android/app/build.gradle.kts
-          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
-          grep -q 'class MainActivity' android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-          grep -q 'OrahQuickWidgetProvider' android/app/src/main/AndroidManifest.xml
-          grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
-
-      - name: Verify Gradle wrapper
+          test -f tool/release_audit.py
+          test -f tool/configure_release_signing.py
+          grep -q '^name: orah_notes$' pubspec.yaml
+          grep -q '^version: 1.0.0+1$' pubspec.yaml
+      - name: Generate Android host
+        run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
+      - name: Prepare ORAH Android host
+        run: python3 tool/prepare_android_host.py
+      - name: Verify Android host
         shell: bash
         run: |
           set -euo pipefail
           test -x android/gradlew
-          test -f android/gradle/wrapper/gradle-wrapper.properties
-
-      - name: Verify ORAH manifest identity
-        shell: bash
-        run: |
-          set -euo pipefail
+          test -f android/app/build.gradle.kts
+          test -f android/app/src/main/AndroidManifest.xml
+          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
+          grep -q 'namespace = "com.orah.orah_notes"' android/app/build.gradle.kts
+          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
           grep -q 'android:label="ORAH"' android/app/src/main/AndroidManifest.xml
-          grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
           grep -q 'OrahQuickWidgetProvider' android/app/src/main/AndroidManifest.xml
-
+          grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
       - name: Enable core library desugaring
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path("android/app/build.gradle.kts")
-          s = p.read_text()
+          p=Path("android/app/build.gradle.kts")
+          s=p.read_text()
           if "isCoreLibraryDesugaringEnabled = true" not in s:
-              s = s.replace(
-                  "compileOptions {",
-                  "compileOptions {\n        isCoreLibraryDesugaringEnabled = true",
-                  1,
-              ) if "compileOptions {" in s else s.replace(
-                  "compileSdk = flutter.compileSdkVersion",
-                  "compileSdk = flutter.compileSdkVersion\n\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",
-                  1,
-              )
+              if "compileOptions {" in s:
+                  s=s.replace("compileOptions {","compileOptions {\n        isCoreLibraryDesugaringEnabled = true",1)
+              else:
+                  s=s.replace("compileSdk = flutter.compileSdkVersion","compileSdk = flutter.compileSdkVersion\n\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",1)
           if 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")' not in s:
-              s = s.replace(
-                  "dependencies {",
-                  'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',
-                  1,
-              )
+              s=s.replace("dependencies {",'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',1)
           p.write_text(s)
           PY
-
-      - name: Android Gradle diagnostics
+      - name: Android Gradle preflight
         shell: bash
         run: |
           set -euo pipefail
           cd android
           ./gradlew --version
-
-      - name: Verify release audit script
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -x tool/release_audit.py || chmod +x tool/release_audit.py
-          python3 -m py_compile tool/release_audit.py tool/prepare_android_host.py tool/configure_release_signing.py
-
+          ./gradlew tasks --no-daemon >/tmp/orah-gradle-tasks.log 2>&1 || { tail -n 250 /tmp/orah-gradle-tasks.log; exit 1; }
+      - name: Validate automation scripts
+        run: python3 -m py_compile tool/release_audit.py tool/prepare_android_host.py tool/configure_release_signing.py
       - name: Release source audit
         run: python3 tool/release_audit.py
-
-      - name: Clean generated build state
-        run: flutter clean
-
-      - name: Flutter dependency diagnostics
+      - name: Flutter dependencies
         shell: bash
         run: |
           set -euo pipefail
-          flutter pub get --verbose >/tmp/orah-pub-get.log 2>&1 || {
-            tail -n 200 /tmp/orah-pub-get.log
-            exit 1
-          }
-
-      - name: Check Flutter project metadata
-        shell: bash
+          flutter pub get --verbose >/tmp/orah-pub-get.log 2>&1 || { tail -n 250 /tmp/orah-pub-get.log; exit 1; }
+      - name: Verify dependency lockfile
         run: |
-          set -euo pipefail
-          grep -q '^name: orah_notes
-
-      - name: Verify pubspec lockfile state
-        shell: bash
-        run: |
-          set -euo pipefail
           test -f pubspec.lock
           grep -q '^packages:' pubspec.lock
-
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
       - name: Test
         run: flutter test
-
-      - name: Verify test artifact stage
-        run: test -f pubspec.yaml
-
-      - name: Record Flutter build metadata
-        run: flutter doctor -v
-
-      - name: Verify Flutter project
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter doctor -v
-          flutter pub deps --style=compact >/tmp/orah-deps.txt
-          test -s /tmp/orah-deps.txt
-
-      - name: Verify Android Gradle project
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd android
-          ./gradlew tasks --no-daemon >/tmp/orah-gradle-tasks.log 2>&1 || {
-            tail -n 250 /tmp/orah-gradle-tasks.log
-            exit 1
-          }
-
       - name: Build debug APK
         run: flutter build apk --debug
-
-      - name: Verify Android host version markers
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
-
       - name: Verify release version
         shell: bash
         run: |
-          set -euo pipefail
           version="$(awk '/^version:/ {print $2}' pubspec.yaml)"
-          echo "ORAH version: $version"
           test "$version" = "1.0.0+1"
-
-      - name: Verify Android application ID before release
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
-
+      - name: Verify application ID
+        run: grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
       - name: Build release APK
         run: flutter build apk --release
-
       - name: Configure production signing
         if: ${{ inputs.production_release == true }}
         env:
@@ -232,7 +132,6 @@ jobs:
           test -n "$ORAH_KEYSTORE_PASSWORD"
           test -n "$ORAH_KEY_ALIAS"
           test -n "$ORAH_KEY_PASSWORD"
-          mkdir -p android
           printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
           cat > android/key.properties <<EOF
           storePassword=$ORAH_KEYSTORE_PASSWORD
@@ -240,767 +139,37 @@ jobs:
           keyAlias=$ORAH_KEY_ALIAS
           storeFile=orah-upload.jks
           EOF
-
       - name: Configure production signing in Gradle
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
-      - name: Verify release build inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f android/app/build.gradle.kts
-          test -f android/app/src/main/AndroidManifest.xml
-          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-
       - name: Build release AAB
         run: flutter build appbundle --release
-
       - name: Verify artifacts
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           test -s build/app/outputs/flutter-apk/app-debug.apk
           test -s build/app/outputs/flutter-apk/app-release.apk
           test -s build/app/outputs/bundle/release/app-release.aab
           unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
           unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
           unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
-          ls -lh build/app/outputs/flutter-apk/*.apk
-          ls -lh build/app/outputs/bundle/release/app-release.aab
-
-      - name: Print final artifact paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
-
+          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
           name: orah-apks-${{ github.sha }}
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 14
-
-      - name: Verify release output directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d build/app/outputs/flutter-apk
-          test -d build/app/outputs/bundle/release
-
-      - name: Generate artifact checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
-          cat build/app/outputs/orah-artifact-sha256.txt
-
-      - name: Upload release checksums
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-checksums-${{ github.sha }}
-          path: build/app/outputs/orah-artifact-sha256.txt
-          retention-days: 14
-
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-aab-${{ github.sha }}
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 14
-
-# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
- pubspec.yaml
-          grep -q '^version: 1.0.0+1
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Test
-        run: flutter test
-
-      - name: Record Flutter build metadata
-        run: flutter doctor -v
-
-      - name: Verify Flutter project
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter doctor -v
-          flutter pub deps --style=compact >/tmp/orah-deps.txt
-          test -s /tmp/orah-deps.txt
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Verify Android host version markers
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
-
-      - name: Verify release version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(awk '/^version:/ {print $2}' pubspec.yaml)"
-          echo "ORAH version: $version"
-          test "$version" = "1.0.0+1"
-
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Configure production signing
-        if: ${{ inputs.production_release == true }}
-        env:
-          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
-          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
-          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
-          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
-          test -n "$ORAH_KEYSTORE_PASSWORD"
-          test -n "$ORAH_KEY_ALIAS"
-          test -n "$ORAH_KEY_PASSWORD"
-          mkdir -p android
-          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
-          cat > android/key.properties <<EOF
-          storePassword=$ORAH_KEYSTORE_PASSWORD
-          keyPassword=$ORAH_KEY_PASSWORD
-          keyAlias=$ORAH_KEY_ALIAS
-          storeFile=orah-upload.jks
-          EOF
-
-      - name: Configure production signing in Gradle
-        if: ${{ inputs.production_release == true }}
-        run: python3 tool/configure_release_signing.py
-      - name: Verify release build inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f android/app/build.gradle.kts
-          test -f android/app/src/main/AndroidManifest.xml
-          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      - name: Verify artifacts
-        shell: bash
-        run: |
-          set -e
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          test -s build/app/outputs/flutter-apk/app-release.apk
-          test -s build/app/outputs/bundle/release/app-release.aab
-          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
-          unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
-          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
-          ls -lh build/app/outputs/flutter-apk/*.apk
-          ls -lh build/app/outputs/bundle/release/app-release.aab
-
-      - name: Print final artifact paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-apks-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 14
-
-      - name: Verify release output directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d build/app/outputs/flutter-apk
-          test -d build/app/outputs/bundle/release
-
-      - name: Generate artifact checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
-          cat build/app/outputs/orah-artifact-sha256.txt
-
-      - name: Upload release checksums
+      - name: Upload checksums
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-checksums-${{ github.sha }}
           path: build/app/outputs/orah-artifact-sha256.txt
           retention-days: 14
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-aab-${{ github.sha }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 14
-
-# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
- pubspec.yaml
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Test
-        run: flutter test
-
-      - name: Record Flutter build metadata
-        run: flutter doctor -v
-
-      - name: Verify Flutter project
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter doctor -v
-          flutter pub deps --style=compact >/tmp/orah-deps.txt
-          test -s /tmp/orah-deps.txt
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Verify Android host version markers
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
-
-      - name: Verify release version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(awk '/^version:/ {print $2}' pubspec.yaml)"
-          echo "ORAH version: $version"
-          test "$version" = "1.0.0+1"
-
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Configure production signing
-        if: ${{ inputs.production_release == true }}
-        env:
-          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
-          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
-          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
-          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
-          test -n "$ORAH_KEYSTORE_PASSWORD"
-          test -n "$ORAH_KEY_ALIAS"
-          test -n "$ORAH_KEY_PASSWORD"
-          mkdir -p android
-          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
-          cat > android/key.properties <<EOF
-          storePassword=$ORAH_KEYSTORE_PASSWORD
-          keyPassword=$ORAH_KEY_PASSWORD
-          keyAlias=$ORAH_KEY_ALIAS
-          storeFile=orah-upload.jks
-          EOF
-
-      - name: Configure production signing in Gradle
-        if: ${{ inputs.production_release == true }}
-        run: python3 tool/configure_release_signing.py
-      - name: Verify release build inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f android/app/build.gradle.kts
-          test -f android/app/src/main/AndroidManifest.xml
-          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      - name: Verify artifacts
-        shell: bash
-        run: |
-          set -e
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          test -s build/app/outputs/flutter-apk/app-release.apk
-          test -s build/app/outputs/bundle/release/app-release.aab
-          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
-          unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
-          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
-          ls -lh build/app/outputs/flutter-apk/*.apk
-          ls -lh build/app/outputs/bundle/release/app-release.aab
-
-      - name: Print final artifact paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-apks-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 14
-
-      - name: Verify release output directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d build/app/outputs/flutter-apk
-          test -d build/app/outputs/bundle/release
-
-      - name: Generate artifact checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
-          cat build/app/outputs/orah-artifact-sha256.txt
-
-      - name: Upload release checksums
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-checksums-${{ github.sha }}
-          path: build/app/outputs/orah-artifact-sha256.txt
-          retention-days: 14
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-aab-${{ github.sha }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 14
-
-# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
- pubspec.yaml
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Verify pubspec lockfile state
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f pubspec.lock
-          grep -q '^packages:' pubspec.lock
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Test
-        run: flutter test
-
-      - name: Verify test artifact stage
-        run: test -f pubspec.yaml
-
-      - name: Record Flutter build metadata
-        run: flutter doctor -v
-
-      - name: Verify Flutter project
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter doctor -v
-          flutter pub deps --style=compact >/tmp/orah-deps.txt
-          test -s /tmp/orah-deps.txt
-
-      - name: Verify Android Gradle project
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd android
-          ./gradlew tasks --no-daemon >/tmp/orah-gradle-tasks.log 2>&1 || {
-            tail -n 250 /tmp/orah-gradle-tasks.log
-            exit 1
-          }
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Verify Android host version markers
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
-
-      - name: Verify release version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(awk '/^version:/ {print $2}' pubspec.yaml)"
-          echo "ORAH version: $version"
-          test "$version" = "1.0.0+1"
-
-      - name: Verify Android application ID before release
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'applicationId = "com.orah.orah_notes"' android/app/build.gradle.kts
-
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Configure production signing
-        if: ${{ inputs.production_release == true }}
-        env:
-          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
-          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
-          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
-          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
-          test -n "$ORAH_KEYSTORE_PASSWORD"
-          test -n "$ORAH_KEY_ALIAS"
-          test -n "$ORAH_KEY_PASSWORD"
-          mkdir -p android
-          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
-          cat > android/key.properties <<EOF
-          storePassword=$ORAH_KEYSTORE_PASSWORD
-          keyPassword=$ORAH_KEY_PASSWORD
-          keyAlias=$ORAH_KEY_ALIAS
-          storeFile=orah-upload.jks
-          EOF
-
-      - name: Configure production signing in Gradle
-        if: ${{ inputs.production_release == true }}
-        run: python3 tool/configure_release_signing.py
-      - name: Verify release build inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f android/app/build.gradle.kts
-          test -f android/app/src/main/AndroidManifest.xml
-          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      - name: Verify artifacts
-        shell: bash
-        run: |
-          set -e
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          test -s build/app/outputs/flutter-apk/app-release.apk
-          test -s build/app/outputs/bundle/release/app-release.aab
-          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
-          unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
-          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
-          ls -lh build/app/outputs/flutter-apk/*.apk
-          ls -lh build/app/outputs/bundle/release/app-release.aab
-
-      - name: Print final artifact paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-apks-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 14
-
-      - name: Verify release output directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d build/app/outputs/flutter-apk
-          test -d build/app/outputs/bundle/release
-
-      - name: Generate artifact checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
-          cat build/app/outputs/orah-artifact-sha256.txt
-
-      - name: Upload release checksums
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-checksums-${{ github.sha }}
-          path: build/app/outputs/orah-artifact-sha256.txt
-          retention-days: 14
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-aab-${{ github.sha }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 14
-
-# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
- pubspec.yaml
-          grep -q '^version: 1.0.0+1
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Test
-        run: flutter test
-
-      - name: Record Flutter build metadata
-        run: flutter doctor -v
-
-      - name: Verify Flutter project
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter doctor -v
-          flutter pub deps --style=compact >/tmp/orah-deps.txt
-          test -s /tmp/orah-deps.txt
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Verify Android host version markers
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
-
-      - name: Verify release version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(awk '/^version:/ {print $2}' pubspec.yaml)"
-          echo "ORAH version: $version"
-          test "$version" = "1.0.0+1"
-
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Configure production signing
-        if: ${{ inputs.production_release == true }}
-        env:
-          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
-          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
-          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
-          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
-          test -n "$ORAH_KEYSTORE_PASSWORD"
-          test -n "$ORAH_KEY_ALIAS"
-          test -n "$ORAH_KEY_PASSWORD"
-          mkdir -p android
-          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
-          cat > android/key.properties <<EOF
-          storePassword=$ORAH_KEYSTORE_PASSWORD
-          keyPassword=$ORAH_KEY_PASSWORD
-          keyAlias=$ORAH_KEY_ALIAS
-          storeFile=orah-upload.jks
-          EOF
-
-      - name: Configure production signing in Gradle
-        if: ${{ inputs.production_release == true }}
-        run: python3 tool/configure_release_signing.py
-      - name: Verify release build inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f android/app/build.gradle.kts
-          test -f android/app/src/main/AndroidManifest.xml
-          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      - name: Verify artifacts
-        shell: bash
-        run: |
-          set -e
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          test -s build/app/outputs/flutter-apk/app-release.apk
-          test -s build/app/outputs/bundle/release/app-release.aab
-          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
-          unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
-          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
-          ls -lh build/app/outputs/flutter-apk/*.apk
-          ls -lh build/app/outputs/bundle/release/app-release.aab
-
-      - name: Print final artifact paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-apks-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 14
-
-      - name: Verify release output directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d build/app/outputs/flutter-apk
-          test -d build/app/outputs/bundle/release
-
-      - name: Generate artifact checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
-          cat build/app/outputs/orah-artifact-sha256.txt
-
-      - name: Upload release checksums
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-checksums-${{ github.sha }}
-          path: build/app/outputs/orah-artifact-sha256.txt
-          retention-days: 14
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-aab-${{ github.sha }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 14
-
-# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
- pubspec.yaml
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Test
-        run: flutter test
-
-      - name: Record Flutter build metadata
-        run: flutter doctor -v
-
-      - name: Verify Flutter project
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter doctor -v
-          flutter pub deps --style=compact >/tmp/orah-deps.txt
-          test -s /tmp/orah-deps.txt
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Verify Android host version markers
-        shell: bash
-        run: |
-          set -euo pipefail
-          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
-
-      - name: Verify release version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(awk '/^version:/ {print $2}' pubspec.yaml)"
-          echo "ORAH version: $version"
-          test "$version" = "1.0.0+1"
-
-      - name: Build release APK
-        run: flutter build apk --release
-
-      - name: Configure production signing
-        if: ${{ inputs.production_release == true }}
-        env:
-          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
-          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
-          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
-          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
-          test -n "$ORAH_KEYSTORE_PASSWORD"
-          test -n "$ORAH_KEY_ALIAS"
-          test -n "$ORAH_KEY_PASSWORD"
-          mkdir -p android
-          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
-          cat > android/key.properties <<EOF
-          storePassword=$ORAH_KEYSTORE_PASSWORD
-          keyPassword=$ORAH_KEY_PASSWORD
-          keyAlias=$ORAH_KEY_ALIAS
-          storeFile=orah-upload.jks
-          EOF
-
-      - name: Configure production signing in Gradle
-        if: ${{ inputs.production_release == true }}
-        run: python3 tool/configure_release_signing.py
-      - name: Verify release build inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f android/app/build.gradle.kts
-          test -f android/app/src/main/AndroidManifest.xml
-          test -f android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
-
-      - name: Build release AAB
-        run: flutter build appbundle --release
-
-      - name: Verify artifacts
-        shell: bash
-        run: |
-          set -e
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          test -s build/app/outputs/flutter-apk/app-release.apk
-          test -s build/app/outputs/bundle/release/app-release.aab
-          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
-          unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
-          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
-          ls -lh build/app/outputs/flutter-apk/*.apk
-          ls -lh build/app/outputs/bundle/release/app-release.aab
-
-      - name: Print final artifact paths
-        shell: bash
-        run: |
-          set -euo pipefail
-          find build/app/outputs/flutter-apk build/app/outputs/bundle/release -maxdepth 1 -type f -printf '%p %s bytes\\n' | sort
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-apks-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 14
-
-      - name: Verify release output directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d build/app/outputs/flutter-apk
-          test -d build/app/outputs/bundle/release
-
-      - name: Generate artifact checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
-          cat build/app/outputs/orah-artifact-sha256.txt
-
-      - name: Upload release checksums
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-checksums-${{ github.sha }}
-          path: build/app/outputs/orah-artifact-sha256.txt
-          retention-days: 14
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-release-aab-${{ github.sha }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 14
-
-# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
