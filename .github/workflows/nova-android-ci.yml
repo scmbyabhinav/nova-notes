@@ -37,6 +37,9 @@ jobs:
       - name: Generate Android host project
         run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
 
+      - name: Prepare ORAH Android host
+        run: python3 tool/prepare_android_host.py
+
       - name: Enable core library desugaring
         shell: bash
         run: |
