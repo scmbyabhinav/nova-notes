@@ -141,8 +141,9 @@ class _HomeScreenState extends State<HomeScreen> {
           title: '${note.title} (Copy)',
           updatedAt: DateTime.now(),
         );
+        final duplicateId = '${DateTime.now().microsecondsSinceEpoch}_copy';
         await repository.saveNote(Note(
-          id: '${DateTime.now().microsecondsSinceEpoch}_copy',
+          id: duplicateId,
           title: duplicate.title,
           content: duplicate.content,
           type: duplicate.type,
@@ -160,6 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
           isTrashed: false,
           dueAt: duplicate.dueAt,
         ));
+        if (duplicate.dueAt != null) {
+          await OrahReminderService.instance.schedule(noteId: duplicateId, title: duplicate.title, when: duplicate.dueAt!);
+        }
+        for (final item in duplicate.checklistItems) {
+          if (item.dueAt != null && !item.isDone) {
+            await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId);
+          }
+        }
         await _loadNotes();
         return;
       case 'color':
