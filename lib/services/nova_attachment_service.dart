@@ -97,7 +97,14 @@ class NovaAttachmentService {
 
   Future<int> size(String path) async {
     final file = File(path);
-    return file.existsSync() ? file.length() : 0;
+    if (!await file.exists()) return 0;
+    final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
+    final filePath = file.absolute.path;
+    if (filePath != rootPath && !p.isWithin(rootPath, filePath)) {
+      throw const FileSystemException('Attachment is outside the Orah attachment directory');
+    }
+    return file.length();
   }
 
   Future<Directory> _attachmentDirectory() async {
