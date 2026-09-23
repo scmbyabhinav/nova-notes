@@ -20,7 +20,6 @@ import '../services/nova_attachment_service.dart';
 import '../services/orah_reminder_service.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_smart_detection.dart';
-import '../core/services/nova_security_service.dart';
 import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
@@ -29,15 +28,11 @@ class NoteEditorScreen extends StatefulWidget {
     required this.repository,
     this.note,
     this.initialType = NoteType.text,
-    this.initialTitle,
-    this.initialContent,
   });
 
   final NoteRepository repository;
   final Note? note;
   final NoteType initialType;
-  final String? initialTitle;
-  final String? initialContent;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -63,9 +58,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
-  bool _isLocked = false;
-  bool _privateUnlocked = true;
-  bool _unlocking = false;
 
   @override
   void initState() {
@@ -76,16 +68,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
 
-    _titleController = TextEditingController(text: existing?.title ?? widget.initialTitle ?? '');
+    _titleController = TextEditingController(text: existing?.title ?? '');
     _contentController =
         TextEditingController(text: existing?.content ?? '');
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
     _isArchived = existing?.isArchived ?? false;
-    _isLocked = existing?.isLocked ?? false;
-    _privateUnlocked = !_isLocked;
-    if (_isLocked) WidgetsBinding.instance.addPostFrameCallback((_) => _unlockPrivateNote());
     _dueAt = existing?.dueAt;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
@@ -140,8 +129,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _removeChecklistItem(int index) async {
-    final removed = _checklistItems[index];
-    await OrahReminderService.instance.cancel('checklist:${removed.id}');
     setState(() { _checklistItems.removeAt(index); _hasChanges = true; });
     await _save();
   }
@@ -156,52 +143,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
-  Future<void> _unlockPrivateNote() async {
-    if (!_isLocked || _unlocking || !mounted) return;
-    setState(() => _unlocking = true);
-    final security = NovaSecurityService();
-    var ok = false;
-    if (await security.isBiometricEnabled() && await security.canUseBiometrics()) {
-      ok = await security.authenticateBiometric();
-    }
-    if (!ok && await security.hasPin()) {
-      final controller = TextEditingController();
-      final pin = await showDialog<String>(
-        context: context,
-        barrierDismissible: false,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Private note'),
-          content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: 'Enter PIN')),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: const Text('Unlock')),
-          ],
-        ),
-      );
-      controller.dispose();
-      if (pin != null) ok = await security.verifyPin(pin);
-    }
-    if (!mounted) return;
-    if (ok) {
-      setState(() { _unlocking = false; _privateUnlocked = true; });
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
-
-  Future<void> _lockNote() async {
-    final security = NovaSecurityService();
-    if (!await security.hasPin()) {
-      final controller = TextEditingController();
-      final pin = await showDialog<String>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Create PIN'),
-          content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit PIN')),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(onPressed: () {
-              if (RegExp(r'^\\d{4,8}
+  String _newId() =>
       '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
@@ -260,13 +202,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           );
 
     await widget.repository.saveNote(note);
-    for (final item in _checklistItems) {
-      if (item.dueAt != null && !item.isDone) {
-        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: _noteId);
-      } else {
-        await OrahReminderService.instance.cancel('checklist:${item.id}');
-      }
-    }
     if (_dueAt != null) { await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!); } else { await OrahReminderService.instance.cancel(_noteId); }
     _hasChanges = false;
 
@@ -432,21 +367,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
     final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
     if (choice == null || !mounted) return;
-    final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
-    if (hasContent) {
-      final replace = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Replace current note?'),
-          content: const Text('This template will replace the current title and content.'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Replace')),
-          ],
-        ),
-      );
-      if (replace != true || !mounted) return;
-    }
     setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _hasChanges = true; });
     await _save();
   }
@@ -743,20 +663,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    if (_isLocked && !_privateUnlocked) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Private note')),
-        body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.lock_rounded, size: 56),
-          const SizedBox(height: 16),
-          Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
-          const SizedBox(height: 8),
-          const Text('Unlock with your biometric or PIN to view it.', textAlign: TextAlign.center),
-          const SizedBox(height: 20),
-          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? 'Unlocking…' : 'Unlock note')),
-        ]))),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -839,9 +745,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 case 'archive':
                   await _setFlag(archived: !_isArchived);
                   return;
-                case 'lock':
-                  await _lockNote();
-                  return;
                 case 'delete':
                   await _delete();
                   return;
@@ -899,11 +802,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   title: Text(_isArchived ? 'Unarchive' : 'Archive'),
                 ),
               ),
-              if (!_isLocked)
-                const PopupMenuItem(
-                  value: 'lock',
-                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text('Lock note')),
-                ),
               const PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
