@@ -179,7 +179,7 @@ class LocalNoteRepository implements NoteRepository {
       createdAt: createdAt,
       updatedAt: updatedAt,
       folderId: map['folderId'] as String?,
-      tags: List<String>.from(map['tags'] as List? ?? const []),
+      tags: (map['tags'] is List) ? List<String>.from((map['tags'] as List).whereType<String>()) : const [],
       color: map['color'] as int?,
       isPinned: map['isPinned'] as bool? ?? false,
       isFavorite: map['isFavorite'] as bool? ?? false,
