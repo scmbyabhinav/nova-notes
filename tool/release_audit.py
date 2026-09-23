@@ -79,6 +79,9 @@ else:
         if marker not in privacy_text:
             warnings.append(f"PRIVACY_POLICY.md should explicitly document: {marker}.")
 
+
+# The audit continues below with signing and billing checks. The final exit status
+# is intentionally calculated at the end of the file so later checks cannot be hidden.
 print("ORAH release audit")
 print("=================")
 if errors:
