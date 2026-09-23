@@ -33,6 +33,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialType = NoteType.text,
     this.initialTitle,
     this.initialContent,
+    this.initialAttachments = const [],
   });
 
   final NoteRepository repository;
@@ -92,7 +93,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _tags = [...(existing?.tags ?? const [])];
-    _attachments = [...(existing?.attachments ?? const [])];
+    _attachments = [...(existing?.attachments ?? widget.initialAttachments)];
     _checklistItems = [...(existing?.checklistItems ?? const [])];
     if (_noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
 
