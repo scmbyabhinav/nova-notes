@@ -187,7 +187,7 @@ class LocalNoteRepository implements NoteRepository {
       isLocked: map['isLocked'] as bool? ?? false,
       isTrashed: map['isTrashed'] as bool? ?? false,
       dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
-      attachments: List<String>.from(map['attachments'] as List? ?? const []),
+      attachments: (map['attachments'] is List) ? List<String>.from((map['attachments'] as List).whereType<String>()) : const [],
       checklistItems: _checklistItemsFromMap(map),
     );
   }
