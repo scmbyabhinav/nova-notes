@@ -241,16 +241,22 @@ class LocalNoteRepository implements NoteRepository {
       throw const FormatException('Backup contains no valid notes.');
     }
 
+    if (rawNotes.length > 100000) {
+      throw const FormatException('Backup contains too many notes.');
+    }
+
     final imported = <Note>[];
     final seenIds = <String>{};
     for (final item in rawNotes) {
-      final note = _fromMap(Map<String, dynamic>.from(item as Map));
+      if (item is! Map) {
+        throw const FormatException('Backup contains a malformed note record.');
+      }
+      final note = _fromMap(Map<String, dynamic>.from(item));
       if (note.id.trim().isEmpty || !seenIds.add(note.id)) continue;
       imported.add(note);
     }
 
     final existing = await getNotes();
-    if (imported.length > 100000) throw const FormatException('Backup contains too many notes.');
     final byId = <String, Note>{for (final n in existing) n.id: n};
 
     for (final note in imported) {
