@@ -265,7 +265,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await widget.repository.saveNote(note);
     for (final item in _checklistItems) {
       if (item.dueAt != null && !item.isDone) {
-        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: _noteId);
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: _noteId, payloadChecklistId: item.id);
       } else {
         await OrahReminderService.instance.cancel('checklist:${item.id}');
       }
