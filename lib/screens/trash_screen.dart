@@ -52,6 +52,8 @@ class _TrashScreenState extends State<TrashScreen> {
     );
     if (confirmed != true) return;
     final repo = await NoteRepositoryProvider.instance();
+    await OrahReminderService.instance.cancel(note.id);
+    for (final item in note.checklistItems) { await OrahReminderService.instance.cancel('checklist:${item.id}'); }
     await repo.deleteNote(note.id);
     await OrahReminderService.instance.cancel(note.id);
     for (final item in note.checklistItems) { await OrahReminderService.instance.cancel('checklist:${item.id}'); }
