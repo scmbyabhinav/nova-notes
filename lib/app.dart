@@ -72,11 +72,11 @@ class NovaShell extends StatefulWidget {
 class _NovaShellState extends State<NovaShell> {
   int _index = 0;
 
-  final _pages = const <Widget>[
-    HomeScreen(),
-    FoldersScreen(),
-    FavoritesScreen(),
-    SettingsScreen(),
+  List<Widget> get _pages => [
+    const HomeScreen(),
+    const FoldersScreen(),
+    const FavoritesScreen(),
+    SettingsScreen(themeController: widget.themeController),
   ];
 
   Future<void> _openEditor(NoteType type) async {
