@@ -79,6 +79,20 @@ class _HomeScreenState extends State<HomeScreen> {
     await _loadNotes();
   }
 
+  Future<void> _restoreFromTrash(Note note) async {
+    final repository = await NoteRepositoryProvider.instance();
+    await repository.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
+    if (note.dueAt != null && note.dueAt!.isAfter(DateTime.now())) {
+      await OrahReminderService.instance.schedule(noteId: note.id, title: note.title, when: note.dueAt!);
+    }
+    for (final item of note.checklistItems) {
+      if (item.dueAt != null && !item.isDone && item.dueAt!.isAfter(DateTime.now())) {
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: note.id);
+      }
+    }
+    await _loadNotes();
+  }
+
   Future<void> _showNoteMenu(Note note) async {
     final action = await showModalBottomSheet<String>(
       context: context,
@@ -209,6 +223,13 @@ class _HomeScreenState extends State<HomeScreen> {
           await OrahReminderService.instance.cancel('checklist:${item.id}');
         }
         await _loadNotes();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Moved to Trash'),
+            action: SnackBarAction(label: 'Undo', onPressed: () => _restoreFromTrash(note)),
+          ),
+        );
         return;
     }
   }
