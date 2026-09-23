@@ -95,3 +95,14 @@ elif not errors:
     print("\nPASS WITH WARNINGS: no blocking source-configuration errors found.")
 
 sys.exit(1 if errors else 0)
+
+# Production signing configuration must be explicit and never use a hard-coded keystore.
+workflow = ROOT / ".github/workflows/nova-android-ci.yml"
+if workflow.exists():
+    wf = workflow.read_text()
+    if "production_release" not in wf: errors.append("CI is missing the production_release signing gate.")
+    if "ORAH_UPLOAD_KEYSTORE_B64" not in wf: errors.append("CI is missing the upload keystore secret.")
+    if "Configure production signing in Gradle" not in wf: errors.append("CI is missing Gradle release-signing configuration.")
+    if "tool/configure_release_signing.py" not in wf: errors.append("CI is missing the release-signing configurator.")
+signing_tool = ROOT / 'tool/configure_release_signing.py'
+if not signing_tool.exists(): errors.append('Missing release signing configurator.')
