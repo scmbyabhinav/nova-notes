@@ -46,7 +46,7 @@ class OrahReminderService {
     if (!_initialized) await initialize();
     if (!when.isAfter(DateTime.now())) return;
     await _plugin.zonedSchedule(
-      id: _notificationId(noteId),
+      id: _notificationId('note:$noteId'),
       title: 'Orah reminder',
       body: title,
       scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
@@ -64,5 +64,5 @@ class OrahReminderService {
     );
   }
 
-  Future<void> cancel(String noteId) async => _plugin.cancel(id: _notificationId(noteId));
+  Future<void> cancel(String noteId) async => _plugin.cancel(id: _notificationId('note:$noteId'));
 }
