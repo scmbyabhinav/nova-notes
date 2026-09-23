@@ -54,10 +54,10 @@ class _OrahProScreenState extends State<OrahProScreen> {
                   for (final feature in const [
                     'OCR and smart capture',
                     'Advanced search and intelligence',
-                    'Advanced reminders and task tools',
+                    'Advanced capture, search and export tools',
                     'Premium templates and organization',
-                    'Advanced export and future annotation tools',
-                    'Future encrypted sync features',
+                    'Advanced export tools',
+                    'Future cloud features will be added separately when available',
                   ])
                     Padding(
                       padding: const EdgeInsets.only(bottom: 9),
