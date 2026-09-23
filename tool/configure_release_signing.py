@@ -5,6 +5,7 @@ gradle = root / "android/app/build.gradle.kts"
 t = gradle.read_text()
 if "signingConfigs" in t: raise SystemExit("Release signing already configured.")
 if "android {" not in t: raise SystemExit("Missing android block.")
+if not (root / "key.properties").exists(): raise SystemExit("key.properties is required for production signing.")
 t = t.replace("android {", 'android {\n    val keystorePropertiesFile = rootProject.file("key.properties")\n    val keystoreProperties = java.util.Properties()\n    if (keystorePropertiesFile.exists()) {\n        keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }\n    }\n', 1)
 t = t.replace("    buildTypes {", '    signingConfigs {\n        create("release") {\n            keyAlias = keystoreProperties["keyAlias"] as String?\n            keyPassword = keystoreProperties["keyPassword"] as String?\n            storeFile = (keystoreProperties["storeFile"] as String?)?.let { rootProject.file(it) }\n            storePassword = keystoreProperties["storePassword"] as String?\n        }\n    }\n\n    buildTypes {', 1)
 t = t.replace("        release {", '        release {\n            signingConfig = signingConfigs.getByName("release")', 1)
