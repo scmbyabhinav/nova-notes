@@ -93,9 +93,9 @@ class LocalNoteRepository implements NoteRepository {
         continue;
       }
 
-      final title = note.title.toLowerCase();
-      final content = [note.content, ...note.checklistItems.map((item) => item.text)].join(' ').toLowerCase();
-      final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
+      final title = note.isLocked ? 'private note' : note.title.toLowerCase();
+      final content = note.isLocked ? '' : [note.content, ...note.checklistItems.map((item) => item.text)].join(' ').toLowerCase();
+      final tags = note.isLocked ? const <String>[] : note.tags.map((tag) => tag.toLowerCase()).toList();
       final haystack = [title, content, ...tags].join(' ');
       if (!terms.every(haystack.contains)) continue;
 
