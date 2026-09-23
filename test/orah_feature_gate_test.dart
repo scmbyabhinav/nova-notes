@@ -25,6 +25,18 @@ void main() {
     }
   });
 
+  test('all monetized features are Pro-gated', () {
+    expect(OrahFeatureGate.isPremium(OrahFeature.ocr), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.advancedSearch), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.smartCapture), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.advancedReminders), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.premiumTemplates), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.advancedExport), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.attachmentTools), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.encryptedBackup), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.futureSync), isTrue);
+  });
+
   test('feature labels are stable', () {
     expect(OrahFeatureGate.label(OrahFeature.ocr), 'OCR & smart capture');
     expect(OrahFeatureGate.label(OrahFeature.advancedSearch), 'Advanced search');
