@@ -14,13 +14,12 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: orah-android-\${{ github.workflow }}-\${{ github.ref }}
+  group: orah-android-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -142,14 +141,14 @@ jobs:
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: orah-apks-\${{ github.sha }}
+          name: orah-apks-${{ github.sha }}
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 14
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: orah-release-aab-\${{ github.sha }}
+          name: orah-release-aab-${{ github.sha }}
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 14
 
