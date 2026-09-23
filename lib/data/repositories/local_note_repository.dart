@@ -208,7 +208,7 @@ class LocalNoteRepository implements NoteRepository {
     }
     final content = map['content'] as String? ?? '';
     if (map['type'] == NoteType.checklist.name && content.trim().isNotEmpty) {
-      return content.split(RegExp(r'\\r?\\n')).where((line) => line.trim().isNotEmpty).map((line) {
+      return content.split(RegExp(r'\r?\n')).where((line) => line.trim().isNotEmpty).map((line) {
         final trimmed = line.trim();
         final done = trimmed.startsWith('[x]') || trimmed.startsWith('[X]') || trimmed.startsWith('☑');
         final text = trimmed.replaceFirst(RegExp(r'^(?:\\[[ xX]\\]|☐|☑)\\s*'), '').replaceFirst(RegExp(r'^[-*•]\\s*'), '');
