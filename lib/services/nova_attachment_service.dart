@@ -27,7 +27,12 @@ class NovaAttachmentService {
 
   Future<void> delete(String path) async {
     final file = File(path);
-    if (await file.exists()) await file.delete();
+    if (!await file.exists()) return;
+    final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
+    final filePath = file.absolute.path;
+    if (filePath != rootPath && !p.isWithin(rootPath, filePath)) throw const FileSystemException('Attachment is outside the Orah attachment directory');
+    await file.delete();
   }
 
   Future<String> rename(String sourcePath, String newName) async {
