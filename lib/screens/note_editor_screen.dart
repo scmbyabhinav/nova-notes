@@ -19,6 +19,8 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/orah_reminder_service.dart';
 import '../services/orah_ocr_service.dart';
+import '../services/orah_feature_gate.dart';
+import '../services/orah_premium_gate.dart';
 import '../services/orah_smart_detection.dart';
 import '../core/services/nova_security_service.dart';
 import 'package:intl/intl.dart';
@@ -349,6 +351,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _scanTextFromImage() async {
+    if (!await OrahPremiumGate.check(context, OrahFeature.ocr)) return;
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null || !mounted) return;
     try {
