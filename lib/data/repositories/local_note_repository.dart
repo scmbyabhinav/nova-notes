@@ -255,6 +255,9 @@ class LocalNoteRepository implements NoteRepository {
         throw const FormatException('Backup contains a malformed note record.');
       }
       final note = _fromMap(Map<String, dynamic>.from(item));
+      if (note.id.length > 256 || note.title.length > 10000 || note.content.length > 1000000) {
+        throw const FormatException('Backup contains an oversized note field.');
+      }
       if (note.id.trim().isEmpty || !seenIds.add(note.id)) continue;
       imported.add(note);
     }
