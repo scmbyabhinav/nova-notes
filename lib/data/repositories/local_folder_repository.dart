@@ -38,6 +38,8 @@ class LocalFolderRepository implements FolderRepository {
     final folders = await getFolders();
     final index = folders.indexWhere((item) => item.id == folder.id);
 
+    if (folder.id.trim().isEmpty) throw const FormatException('Folder ID cannot be empty.');
+    if (folder.name.trim().isEmpty) throw const FormatException('Folder name cannot be empty.');
     if (index == -1) {
       folders.add(folder);
     } else {
