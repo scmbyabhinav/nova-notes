@@ -13,7 +13,7 @@ class OrahReminderService {
   static final instance = OrahReminderService._();
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
-  bool _initialized = false;
+  bool _initialized = false;\n  String? _pendingLaunchPayload;
 
   Future<void> initialize() async {
     if (_initialized) return;
