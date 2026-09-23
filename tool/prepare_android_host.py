@@ -14,6 +14,9 @@ RES_XML.mkdir(parents=True, exist_ok=True)
 RES_LAYOUT.mkdir(parents=True, exist_ok=True)
 
 manifest = MANIFEST.read_text()
+if not MANIFEST.exists():
+    raise SystemExit("AndroidManifest.xml was not generated.")
+
 
 manifest = manifest.replace('android:label="orah_notes"', 'android:label="ORAH"')
 manifest = manifest.replace('android:label="Orah"', 'android:label="ORAH"')
