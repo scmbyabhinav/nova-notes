@@ -342,8 +342,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _addFiles() async {
     try {
-      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-      final files = result?.files ?? const <PlatformFile>[];
+      final files = await FilePicker.pickFiles();
       if (files.isEmpty) return;
       final imported = <String>[];
       for (final file in files) {
