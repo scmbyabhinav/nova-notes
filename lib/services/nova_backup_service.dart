@@ -23,6 +23,7 @@ class NovaBackupService {
     if (foldersRaw != null) files['data/folders.json'] = utf8.encode(foldersRaw);
     final manifest = <Map<String, String>>[];
     final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
     final list = rawNotes['notes'] as List<dynamic>? ?? [];
     for (final raw in list) {
       final map = Map<String, dynamic>.from(raw as Map);
