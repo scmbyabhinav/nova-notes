@@ -8,6 +8,7 @@ import '../models/note.dart';
 import '../models/search_filter.dart';
 import 'note_editor_screen.dart';
 import '../services/orah_feature_gate.dart';
+import 'orah_pro_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -427,6 +428,16 @@ class _SearchScreenState extends State<SearchScreen> {
                                           theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
+                                  if (_advancedBlocked) ...[
+                                    const SizedBox(height: 14),
+                                    FilledButton.icon(
+                                      onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (_) => const OrahProScreen()),
+                                      ),
+                                      icon: const Icon(Icons.workspace_premium_rounded),
+                                      label: const Text('Open ORAH Pro'),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
