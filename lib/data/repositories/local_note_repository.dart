@@ -221,6 +221,9 @@ class LocalNoteRepository implements NoteRepository {
   /// Returns a portable JSON backup containing all notes.
   Future<String> exportJson() async {
     final notes = await getNotes();
+    if (notes.length > 100000) {
+      throw const FormatException('Too many notes to export safely.');
+    }
     return jsonEncode({
       'format': 'nova_notes_backup',
       'version': 1,
