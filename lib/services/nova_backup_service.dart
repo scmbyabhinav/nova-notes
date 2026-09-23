@@ -60,6 +60,9 @@ class NovaBackupService {
     final bytes = await backup.readAsBytes();
     if (bytes.length > maxBackupBytes) throw const FormatException('Backup is too large to restore safely.');
     final archive = ZipDecoder().decodeBytes(bytes);
+    if (archive.files.length > 100000) {
+      throw const FormatException('Backup contains too many archive entries.');
+    }
     final notesFile = archive.findFile('data/notes.json');
     if (notesFile == null) throw const FormatException('Invalid Orah backup: notes.json missing.');
     final raw = jsonDecode(utf8.decode(notesFile.content as List<int>));
