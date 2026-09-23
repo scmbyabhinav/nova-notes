@@ -22,6 +22,9 @@ class LocalFolderRepository implements FolderRepository {
 
     try {
       final decoded = jsonDecode(raw) as List<dynamic>;
+      if (decoded.length > 10000) {
+        throw const FormatException('Too many folders.');
+      }
       final folders = <NoteFolder>[];
       final ids = <String>{};
       for (final item in decoded) {
