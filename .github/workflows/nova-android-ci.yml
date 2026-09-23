@@ -150,6 +150,20 @@ jobs:
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 14
 
+      - name: Generate artifact checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum build/app/outputs/flutter-apk/*.apk build/app/outputs/bundle/release/app-release.aab > build/app/outputs/orah-artifact-sha256.txt
+          cat build/app/outputs/orah-artifact-sha256.txt
+
+      - name: Upload release checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: orah-release-checksums-${{ github.sha }}
+          path: build/app/outputs/orah-artifact-sha256.txt
+          retention-days: 14
+
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
