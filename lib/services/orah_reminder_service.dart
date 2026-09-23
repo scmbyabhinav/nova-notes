@@ -59,7 +59,7 @@ class OrahReminderService {
           final items = [...note.checklistItems];
           items[index] = items[index].copyWith(isDone: true);
           await repository.saveNote(note.copyWith(checklistItems: items, updatedAt: DateTime.now()));
-          await cancel('checklist:\${target.checklistId}');
+          await cancel('checklist:${target.checklistId}');
         }
       } else {
         await cancel(noteId);
