@@ -29,7 +29,7 @@ release APK and release AAB builds.
    passwords to GitHub.
 3. Create the three ORAH Pro products using the exact IDs in
    `PLAY_BILLING_SETUP.md`.
-4. Complete Play Console app content, privacy/data safety, store listing,
+4. Publish `PRIVACY_POLICY.md` at a real HTTPS URL controlled by the publisher, then complete Play Console app content, privacy/data safety, store listing,
    content rating and target-audience declarations.
 5. Provide a real, publicly reachable privacy-policy URL.
 6. Test the release AAB on an internal/closed Play track before production.
