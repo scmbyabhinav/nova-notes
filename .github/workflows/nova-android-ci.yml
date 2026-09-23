@@ -1,6 +1,13 @@
 name: Orah Android CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      production_release:
+        description: "Build a Play-uploadable signed AAB (requires signing secrets)"
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - main
@@ -95,6 +102,32 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release
 
+      - name: Configure production signing
+        if: ${{ inputs.production_release == true }}
+        env:
+          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
+          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
+          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
+          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
+          test -n "$ORAH_KEYSTORE_PASSWORD"
+          test -n "$ORAH_KEY_ALIAS"
+          test -n "$ORAH_KEY_PASSWORD"
+          mkdir -p android
+          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ORAH_KEYSTORE_PASSWORD
+          keyPassword=$ORAH_KEY_PASSWORD
+          keyAlias=$ORAH_KEY_ALIAS
+          storeFile=orah-upload.jks
+          EOF
+
+      - name: Configure production signing in Gradle
+        if: ${{ inputs.production_release == true }}
+        run: python3 tool/configure_release_signing.py
       - name: Build release AAB
         run: flutter build appbundle --release
 
