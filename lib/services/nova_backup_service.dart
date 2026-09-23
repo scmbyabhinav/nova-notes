@@ -42,6 +42,7 @@ class NovaBackupService {
     rawNotes['version'] = version;
     rawNotes['attachments'] = manifest;
     files['data/notes.json'] = utf8.encode(jsonEncode(rawNotes));
+    if (files.isEmpty) throw const FormatException('Nothing available to back up.');
     final archive = Archive();
     for (final e in files.entries) archive.addFile(ArchiveFile(e.key, e.value.length, e.value));
     final encoded = ZipEncoder().encode(archive) ?? <int>[];
