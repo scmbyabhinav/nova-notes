@@ -127,6 +127,13 @@ jobs:
           cd android
           ./gradlew --version
 
+      - name: Verify release audit script
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x tool/release_audit.py || chmod +x tool/release_audit.py
+          python3 -m py_compile tool/release_audit.py tool/prepare_android_host.py tool/configure_release_signing.py
+
       - name: Release source audit
         run: python3 tool/release_audit.py
 
