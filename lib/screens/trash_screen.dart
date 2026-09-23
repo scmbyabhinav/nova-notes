@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
+import '../services/orah_reminder_service.dart';
 
 class TrashScreen extends StatefulWidget {
   const TrashScreen({super.key});
@@ -25,6 +26,14 @@ class _TrashScreenState extends State<TrashScreen> {
   Future<void> _restore(Note note) async {
     final repo = await NoteRepositoryProvider.instance();
     await repo.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
+    if (note.dueAt != null && note.dueAt!.isAfter(DateTime.now())) {
+      await OrahReminderService.instance.schedule(noteId: note.id, title: note.title, when: note.dueAt!);
+    }
+    for (final item in note.checklistItems) {
+      if (item.dueAt != null && !item.isDone && item.dueAt!.isAfter(DateTime.now())) {
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!);
+      }
+    }
     await _load();
   }
 
