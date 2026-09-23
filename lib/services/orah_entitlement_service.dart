@@ -22,6 +22,17 @@ class OrahEntitlementService extends ChangeNotifier {
   String? error;
 
   bool get isPremium => plan != OrahPlan.free;
+  bool get isLifetime => plan == OrahPlan.lifetime;
+  bool get isSubscription => plan == OrahPlan.monthly || plan == OrahPlan.yearly;
+
+  bool canUse(String feature) => isPremium;
+
+  Future<bool> requirePro(String feature) async {
+    if (isPremium) return true;
+    error = '$feature is a Pro feature. Open Settings → ORAH Pro to unlock it.';
+    notifyListeners();
+    return false;
+  }
 
   Future<void> initialize() async {
     if (!loading) return;
