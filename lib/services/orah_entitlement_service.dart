@@ -124,41 +124,99 @@ class OrahEntitlementService extends ChangeNotifier {
 
   Future<void> _handlePurchases(List<PurchaseDetails> purchases) async {
     final prefs = await SharedPreferences.getInstance();
+
+    // A restore can contain several purchases. Resolve the strongest entitlement
+    // first so a restored monthly purchase can never accidentally downgrade
+    // an existing lifetime entitlement.
+    OrahPlan? restoredPlan;
+    String? restoredTransactionDate;
+
     for (final purchase in purchases) {
-      if (purchase.status == PurchaseStatus.purchased ||
-          purchase.status == PurchaseStatus.restored) {
-        final next = switch (purchase.productID) {
-          monthlyId => OrahPlan.monthly,
-          yearlyId => OrahPlan.yearly,
-          lifetimeId => OrahPlan.lifetime,
-          _ => OrahPlan.free,
-        };
-        if (next != OrahPlan.free) {
-          final now = DateTime.now();
-          plan = next;
-          expiresAt = switch (next) {
-            OrahPlan.monthly => now.add(const Duration(days: 31)),
-            OrahPlan.yearly => now.add(const Duration(days: 366)),
-            OrahPlan.lifetime => null,
-            OrahPlan.free => null,
-          };
-          await prefs.setString(_entitlementKey, next.name);
-          await prefs.setString(_purchaseDateKey, now.toIso8601String());
-          if (expiresAt == null) {
-            await prefs.remove(_expiryKey);
-          } else {
-            await prefs.setString(_expiryKey, expiresAt!.toIso8601String());
-          }
-          error = null;
-        }
-      } else if (purchase.status == PurchaseStatus.error) {
+      if (purchase.status == PurchaseStatus.error) {
         error = purchase.error?.message ?? 'Purchase failed.';
+        continue;
       }
+
+      if (purchase.status != PurchaseStatus.purchased &&
+          purchase.status != PurchaseStatus.restored) {
+        continue;
+      }
+
+      final candidate = switch (purchase.productID) {
+        monthlyId => OrahPlan.monthly,
+        yearlyId => OrahPlan.yearly,
+        lifetimeId => OrahPlan.lifetime,
+        _ => null,
+      };
+      if (candidate == null) continue;
+
+      final currentRank = _planRank(restoredPlan);
+      final candidateRank = _planRank(candidate);
+      if (candidateRank > currentRank) {
+        restoredPlan = candidate;
+        restoredTransactionDate = purchase.transactionDate;
+      }
+
       if (purchase.pendingCompletePurchase) {
         await InAppPurchase.instance.completePurchase(purchase);
       }
     }
+
+    if (restoredPlan != null) {
+      final now = DateTime.now();
+      plan = restoredPlan!;
+      final transactionDate = restoredTransactionDate == null
+          ? null
+          : DateTime.tryParse(restoredTransactionDate!);
+
+      // Keep the entitlement date anchored to the store transaction when the
+      // plugin supplies one. This avoids extending a restored subscription
+      // simply because the user reopened ORAH.
+      final anchor = transactionDate ?? now;
+      expiresAt = switch (restoredPlan) {
+        OrahPlan.monthly => anchor.add(const Duration(days: 31)),
+        OrahPlan.yearly => anchor.add(const Duration(days: 366)),
+        OrahPlan.lifetime => null,
+        OrahPlan.free => null,
+      };
+
+      // Never turn a restored expired subscription into a fresh subscription.
+      // A production billing backend should replace this client-side fallback
+      // with Google Play server-side subscription verification.
+      if (restoredPlan != OrahPlan.lifetime &&
+          expiresAt != null &&
+          !expiresAt!.isAfter(now)) {
+        plan = OrahPlan.free;
+        expiresAt = null;
+        await prefs.remove(_entitlementKey);
+        await prefs.remove(_expiryKey);
+      } else {
+        await prefs.setString(_entitlementKey, plan.name);
+        await prefs.setString(_purchaseDateKey, anchor.toIso8601String());
+        if (expiresAt == null) {
+          await prefs.remove(_expiryKey);
+        } else {
+          await prefs.setString(_expiryKey, expiresAt!.toIso8601String());
+        }
+        error = null;
+      }
+    }
+
     notifyListeners();
+  }
+
+  int _planRank(OrahPlan? value) {
+    switch (value) {
+      case OrahPlan.lifetime:
+        return 3;
+      case OrahPlan.yearly:
+        return 2;
+      case OrahPlan.monthly:
+        return 1;
+      case OrahPlan.free:
+      case null:
+        return 0;
+    }
   }
 
   @override
