@@ -56,6 +56,15 @@ jobs:
       - name: Prepare ORAH Android host
         run: python3 tool/prepare_android_host.py
 
+      - name: Verify repository state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short
+          git rev-parse HEAD
+          test -f pubspec.yaml
+          test -f tool/prepare_android_host.py
+
       - name: Verify generated Android host
         shell: bash
         run: |
