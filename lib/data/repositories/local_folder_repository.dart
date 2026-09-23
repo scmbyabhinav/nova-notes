@@ -22,9 +22,13 @@ class LocalFolderRepository implements FolderRepository {
 
     try {
       final decoded = jsonDecode(raw) as List<dynamic>;
-      final folders = decoded
-          .map((item) => _fromMap(Map<String, dynamic>.from(item as Map)))
-          .toList();
+      final folders = <NoteFolder>[];
+      final ids = <String>{};
+      for (final item in decoded) {
+        final folder = _fromMap(Map<String, dynamic>.from(item as Map));
+        if (folder.id.trim().isEmpty || !ids.add(folder.id)) continue;
+        folders.add(folder);
+      }
 
       folders.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       return folders;
