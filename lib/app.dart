@@ -10,7 +10,6 @@ import 'screens/folders_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
-import 'screens/orah_templates_screen.dart';
 import 'core/navigation/orah_navigation.dart';
 
 class OrahApp extends StatefulWidget {
@@ -73,11 +72,11 @@ class NovaShell extends StatefulWidget {
 class _NovaShellState extends State<NovaShell> {
   int _index = 0;
 
-  final _pages = const <Widget>[
-    HomeScreen(),
-    FoldersScreen(),
-    FavoritesScreen(),
-    SettingsScreen(),
+  List<Widget> get _pages => [
+    const HomeScreen(),
+    const FoldersScreen(),
+    const FavoritesScreen(),
+    SettingsScreen(themeController: widget.themeController),
   ];
 
   Future<void> _openEditor(NoteType type) async {
@@ -150,20 +149,6 @@ class _NovaShellState extends State<NovaShell> {
                 onTap: () {
                   Navigator.pop(sheetContext);
                   _openEditor(NoteType.checklist);
-                },
-              ),
-              const Divider(height: 18),
-              ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.auto_awesome_rounded),
-                ),
-                title: const Text('Templates'),
-                subtitle: const Text('Start from a proven structure'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const OrahTemplatesScreen()),
-                  );
                 },
               ),
             ],
