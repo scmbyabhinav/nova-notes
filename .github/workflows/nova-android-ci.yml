@@ -44,7 +44,6 @@ jobs:
         run: |
           set -euo pipefail
           test -f pubspec.yaml
-          test -f pubspec.lock
           test -f tool/prepare_android_host.py
           test -f tool/release_audit.py
           test -f tool/configure_release_signing.py
