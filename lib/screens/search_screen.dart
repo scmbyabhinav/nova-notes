@@ -50,7 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _search() {
     final rawQuery = _controller.text.trim().toLowerCase();
-    final tokens = rawQuery.split(RegExp(r'\\s+')).where((t) => t.isNotEmpty).toList();
+    final tokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
 
     bool? pinned;
     bool? favorite;
