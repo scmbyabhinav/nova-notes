@@ -96,8 +96,8 @@ class _TrashScreenState extends State<TrashScreen> {
                     return Card(
                       child: ListTile(
                         leading: const Icon(Icons.delete_outline_rounded),
-                        title: Text(note.title),
-                        subtitle: Text(note.type == NoteType.checklist ? 'Checklist' : 'Note'),
+                        title: Text(note.isLocked ? 'Private note' : note.title),
+                        subtitle: Text(note.isLocked ? 'Locked note' : (note.type == NoteType.checklist ? 'Checklist' : 'Note')),
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) => value == 'restore' ? _restore(note) : _deleteForever(note),
                           itemBuilder: (_) => const [
