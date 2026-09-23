@@ -19,8 +19,7 @@ flutter analyze --no-fatal-warnings --no-fatal-infos
 flutter test
 ```
 
-The GitHub workflow also generates the Android host and attempts debug APK,
-release APK and release AAB builds.
+The GitHub workflow generates the Android host and builds a debug APK, release APK and release AAB. The normal CI AAB is not Play-uploadable; production signing requires production_release=true and the four protected signing secrets.
 
 ## Android / Play release
 
