@@ -120,6 +120,7 @@ class OrahReminderService {
       return;
     }
     if (title.trim().isEmpty) return;
+    final safeTitle = title.trim();
     final payload = jsonEncode({
       'noteId': payloadNoteId ?? noteId,
       if (payloadChecklistId != null) 'checklistId': payloadChecklistId,
