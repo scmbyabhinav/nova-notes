@@ -169,6 +169,9 @@ jobs:
       - name: Test
         run: flutter test
 
+      - name: Verify test artifact stage
+        run: test -f pubspec.yaml
+
       - name: Record Flutter build metadata
         run: flutter doctor -v
 
