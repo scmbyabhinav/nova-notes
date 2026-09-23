@@ -69,6 +69,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isLocked = false;
   bool _privateUnlocked = true;
   bool _unlocking = false;
+  int _saveRevision = 0;
 
   @override
   void initState() {
@@ -106,7 +107,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final trimmed = line.trim();
       final done = trimmed.startsWith('[x]') || trimmed.startsWith('[X]') || trimmed.startsWith('☑');
       final text = trimmed.replaceFirst(RegExp(r'^(?:\[[ xX]\]|☐|☑)\s*'), '').replaceFirst(RegExp(r'^[-*•]\s*'), '');
-      return ChecklistItem(id: text.hashCode.toString(), text: text, isDone: done);
+      return ChecklistItem(id: '${DateTime.now().microsecondsSinceEpoch}_${text.hashCode}', text: text, isDone: done);
     }).toList();
   }
 
@@ -211,6 +212,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
     // focus stable and avoids inherited-widget churn during autosave.
     _hasChanges = true;
+    _saveRevision++;
     _saveTimer?.cancel();
     _saveTimer = Timer(const Duration(milliseconds: 600), _save);
   }
@@ -243,6 +245,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
           )
@@ -258,10 +261,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
           );
 
+    final revision = _saveRevision;
     await widget.repository.saveNote(note);
     for (final item in _checklistItems) {
       if (item.dueAt != null && !item.isDone) {
@@ -271,9 +276,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       }
     }
     if (_dueAt != null) { await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!); } else { await OrahReminderService.instance.cancel(_noteId); }
-    _hasChanges = false;
+    if (_saveRevision == revision) _hasChanges = false;
 
     if (mounted) setState(() => _saving = false);
+  }
+
+  @override
+  void dispose() {
+    _saveTimer?.cancel();
+    _titleController.dispose();
+    _contentController.dispose();
+    _contentFocus.dispose();
+    super.dispose();
   }
 
   Future<void> _close() async {
