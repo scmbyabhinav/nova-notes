@@ -2,87 +2,103 @@ name: Orah Android CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
 
-jobs:
-  verify:
-    name: Analyze and test
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - name: Verify Flutter
-        run: flutter --version
-      - name: Get dependencies
-        run: flutter pub get
-      - name: Analyze
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-      - name: Test
-        run: flutter test
+concurrency:
+  group: orah-android-\${{ github.workflow }}-\${{ github.ref }}
+  cancel-in-progress: true
 
-  android:
-    name: Build Android artifacts
-    needs: verify
+jobs:
+  build:
+    name: Analyze, test and build Android
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-      - name: Generate Android project
-        run: flutter create --platforms=android --org com.orah .
-      - name: Enable desugaring
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Generate Android host project
+        run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
+
+      - name: Enable core library desugaring
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path("android/app/build.gradle.kts")
           s = p.read_text()
-          if "isCoreLibraryDesugaringEnabled" not in s:
+          if "isCoreLibraryDesugaringEnabled = true" not in s:
               s = s.replace(
+                  "compileOptions {",
+                  "compileOptions {\n        isCoreLibraryDesugaringEnabled = true",
+                  1,
+              ) if "compileOptions {" in s else s.replace(
                   "compileSdk = flutter.compileSdkVersion",
                   "compileSdk = flutter.compileSdkVersion\n\n    compileOptions {\n        isCoreLibraryDesugaringEnabled = true\n    }",
                   1,
               )
-          if "coreLibraryDesugaring(" not in s:
-              marker = "dependencies {"
-              s = s.replace(marker, marker + '\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")', 1)
+          if 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")' not in s:
+              s = s.replace(
+                  "dependencies {",
+                  'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',
+                  1,
+              )
           p.write_text(s)
           PY
+
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+      - name: Test
+        run: flutter test
+
       - name: Build debug APK
         run: flutter build apk --debug
+
       - name: Build release APK
         run: flutter build apk --release
+
       - name: Build release AAB
         run: flutter build appbundle --release
+
       - name: Verify artifacts
+        shell: bash
         run: |
+          set -e
           test -s build/app/outputs/flutter-apk/app-debug.apk
           test -s build/app/outputs/flutter-apk/app-release.apk
           test -s build/app/outputs/bundle/release/app-release.aab
-      - name: Upload APK
+
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: orah-apks
+          name: orah-apks-\${{ github.sha }}
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 14
+
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: orah-release-aab
+          name: orah-release-aab-\${{ github.sha }}
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 14
