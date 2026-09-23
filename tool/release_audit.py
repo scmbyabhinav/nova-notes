@@ -106,3 +106,12 @@ if workflow.exists():
     if "tool/configure_release_signing.py" not in wf: errors.append("CI is missing the release-signing configurator.")
 signing_tool = ROOT / 'tool/configure_release_signing.py'
 if not signing_tool.exists(): errors.append('Missing release signing configurator.')
+
+# Production billing boundary documentation.
+const_billing_doc = ROOT / "PLAY_BILLING_VERIFICATION.md"
+if not const_billing_doc.exists():
+    errors.append("Missing production billing verification architecture document.")
+else:
+    billing = const_billing_doc.read_text().lower()
+    for marker in ("purchase token", "google play developer api", "real-time developer notifications"):
+        if marker not in billing: errors.append(f"Billing verification document is missing required marker: {marker}.")
