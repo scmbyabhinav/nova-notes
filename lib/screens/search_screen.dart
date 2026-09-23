@@ -7,6 +7,8 @@ import '../models/folder.dart';
 import '../models/note.dart';
 import '../models/search_filter.dart';
 import 'note_editor_screen.dart';
+import '../services/orah_feature_gate.dart';
+import '../services/orah_premium_gate.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -23,6 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Note> _results = const [];
   SearchFilter _filter = const SearchFilter();
   bool _loading = true;
+  bool _advancedBlocked = false;
   List<NoteFolder> _folders = const [];
 
   @override
@@ -51,6 +54,19 @@ class _SearchScreenState extends State<SearchScreen> {
   void _search() {
     final rawQuery = _controller.text.trim().toLowerCase();
     final tokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    final hasAdvancedOperator = tokens.any((token) =>
+        token.startsWith('is:') ||
+        token.startsWith('has:') ||
+        token.startsWith('tag:') ||
+        token.startsWith('folder:') ||
+        token.startsWith('type:') ||
+        token.startsWith('before:') ||
+        token.startsWith('after:'));
+    if (hasAdvancedOperator && !OrahFeatureGate.allowed(OrahFeature.advancedSearch)) {
+      if (mounted) setState(() { _results = const []; _advancedBlocked = true; });
+      return;
+    }
+    if (_advancedBlocked && mounted) setState(() => _advancedBlocked = false);
 
     bool? pinned;
     bool? favorite;
@@ -397,7 +413,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    'No notes found',
+                                    _advancedBlocked ? 'Advanced search is a Pro feature' : 'No notes found',
                                     style: theme.textTheme.titleMedium
                                         ?.copyWith(
                                       fontWeight: FontWeight.w800,
@@ -405,7 +421,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    'Try another word or remove a filter.',
+                                    _advancedBlocked ? 'Use normal keywords for free, or open ORAH Pro to unlock filters and operators.' : 'Try another word or remove a filter.',
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color:
