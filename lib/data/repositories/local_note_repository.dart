@@ -22,10 +22,16 @@ class LocalNoteRepository implements NoteRepository {
       final decoded = jsonDecode(raw);
       if (decoded is! List) return [];
       final seen = <String>{};
-      final notes = decoded
-          .map((item) => _fromMap(Map<String, dynamic>.from(item as Map)))
-          .where((note) => note.id.trim().isNotEmpty && seen.add(note.id))
-          .toList();
+      final notes = <Note>[];
+      for (final item in decoded) {
+        if (item is! Map) continue;
+        try {
+          final note = _fromMap(Map<String, dynamic>.from(item));
+          if (note.id.trim().isNotEmpty && seen.add(note.id)) notes.add(note);
+        } catch (_) {
+          // Skip one malformed record without hiding otherwise valid notes.
+        }
+      }
 
       notes.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
       return notes;
@@ -160,7 +166,7 @@ class LocalNoteRepository implements NoteRepository {
     final createdAt = DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now();
     final updatedAt = DateTime.tryParse(map['updatedAt'] as String? ?? '') ?? createdAt;
     return Note(
-      id: map['id'] as String,
+      id: map['id'] as String? ?? '',
       title: map['title'] as String? ?? '',
       content: map['content'] as String? ?? '',
       type: NoteType.values.firstWhere(
@@ -186,7 +192,16 @@ class LocalNoteRepository implements NoteRepository {
   List<ChecklistItem> _checklistItemsFromMap(Map<String, dynamic> map) {
     final raw = map['checklistItems'];
     if (raw is List && raw.isNotEmpty) {
-      return raw.map((item) => ChecklistItem.fromMap(Map<String, dynamic>.from(item as Map))).toList();
+      final items = <ChecklistItem>[];
+      for (final item in raw) {
+        if (item is! Map) continue;
+        try {
+          items.add(ChecklistItem.fromMap(Map<String, dynamic>.from(item)));
+        } catch (_) {
+          // Skip malformed checklist entries while preserving the note.
+        }
+      }
+      return items;
     }
     final content = map['content'] as String? ?? '';
     if (map['type'] == NoteType.checklist.name && content.trim().isNotEmpty) {
