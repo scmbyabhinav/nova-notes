@@ -498,8 +498,16 @@ class _NoteCard extends StatelessWidget {
                     _NoteText(note: note),
                     const SizedBox(height: 8),
                     Wrap(
-                      spacing: 4,
+                      spacing: 6,
+                      runSpacing: 4,
                       children: [
+                        if (note.dueAt != null)
+                          _SmartBadge(
+                            icon: Icons.notifications_active_outlined,
+                            label: _dueLabel(note.dueAt!),
+                          ),
+                        if (note.type == NoteType.checklist && note.checklistItems.any((item) => item.dueAt != null && !item.isDone && item.dueAt!.isBefore(DateTime.now())))
+                          const _SmartBadge(icon: Icons.warning_amber_rounded, label: 'Overdue'),
                         if (note.isFavorite)
                           const Icon(Icons.star_rounded, size: 16),
                         if (note.attachments.isNotEmpty)
@@ -530,6 +538,15 @@ class _NoteCard extends StatelessWidget {
     );
   }
 
+  String _dueLabel(DateTime date) {
+    final now = DateTime.now();
+    if (date.isBefore(now)) return 'Overdue';
+    final difference = date.difference(now);
+    if (difference.inHours < 24) return 'Today';
+    if (difference.inHours < 48) return 'Tomorrow';
+    return '${date.day}/${date.month}';
+  }
+
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     if (date.year == now.year &&
@@ -538,6 +555,21 @@ class _NoteCard extends StatelessWidget {
       return 'Today';
     }
     return '${date.day}/${date.month}/${date.year}';
+  }
+}
+
+class _SmartBadge extends StatelessWidget {
+  const _SmartBadge({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+      decoration: BoxDecoration(color: scheme.primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(999)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 13, color: scheme.primary), const SizedBox(width: 4), Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: scheme.primary))]),
+    );
   }
 }
 
