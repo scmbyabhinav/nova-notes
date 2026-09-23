@@ -69,42 +69,75 @@ class NovaBackupService {
     if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid Orah portable backup.');
     final backupVersion = raw['version'] is num ? (raw['version'] as num).toInt() : 0;
     if (backupVersion <= 0 || backupVersion > version) throw const FormatException('Unsupported Orah backup version.');
-    final extracted = <String, String>{};
-    var extractedBytes = 0;
-    const maxAttachmentBytes = 512 * 1024 * 1024;
-    final root = await _attachmentDirectory();
-    for (final file in archive.files) {
-      if (!file.isFile || !file.name.startsWith('attachments/')) continue;
-      if (file.name.contains('..') || file.name.contains('\\')) throw const FormatException('Invalid attachment path in backup.');
-      final name = p.basename(file.name);
-      if (name.isEmpty || name == '.' || name == '..') throw const FormatException('Invalid attachment name in backup.');
-      extractedBytes += (file.content as List<int>).length;
-      if (extractedBytes > maxAttachmentBytes) throw const FormatException('Backup attachments are too large to restore safely.');
-      final base = p.basenameWithoutExtension(name);
-      final ext = p.extension(name);
-      var target = File(p.join(root.path, name));
-      var suffix = 0;
-      while (await target.exists()) {
-        suffix++;
-        target = File(p.join(root.path, '${DateTime.now().microsecondsSinceEpoch}-$suffix-$base$ext'));
-      }
-      await target.writeAsBytes(file.content as List<int>, flush: true);
-      extracted[file.name] = target.path;
-    }
     final rawNoteList = raw['notes'];
     if (rawNoteList is! List) throw const FormatException('Invalid Orah backup: notes are missing.');
     if (rawNoteList.length > 100000) throw const FormatException('Backup contains too many notes.');
-    final noteList = rawNoteList.map((item) {
-      final map = Map<String, dynamic>.from(item as Map);
-      final paths = List<String>.from(map['attachments'] as List? ?? const []);
-      map['attachments'] = paths.map((x) => extracted[x]).whereType<String>().toList();
-      return map;
-    }).toList();
-    final payload = {'format': 'nova_notes_backup', 'version': 1, 'exportedAt': raw['exportedAt'] ?? DateTime.now().toIso8601String(), 'notes': noteList};
-    final count = await LocalNoteRepository(preferences).importJson(jsonEncode(payload));
     final foldersFile = archive.findFile('data/folders.json');
-    if (foldersFile != null) await preferences.setString('nova_folders_v1', utf8.decode(foldersFile.content as List<int>));
-    return count;
+    String? foldersPayload;
+    if (foldersFile != null) {
+      try {
+        final folderBytes = foldersFile.content as List<int>;
+        final decodedFolders = jsonDecode(utf8.decode(folderBytes));
+        if (decodedFolders is! List) {
+          throw const FormatException('Invalid Orah backup: folders are malformed.');
+        }
+        foldersPayload = utf8.decode(folderBytes);
+      } catch (_) {
+        throw const FormatException('Invalid Orah backup: folders are malformed.');
+      }
+    }
+
+    final extracted = <String, String>{};
+    final createdPaths = <String>[];
+    var extractedBytes = 0;
+    const maxAttachmentBytes = 512 * 1024 * 1024;
+    final root = await _attachmentDirectory();
+
+    try {
+      for (final file in archive.files) {
+        if (!file.isFile || !file.name.startsWith('attachments/')) continue;
+        if (file.name.contains('..') || file.name.contains('\\')) throw const FormatException('Invalid attachment path in backup.');
+        final name = p.basename(file.name);
+        if (name.isEmpty || name == '.' || name == '..') throw const FormatException('Invalid attachment name in backup.');
+        extractedBytes += (file.content as List<int>).length;
+        if (extractedBytes > maxAttachmentBytes) throw const FormatException('Backup attachments are too large to restore safely.');
+        final base = p.basenameWithoutExtension(name);
+        final ext = p.extension(name);
+        var target = File(p.join(root.path, name));
+        var suffix = 0;
+        while (await target.exists()) {
+          suffix++;
+          target = File(p.join(root.path, '${DateTime.now().microsecondsSinceEpoch}-$suffix-$base$ext'));
+        }
+        await target.writeAsBytes(file.content as List<int>, flush: true);
+        createdPaths.add(target.path);
+        extracted[file.name] = target.path;
+      }
+
+      final noteList = rawNoteList.map((item) {
+        if (item is! Map) throw const FormatException('Invalid Orah backup: a note record is malformed.');
+        final map = Map<String, dynamic>.from(item);
+        final rawAttachments = map['attachments'];
+        if (rawAttachments != null && rawAttachments is! List) {
+          throw const FormatException('Invalid Orah backup: note attachments are malformed.');
+        }
+        final paths = rawAttachments is List ? rawAttachments.whereType<String>().toList() : const <String>[];
+        map['attachments'] = paths.map((x) => extracted[x]).whereType<String>().toList();
+        return map;
+      }).toList();
+
+      final payload = {'format': 'nova_notes_backup', 'version': 1, 'exportedAt': raw['exportedAt'] ?? DateTime.now().toIso8601String(), 'notes': noteList};
+      final count = await LocalNoteRepository(preferences).importJson(jsonEncode(payload));
+      if (foldersPayload != null) await preferences.setString('nova_folders_v1', foldersPayload);
+      return count;
+    } catch (error) {
+      for (final path in createdPaths) {
+        try {
+          await File(path).delete();
+        } catch (_) {}
+      }
+      rethrow;
+    }
   }
 
   Future<Directory> _attachmentDirectory() async {
