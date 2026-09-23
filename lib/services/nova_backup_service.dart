@@ -63,11 +63,15 @@ class NovaBackupService {
     final backupVersion = raw['version'] is num ? (raw['version'] as num).toInt() : 0;
     if (backupVersion <= 0 || backupVersion > version) throw const FormatException('Unsupported Orah backup version.');
     final extracted = <String, String>{};
+    var extractedBytes = 0;
+    const maxAttachmentBytes = 512 * 1024 * 1024;
     final root = await _attachmentDirectory();
     for (final file in archive.files) {
       if (!file.isFile || !file.name.startsWith('attachments/')) continue;
       final name = p.basename(file.name);
       if (name.isEmpty || name == '.' || name == '..') throw const FormatException('Invalid attachment name in backup.');
+      extractedBytes += (file.content as List<int>).length;
+      if (extractedBytes > maxAttachmentBytes) throw const FormatException('Backup attachments are too large to restore safely.');
       final base = p.basenameWithoutExtension(name);
       final ext = p.extension(name);
       var target = File(p.join(root.path, name));
