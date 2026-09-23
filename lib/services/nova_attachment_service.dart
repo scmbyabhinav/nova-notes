@@ -16,10 +16,12 @@ class NovaAttachmentService {
   }
 
   Future<String> importFile(String sourcePath) async {
+    final source = File(sourcePath);
+    if (!await source.exists()) throw const FileSystemException('Source attachment not found');
     final root = await _attachmentDirectory();
     final name = _uniqueName(root.path, p.basename(sourcePath));
     final target = File(p.join(root.path, name));
-    await File(sourcePath).copy(target.path);
+    await source.copy(target.path);
     return target.path;
   }
 
