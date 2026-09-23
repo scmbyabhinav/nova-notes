@@ -30,7 +30,7 @@ class NovaBackupService {
       for (final path in attachments) {
         final file = File(path);
         if (!await file.exists()) continue;
-        final archiveName = 'attachments/\${p.basename(path)}';
+        final archiveName = 'attachments/${map['id']}-${p.basename(path)}';
         files[archiveName] = await file.readAsBytes();
         portable.add(archiveName);
         manifest.add({'source': path, 'archive': archiveName});
@@ -46,7 +46,7 @@ class NovaBackupService {
     final encoded = ZipEncoder().encode(archive) ?? <int>[];
     final dir = await getTemporaryDirectory();
     final stamp = DateTime.now().toIso8601String().replaceAll(RegExp(r'[:.]'), '-');
-    final file = File(p.join(dir.path, 'Orah_Backup_\$stamp.nova'));
+    final file = File(p.join(dir.path, 'Orah_Backup_$stamp.nova'));
     await file.writeAsBytes(encoded, flush: true);
     return file;
   }
@@ -56,7 +56,7 @@ class NovaBackupService {
     final notesFile = archive.findFile('data/notes.json');
     if (notesFile == null) throw const FormatException('Invalid Orah backup: notes.json missing.');
     final raw = jsonDecode(utf8.decode(notesFile.content as List<int>));
-    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid Orah portable backup.');
+    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid Orah portable backup.');\n    final backupVersion = raw['version'] is num ? (raw['version'] as num).toInt() : 0;\n    if (backupVersion <= 0 || backupVersion > version) throw const FormatException('Unsupported Orah backup version.');
     final extracted = <String, String>{};
     final root = await _attachmentDirectory();
     for (final file in archive.files) {

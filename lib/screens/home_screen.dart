@@ -79,6 +79,20 @@ class _HomeScreenState extends State<HomeScreen> {
     await _loadNotes();
   }
 
+  Future<void> _restoreFromTrash(Note note) async {
+    final repository = await NoteRepositoryProvider.instance();
+    await repository.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
+    if (note.dueAt != null && note.dueAt!.isAfter(DateTime.now())) {
+      await OrahReminderService.instance.schedule(noteId: note.id, title: note.title, when: note.dueAt!);
+    }
+    for (final item of note.checklistItems) {
+      if (item.dueAt != null && !item.isDone && item.dueAt!.isAfter(DateTime.now())) {
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: note.id);
+      }
+    }
+    await _loadNotes();
+  }
+
   Future<void> _showNoteMenu(Note note) async {
     final action = await showModalBottomSheet<String>(
       context: context,
@@ -141,8 +155,12 @@ class _HomeScreenState extends State<HomeScreen> {
           title: '${note.title} (Copy)',
           updatedAt: DateTime.now(),
         );
+        final duplicateId = '${DateTime.now().microsecondsSinceEpoch}_copy';
+        final duplicateItems = note.checklistItems.map((item) => ChecklistItem(
+          id: '${duplicateId}_${item.id}', text: item.text, isDone: item.isDone, dueAt: item.dueAt,
+        )).toList();
         await repository.saveNote(Note(
-          id: '${DateTime.now().microsecondsSinceEpoch}_copy',
+          id: duplicateId,
           title: duplicate.title,
           content: duplicate.content,
           type: duplicate.type,
@@ -151,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
           folderId: duplicate.folderId,
           tags: duplicate.tags,
           attachments: const [],
-          checklistItems: duplicate.checklistItems,
+          checklistItems: duplicateItems,
           color: duplicate.color,
           isPinned: false,
           isFavorite: false,
@@ -160,6 +178,14 @@ class _HomeScreenState extends State<HomeScreen> {
           isTrashed: false,
           dueAt: duplicate.dueAt,
         ));
+        if (duplicate.dueAt != null) {
+          await OrahReminderService.instance.schedule(noteId: duplicateId, title: duplicate.title, when: duplicate.dueAt!);
+        }
+        for (final item in duplicateItems) {
+          if (item.dueAt != null && !item.isDone) {
+            await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId);
+          }
+        }
         await _loadNotes();
         return;
       case 'color':
@@ -197,13 +223,20 @@ class _HomeScreenState extends State<HomeScreen> {
           await OrahReminderService.instance.cancel('checklist:${item.id}');
         }
         await _loadNotes();
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Moved to Trash'),
+            action: SnackBarAction(label: 'Undo', onPressed: () => _restoreFromTrash(note)),
+          ),
+        );
         return;
     }
   }
 
   Future<void> _showColorPicker(Note note) async {
-    const colors = <Color?>[null, Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
-    final color = await showModalBottomSheet<Color?>(
+    const colors = <Color?>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
+    final selected = await showModalBottomSheet<int>(
       context: context,
       showDragHandle: true,
       builder: (context) => SafeArea(
@@ -212,28 +245,39 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Wrap(
             spacing: 14,
             runSpacing: 14,
-            children: [for (final color in colors) InkWell(
-              onTap: () => Navigator.pop(context, color),
+            children: [InkWell(
+              onTap: () => Navigator.pop(context, -1),
               borderRadius: BorderRadius.circular(28),
               child: Container(
                 width: 50, height: 50,
                 decoration: BoxDecoration(
-                  color: color ?? Theme.of(context).colorScheme.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(color: note.color == color?.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                  border: Border.all(color: note.color == null ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
                 ),
-                child: color == null ? const Icon(Icons.format_color_reset_outlined) : null,
+                child: const Icon(Icons.format_color_reset_outlined),
               ),
-            )],
+            ), ...[for (final color in colors) InkWell(
+              onTap: () => Navigator.pop(context, color.value),
+              borderRadius: BorderRadius.circular(28),
+              child: Container(
+                width: 50, height: 50,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: note.color == color.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                ),
+              ),
+            )]],
           ),
         ),
       ),
     );
     if (!mounted) return;
-    // A dismissed sheet returns null too; only clear when the user explicitly chose reset.
-    if (color == null && note.color == null) return;
+    if (selected == null) return;
     final repository = await NoteRepositoryProvider.instance();
-    await repository.saveNote(note.copyWith(color: color?.value, clearColor: color == null, updatedAt: DateTime.now()));
+    final color = selected == -1 ? null : selected;
+    await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
     await _loadNotes();
   }
 

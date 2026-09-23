@@ -29,7 +29,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
     setState(() {
       _favorites =
-          notes.where((note) => note.isFavorite && !note.isArchived).toList();
+          notes.where((note) => note.isFavorite && !note.isArchived && !note.isTrashed).toList();
       _loading = false;
     });
   }

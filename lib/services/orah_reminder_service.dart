@@ -13,7 +13,7 @@ class OrahReminderService {
   static final instance = OrahReminderService._();
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
-  bool _initialized = false;
+  bool _initialized = false;\n  String? _pendingLaunchPayload;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -42,7 +42,7 @@ class OrahReminderService {
   int _notificationId(String key) =>
       ByteData.view(Uint8List.fromList(sha256.convert(utf8.encode(key)).bytes).buffer).getInt32(0) & 0x7fffffff;
 
-  Future<void> schedule({required String noteId, required String title, required DateTime when}) async {
+  Future<void> schedule({required String noteId, required String title, required DateTime when, String? payloadNoteId}) async {
     if (!_initialized) await initialize();
     if (!when.isAfter(DateTime.now())) return;
     await _plugin.zonedSchedule(
@@ -60,9 +60,9 @@ class OrahReminderService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      payload: noteId,
+      payload: payloadNoteId ?? noteId,
     );
   }
 
-  Future<void> cancel(String noteId) async => _plugin.cancel(id: _notificationId('note:$noteId'));
+  Future<void> cancel(String noteId) async {\n    if (!_initialized) await initialize();\n    await Future.wait([\n      _plugin.cancel(id: _notificationId('note:$noteId')),\n      // Clear reminders created by older Orah builds before IDs were namespaced.\n      _plugin.cancel(id: _notificationId(noteId)),\n    ]);\n  }
 }

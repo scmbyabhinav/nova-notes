@@ -23,7 +23,7 @@ class UniversalExportService {
       case NovaExportFormat.text: ext='txt'; bytes=utf8.encode(_text(note));
       case NovaExportFormat.markdown: ext='md'; bytes=utf8.encode(_markdown(note));
     }
-    return File('${dir.path}/$base.$ext').writeAsBytes(bytes, flush:true);
+    final stamp = DateTime.now().microsecondsSinceEpoch;\n    return File('${dir.path}/$base-$stamp.$ext').writeAsBytes(bytes, flush:true);
   }
   String _safeName(String s) {
     final v=(s.trim().isEmpty?'NOVA Note':s.trim()).replaceAll(RegExp(r'[<>:"/\\|?*]'),'_');
