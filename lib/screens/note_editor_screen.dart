@@ -19,6 +19,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/orah_reminder_service.dart';
 import '../services/orah_ocr_service.dart';
+import '../services/orah_entitlement_service.dart';
 import '../services/orah_smart_detection.dart';
 import '../core/services/nova_security_service.dart';
 import 'package:intl/intl.dart';
@@ -349,6 +350,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _scanTextFromImage() async {
+    if (!await OrahEntitlementService.instance.requirePro('OCR')) return;
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null || !mounted) return;
     try {
