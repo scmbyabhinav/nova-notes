@@ -72,7 +72,7 @@ class NovaShell extends StatefulWidget {
 class _NovaShellState extends State<NovaShell> {
   int _index = 0;
 
-  final _pages = const <Widget>[
+  late final List<Widget> _pages = [
     HomeScreen(),
     FoldersScreen(),
     FavoritesScreen(),
