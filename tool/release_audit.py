@@ -94,8 +94,6 @@ if not errors and not warnings:
 elif not errors:
     print("\nPASS WITH WARNINGS: no blocking source-configuration errors found.")
 
-sys.exit(1 if errors else 0)
-
 # Production signing configuration must be explicit and never use a hard-coded keystore.
 workflow = ROOT / ".github/workflows/nova-android-ci.yml"
 if workflow.exists():
