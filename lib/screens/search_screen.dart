@@ -43,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _allNotes = notes;
       _folders = folders;
-      _results = notes.where((note) => !note.isArchived).toList();
+      _results = notes.where((note) => !note.isArchived && !note.isTrashed).toList();
       _loading = false;
     });
   }
