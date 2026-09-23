@@ -77,7 +77,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _noteType = existing?.type ?? widget.initialType;
 
     _titleController = TextEditingController(text: existing?.title ?? widget.initialTitle ?? '');
-    _contentController = TextEditingController(text: existing?.content ?? widget.initialContent ?? '');
+    _contentController =
+        TextEditingController(text: existing?.content ?? '');
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
@@ -199,7 +200,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit PIN')),
           actions: [
             TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(onPressed: () { if (RegExp(r'^\\d{4,8}
+            FilledButton(onPressed: () {
+              if (RegExp(r'^\\d{4,8}
       '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
@@ -240,7 +242,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isArchived: _isArchived,
             color: _noteColor,
             dueAt: _dueAt,
-            isLocked: _isLocked,
           )
         : widget.note!.copyWith(
             title: title.isEmpty ? 'Untitled note' : title,
@@ -256,7 +257,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isArchived: _isArchived,
             color: _noteColor,
             dueAt: _dueAt,
-            isLocked: _isLocked,
           );
 
     await widget.repository.saveNote(note);
@@ -432,6 +432,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
     final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
     if (choice == null || !mounted) return;
+    final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
+    if (hasContent) {
+      final replace = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Replace current note?'),
+          content: const Text('This template will replace the current title and content.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Replace')),
+          ],
+        ),
+      );
+      if (replace != true || !mounted) return;
+    }
     setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _hasChanges = true; });
     await _save();
   }
@@ -780,12 +795,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               switch (value) {
-                case 'lock':
-                  await _lockNote();
-                  return;
-                case 'smart':
-                  await _detectSmartInfo();
-                  return;
                 case 'ocr': await _scanTextFromImage(); return;
                 case 'template': await _showTemplates(); return;
                 case 'reminder': await _setDueDate(); return;
@@ -830,14 +839,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 case 'archive':
                   await _setFlag(archived: !_isArchived);
                   return;
+                case 'lock':
+                  await _lockNote();
+                  return;
                 case 'delete':
                   await _delete();
                   return;
               }
             },
             itemBuilder: (context) => [
-              if (!_isLocked) PopupMenuItem(value: 'lock', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.lock_outline), title: const Text('Lock note')),
-
               const PopupMenuItem(
                 value: 'export',
                 child: ListTile(
@@ -889,6 +899,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   title: Text(_isArchived ? 'Unarchive' : 'Archive'),
                 ),
               ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'lock',
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text('Lock note')),
+                ),
               const PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
@@ -1309,7 +1324,8 @@ class _ToolButton extends StatelessWidget {
     );
   }
 }
-).hasMatch(controller.text)) Navigator.pop(dialogContext, controller.text); }, child: const Text('Create')),
+).hasMatch(controller.text)) Navigator.pop(dialogContext, controller.text);
+            }, child: const Text('Create')),
           ],
         ),
       );
@@ -1382,7 +1398,7 @@ class _ToolButton extends StatelessWidget {
     await widget.repository.saveNote(note);
     for (final item in _checklistItems) {
       if (item.dueAt != null && !item.isDone) {
-        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!);
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: _noteId);
       } else {
         await OrahReminderService.instance.cancel('checklist:${item.id}');
       }
