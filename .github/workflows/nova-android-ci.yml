@@ -140,6 +140,9 @@ jobs:
           test -s build/app/outputs/flutter-apk/app-debug.apk
           test -s build/app/outputs/flutter-apk/app-release.apk
           test -s build/app/outputs/bundle/release/app-release.aab
+          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
+          unzip -t build/app/outputs/flutter-apk/app-debug.apk >/dev/null
+          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
           ls -lh build/app/outputs/flutter-apk/*.apk
           ls -lh build/app/outputs/bundle/release/app-release.aab
 
