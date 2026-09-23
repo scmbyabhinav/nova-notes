@@ -43,7 +43,13 @@ class NovaAttachmentService {
   Future<String> rename(String sourcePath, String newName) async {
     final source = File(sourcePath);
     if (!await source.exists()) throw const FileSystemException('Attachment not found');
-    final directory = source.parent.path;
+    final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
+    final sourceAbsolute = source.absolute.path;
+    if (sourceAbsolute != rootPath && !p.isWithin(rootPath, sourceAbsolute)) {
+      throw const FileSystemException('Attachment is outside the Orah attachment directory');
+    }
+    final directory = root.path;
     final safe = p.basename(newName).replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
     if (safe.isEmpty) throw const FileSystemException('Invalid file name');
     final extension = p.extension(source.path);
