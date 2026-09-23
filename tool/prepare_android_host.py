@@ -10,6 +10,9 @@ RES_XML = MAIN / "res" / "xml"
 RES_LAYOUT = MAIN / "res" / "layout"
 
 KOTLIN.mkdir(parents=True, exist_ok=True)
+if not ANDROID.exists():
+    raise SystemExit("Generated Android directory is missing.")
+
 RES_XML.mkdir(parents=True, exist_ok=True)
 RES_LAYOUT.mkdir(parents=True, exist_ok=True)
 
