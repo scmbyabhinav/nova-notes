@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         for (final item in duplicateItems) {
           if (item.dueAt != null && !item.isDone) {
-            await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId);
+            await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId, payloadChecklistId: item.id);
           }
         }
         await _loadNotes();
