@@ -1487,6 +1487,7 @@ class _ToolButton extends StatelessWidget {
   }
 
   Future<void> _scanTextFromImage() async {
+    if (!await OrahEntitlementService.instance.requirePro('OCR')) return;
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null || !mounted) return;
     try {
