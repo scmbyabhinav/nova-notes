@@ -8,5 +8,5 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
   await OrahReminderService.instance.initialize();
-  runApp(const OrahApp());
+  runApp(const OrahApp());\n  WidgetsBinding.instance.addPostFrameCallback((_) { OrahReminderService.instance.openPendingNotification(); });
 }
