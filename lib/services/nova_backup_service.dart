@@ -13,6 +13,7 @@ class NovaBackupService {
   final SharedPreferences preferences;
   static const format = 'nova_notes_portable_backup';
   static const version = 2;
+  static const maxBackupBytes = 512 * 1024 * 1024;
 
   Future<File> createBackup() async {
     final notes = LocalNoteRepository(preferences);
@@ -52,7 +53,9 @@ class NovaBackupService {
   }
 
   Future<int> restoreBackup(File backup) async {
-    final archive = ZipDecoder().decodeBytes(await backup.readAsBytes());
+    final bytes = await backup.readAsBytes();
+    if (bytes.length > maxBackupBytes) throw const FormatException('Backup is too large to restore safely.');
+    final archive = ZipDecoder().decodeBytes(bytes);
     final notesFile = archive.findFile('data/notes.json');
     if (notesFile == null) throw const FormatException('Invalid Orah backup: notes.json missing.');
     final raw = jsonDecode(utf8.decode(notesFile.content as List<int>));
