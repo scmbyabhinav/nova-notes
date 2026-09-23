@@ -482,6 +482,12 @@ class _NoteCard extends StatelessWidget {
                     _NoteIcon(type: note.type),
                     const SizedBox(width: 14),
                     Expanded(child: _NoteText(note: note)),
+                    if (note.dueAt != null)
+                      _SmartBadge(icon: Icons.notifications_active_outlined, label: _dueLabel(note.dueAt!)),
+                    if (note.type == NoteType.checklist && note.checklistItems.any((item) => item.dueAt != null && !item.isDone && item.dueAt!.isBefore(DateTime.now())))
+                      const _SmartBadge(icon: Icons.warning_amber_rounded, label: 'Overdue'),
+                    if (note.isLocked)
+                      const _SmartBadge(icon: Icons.lock_outline_rounded, label: 'Private'),
                     if (note.isFavorite)
                       const Padding(
                         padding: EdgeInsets.only(left: 6),
