@@ -73,6 +73,14 @@ jobs:
           test -x android/gradlew
           test -f android/gradle/wrapper/gradle-wrapper.properties
 
+      - name: Verify ORAH manifest identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'android:label="ORAH"' android/app/src/main/AndroidManifest.xml
+          grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
+          grep -q 'OrahQuickWidgetProvider' android/app/src/main/AndroidManifest.xml
+
       - name: Enable core library desugaring
         shell: bash
         run: |
@@ -192,6 +200,13 @@ jobs:
           name: orah-apks-${{ github.sha }}
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 14
+
+      - name: Verify release output directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d build/app/outputs/flutter-apk
+          test -d build/app/outputs/bundle/release
 
       - name: Generate artifact checksums
         shell: bash
