@@ -68,6 +68,7 @@ class NovaBackupService {
     final root = await _attachmentDirectory();
     for (final file in archive.files) {
       if (!file.isFile || !file.name.startsWith('attachments/')) continue;
+      if (file.name.contains('..') || file.name.contains('\\')) throw const FormatException('Invalid attachment path in backup.');
       final name = p.basename(file.name);
       if (name.isEmpty || name == '.' || name == '..') throw const FormatException('Invalid attachment name in backup.');
       extractedBytes += (file.content as List<int>).length;
