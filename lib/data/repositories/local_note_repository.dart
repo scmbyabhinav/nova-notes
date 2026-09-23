@@ -157,6 +157,8 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   Note _fromMap(Map<String, dynamic> map) {
+    final createdAt = DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now();
+    final updatedAt = DateTime.tryParse(map['updatedAt'] as String? ?? '') ?? createdAt;
     return Note(
       id: map['id'] as String,
       title: map['title'] as String? ?? '',
@@ -165,8 +167,8 @@ class LocalNoteRepository implements NoteRepository {
         (type) => type.name == map['type'],
         orElse: () => NoteType.text,
       ),
-      createdAt: DateTime.parse(map['createdAt'] as String),
-      updatedAt: DateTime.parse(map['updatedAt'] as String),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       folderId: map['folderId'] as String?,
       tags: List<String>.from(map['tags'] as List? ?? const []),
       color: map['color'] as int?,
