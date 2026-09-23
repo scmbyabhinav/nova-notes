@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (note.dueAt != null && note.dueAt!.isAfter(DateTime.now())) {
       await OrahReminderService.instance.schedule(noteId: note.id, title: note.title, when: note.dueAt!);
     }
-    for (final item of note.checklistItems) {
+    for (final item in note.checklistItems) {
       if (item.dueAt != null && !item.isDone && item.dueAt!.isAfter(DateTime.now())) {
         await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: note.id);
       }
@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _showColorPicker(Note note) async {
-    const colors = <Color?>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
+    const colors = <Color>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
     final selected = await showModalBottomSheet<int>(
       context: context,
       showDragHandle: true,
