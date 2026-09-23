@@ -615,7 +615,7 @@ class _NoteText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          note.title.isEmpty ? 'Untitled note' : note.title,
+          note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleSmall?.copyWith(
@@ -623,7 +623,9 @@ class _NoteText extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 7),
-        if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
+        if (note.isLocked) ...[
+          Text('Locked content', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        ] else if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
           Text(
             '${note.completedChecklistItems}/${note.checklistItems.length} completed',
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600),
