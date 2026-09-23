@@ -100,6 +100,7 @@ class NovaBackupService {
 
     final extracted = <String, String>{};
     final createdPaths = <String>[];
+    final archiveAttachmentNames = <String>{};
     var extractedBytes = 0;
     const maxAttachmentBytes = 512 * 1024 * 1024;
     final root = await _attachmentDirectory();
@@ -109,6 +110,9 @@ class NovaBackupService {
         if (!file.isFile || !file.name.startsWith('attachments/')) continue;
         if (file.name.contains('..') || file.name.contains('\\')) throw const FormatException('Invalid attachment path in backup.');
         final name = p.basename(file.name);
+        if (!archiveAttachmentNames.add(file.name)) {
+          throw const FormatException('Duplicate attachment entry in backup.');
+        }
         if (name.isEmpty || name == '.' || name == '..') throw const FormatException('Invalid attachment name in backup.');
         extractedBytes += (file.content as List<int>).length;
         if (extractedBytes > maxAttachmentBytes) throw const FormatException('Backup attachments are too large to restore safely.');
