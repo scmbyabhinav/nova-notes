@@ -185,8 +185,8 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
             title: const Text('App lock'),
             subtitle: Text(
               _hasPin
-                  ? 'Require your PIN when NOVA is locked'
-                  : 'Create a PIN to protect NOVA',
+                  ? 'Require your PIN when ORAH is locked'
+                  : 'Create a PIN to protect ORAH',
             ),
             value: _appLock,
             onChanged: _toggleAppLock,
@@ -195,7 +195,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
             ListTile(
               leading: const Icon(Icons.password_outlined),
               title: const Text('Change PIN'),
-              subtitle: const Text('Replace your current NOVA PIN'),
+              subtitle: const Text('Replace your current ORAH PIN'),
               trailing: const Icon(Icons.chevron_right),
               onTap: _setPin,
             ),
@@ -220,7 +220,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
             leading: Icon(Icons.privacy_tip_outlined),
             title: Text('Local-first privacy'),
             subtitle: Text(
-              'NOVA does not require an account or cloud sync for your notes.',
+              'ORAH does not require an account or cloud sync for your notes.',
             ),
           ),
           const Padding(
@@ -229,7 +229,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
               'Security note: PIN credentials are stored in Android/iOS '
               'secure storage. Sensitive note content remains local. '
               'Full encrypted note-vault storage will be added before '
-              'NOVA claims end-to-end encrypted content.',
+              'ORAH claims end-to-end encrypted content.',
             ),
           ),
         ],
