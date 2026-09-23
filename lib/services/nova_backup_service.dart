@@ -67,7 +67,11 @@ class NovaBackupService {
     for (final file in archive.files) {
       if (!file.isFile || !file.name.startsWith('attachments/')) continue;
       final name = p.basename(file.name);
-      final target = File(p.join(root.path, name));
+      if (name.isEmpty || name == '.' || name == '..') throw const FormatException('Invalid attachment name in backup.');
+      final base = p.basenameWithoutExtension(name);
+      final ext = p.extension(name);
+      var target = File(p.join(root.path, name));
+      if (await target.exists()) target = File(p.join(root.path, '${DateTime.now().microsecondsSinceEpoch}-$base$ext'));
       await target.writeAsBytes(file.content as List<int>, flush: true);
       extracted[file.name] = target.path;
     }
