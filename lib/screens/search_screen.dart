@@ -113,7 +113,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
       final noteFolder = folderName(note.folderId);
       if (folderTerm != null && noteFolder != folderTerm && note.folderId != folderTerm) continue;
-      if (tagTerm != null && !note.tags.any((tag) => tag.toLowerCase() == tagTerm || tag.toLowerCase().contains(tagTerm))) continue;
+      if (tagTerm != null && !note.tags.any((tag) => tag.toLowerCase() == tagTerm || tag.toLowerCase().contains(tagTerm!))) continue;
 
       final title = note.title.toLowerCase();
       final content = note.content.toLowerCase();
