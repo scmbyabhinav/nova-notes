@@ -133,6 +133,15 @@ jobs:
       - name: Clean generated build state
         run: flutter clean
 
+      - name: Flutter dependency diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get --verbose >/tmp/orah-pub-get.log 2>&1 || {
+            tail -n 200 /tmp/orah-pub-get.log
+            exit 1
+          }
+
       - name: Get dependencies
         run: flutter pub get
 
