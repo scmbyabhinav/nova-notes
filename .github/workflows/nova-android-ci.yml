@@ -154,6 +154,14 @@ jobs:
       - name: Record Flutter build metadata
         run: flutter doctor -v
 
+      - name: Verify Flutter project
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter doctor -v
+          flutter pub deps --style=compact >/tmp/orah-deps.txt
+          test -s /tmp/orah-deps.txt
+
       - name: Build debug APK
         run: flutter build apk --debug
 
