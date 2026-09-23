@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/nova_attachment_service.dart';
 
 class TrashScreen extends StatefulWidget {
   const TrashScreen({super.key});
@@ -52,6 +53,7 @@ class _TrashScreenState extends State<TrashScreen> {
     if (confirmed != true) return;
     final repo = await NoteRepositoryProvider.instance();
     await repo.deleteNote(note.id);
+    for (final path in note.attachments) { await const NovaAttachmentService().delete(path); }
     await _load();
   }
 
@@ -70,7 +72,10 @@ class _TrashScreenState extends State<TrashScreen> {
     );
     if (confirmed != true) return;
     final repo = await NoteRepositoryProvider.instance();
-    for (final note in _notes) { await repo.deleteNote(note.id); }
+    for (final note in _notes) {
+      await repo.deleteNote(note.id);
+      for (final path in note.attachments) { await const NovaAttachmentService().delete(path); }
+    }
     await _load();
   }
 
