@@ -79,6 +79,36 @@ jobs:
                   s=s.rstrip() + "\n\ndependencies {\n    " + dependency + "\n}\n"
           p.write_text(s)
           PY
+      - name: Align legacy Android plugin JVM targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          matches = list(Path.home().glob(".pub-cache/hosted/pub.dev/receive_sharing_intent-*/android/build.gradle"))
+          if not matches:
+              raise SystemExit("receive_sharing_intent Android build.gradle not found")
+          p = matches[0]
+          s = p.read_text()
+          if "compileOptions {" not in s:
+              s = s.replace(
+                  "android {",
+                  """android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }""",
+                  1,
+              )
+          else:
+              if "sourceCompatibility JavaVersion.VERSION_17" not in s:
+                  s = s.replace("compileOptions {", "compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17", 1)
+              if "targetCompatibility JavaVersion.VERSION_17" not in s:
+                  s = s.replace("compileOptions {", "compileOptions {\n        targetCompatibility JavaVersion.VERSION_17", 1)
+          p.write_text(s)
+          print(f"Aligned JVM target for {p}")
+          PY
       - name: Android Gradle preflight
         shell: bash
         run: |
