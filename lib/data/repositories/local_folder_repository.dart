@@ -25,9 +25,14 @@ class LocalFolderRepository implements FolderRepository {
       final folders = <NoteFolder>[];
       final ids = <String>{};
       for (final item in decoded) {
-        final folder = _fromMap(Map<String, dynamic>.from(item as Map));
-        if (folder.id.trim().isEmpty || !ids.add(folder.id)) continue;
-        folders.add(folder);
+        if (item is! Map) continue;
+        try {
+          final folder = _fromMap(Map<String, dynamic>.from(item));
+          if (folder.id.trim().isEmpty || !ids.add(folder.id)) continue;
+          folders.add(folder);
+        } catch (_) {
+          // Skip one malformed folder without losing valid folders.
+        }
       }
 
       folders.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
@@ -92,7 +97,7 @@ class LocalFolderRepository implements FolderRepository {
   NoteFolder _fromMap(Map<String, dynamic> map) {
     final createdAt = DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now();
     return NoteFolder(
-      id: map['id'] as String,
+      id: map['id'] as String? ?? '',
       name: map['name'] as String? ?? 'Folder',
       createdAt: createdAt,
       iconCodePoint: map['iconCodePoint'] as int?,
