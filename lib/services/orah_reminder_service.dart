@@ -75,7 +75,7 @@ class OrahReminderService {
       final item = note.checklistItems[index];
       if (item.isDone) return;
       await schedule(
-        noteId: 'checklist:\${target.checklistId}',
+        noteId: 'checklist:${target.checklistId}',
         title: item.text,
         when: when,
         payloadNoteId: noteId,
