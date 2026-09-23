@@ -130,7 +130,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _removeChecklistItem(int index) async {
     final removed = _checklistItems[index];
-    await OrahReminderService.instance.cancel(removed.id);
+    await OrahReminderService.instance.cancel('checklist:${removed.id}');
     setState(() { _checklistItems.removeAt(index); _hasChanges = true; });
     await _save();
   }
