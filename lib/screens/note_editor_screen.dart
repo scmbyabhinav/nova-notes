@@ -376,6 +376,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
     final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
     if (choice == null || !mounted) return;
+    final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
+    if (hasContent) {
+      final replace = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Replace current note?'),
+          content: const Text('This template will replace the current title and content.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Replace')),
+          ],
+        ),
+      );
+      if (replace != true || !mounted) return;
+    }
     setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _hasChanges = true; });
     await _save();
   }
