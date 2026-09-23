@@ -42,7 +42,7 @@ class OrahReminderService {
   int _notificationId(String key) =>
       ByteData.view(Uint8List.fromList(sha256.convert(utf8.encode(key)).bytes).buffer).getInt32(0) & 0x7fffffff;
 
-  Future<void> schedule({required String noteId, required String title, required DateTime when}) async {
+  Future<void> schedule({required String noteId, required String title, required DateTime when, String? payloadNoteId}) async {
     if (!_initialized) await initialize();
     if (!when.isAfter(DateTime.now())) return;
     await _plugin.zonedSchedule(
@@ -60,7 +60,7 @@ class OrahReminderService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      payload: noteId,
+      payload: payloadNoteId ?? noteId,
     );
   }
 
