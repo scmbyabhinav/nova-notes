@@ -24,6 +24,7 @@ The GitHub workflow generates the Android host and builds a debug APK, release A
 ## Android / Play release
 
 - CI uses Java 17 and the generated Gradle wrapper.
+- The PR CI trigger must produce a real workflow run before the build is considered verified.
 - Android identity is verified as `com.orah.orah_notes`.
 - APK/AAB output directories and archive integrity are checked in CI.
 - Release artifact checksums are retained with the build artifacts.
