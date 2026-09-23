@@ -94,3 +94,5 @@ jobs:
           name: orah-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 14
+
+# Main-branch CI heartbeat: validate that Actions executes on push to main.
