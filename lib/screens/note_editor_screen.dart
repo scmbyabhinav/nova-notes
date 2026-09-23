@@ -24,11 +24,15 @@ class NoteEditorScreen extends StatefulWidget {
     required this.repository,
     this.note,
     this.initialType = NoteType.text,
+    this.initialTitle,
+    this.initialContent,
   });
 
   final NoteRepository repository;
   final Note? note;
   final NoteType initialType;
+  final String? initialTitle;
+  final String? initialContent;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -62,9 +66,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
 
-    _titleController = TextEditingController(text: existing?.title ?? '');
-    _contentController =
-        TextEditingController(text: existing?.content ?? '');
+    _titleController = TextEditingController(text: existing?.title ?? widget.initialTitle ?? '');
+    _contentController = TextEditingController(text: existing?.content ?? widget.initialContent ?? '');
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
@@ -339,7 +342,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _addFiles() async {
     try {
-      final files = await FilePicker.pickFiles(allowMultiple: true);
+      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      final files = result?.files ?? const <PlatformFile>[];
       if (files.isEmpty) return;
       final imported = <String>[];
       for (final file in files) {
