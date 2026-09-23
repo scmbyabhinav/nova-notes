@@ -78,8 +78,19 @@ class NovaBackupService {
       try {
         final folderBytes = foldersFile.content as List<int>;
         final decodedFolders = jsonDecode(utf8.decode(folderBytes));
-        if (decodedFolders is! List) {
+        if (decodedFolders is! List || decodedFolders.length > 10000) {
           throw const FormatException('Invalid Orah backup: folders are malformed.');
+        }
+        for (final item in decodedFolders) {
+          if (item is! Map) {
+            throw const FormatException('Invalid Orah backup: a folder record is malformed.');
+          }
+          final map = Map<String, dynamic>.from(item);
+          final id = map['id'];
+          final name = map['name'];
+          if (id is! String || id.trim().isEmpty || name is! String || name.trim().isEmpty || name.trim().length > 80) {
+            throw const FormatException('Invalid Orah backup: a folder record is invalid.');
+          }
         }
         foldersPayload = utf8.decode(folderBytes);
       } catch (_) {
