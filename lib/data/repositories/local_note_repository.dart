@@ -19,9 +19,12 @@ class LocalNoteRepository implements NoteRepository {
     if (raw == null || raw.isEmpty) return [];
 
     try {
-      final decoded = jsonDecode(raw) as List<dynamic>;
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      final seen = <String>{};
       final notes = decoded
           .map((item) => _fromMap(Map<String, dynamic>.from(item as Map)))
+          .where((note) => note.id.trim().isNotEmpty && seen.add(note.id))
           .toList();
 
       notes.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
