@@ -11,6 +11,7 @@ class OrahAndroidIntentService {
   static final instance = OrahAndroidIntentService._();
   static const _channel = MethodChannel('orah_notes/android');
   bool _initialized = false;
+  String? _pendingAction;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -26,11 +27,17 @@ class OrahAndroidIntentService {
         await _handle(action);
       }
     } catch (_) {}
+    final pending = _pendingAction;
+    _pendingAction = null;
+    if (pending != null) await _handle(pending);
   }
 
   Future<void> _handle(String? action) async {
     final navigator = orahNavigatorKey.currentState;
-    if (navigator == null) return;
+    if (navigator == null) {
+      _pendingAction = action;
+      return;
+    }
     final repository = await NoteRepositoryProvider.instance();
     switch (action) {
       case 'new_note':
