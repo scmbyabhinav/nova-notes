@@ -59,6 +59,8 @@ class _SearchScreenState extends State<SearchScreen> {
     final ranked = <({Note note, int score})>[];
 
     for (final note in _allNotes) {
+      if (note.isTrashed) continue;
+      if (note.isLocked && terms.isNotEmpty) continue;
       if (!_filter.archivedOnly && note.isArchived) continue;
       if (_filter.archivedOnly && !note.isArchived) continue;
       if (_filter.favoritesOnly && !note.isFavorite) continue;
@@ -415,7 +417,7 @@ class _SearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final text = note.content.isEmpty ? 'No content' : note.content;
+    final text = note.isLocked ? 'Locked note — unlock to view' : (note.content.isEmpty ? 'No content' : note.content);
 
     return Card(
       child: ListTile(
@@ -426,7 +428,7 @@ class _SearchResultTile extends StatelessWidget {
           child: Icon(Icons.note_alt_outlined),
         ),
         title: _HighlightedText(
-          text: note.title.isEmpty ? 'Untitled note' : note.title,
+          text: note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
           query: query,
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w800,
