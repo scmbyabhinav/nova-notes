@@ -74,3 +74,12 @@ have a server-side sync/verification backend.
 Do not mark the release ready solely because a workflow file exists. The
 Android build, tests and AAB must actually complete successfully, and Play
 Console configuration must be verified separately.
+
+## Automated release integrity
+- [ ] VERSION and pubspec.yaml version match.
+- [ ] Android application ID is com.orah.orah_notes.
+- [ ] Production signing is enabled only through GitHub Actions secrets.
+- [ ] A production dispatch uses production_release=true.
+- [ ] Release AAB is non-empty and passes tool/release_audit.py.
+- [ ] Billing verification architecture is present; client-side subscription dates are not authoritative.
+- [ ] Play Console product IDs exactly match the source product IDs.
