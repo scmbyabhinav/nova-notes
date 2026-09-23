@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:image_picker/image_picker.dart';\nimport '../data/repositories/note_repository_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import '../data/repositories/note_repository_provider.dart';
 
 class NovaAttachmentService {
   const NovaAttachmentService();
@@ -58,7 +59,14 @@ class NovaAttachmentService {
     return total;
   }
 
-  Future<int> cleanupOrphansFromNotes() async {\n    final repository = await NoteRepositoryProvider.instance();\n    final notes = await repository.getNotes();\n    final referenced = <String>{for (final note in notes) ...note.attachments};\n    return removeOrphans(referenced);\n  }\n\n  Future<int> removeOrphans(Set<String> referencedPaths) async {
+  Future<int> cleanupOrphansFromNotes() async {
+    final repository = await NoteRepositoryProvider.instance();
+    final notes = await repository.getNotes();
+    final referenced = <String>{for (final note in notes) ...note.attachments};
+    return removeOrphans(referenced);
+  }
+
+  Future<int> removeOrphans(Set<String> referencedPaths) async {
     var removed = 0;
     final normalized = referencedPaths.map((path) => File(path).absolute.path).toSet();
     for (final file in await listAttachments()) {
