@@ -222,6 +222,7 @@ class LocalNoteRepository implements NoteRepository {
         .toList();
 
     final existing = await getNotes();
+    if (imported.length > 100000) throw const FormatException('Backup contains too many notes.');
     final byId = <String, Note>{for (final n in existing) n.id: n};
 
     for (final note in imported) {
