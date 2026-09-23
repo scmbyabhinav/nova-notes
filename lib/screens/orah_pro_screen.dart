@@ -49,7 +49,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                   const SizedBox(height: 12),
                   Text('Capture more. Find faster.', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
                   const SizedBox(height: 8),
-                  const Text('ORAH Pro unlocks advanced tools while keeping the core local note experience free.'),
+                  const Text('ORAH Free stays useful forever: unlimited local notes, checklists, folders, tags, search, basic attachments, themes, export, backup/restore and device privacy. Pro adds advanced capture, organization and automation. Choose a recurring subscription or a one-time Lifetime license.'),
                   const SizedBox(height: 18),
                   for (final feature in const [
                     'OCR and smart capture',
@@ -57,7 +57,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                     'Advanced reminders and task tools',
                     'Premium templates and organization',
                     'Advanced export and future annotation tools',
-                    'Future encrypted sync features',
+                    'Future encrypted sync and cloud features',
                   ])
                     Padding(
                       padding: const EdgeInsets.only(bottom: 9),
@@ -105,7 +105,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Store product IDs: orah_pro_monthly, orah_pro_yearly, orah_pro_lifetime.',
+            'Billing products: monthly subscription, yearly subscription, or one-time lifetime purchase. Store product IDs: orah_pro_monthly, orah_pro_yearly, orah_pro_lifetime.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
