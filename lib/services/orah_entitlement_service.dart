@@ -3,114 +3,92 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum OrahPlan { free, monthly, yearly, lifetime }
-
 class OrahEntitlementService extends ChangeNotifier {
   OrahEntitlementService._();
   static final instance = OrahEntitlementService._();
-
   static const monthlyId = 'orah_pro_monthly';
   static const yearlyId = 'orah_pro_yearly';
   static const lifetimeId = 'orah_pro_lifetime';
-  static const _entitlementKey = 'orah_entitlement';
-  static const _purchaseDateKey = 'orah_purchase_date';
+  static const _entitledKey = 'orah_pro_entitled_v1';
+  static const _productKey = 'orah_pro_entitlement_product_v1';
 
+  final InAppPurchase _iap = InAppPurchase.instance;
   StreamSubscription<List<PurchaseDetails>>? _subscription;
-  List<ProductDetails> products = const [];
-  OrahPlan plan = OrahPlan.free;
-  bool loading = true;
-  String? error;
+  bool _initialized = false, _available = false, _pro = false;
+  String? _entitlementProduct;
+  List<ProductDetails> _products = const [];
 
-  bool get isPremium => plan != OrahPlan.free;
+  bool get isInitialized => _initialized;
+  bool get storeAvailable => _available;
+  bool get isPro => _pro;
+  String? get entitlementProduct => _entitlementProduct;
+  List<ProductDetails> get products => List.unmodifiable(_products);
+  ProductDetails? get monthly => _find(monthlyId);
+  ProductDetails? get yearly => _find(yearlyId);
+  ProductDetails? get lifetime => _find(lifetimeId);
 
   Future<void> initialize() async {
-    if (!loading) return;
+    if (_initialized) return;
     final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString(_entitlementKey);
-    plan = switch (stored) {
-      'monthly' => OrahPlan.monthly,
-      'yearly' => OrahPlan.yearly,
-      'lifetime' => OrahPlan.lifetime,
-      _ => OrahPlan.free,
-    };
-
-    _subscription = InAppPurchase.instance.purchaseStream.listen(
-      _handlePurchases,
-      onError: (Object e) {
-        error = e.toString();
-        notifyListeners();
-      },
-    );
-
+    _pro = prefs.getBool(_entitledKey) ?? false;
+    _entitlementProduct = prefs.getString(_productKey);
+    _subscription = _iap.purchaseStream.listen(_onPurchases, onError: (_) {});
     try {
-      final available = await InAppPurchase.instance.isAvailable();
-      if (available) {
-        final response = await InAppPurchase.instance.queryProductDetails(
+      _available = await _iap.isAvailable();
+      if (_available) {
+        final response = await _iap.queryProductDetails(
           {monthlyId, yearlyId, lifetimeId},
         );
-        products = response.productDetails;
-        if (response.error != null) error = response.error!.message;
+        _products = response.productDetails;
+        await _iap.restorePurchases();
       }
-    } catch (e) {
-      error = e.toString();
-    } finally {
-      loading = false;
-      notifyListeners();
-    }
-  }
-
-  ProductDetails? product(String id) {
-    for (final item in products) {
-      if (item.id == id) return item;
-    }
-    return null;
-  }
-
-  Future<void> buy(String productId) async {
-    final item = product(productId);
-    if (item == null) {
-      error = 'This plan is not available in the current store.';
-      notifyListeners();
-      return;
-    }
-    final param = PurchaseParam(productDetails: item);
-    await InAppPurchase.instance.buyNonConsumable(purchaseParam: param);
-  }
-
-  Future<void> restore() => InAppPurchase.instance.restorePurchases();
-
-  Future<void> _handlePurchases(List<PurchaseDetails> purchases) async {
-    final prefs = await SharedPreferences.getInstance();
-    for (final purchase in purchases) {
-      if (purchase.status == PurchaseStatus.purchased ||
-          purchase.status == PurchaseStatus.restored) {
-        final next = switch (purchase.productID) {
-          monthlyId => OrahPlan.monthly,
-          yearlyId => OrahPlan.yearly,
-          lifetimeId => OrahPlan.lifetime,
-          _ => plan,
-        };
-        if (next != OrahPlan.free) {
-          plan = next;
-          await prefs.setString(_entitlementKey, next.name);
-          await prefs.setString(_purchaseDateKey, DateTime.now().toIso8601String());
-        }
-      } else if (purchase.status == PurchaseStatus.error) {
-        error = purchase.error?.message ?? 'Purchase failed.';
-      }
-      if (purchase.pendingCompletePurchase) {
-        await InAppPurchase.instance.completePurchase(purchase);
-      }
-    }
+    } catch (_) {}
+    _initialized = true;
     notifyListeners();
   }
 
-  String get planLabel => switch (plan) {
-    OrahPlan.monthly => 'Pro Monthly',
-    OrahPlan.yearly => 'Pro Yearly',
-    OrahPlan.lifetime => 'Pro Lifetime',
-    OrahPlan.free => 'Free',
-  };
+  Future<bool> buy(ProductDetails product) async {
+    if (!_initialized) await initialize();
+    if (!_available) return false;
+    try {
+      return await _iap.buyNonConsumable(
+        purchaseParam: PurchaseParam(productDetails: product),
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> restore() async {
+    if (!_initialized) await initialize();
+    if (!_available) return;
+    try { await _iap.restorePurchases(); } catch (_) {}
+  }
+
+  Future<void> _onPurchases(List<PurchaseDetails> purchases) async {
+    for (final purchase in purchases) {
+      final valid = purchase.status == PurchaseStatus.purchased ||
+          purchase.status == PurchaseStatus.restored;
+      if (valid && {monthlyId, yearlyId, lifetimeId}.contains(purchase.productID)) {
+        _pro = true;
+        _entitlementProduct = purchase.productID;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(_entitledKey, true);
+        await prefs.setString(_productKey, purchase.productID);
+        notifyListeners();
+      }
+      if (purchase.pendingCompletePurchase) {
+        try { await _iap.completePurchase(purchase); } catch (_) {}
+      }
+    }
+  }
+
+  ProductDetails? _find(String id) {
+    for (final product in _products) {
+      if (product.id == id) return product;
+    }
+    return null;
+  }
 
   @override
   void dispose() {
