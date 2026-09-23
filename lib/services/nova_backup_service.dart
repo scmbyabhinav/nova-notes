@@ -83,7 +83,11 @@ class NovaBackupService {
       final base = p.basenameWithoutExtension(name);
       final ext = p.extension(name);
       var target = File(p.join(root.path, name));
-      if (await target.exists()) target = File(p.join(root.path, '${DateTime.now().microsecondsSinceEpoch}-$base$ext'));
+      var suffix = 0;
+      while (await target.exists()) {
+        suffix++;
+        target = File(p.join(root.path, '${DateTime.now().microsecondsSinceEpoch}-$suffix-$base$ext'));
+      }
       await target.writeAsBytes(file.content as List<int>, flush: true);
       extracted[file.name] = target.path;
     }
