@@ -133,7 +133,12 @@ class NovaBackupService {
           throw const FormatException('Invalid Orah backup: note attachments are malformed.');
         }
         final paths = rawAttachments is List ? rawAttachments.whereType<String>().toList() : const <String>[];
-        map['attachments'] = paths.map((x) => extracted[x]).whereType<String>().toList();
+        for (final path in paths) {
+          if (!path.startsWith('attachments/') || !extracted.containsKey(path)) {
+            throw const FormatException('Invalid Orah backup: attachment reference is missing.');
+          }
+        }
+        map['attachments'] = paths.map((x) => extracted[x]!).toList();
         return map;
       }).toList();
 
