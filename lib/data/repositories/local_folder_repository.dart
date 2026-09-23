@@ -52,9 +52,11 @@ class LocalFolderRepository implements FolderRepository {
 
     if (folder.id.trim().isEmpty) throw const FormatException('Folder ID cannot be empty.');
     if (folder.name.trim().isEmpty) throw const FormatException('Folder name cannot be empty.');
-    if (folder.name.trim().length > 80) throw const FormatException('Folder name is too long.');
+    final normalizedName = folder.name.trim();
+    if (normalizedName.length > 80) throw const FormatException('Folder name is too long.');
+    final normalizedFolder = folder.name == normalizedName ? folder : folder.copyWith(name: normalizedName);
     if (index == -1) {
-      folders.add(folder);
+      folders.add(normalizedFolder);
     } else {
       folders[index] = folder;
     }
