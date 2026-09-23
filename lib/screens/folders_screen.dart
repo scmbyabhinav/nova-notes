@@ -75,6 +75,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
     controller.dispose();
 
     if (name == null || name.isEmpty) return;
+    if (name.length > 80) return;
 
     final repository = await FolderRepositoryProvider.instance();
     await repository.saveFolder(
