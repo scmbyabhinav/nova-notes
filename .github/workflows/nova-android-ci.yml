@@ -98,6 +98,9 @@ jobs:
       - name: Test
         run: flutter test
 
+      - name: Record Flutter build metadata
+        run: flutter doctor -v
+
       - name: Build debug APK
         run: flutter build apk --debug
 
