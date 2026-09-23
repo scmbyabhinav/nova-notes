@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
 
 import '../data/repositories/note_repository.dart';
@@ -191,6 +192,10 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
         await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
+        await OrahReminderService.instance.cancel(note.id);
+        for (final item in note.checklistItems) {
+          await OrahReminderService.instance.cancel('checklist:${item.id}');
+        }
         await _loadNotes();
         return;
     }
