@@ -130,7 +130,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _removeChecklistItem(int index) async {
     final removed = _checklistItems[index];
-    await OrahReminderService.instance.cancel(removed.id);
+    await OrahReminderService.instance.cancel('checklist:${removed.id}');
     setState(() { _checklistItems.removeAt(index); _hasChanges = true; });
     await _save();
   }
@@ -206,9 +206,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await widget.repository.saveNote(note);
     for (final item in _checklistItems) {
       if (item.dueAt != null && !item.isDone) {
-        await OrahReminderService.instance.schedule(noteId: item.id, title: item.text, when: item.dueAt!);
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!);
       } else {
-        await OrahReminderService.instance.cancel(item.id);
+        await OrahReminderService.instance.cancel('checklist:${item.id}');
       }
     }
     if (_dueAt != null) { await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!); } else { await OrahReminderService.instance.cancel(_noteId); }
