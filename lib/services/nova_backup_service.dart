@@ -56,7 +56,9 @@ class NovaBackupService {
     final notesFile = archive.findFile('data/notes.json');
     if (notesFile == null) throw const FormatException('Invalid Orah backup: notes.json missing.');
     final raw = jsonDecode(utf8.decode(notesFile.content as List<int>));
-    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid Orah portable backup.');\n    final backupVersion = raw['version'] is num ? (raw['version'] as num).toInt() : 0;\n    if (backupVersion <= 0 || backupVersion > version) throw const FormatException('Unsupported Orah backup version.');
+    if (raw is! Map || raw['format'] != format) throw const FormatException('Invalid Orah portable backup.');
+    final backupVersion = raw['version'] is num ? (raw['version'] as num).toInt() : 0;
+    if (backupVersion <= 0 || backupVersion > version) throw const FormatException('Unsupported Orah backup version.');
     final extracted = <String, String>{};
     final root = await _attachmentDirectory();
     for (final file in archive.files) {
