@@ -13,7 +13,8 @@ class OrahReminderService {
   static final instance = OrahReminderService._();
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
-  bool _initialized = false;\n  String? _pendingLaunchPayload;
+  bool _initialized = false;
+  String? _pendingLaunchPayload;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -64,5 +65,12 @@ class OrahReminderService {
     );
   }
 
-  Future<void> cancel(String noteId) async {\n    if (!_initialized) await initialize();\n    await Future.wait([\n      _plugin.cancel(id: _notificationId('note:$noteId')),\n      // Clear reminders created by older Orah builds before IDs were namespaced.\n      _plugin.cancel(id: _notificationId(noteId)),\n    ]);\n  }
+  Future<void> cancel(String noteId) async {
+    if (!_initialized) await initialize();
+    await Future.wait([
+      _plugin.cancel(id: _notificationId('note:$noteId')),
+      // Clear reminders created by older Orah builds before IDs were namespaced.
+      _plugin.cancel(id: _notificationId(noteId)),
+    ]);
+  }
 }
