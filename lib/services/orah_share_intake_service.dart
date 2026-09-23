@@ -32,12 +32,12 @@ class OrahShareIntakeService {
     if (navigator == null) return;
 
     final textItems = media
-        .where((item) => item.type == SharedMediaType.text)
+        .where((item) => item.type == SharedMediaType.text || item.type == SharedMediaType.url)
         .map((item) => item.path.trim())
         .where((value) => value.isNotEmpty)
         .toList();
 
-    final fileItems = media.where((item) => item.type != SharedMediaType.text).toList();
+    final fileItems = media.where((item) => item.type != SharedMediaType.text && item.type != SharedMediaType.url).toList();
     final repository = await NoteRepositoryProvider.instance();
 
     if (fileItems.isEmpty) {
@@ -45,7 +45,7 @@ class OrahShareIntakeService {
         MaterialPageRoute(
           builder: (_) => NoteEditorScreen(
             repository: repository,
-            initialTitle: 'Shared from another app',
+            initialTitle: textItems.isEmpty ? 'Shared from another app' : textItems.first.length > 60 ? '${textItems.first.substring(0, 60)}…' : textItems.first,
             initialContent: textItems.join('\n\n'),
           ),
         ),
