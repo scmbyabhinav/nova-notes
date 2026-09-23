@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 class OrahSmartDetection {
   OrahSmartDetection._();
 
-  static final _amount = RegExp(r'(?:₹|INR|Rs\.?|USD|\$|EUR|€|GBP|£)\s?\d[\d,]*(?:\.\d{1,2})?', caseSensitive: false);
+  static final _amount = RegExp(r'(?:₹|INR|Rs\.?|USD|\$|EUR|€|GBP|£)\s?\d(?:[\d,]*\d)?(?:\.\d{1,2})?', caseSensitive: false);
   static final _date = RegExp(r'\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}[/-]\d{1,2}[/-]\d{1,2})\b');
 
   static List<String> amounts(String text) => _amount.allMatches(text).map((m) => m.group(0)!).toList();
