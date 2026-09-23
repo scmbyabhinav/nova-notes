@@ -18,12 +18,6 @@ import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/orah_reminder_service.dart';
-import '../services/orah_ocr_service.dart';
-import '../services/orah_feature_gate.dart';
-import '../services/orah_premium_gate.dart';
-import '../services/orah_smart_detection.dart';
-import '../core/services/nova_security_service.dart';
-import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
   const NoteEditorScreen({
@@ -60,16 +54,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isPinned = false;
   bool _isFavorite = false;
   bool _isArchived = false;
-  DateTime? _dueAt;
-  int? _noteColor;
   String? _folderId;
   List<String> _tags = const [];
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
-  bool _isLocked = false;
-  bool _privateUnlocked = true;
-  bool _unlocking = false;
 
   @override
   void initState() {
@@ -87,11 +76,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
     _isArchived = existing?.isArchived ?? false;
-    _isLocked = existing?.isLocked ?? false;
-    _privateUnlocked = !_isLocked;
-    if (_isLocked) WidgetsBinding.instance.addPostFrameCallback((_) => _unlockPrivateNote());
-    _dueAt = existing?.dueAt;
-    _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _tags = [...(existing?.tags ?? const [])];
     _attachments = [...(existing?.attachments ?? widget.initialAttachments)];
@@ -144,8 +128,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _removeChecklistItem(int index) async {
-    final removed = _checklistItems[index];
-    await OrahReminderService.instance.cancel('checklist:${removed.id}');
     setState(() { _checklistItems.removeAt(index); _hasChanges = true; });
     await _save();
   }
@@ -160,93 +142,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
-  Future<void> _unlockPrivateNote() async {
-    if (!_isLocked || _unlocking || !mounted) return;
-    setState(() => _unlocking = true);
-    final security = NovaSecurityService();
-    var ok = false;
-    if (await security.isBiometricEnabled() && await security.canUseBiometrics()) {
-      ok = await security.authenticateBiometric();
-    }
-    if (!ok && await security.hasPin()) {
-      final controller = TextEditingController();
-      final pin = await showDialog<String>(
-        context: context,
-        barrierDismissible: false,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Private note'),
-          content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: 'Enter PIN')),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: const Text('Unlock')),
-          ],
-        ),
-      );
-      controller.dispose();
-      if (pin != null) ok = await security.verifyPin(pin);
-    }
-    if (!mounted) return;
-    if (ok) {
-      setState(() { _unlocking = false; _privateUnlocked = true; });
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
-
-  Future<void> _lockNote() async {
-    final security = NovaSecurityService();
-    if (!await security.hasPin()) {
-      final controller = TextEditingController();
-      final pin = await showDialog<String>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Create PIN'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            obscureText: true,
-            maxLength: 8,
-            decoration: const InputDecoration(labelText: '4–8 digit PIN'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (RegExp(r'^\\d{4,8}$').hasMatch(controller.text)) {
-                  Navigator.pop(dialogContext, controller.text);
-                }
-              },
-              child: const Text('Create'),
-            ),
-          ],
-        ),
-      );
-      controller.dispose();
-      if (pin == null) return;
-      await security.setPin(pin);
-    }
-    if (!mounted) return;
-    setState(() {
-      _isLocked = true;
-      _privateUnlocked = false;
-      _hasChanges = true;
-    });
-    await _save();
-  }
-
   String _newId() =>
       '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
-    // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
-    // focus stable and avoids inherited-widget churn during autosave.
     _hasChanges = true;
     _saveTimer?.cancel();
     _saveTimer = Timer(const Duration(milliseconds: 600), _save);
+
+    if (mounted) setState(() {});
   }
 
   Future<void> _save() async {
@@ -277,8 +181,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
-            color: _noteColor,
-            dueAt: _dueAt,
           )
         : widget.note!.copyWith(
             title: title.isEmpty ? 'Untitled note' : title,
@@ -292,19 +194,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
-            color: _noteColor,
-            dueAt: _dueAt,
           );
 
     await widget.repository.saveNote(note);
-    for (final item in _checklistItems) {
-      if (item.dueAt != null && !item.isDone) {
-        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: _noteId);
-      } else {
-        await OrahReminderService.instance.cancel('checklist:${item.id}');
-      }
-    }
-    if (_dueAt != null) { await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!); } else { await OrahReminderService.instance.cancel(_noteId); }
     _hasChanges = false;
 
     if (mounted) setState(() => _saving = false);
@@ -347,144 +239,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _hasChanges = true;
     });
 
-    await _save();
-  }
-
-  Future<void> _detectSmartInfo() async {
-    final text = _titleController.text + '\n' + _contentController.text + '\n' + _checklistItems.map((item) => item.text).join('\n');
-    final dates = OrahSmartDetection.dates(text);
-    final amounts = OrahSmartDetection.amounts(text);
-    if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Smart details'),
-        content: Text(OrahSmartDetection.summary(text)),
-        actions: [
-          if (dates.isNotEmpty)
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _setDetectedReminder(dates.first);
-              },
-              child: const Text('Use first date as reminder'),
-            ),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done')),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _setDetectedReminder(DateTime date) async {
-    final now = DateTime.now();
-    if (date.isBefore(now)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Detected date is already in the past.')));
-      return;
-    }
-    setState(() { _dueAt = date; _hasChanges = true; });
-    await _save();
-  }
-
-  Future<void> _scanTextFromImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked == null || !mounted) return;
-    try {
-      final text = await OrahOcrService.instance.extractText(File(picked.path));
-      if (!mounted) return;
-      if (text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No readable text found.')));
-        return;
-      }
-      final current = _contentController.text.trim();
-      final combined = current.isEmpty ? text : '$current\n\n$text';
-      _contentController.value = TextEditingValue(
-        text: combined,
-        selection: TextSelection.collapsed(offset: combined.length),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Text extracted from image.')));
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not read text from that image.')));
-    }
-  }
-
-  Future<void> _setNoteColor(Color? color) async {
-    setState(() {
-      _noteColor = color?.value;
-      _hasChanges = true;
-    });
-    await _save();
-  }
-
-  Future<void> _showNoteColorPicker() async {
-    const colors = <Color?>[null, Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-          child: Wrap(
-            spacing: 14,
-            runSpacing: 14,
-            children: [
-              for (final color in colors)
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    _setNoteColor(color);
-                  },
-                  borderRadius: BorderRadius.circular(28),
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: color ?? Theme.of(sheetContext).colorScheme.surface,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: _noteColor == color?.value ? Theme.of(sheetContext).colorScheme.primary : Theme.of(sheetContext).colorScheme.outlineVariant, width: 2),
-                    ),
-                    child: color == null ? const Icon(Icons.format_color_reset_outlined) : null,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _setDueDate() async {
-    final now = DateTime.now();
-    final initial = _dueAt ?? now.add(const Duration(hours: 1));
-    final picked = await showDatePicker(context: context, initialDate: initial.isBefore(now) ? now : initial, firstDate: now, lastDate: DateTime(now.year + 10));
-    if (picked == null || !mounted) return;
-    final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
-    if (time == null) return;
-    setState(() { _dueAt = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute); _hasChanges = true; });
-    await _save();
-  }
-
-  Future<void> _clearDueDate() async { setState(() { _dueAt = null; _hasChanges = true; }); await _save(); }
-
-  Future<void> _showTemplates() async {
-    final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
-    final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
-    if (choice == null || !mounted) return;
-    final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
-    if (hasContent) {
-      final replace = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Replace current note?'),
-          content: const Text('This template will replace the current title and content.'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Replace')),
-          ],
-        ),
-      );
-      if (replace != true || !mounted) return;
-    }
-    setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _hasChanges = true; });
     await _save();
   }
 
@@ -592,10 +346,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _addFiles() async {
     try {
-      final result = await FilePicker.pickFiles();
-      if (result.isEmpty) return;
+      final files = await FilePicker.pickFiles(allowMultiple: true);
+      if (files.isEmpty) return;
       final imported = <String>[];
-      for (final file in result) {
+      for (final file in files) {
         if (file.path == null) continue;
         imported.add(
           await const NovaAttachmentService().importFile(file.path!),
@@ -818,13 +572,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               switch (value) {
-                case 'ocr': await _scanTextFromImage(); return;
-                case 'template': await _showTemplates(); return;
-                case 'reminder': await _setDueDate(); return;
-                case 'clear_reminder': await _clearDueDate(); return;
-                case 'color':
-                  await _showNoteColorPicker();
-                  return;
                 case 'export':
                   await _save();
                   if (!mounted) return;
@@ -847,8 +594,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         isPinned: _isPinned,
                         isFavorite: _isFavorite,
                         isArchived: _isArchived,
-                        isTrashed: false,
-                        dueAt: _dueAt,
                       ),
                     ),
                   );
@@ -889,15 +634,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     _isFavorite ? 'Remove favorite' : 'Add to favorites',
                   ),
                 ),
-              ),
-              const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
-              const PopupMenuItem(value: 'smart', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Detect dates & amounts'))),
-              const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
-              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
-              if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
-              const PopupMenuItem(
-                value: 'color',
-                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
               ),
               const PopupMenuItem(
                 value: 'organize',
@@ -1144,15 +880,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 }
 
 class _ChecklistEditor extends StatelessWidget {
-  const _ChecklistEditor({
-    required this.items,
-    required this.onAdd,
-    required this.onToggle,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onReorder,
-  });
-
+  const _ChecklistEditor({required this.items, required this.onAdd, required this.onToggle, required this.onEdit, required this.onDelete, required this.onReorder});
   final List<ChecklistItem> items;
   final VoidCallback onAdd;
   final Future<void> Function(int, bool) onToggle;
@@ -1164,137 +892,26 @@ class _ChecklistEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final done = items.where((item) => item.isDone).length;
     final progress = items.isEmpty ? 0.0 : done / items.length;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (items.isNotEmpty)
-          Row(
-            children: [
-              Expanded(child: LinearProgressIndicator(value: progress)),
-              const SizedBox(width: 12),
-              Text('$done/${items.length}'),
-            ],
-          ),
-        if (items.isNotEmpty) const SizedBox(height: 12),
-        if (items.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 36),
-            child: Column(
-              children: [
-                Icon(
-                  Icons.checklist_rounded,
-                  size: 52,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(height: 12),
-                const Text('Your checklist is empty'),
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: onAdd,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add first task'),
-                ),
-              ],
-            ),
-          )
-        else
-          Column(
-            children: [
-              for (var index = 0; index < items.length; index++)
-                _ChecklistRow(
-                  key: ValueKey(items[index].id),
-                  item: items[index],
-                  canMoveUp: index > 0,
-                  canMoveDown: index < items.length - 1,
-                  onToggle: (value) => onToggle(index, value),
-                  onEdit: () => onEdit(index),
-                  onDelete: () => onDelete(index),
-                  onMoveUp: index > 0
-                      ? () => onReorder(index, index - 1)
-                      : null,
-                  onMoveDown: index < items.length - 1
-                      ? () => onReorder(index, index + 1)
-                      : null,
-                ),
-            ],
-          ),
-        if (items.isNotEmpty)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add),
-              label: const Text('Add task'),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _ChecklistRow extends StatelessWidget {
-  const _ChecklistRow({
-    super.key,
-    required this.item,
-    required this.canMoveUp,
-    required this.canMoveDown,
-    required this.onToggle,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onMoveUp,
-    required this.onMoveDown,
-  });
-
-  final ChecklistItem item;
-  final bool canMoveUp;
-  final bool canMoveDown;
-  final ValueChanged<bool> onToggle;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final VoidCallback? onMoveUp;
-  final VoidCallback? onMoveDown;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 6),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-        leading: Checkbox(
-          value: item.isDone,
-          onChanged: (value) => onToggle(value ?? false),
-        ),
-        title: Text(
-          item.text,
-          style: TextStyle(
-            decoration: item.isDone ? TextDecoration.lineThrough : null,
-          ),
-        ),
-        onTap: () => onToggle(!item.isDone),
-        onLongPress: onEdit,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              tooltip: 'Move up',
-              onPressed: canMoveUp ? onMoveUp : null,
-              icon: const Icon(Icons.keyboard_arrow_up_rounded),
-            ),
-            IconButton(
-              tooltip: 'Move down',
-              onPressed: canMoveDown ? onMoveDown : null,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-            ),
-            IconButton(
-              tooltip: 'Delete task',
-              onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline_rounded),
-            ),
-          ],
-        ),
-      ),
-    );
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (items.isNotEmpty) Row(children: [Expanded(child: LinearProgressIndicator(value: progress)), const SizedBox(width: 12), Text('$done/${items.length}')]),
+      if (items.isNotEmpty) const SizedBox(height: 12),
+      if (items.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 36), child: Column(children: [
+        Icon(Icons.checklist_rounded, size: 52, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(height: 12), const Text('Your checklist is empty'), const SizedBox(height: 8),
+        FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add first task')),
+      ]))
+      else ReorderableListView.builder(
+        shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: items.length, onReorder: onReorder,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return ListTile(key: ValueKey(item.id), contentPadding: EdgeInsets.zero,
+            leading: Checkbox(value: item.isDone, onChanged: (value) => onToggle(index, value ?? false)),
+            title: Text(item.text, style: TextStyle(decoration: item.isDone ? TextDecoration.lineThrough : null)),
+            onTap: () => onToggle(index, !item.isDone), onLongPress: () => onEdit(index),
+            trailing: IconButton(tooltip: 'Delete task', onPressed: () => onDelete(index), icon: const Icon(Icons.delete_outline_rounded)));
+        }),
+      if (items.isNotEmpty) Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add task'))),
+    ]);
   }
 }
 
