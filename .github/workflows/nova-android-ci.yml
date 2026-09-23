@@ -49,11 +49,8 @@ jobs:
           test -f tool/release_audit.py
           test -f tool/configure_release_signing.py
           grep -q '^name: orah_notes$' pubspec.yaml
-          python3 - <<'PY'
-          from pathlib import Path
-          version_line = next((line.strip() for line in Path('pubspec.yaml').read_text().splitlines() if line.startswith('version:')), '')
-          assert version_line == 'version: 1.0.0+1', version_line
-          PY
+          version="$(awk '$1 == "version:" {print $2; exit}' pubspec.yaml | tr -d '\r')"
+          test "$version" = '1.0.0+1'
       - name: Generate Android host
         run: flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
       - name: Prepare ORAH Android host
