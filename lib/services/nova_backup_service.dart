@@ -75,7 +75,9 @@ class NovaBackupService {
       await target.writeAsBytes(file.content as List<int>, flush: true);
       extracted[file.name] = target.path;
     }
-    final noteList = (raw['notes'] as List<dynamic>? ?? []).map((item) {
+    final rawNoteList = raw['notes'];
+    if (rawNoteList is! List) throw const FormatException('Invalid Orah backup: notes are missing.');
+    final noteList = rawNoteList.map((item) {
       final map = Map<String, dynamic>.from(item as Map);
       final paths = List<String>.from(map['attachments'] as List? ?? const []);
       map['attachments'] = paths.map((x) => extracted[x]).whereType<String>().toList();
