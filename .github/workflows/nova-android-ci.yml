@@ -104,6 +104,12 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
 
+      - name: Verify Android host version markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'com.orah.orah_notes' android/app/build.gradle.kts
+
       - name: Build release APK
         run: flutter build apk --release
 
