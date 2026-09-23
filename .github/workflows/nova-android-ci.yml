@@ -31,11 +31,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
+      - name: Verify Java
+        run: java -version
 
       - name: Flutter version
         run: flutter --version
@@ -56,6 +65,13 @@ jobs:
           grep -q 'class MainActivity' android/app/src/main/kotlin/com/orah/orah_notes/MainActivity.kt
           grep -q 'OrahQuickWidgetProvider' android/app/src/main/AndroidManifest.xml
           grep -q 'android.intent.action.SEND' android/app/src/main/AndroidManifest.xml
+
+      - name: Verify Gradle wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x android/gradlew
+          test -f android/gradle/wrapper/gradle-wrapper.properties
 
       - name: Enable core library desugaring
         shell: bash
@@ -82,6 +98,13 @@ jobs:
               )
           p.write_text(s)
           PY
+
+      - name: Android Gradle diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd android
+          ./gradlew --version
 
       - name: Release source audit
         run: python3 tool/release_audit.py
