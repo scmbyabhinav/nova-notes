@@ -23,6 +23,7 @@ class OrahEntitlementService extends ChangeNotifier {
   DateTime? expiresAt;
   bool loading = true;
   String? error;
+  Future<void>? _initializationFuture;
 
   bool get isPremium {
     if (plan == OrahPlan.lifetime) return true;
@@ -38,8 +39,19 @@ class OrahEntitlementService extends ChangeNotifier {
     OrahPlan.free => 'Free',
   };
 
-  Future<void> initialize() async {
-    if (!loading) return;
+  Future<void> initialize() {
+    final inFlight = _initializationFuture;
+    if (inFlight != null) return inFlight;
+    if (!loading) return Future<void>.value();
+
+    final future = _initialize();
+    _initializationFuture = future;
+    return future.whenComplete(() {
+      _initializationFuture = null;
+    });
+  }
+
+  Future<void> _initialize() async {
     final prefs = await SharedPreferences.getInstance();
     _loadCachedEntitlement(prefs);
 
