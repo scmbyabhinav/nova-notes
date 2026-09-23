@@ -23,6 +23,12 @@ The GitHub workflow generates the Android host and builds a debug APK, release A
 
 ## Android / Play release
 
+- CI uses Java 17 and the generated Gradle wrapper.
+- Android identity is verified as `com.orah.orah_notes`.
+- APK/AAB output directories and archive integrity are checked in CI.
+- Release artifact checksums are retained with the build artifacts.
+
+
 1. Verify the generated Android application ID in the CI build output.
 2. Configure a unique release signing key. Never commit the keystore or
    passwords to GitHub.
