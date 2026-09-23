@@ -93,6 +93,7 @@ class NovaBackupService {
     }
     final rawNoteList = raw['notes'];
     if (rawNoteList is! List) throw const FormatException('Invalid Orah backup: notes are missing.');
+    if (rawNoteList.length > 100000) throw const FormatException('Backup contains too many notes.');
     final noteList = rawNoteList.map((item) {
       final map = Map<String, dynamic>.from(item as Map);
       final paths = List<String>.from(map['attachments'] as List? ?? const []);
