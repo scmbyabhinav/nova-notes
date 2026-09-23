@@ -60,6 +60,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
   bool _isLocked = false;
+  bool _privateUnlocked = true;
   bool _unlocking = false;
 
   @override
@@ -79,6 +80,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _isFavorite = existing?.isFavorite ?? false;
     _isArchived = existing?.isArchived ?? false;
     _isLocked = existing?.isLocked ?? false;
+    _privateUnlocked = !_isLocked;
     if (_isLocked) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _unlockPrivateNote());
     }
@@ -179,7 +181,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
     if (!mounted) return;
     if (ok) {
-      setState(() => _unlocking = false);
+      setState(() { _unlocking = false; _privateUnlocked = true; });
     } else {
       _unlocking = false;
       Navigator.of(context).pop();
@@ -188,10 +190,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _togglePrivateNote() async {
     final security = NovaSecurityService();
-    if (_isLocked) {
-      await _unlockPrivateNote();
-      return;
-    }
+    if (_isLocked) return;
     if (!await security.hasPin()) {
       final controller = TextEditingController();
       final pin = await showDialog<String>(
@@ -728,8 +727,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    if (_isLocked && _unlocking) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_isLocked && !_privateUnlocked) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Private note')),
+        body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.lock_rounded, size: 56),
+          const SizedBox(height: 16),
+          Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
+          const Text('Unlock with your biometric or PIN to view it.', textAlign: TextAlign.center),
+          const SizedBox(height: 20),
+          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? 'Unlocking…' : 'Unlock note')),
+        ]))),
+      );
     }
 
     return Scaffold(
@@ -827,7 +837,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'lock',
-                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(_isLocked ? Icons.lock_open_outlined : Icons.lock_outline), title: Text(_isLocked ? 'Unlock note' : 'Lock note')),
+                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(_isLocked ? Icons.lock_open_outlined : Icons.lock_outline), title: Text(_isLocked ? 'Private note' : 'Lock note')),
               ),
               const PopupMenuItem(
                 value: 'export',
@@ -1307,7 +1317,7 @@ class _ToolButton extends StatelessWidget {
       if (pin == null) return;
       await security.setPin(pin);
     }
-    setState(() => _isLocked = true);
+    setState(() { _isLocked = true; _privateUnlocked = false; });
     _hasChanges = true;
     await _save();
     if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Note locked.')));
