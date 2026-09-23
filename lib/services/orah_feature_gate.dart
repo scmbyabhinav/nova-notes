@@ -15,7 +15,18 @@ enum OrahFeature {
 class OrahFeatureGate {
   const OrahFeatureGate._();
 
-  static bool isPremium(OrahFeature feature) => true;
+  static bool isPremium(OrahFeature feature) => switch (feature) {
+    // These are the currently monetized advanced tools.
+    OrahFeature.ocr ||
+    OrahFeature.advancedSearch ||
+    OrahFeature.smartCapture ||
+    OrahFeature.advancedReminders ||
+    OrahFeature.premiumTemplates ||
+    OrahFeature.advancedExport ||
+    OrahFeature.attachmentTools ||
+    OrahFeature.encryptedBackup ||
+    OrahFeature.futureSync => true,
+  };
 
   static bool allowed(OrahFeature feature) =>
       !isPremium(feature) || OrahEntitlementService.instance.isPremium;
