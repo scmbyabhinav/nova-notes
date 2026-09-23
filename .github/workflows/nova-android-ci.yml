@@ -105,3 +105,5 @@ jobs:
           name: orah-release-aab-\${{ github.sha }}
           path: build/app/outputs/bundle/release/app-release.aab
           retention-days: 14
+
+# CI trigger checkpoint: keep the workflow path exercised on the repair PR.
