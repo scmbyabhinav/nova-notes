@@ -32,7 +32,7 @@ class _TrashScreenState extends State<TrashScreen> {
     }
     for (final item in note.checklistItems) {
       if (item.dueAt != null && !item.isDone && item.dueAt!.isAfter(DateTime.now())) {
-        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!);
+        await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: note.id);
       }
     }
     await _load();
