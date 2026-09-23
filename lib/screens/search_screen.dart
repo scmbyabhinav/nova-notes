@@ -76,7 +76,7 @@ class _SearchScreenState extends State<SearchScreen> {
       final title = note.title.toLowerCase();
       final content = note.content.toLowerCase();
       final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
-      final haystack = [title, content, ...tags].join(' ');
+      final checklist = note.checklistItems.map((item) => item.text.toLowerCase()).toList();\n      final haystack = [title, content, ...tags, ...checklist].join(' ');
 
       if (!terms.every(haystack.contains)) continue;
 
@@ -92,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
         } else if (tags.any((tag) => tag.contains(term))) {
           score += 200;
         }
-        if (content.contains(term)) score += 100;
+        if (content.contains(term)) score += 100;\n        if (checklist.any((item) => item.contains(term))) score += 125;
       }
 
       if (title.startsWith(query)) score += 250;
