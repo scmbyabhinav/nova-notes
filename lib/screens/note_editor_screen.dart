@@ -317,6 +317,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _detectSmartInfo() async {
+    if (!await OrahPremiumGate.check(context, OrahFeature.smartCapture)) return;
     final text = _titleController.text + '\n' + _contentController.text + '\n' + _checklistItems.map((item) => item.text).join('\n');
     final dates = OrahSmartDetection.dates(text);
     final amounts = OrahSmartDetection.amounts(text);
