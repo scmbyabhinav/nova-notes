@@ -80,5 +80,8 @@ Console configuration must be verified separately.
 - [ ] Production signing is enabled only through GitHub Actions secrets.
 - [ ] A production dispatch uses production_release=true.
 - [ ] Release AAB is non-empty and passes tool/release_audit.py.
+- [ ] APK and AAB archives pass CI integrity checks.
+- [ ] CI artifact SHA-256 checksums are retained.
+- [ ] Production AAB is signed only through the protected upload-key path.
 - [ ] Billing verification architecture is present; client-side subscription dates are not authoritative.
 - [ ] Play Console product IDs exactly match the source product IDs.
