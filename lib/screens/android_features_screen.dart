@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class AndroidFeaturesScreen extends StatelessWidget {
@@ -13,33 +12,38 @@ class AndroidFeaturesScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text('NOVA on Android', style: theme.textTheme.headlineSmall),
+          Text(
+            'ORAH on Android',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
-            'Fast capture, sharing and home-screen access are being prepared '
-            'as native Android integrations.',
+            'Fast capture, sharing and home-screen access are built into ORAH '
+            'through native Android integrations.',
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 20),
           _FeatureTile(
             icon: Icons.widgets_outlined,
             title: 'Home-screen widget',
-            subtitle: 'Quickly create a note without opening the full app.',
+            subtitle: 'Create a note, checklist or open search from your home screen.',
           ),
           _FeatureTile(
             icon: Icons.bolt_outlined,
             title: 'Quick Note shortcut',
-            subtitle: 'A launcher shortcut for instant capture.',
+            subtitle: 'Launch ORAH directly into instant capture.',
           ),
           _FeatureTile(
             icon: Icons.share_outlined,
-            title: 'Share to NOVA',
-            subtitle: 'Send text and supported content into a new note.',
+            title: 'Share to ORAH',
+            subtitle: 'Send supported text and content into a new ORAH note.',
           ),
           _FeatureTile(
-            icon: Icons.notifications_none_outlined,
-            title: 'Reminder-ready architecture',
-            subtitle: 'Prepared for Android notification/reminder integration.',
+            icon: Icons.notifications_active_outlined,
+            title: 'Reminders',
+            subtitle: 'Create note and checklist reminders without a backend.',
           ),
           const SizedBox(height: 20),
           Card(
@@ -48,12 +52,12 @@ class AndroidFeaturesScreen extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info_outline),
+                  const Icon(Icons.check_circle_outline_rounded),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Native Android wiring happens after Flutter generates '
-                      'the Android platform project. No backend is required.',
+                      'These integrations are local Android features. '
+                      'No backend is required for them.',
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),
