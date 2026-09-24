@@ -15,6 +15,8 @@ if not ANDROID.exists():
 
 RES_XML.mkdir(parents=True, exist_ok=True)
 RES_LAYOUT.mkdir(parents=True, exist_ok=True)
+RES_VALUES = MAIN / "res" / "values"
+RES_VALUES.mkdir(parents=True, exist_ok=True)
 
 manifest = MANIFEST.read_text()
 if not MANIFEST.exists():
@@ -260,14 +262,25 @@ class OrahQuickWidgetProvider : AppWidgetProvider() {
 </LinearLayout>
 ''')
 
+RES_VALUES.joinpath("orah_strings.xml").write_text('''<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="orah_shortcut_new_note_short">New note</string>
+    <string name="orah_shortcut_new_note_long">Create a new ORAH note</string>
+    <string name="orah_shortcut_new_checklist_short">New checklist</string>
+    <string name="orah_shortcut_new_checklist_long">Create a new ORAH checklist</string>
+    <string name="orah_shortcut_search_short">Search</string>
+    <string name="orah_shortcut_search_long">Search ORAH</string>
+</resources>
+''')
+
 (RES_XML / "orah_shortcuts.xml").write_text('''<?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:shortcutId="new_note"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"
-        android:shortcutShortLabel="New note"
-        android:shortcutLongLabel="Create a new ORAH note">
+        android:shortcutShortLabel="@string/orah_shortcut_new_note_short"
+        android:shortcutLongLabel="@string/orah_shortcut_new_note_long">
         <intent
             android:action="com.orah.orah_notes.NEW_NOTE"
             android:targetPackage="com.orah.orah_notes"
@@ -277,8 +290,8 @@ class OrahQuickWidgetProvider : AppWidgetProvider() {
         android:shortcutId="new_checklist"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"
-        android:shortcutShortLabel="New checklist"
-        android:shortcutLongLabel="Create a new ORAH checklist">
+        android:shortcutShortLabel="@string/orah_shortcut_new_checklist_short"
+        android:shortcutLongLabel="@string/orah_shortcut_new_checklist_long">
         <intent
             android:action="com.orah.orah_notes.NEW_CHECKLIST"
             android:targetPackage="com.orah.orah_notes"
@@ -288,8 +301,8 @@ class OrahQuickWidgetProvider : AppWidgetProvider() {
         android:shortcutId="search"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"
-        android:shortcutShortLabel="Search"
-        android:shortcutLongLabel="Search ORAH">
+        android:shortcutShortLabel="@string/orah_shortcut_search_short"
+        android:shortcutLongLabel="@string/orah_shortcut_search_long">
         <intent
             android:action="com.orah.orah_notes.SEARCH"
             android:targetPackage="com.orah.orah_notes"
