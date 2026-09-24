@@ -1,0 +1,20 @@
+name: Orah Production Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch-production-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch production build on attack-125-ci-fix
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api             --method POST             -H "Accept: application/vnd.github+json"             "/repos/${{ github.repository }}/actions/workflows/orah-android-build.yml/dispatches"             -f ref="attack-125-ci-fix"             -F "inputs[production_release]=true"
+          echo "Production build dispatched on attack-125-ci-fix."
