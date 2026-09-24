@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: orah-android-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 
 jobs:
   build:
