@@ -331,4 +331,13 @@ for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.g
     gradle_path.write_text(text)
     print(f"Configured core library desugaring in {gradle_path}")
 
+# Validate generated AndroidManifest.xml is well-formed before Gradle sees it.
+manifest = ANDROID / "app" / "src" / "main" / "AndroidManifest.xml"
+if manifest.exists():
+    import xml.etree.ElementTree as ET
+    try:
+        ET.parse(manifest)
+    except ET.ParseError as exc:
+        raise SystemExit(f"Generated AndroidManifest.xml is invalid: {exc}")
+
 print("ORAH Android host prepared: share target, shortcuts, quick widget.")
