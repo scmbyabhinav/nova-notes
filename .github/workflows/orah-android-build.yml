@@ -28,6 +28,41 @@ jobs:
           python3 tool/prepare_android_host.py
       - name: Dependencies
         run: flutter pub get
+      - name: Verify Android desugaring configuration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          app = Path("android/app")
+          candidates = [app / "build.gradle.kts", app / "build.gradle"]
+          gradle = next((p for p in candidates if p.exists()), None)
+          if gradle is None:
+              raise SystemExit("android/app Gradle file not found")
+          text = gradle.read_text()
+          if gradle.suffix == ".kts":
+              if "isCoreLibraryDesugaringEnabled = true" not in text:
+                  if "compileOptions {" not in text:
+                      raise SystemExit("compileOptions block not found")
+                  text = text.replace("compileOptions {", "compileOptions {\n        isCoreLibraryDesugaringEnabled = true", 1)
+              if "com.android.tools:desugar_jdk_libs" not in text:
+                  dep = 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")'
+                  if "dependencies {" in text:
+                      text = text.replace("dependencies {", "dependencies {\n    " + dep, 1)
+                  else:
+                      text += "\n\ndependencies {\n    " + dep + "\n}\n"
+          else:
+              if "coreLibraryDesugaringEnabled true" not in text:
+                  if "compileOptions {" not in text:
+                      raise SystemExit("compileOptions block not found")
+                  text = text.replace("compileOptions {", "compileOptions {\n        coreLibraryDesugaringEnabled true", 1)
+              if "com.android.tools:desugar_jdk_libs" not in text:
+                  dep = "coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'"
+                  if "dependencies {" in text:
+                      text = text.replace("dependencies {", "dependencies {\n    " + dep, 1)
+                  else:
+                      text += "\n\ndependencies {\n    " + dep + "\n}\n"
+          gradle.write_text(text)
+          print(f"Verified desugaring configuration in {gradle}")
+          PY
       - name: Align Android plugin JVM targets
         run: |
           python3 - <<'PY'
