@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main, attack-125-ci-fix]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
