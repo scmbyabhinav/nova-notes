@@ -32,16 +32,25 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          roots = list(Path.home().glob('.pub-cache/hosted/pub.dev/receive_sharing_intent-*'))
+          roots = list(Path.home().glob('.pub-cache/hosted/pub.dev/*'))
           if not roots:
-              raise SystemExit('receive_sharing_intent package not found after pub get')
+              raise SystemExit('pub.dev package cache not found after pub get')
+          patched = 0
           for root in roots:
               for path in root.rglob('build.gradle*'):
                   text = path.read_text()
-                  updated = text.replace('JavaVersion.VERSION_11', 'JavaVersion.VERSION_17')
+                  updated = (
+                      text
+                      .replace('JavaVersion.VERSION_1_8', 'JavaVersion.VERSION_17')
+                      .replace('JavaVersion.VERSION_11', 'JavaVersion.VERSION_17')
+                      .replace("jvmTarget = '1.8'", "jvmTarget = '17'")
+                      .replace('jvmTarget = "1.8"', 'jvmTarget = "17"')
+                  )
                   if updated != text:
                       path.write_text(updated)
+                      patched += 1
                       print(f'Patched {path}')
+          print(f'Patched {patched} Android plugin Gradle files')
           PY
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
