@@ -47,6 +47,23 @@ jobs:
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
       - name: Test
         run: flutter test
+      - name: Force Gradle JVM target alignment
+        run: |
+          mkdir -p ~/.gradle
+          cat > ~/.gradle/init.gradle <<'GRADLE'
+          allprojects { project ->
+            project.tasks.withType(JavaCompile).configureEach {
+              sourceCompatibility = '17'
+              targetCompatibility = '17'
+              options.release = 17
+            }
+            project.tasks.configureEach { task ->
+              if (task.class.name.contains('KotlinCompile')) {
+                try { task.kotlinOptions.jvmTarget = '17' } catch (ignored) {}
+              }
+            }
+          }
+          GRADLE
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Upload debug APK
