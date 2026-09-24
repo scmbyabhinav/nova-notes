@@ -262,6 +262,15 @@ class OrahQuickWidgetProvider : AppWidgetProvider() {
 </LinearLayout>
 ''')
 
+# R8 sees optional ML Kit language recognizers referenced by the Flutter
+# plugin even when those language-specific artifacts are not bundled.
+# Suppress those optional missing-class warnings so release shrinking can finish.
+(MAIN.parent / "proguard-rules.pro").write_text("""-dontwarn com.google.mlkit.vision.text.chinese.**
+-dontwarn com.google.mlkit.vision.text.devanagari.**
+-dontwarn com.google.mlkit.vision.text.japanese.**
+-dontwarn com.google.mlkit.vision.text.korean.**
+""")
+
 RES_VALUES.joinpath("orah_strings.xml").write_text('''<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="orah_shortcut_new_note_short">New note</string>
