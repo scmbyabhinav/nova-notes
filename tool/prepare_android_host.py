@@ -23,15 +23,16 @@ if not MANIFEST.exists():
 
 manifest = manifest.replace('android:label="orah_notes"', 'android:label="ORAH"')
 manifest = manifest.replace('android:label="Orah"', 'android:label="ORAH"')
-manifest = manifest.replace('android:launchMode="standard"', 'android:launchMode="singleTask"')
 
 activity_marker = 'android:name=".MainActivity"'
 if activity_marker not in manifest:
     raise SystemExit("MainActivity activity not found in AndroidManifest.xml")
 
-# The share plugin requires a singleTask activity and SEND filters.
-if 'android:launchMode="singleTask"' not in manifest:
-    manifest = manifest.replace(activity_marker, activity_marker + '\n            android:launchMode="singleTask"', 1)
+# The share plugin requires a singleTask activity. Normalize any generated
+# launchMode first so the manifest can never contain duplicate attributes.
+import re
+manifest = re.sub(r'\s+android:launchMode="[^"]*"', '', manifest)
+manifest = manifest.replace(activity_marker, activity_marker + '\n            android:launchMode="singleTask"', 1)
 
 share_filters = '''
             <intent-filter>
