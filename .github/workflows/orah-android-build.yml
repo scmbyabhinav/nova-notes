@@ -4,6 +4,12 @@ on:
   push:
     branches: [attack-125-ci-fix]
   workflow_dispatch:
+    inputs:
+      production_release:
+        description: "Build a production-signed APK/AAB using configured GitHub secrets"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -61,7 +67,6 @@ jobs:
                   else:
                       text += "\n\ndependencies {\n    " + dep + "\n}\n"
           gradle.write_text(text)
-          print(f"Verified desugaring configuration in {gradle}")
           PY
       - name: Align Android plugin JVM targets
         run: |
@@ -70,22 +75,16 @@ jobs:
           roots = list(Path.home().glob('.pub-cache/hosted/pub.dev/*'))
           if not roots:
               raise SystemExit('pub.dev package cache not found after pub get')
-          patched = 0
           for root in roots:
               for path in root.rglob('build.gradle*'):
                   text = path.read_text()
-                  updated = (
-                      text
+                  updated = (text
                       .replace('JavaVersion.VERSION_1_8', 'JavaVersion.VERSION_17')
                       .replace('JavaVersion.VERSION_11', 'JavaVersion.VERSION_17')
                       .replace("jvmTarget = '1.8'", "jvmTarget = '17'")
-                      .replace('jvmTarget = "1.8"', 'jvmTarget = "17"')
-                  )
+                      .replace('jvmTarget = "1.8"', 'jvmTarget = "17"'))
                   if updated != text:
                       path.write_text(updated)
-                      patched += 1
-                      print(f'Patched {path}')
-          print(f'Patched {patched} Android plugin Gradle files')
           PY
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
@@ -123,16 +122,53 @@ jobs:
           sudo rm -rf /usr/local/lib/android/sdk/ndk/* || true
           sudo rm -rf /usr/local/lib/android/sdk/cmake/* || true
           df -h /
+      - name: Configure production signing
+        if: ${{ inputs.production_release == true }}
+        env:
+          ORAH_UPLOAD_KEYSTORE_B64: ${{ secrets.ORAH_UPLOAD_KEYSTORE_B64 }}
+          ORAH_KEYSTORE_PASSWORD: ${{ secrets.ORAH_KEYSTORE_PASSWORD }}
+          ORAH_KEY_ALIAS: ${{ secrets.ORAH_KEY_ALIAS }}
+          ORAH_KEY_PASSWORD: ${{ secrets.ORAH_KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ORAH_UPLOAD_KEYSTORE_B64"
+          test -n "$ORAH_KEYSTORE_PASSWORD"
+          test -n "$ORAH_KEY_ALIAS"
+          test -n "$ORAH_KEY_PASSWORD"
+          printf '%s' "$ORAH_UPLOAD_KEYSTORE_B64" | base64 --decode > android/orah-upload.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ORAH_KEYSTORE_PASSWORD
+          keyPassword=$ORAH_KEY_PASSWORD
+          keyAlias=$ORAH_KEY_ALIAS
+          storeFile=orah-upload.jks
+          EOF
+      - name: Configure production signing in Gradle
+        if: ${{ inputs.production_release == true }}
+        run: python3 tool/configure_release_signing.py
       - name: Build release APK
         run: flutter build apk --release
+      - name: Build release AAB
+        run: flutter build appbundle --release
+      - name: Verify release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s build/app/outputs/flutter-apk/app-release.apk
+          test -s build/app/outputs/bundle/release/app-release.aab
+          unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
+          unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
+          if [ "${{ inputs.production_release }}" = "true" ]; then
+            apksigner verify --verbose build/app/outputs/flutter-apk/app-release.apk
+            jarsigner -verify -verbose -certs build/app/outputs/bundle/release/app-release.aab >/tmp/orah-jarsigner.txt
+            grep -q "jar verified" /tmp/orah-jarsigner.txt
+          fi
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-apk-${{ github.sha }}
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
-      - name: Build release AAB
-        run: flutter build appbundle --release
       - name: Upload release AAB
         uses: actions/upload-artifact@v4
         with:
