@@ -302,30 +302,33 @@ for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.g
     if not gradle_path.exists():
         continue
     text = gradle_path.read_text()
-    if "coreLibraryDesugaring" not in text:
-        if gradle_path.suffix == ".kts":
+    if gradle_path.suffix == ".kts":
+        if "isCoreLibraryDesugaringEnabled" not in text:
             text = text.replace(
                 "compileOptions {",
                 "compileOptions {\n        isCoreLibraryDesugaringEnabled = true",
                 1,
             )
+        if 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:' not in text:
             text = text.replace(
                 "dependencies {",
                 'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',
                 1,
             )
-        else:
+    else:
+        if "coreLibraryDesugaringEnabled" not in text:
             text = text.replace(
                 "compileOptions {",
                 "compileOptions {\n        coreLibraryDesugaringEnabled true",
                 1,
             )
+        if "coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:" not in text:
             text = text.replace(
                 "dependencies {",
                 "dependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'",
                 1,
             )
-        gradle_path.write_text(text)
-        print(f"Enabled core library desugaring in {gradle_path}")
+    gradle_path.write_text(text)
+    print(f"Configured core library desugaring in {gradle_path}")
 
 print("ORAH Android host prepared: share target, shortcuts, quick widget.")
