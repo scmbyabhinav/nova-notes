@@ -69,7 +69,8 @@ shortcut_meta = '''
             android:resource="@xml/orah_shortcuts" />
 '''
 if 'android:name="android.app.shortcuts"' not in manifest:
-    manifest = manifest.replace('</activity>', '        </activity>\n' + shortcut_meta, 1)
+    # Android shortcut metadata belongs directly under <application>.
+    manifest = manifest.replace('</application>', shortcut_meta + '    </application>', 1)
 
 widget_receiver = '''
         <receiver
