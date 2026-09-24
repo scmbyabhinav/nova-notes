@@ -296,4 +296,36 @@ class OrahQuickWidgetProvider : AppWidgetProvider() {
 </shortcuts>
 ''')
 
-# flutter_local_notifications requires Java 8+ core library desugaring.\n# Patch whichever Android Gradle DSL Flutter generated (Groovy or Kotlin).\nfor gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.gradle.kts"):\n    if not gradle_path.exists():\n        continue\n    text = gradle_path.read_text()\n    if "coreLibraryDesugaring" not in text:\n        if gradle_path.suffix == ".kts":\n            text = text.replace(\n                "compileOptions {",\n                "compileOptions {\\n        isCoreLibraryDesugaringEnabled = true",\n                1,\n            )\n            text = text.replace(\n                "dependencies {",\n                'dependencies {\\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',\n                1,\n            )\n        else:\n            text = text.replace(\n                "compileOptions {",\n                "compileOptions {\\n        coreLibraryDesugaringEnabled true",\n                1,\n            )\n            text = text.replace(\n                "dependencies {",\n                "dependencies {\\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'",\n                1,\n            )\n        gradle_path.write_text(text)\n        print(f"Enabled core library desugaring in {gradle_path}")\n\nprint("ORAH Android host prepared: share target, shortcuts, quick widget.")
+# flutter_local_notifications requires Java 8+ core library desugaring.
+# Patch whichever Android Gradle DSL Flutter generated (Groovy or Kotlin).
+for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.gradle.kts"):
+    if not gradle_path.exists():
+        continue
+    text = gradle_path.read_text()
+    if "coreLibraryDesugaring" not in text:
+        if gradle_path.suffix == ".kts":
+            text = text.replace(
+                "compileOptions {",
+                "compileOptions {\n        isCoreLibraryDesugaringEnabled = true",
+                1,
+            )
+            text = text.replace(
+                "dependencies {",
+                'dependencies {\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")',
+                1,
+            )
+        else:
+            text = text.replace(
+                "compileOptions {",
+                "compileOptions {\n        coreLibraryDesugaringEnabled true",
+                1,
+            )
+            text = text.replace(
+                "dependencies {",
+                "dependencies {\n    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'",
+                1,
+            )
+        gradle_path.write_text(text)
+        print(f"Enabled core library desugaring in {gradle_path}")
+
+print("ORAH Android host prepared: share target, shortcuts, quick widget.")
