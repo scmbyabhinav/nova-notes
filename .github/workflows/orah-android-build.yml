@@ -60,14 +60,16 @@ jobs:
         run: |
           mkdir -p ~/.gradle
           cat > ~/.gradle/init.gradle <<'GRADLE'
-          allprojects { project ->
-            project.tasks.withType(JavaCompile).configureEach {
-              sourceCompatibility = '17'
-              targetCompatibility = '17'
-            }
-            project.tasks.configureEach { task ->
-              if (task.class.name.contains('KotlinCompile')) {
-                try { task.kotlinOptions.jvmTarget = '17' } catch (ignored) {}
+          gradle.projectsEvaluated {
+            allprojects { project ->
+              project.tasks.withType(JavaCompile).configureEach {
+                sourceCompatibility = '17'
+                targetCompatibility = '17'
+              }
+              project.tasks.configureEach { task ->
+                if (task.class.name.contains('KotlinCompile')) {
+                  try { task.kotlinOptions.jvmTarget = '17' } catch (ignored) {}
+                }
               }
             }
           }
