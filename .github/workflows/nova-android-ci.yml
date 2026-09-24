@@ -2,17 +2,8 @@ name: Orah Android CI
 
 on:
   workflow_dispatch:
-    inputs:
-      production_release:
-        description: "Build a Play-uploadable signed AAB (requires signing secrets)"
-        required: false
-        default: false
-        type: boolean
   push:
     branches: [main, attack-125-ci-fix]
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [main]
 
 permissions:
   contents: read
