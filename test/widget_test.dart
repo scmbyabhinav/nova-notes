@@ -120,9 +120,19 @@ void main() {
       'Travel Plan', 'Travel Diary', 'Journal', 'Recipe', 'Book Notes',
       'Expense Tracker', 'Workout Log',
     ]) {
+      await tester.scrollUntilVisible(
+        find.text(title),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(title), findsOneWidget);
     }
 
+    await tester.scrollUntilVisible(
+      find.text('Recipe'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(find.text('Recipe'));
     await tester.pumpAndSettle();
 
