@@ -16,7 +16,7 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.text('Quick capture'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Start writing...'), findsOneWidget);
@@ -30,11 +30,11 @@ void main() {
     await tester.pump();
 
     await tester.longPress(find.text('Quick capture'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Quick checklist'), findsOneWidget);
     await tester.tap(find.text('Quick checklist'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
