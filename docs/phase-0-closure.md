@@ -106,3 +106,9 @@ suite and parallel Android jobs. Local Flutter/Dart execution was not available
 in the execution environment used for this batch.
 
 - Task 5 — templates: commits `f842ba52`, `6f0cbca9`, `b72888ba`, `30a70804`, and `2aa72ce9`. Expanded the existing local template catalog with Travel Diary, Journal, Recipe, Book Notes, Expense Tracker and Workout Log starter content, plus widget coverage for listing and insertion; follow-ups place the test correctly, make template selection use the active navigator, assert inserted content through the editor field, and fix the editor to honor template initial content.
+
+
+- Task 6 — global look & feel pass: commit `6227435c`. Tightened Home typography to
+  the requested 28sp header, 17sp semibold note titles, 14sp note body/meta and
+  12sp timestamps with explicit #5B5B66 secondary text; replaced the About-page
+  developer JPG with a transparent, light-theme-legible signature PNG.
