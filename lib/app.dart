@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/localization/nova_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
@@ -44,6 +45,34 @@ class _OrahAppState extends State<OrahApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadQuickCaptureHint();
+  }
+
+  Future<void> _loadQuickCaptureHint() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_quickCaptureHintDismissedKey) == true || !mounted) return;
+    final visits = prefs.getInt(_quickCaptureHintVisitsKey) ?? 0;
+    if (visits >= 2) return;
+    await prefs.setInt(_quickCaptureHintVisitsKey, visits + 1);
+    if (!mounted) return;
+    setState(() => _showQuickCaptureHint = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _showQuickCaptureHint) {
+        _quickCaptureHintKey.currentState?.ensureTooltipVisible();
+      }
+    });
+  }
+
+  Future<void> _dismissQuickCaptureHint() async {
+    if (!_showQuickCaptureHint) return;
+    if (mounted) setState(() => _showQuickCaptureHint = false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_quickCaptureHintDismissedKey, true);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final light = NovaTheme.light(seed: Color(_theme.accent));
     final dark = NovaTheme.dark(seed: Color(_theme.accent));
@@ -79,6 +108,11 @@ class _NovaShellState extends State<NovaShell> {
   int _index = 0;
   Timer? _quickCaptureLongPressTimer;
   bool _quickCaptureLongPressTriggered = false;
+  bool _showQuickCaptureHint = false;
+  final GlobalKey<TooltipState> _quickCaptureHintKey = GlobalKey<TooltipState>();
+
+  static const _quickCaptureHintDismissedKey = 'orah_quick_capture_hint_dismissed';
+  static const _quickCaptureHintVisitsKey = 'orah_quick_capture_hint_visits';
 
   List<Widget> get _pages => [
         const HomeScreen(),
@@ -115,6 +149,7 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   void _startQuickCaptureLongPress() {
+    _dismissQuickCaptureHint();
     _quickCaptureLongPressTimer?.cancel();
     _quickCaptureLongPressTriggered = false;
     _quickCaptureLongPressTimer = Timer(const Duration(milliseconds: 500), () {
@@ -191,15 +226,21 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: Listener(
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: (_) => _startQuickCaptureLongPress(),
-        onPointerUp: (_) => _cancelQuickCaptureLongPress(),
-        onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
-        child: FloatingActionButton(
-          onPressed: _quickCapture,
-          tooltip: 'Quick capture. Long-press for checklist and quick options.',
-          child: const Icon(Icons.mic_none_rounded),
+      floatingActionButton: Tooltip(
+        key: _quickCaptureHintKey,
+        message: 'Tap to write • Long-press for checklist & quick options',
+        triggerMode: TooltipTriggerMode.manual,
+        excludeFromSemantics: true,
+        child: Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (_) => _startQuickCaptureLongPress(),
+          onPointerUp: (_) => _cancelQuickCaptureLongPress(),
+          onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
+          child: FloatingActionButton(
+            onPressed: _quickCapture,
+            tooltip: 'Quick capture. Long-press for checklist and quick options.',
+            child: const Icon(Icons.mic_none_rounded),
+          ),
         ),
       ),
       bottomNavigationBar: NavigationBar(
