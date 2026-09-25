@@ -22,6 +22,16 @@ manifest = MANIFEST.read_text()
 if not MANIFEST.exists():
     raise SystemExit("AndroidManifest.xml was not generated.")
 
+# speech_to_text needs microphone access on Android. The host is generated
+# during CI, so keep the permission in this preparation step rather than in
+# a non-existent checked-in Android host.
+if 'android.permission.RECORD_AUDIO' not in manifest:
+    manifest = manifest.replace(
+        '<application',
+        '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\\n    <application',
+        1,
+    )
+
 
 manifest = manifest.replace('android:label="orah_notes"', 'android:label="ORAH"')
 manifest = manifest.replace('android:label="Orah"', 'android:label="ORAH"')
