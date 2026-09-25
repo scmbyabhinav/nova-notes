@@ -17,6 +17,14 @@ class NovaTheme {
       scaffoldBackgroundColor:
           const Color(NovaConstants.backgroundLight),
       fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+        titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(fontSize: 14),
+        bodyMedium: TextStyle(fontSize: 14),
+        bodySmall: TextStyle(fontSize: 12, color: Color(0xFF5B5B66)),
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -67,6 +75,14 @@ class NovaTheme {
       scaffoldBackgroundColor:
           const Color(NovaConstants.backgroundDark),
       fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+        titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(fontSize: 14),
+        bodyMedium: TextStyle(fontSize: 14),
+        bodySmall: TextStyle(fontSize: 12),
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
