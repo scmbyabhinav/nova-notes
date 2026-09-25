@@ -41,12 +41,6 @@ class _OrahAppState extends State<OrahApp> {
   }
 
   @override
-  void dispose() {
-    _quickCaptureLongPressTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final light = NovaTheme.light(seed: Color(_theme.accent));
     final dark = NovaTheme.dark(seed: Color(_theme.accent));
