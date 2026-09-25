@@ -424,7 +424,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _scanTextFromImage() async {
-    if (!await OrahEntitlementService.instance.requirePro('OCR')) return;
+    await OrahEntitlementService.instance.initialize();
+    if (!OrahEntitlementService.instance.isPremium) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('OCR is available with ORAH Pro.')));
+      return;
+    }
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null || !mounted) return;
     try {
