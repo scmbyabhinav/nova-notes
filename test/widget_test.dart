@@ -111,6 +111,27 @@ void main() {
     expect(find.text('Tap the mic to speak your note'), findsNothing);
   });
 
+  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: OrahTemplatesScreen()));
+    await tester.pumpAndSettle();
+
+    for (final title in [
+      'Meeting Notes', 'Daily Plan', 'Shopping List', 'Project Brief',
+      'Travel Plan', 'Travel Diary', 'Journal', 'Recipe', 'Book Notes',
+      'Expense Tracker', 'Workout Log',
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+
+    await tester.tap(find.text('Recipe'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ingredients'), findsOneWidget);
+    expect(find.text('Steps'), findsOneWidget);
+    expect(find.text('Notes'), findsOneWidget);
+  });
+
+
 }
 
 
@@ -144,25 +165,5 @@ class _FakeSpeechService implements VoiceSpeechService {
   Future<void> cancel() async => _isListening = false;
 
   @override
-  void dispose() {}  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: OrahTemplatesScreen()));
-    await tester.pumpAndSettle();
-
-    for (final title in [
-      'Meeting Notes', 'Daily Plan', 'Shopping List', 'Project Brief',
-      'Travel Plan', 'Travel Diary', 'Journal', 'Recipe', 'Book Notes',
-      'Expense Tracker', 'Workout Log',
-    ]) {
-      expect(find.text(title), findsOneWidget);
-    }
-
-    await tester.tap(find.text('Recipe'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Ingredients'), findsOneWidget);
-    expect(find.text('Steps'), findsOneWidget);
-    expect(find.text('Notes'), findsOneWidget);
-  });
-
-
+  void dispose() {}
 }
