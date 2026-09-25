@@ -85,3 +85,23 @@ the model.
 
 SDK values still need to be read from the Android Gradle configuration before
 the Phase 2 support/fallback matrix is finalized.
+
+
+## Batch A — Regression fixes + UX polish — 2026-09-25
+
+- Task 1 — reactive note-library updates: commit `6a40f62b`; follow-up cleanup `c7977803`.
+  Home now listens to the same `LocalNoteRepository` stream used by the editor,
+  and the widget suite includes a create → pop → immediate library assertion.
+- Task 2 — voice capture prominence: commit `54c8fb05`; follow-up wiring fix
+  `c94ac565`. Added the editor M3 mic FAB, one-time voice hint, mocked speech
+  widget coverage, and automatic title generation from the first transcript line.
+- Task 3 — quick-capture discoverability: commit `471e2238`. The home FAB is
+  now a standard circular mic FAB with a persistent first-two-visits hint while
+  preserving the existing long-press capture menu behavior.
+- Task 4 — Android feature actions: commit `6db056e2`. Widget and shortcut rows
+  now explain/use their native actions, Share to ORAH launches a real Android
+  share intent into ORAH, and Reminders opens note creation with reminder setup.
+
+Verification: CI must remain the source of truth for the full Flutter analyze/test
+suite and parallel Android jobs. Local Flutter/Dart execution was not available
+in the execution environment used for this batch.
