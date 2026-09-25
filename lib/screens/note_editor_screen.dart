@@ -95,7 +95,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
     _titleController = TextEditingController(text: existing?.title ?? widget.initialTitle ?? '');
     _contentController =
-        TextEditingController(text: existing?.content ?? '');
+        TextEditingController(text: existing?.content ?? widget.initialContent ?? '');
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
