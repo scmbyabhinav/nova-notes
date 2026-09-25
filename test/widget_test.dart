@@ -36,11 +36,22 @@ void main() {
     await tester.pump();
 
     await tester.longPress(find.text('Quick capture'));
-    await tester.pump(const Duration(seconds: 1));
+    debugPrint('LONG PRESS AFTER GESTURE: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    await tester.pump();
+    debugPrint('LONG PRESS AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    await tester.pump(const Duration(milliseconds: 300));
+    debugPrint('LONG PRESS AFTER PUMP 300MS: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    await tester.pump();
+    debugPrint('LONG PRESS AFTER PUMP 2: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
 
     expect(find.text('Quick checklist'), findsOneWidget);
     await tester.tap(find.text('Quick checklist'));
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    debugPrint('CHECKLIST TAP AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    await tester.pump(const Duration(milliseconds: 300));
+    debugPrint('CHECKLIST TAP AFTER PUMP 300MS: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    await tester.pump();
+    debugPrint('CHECKLIST TAP AFTER PUMP 2: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
