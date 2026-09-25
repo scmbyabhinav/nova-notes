@@ -79,7 +79,7 @@ void main() {
   testWidgets('voice input starts from the editor microphone control', (tester) async {
     final state = await _pumpEditor(tester);
 
-    expect(find.byTooltip('Voice input'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsOneWidget);
 
     await tester.tap(find.byTooltip('Voice input'));
     await tester.pump();
