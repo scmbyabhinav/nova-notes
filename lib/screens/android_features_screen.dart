@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quick_actions/quick_actions.dart';
 
-import '../core/navigation/orah_navigation.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../screens/note_editor_screen.dart';
