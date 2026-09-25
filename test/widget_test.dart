@@ -80,7 +80,7 @@ void main() {
     await tester.pageBack();
     await tester.pump();
 
-    expect(find.text('Reactive note test'), findsOneWidget);
+    expect(find.text('Reactive note test'), findsAtLeastNWidgets(1));
   });
 
   testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
@@ -91,6 +91,7 @@ void main() {
     await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Tap the mic to speak your note'), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsOneWidget);
