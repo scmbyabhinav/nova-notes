@@ -37,7 +37,8 @@ class _ExportNoteSheetState extends State<ExportNoteSheet>{
       _tile(Icons.code_outlined,'Markdown (.md)','Portable Markdown',NovaExportFormat.markdown),
     ])));
   Widget _tile(IconData icon,String title,String subtitle,NovaExportFormat f) {
-    final premium = f == NovaExportFormat.pdf || f == NovaExportFormat.word || f == NovaExportFormat.excel;
+    // Word export is available to all users. PDF/Excel remain Pro-gated.
+    final premium = f == NovaExportFormat.pdf || f == NovaExportFormat.excel;
     return ListTile(
       leading: Icon(icon),
       title: Row(children: [Expanded(child: Text(title)), if (premium) const Icon(Icons.workspace_premium_rounded, size: 18)]),
