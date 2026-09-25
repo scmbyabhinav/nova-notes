@@ -77,14 +77,16 @@ class AboutNovaScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
               child: Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      'assets/abhinav_bajpai_signature.png',
-                      fit: BoxFit.contain,
-                      width: 260,
-                      height: 88,
-                      semanticLabel: 'Abhinav Bajpai — Developer signature',
+                  Image.asset(
+                    'assets/abhinav_bajpai_signature.png',
+                    fit: BoxFit.contain,
+                    width: 300,
+                    height: 100,
+                    filterQuality: FilterQuality.high,
+                    semanticLabel: 'Abhinav Bajpai — Developer signature',
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.draw_outlined,
+                      size: 56,
                     ),
                   ),
                   const SizedBox(height: 14),
