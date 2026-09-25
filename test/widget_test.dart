@@ -8,7 +8,6 @@ import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
 
 void main() {
-
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
@@ -145,9 +144,56 @@ class _FakeSpeechService implements VoiceSpeechService {
   Future<void> cancel() async => _isListening = false;
 
   @override
-  void dispose() {}  void dispose() {}
-}
+  void dispose() {}  testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
+    final speech = _FakeSpeechService();
+    await tester.pumpWidget(OrahApp(speechService: speech));
+    await tester.pump();
 
+    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Tap the mic to speak your note'), findsOneWidget);
+    expect(find.byTooltip('Voice input'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Voice input'));
+    await tester.pump();
+
+    expect(speech.startCount, 1);
+    expect(find.text('Hello from voice'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Tap the mic to speak your note'), findsNothing);
+  });
+
+  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: OrahTemplatesScreen()));
+    await tester.pumpAndSettle();
+
+    for (final title in [
+      'Meeting Notes', 'Daily Plan', 'Shopping List', 'Project Brief',
+      'Travel Plan', 'Travel Diary', 'Journal', 'Recipe', 'Book Notes',
+      'Expense Tracker', 'Workout Log',
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+
+    await tester.tap(find.text('Recipe'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ingredients'), findsOneWidget);
+    expect(find.text('Steps'), findsOneWidget);
+    expect(find.text('Notes'), findsOneWidget);
+  });
+
+
+}
 
 
 class _FakeSpeechService implements VoiceSpeechService {
@@ -180,66 +226,5 @@ class _FakeSpeechService implements VoiceSpeechService {
   Future<void> cancel() async => _isListening = false;
 
   @override
-  void dispose() {}  testWidgets('templates sheet lists all starter templates and inserts selected content', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: OrahTemplatesScreen()),
-    );
-    await tester.pumpAndSettle();
-
-    for (final title in [
-      'Meeting Notes',
-      'Daily Plan',
-      'Shopping List',
-      'Project Brief',
-      'Travel Plan',
-      'Travel Diary',
-      'Journal',
-      'Recipe',
-      'Book Notes',
-      'Expense Tracker',
-      'Workout Log',
-    ]) {
-      expect(find.text(title), findsOneWidget);
-    }
-
-    await tester.tap(find.text('Recipe'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Ingredients'), findsOneWidget);
-    expect(find.text('Steps'), findsOneWidget);
-    expect(find.text('Notes'), findsOneWidget);
-  });
-
-
+  void dispose() {}
 }
-
-  testWidgets('templates sheet lists all starter templates and inserts selected content', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: OrahTemplatesScreen()),
-    );
-    await tester.pumpAndSettle();
-
-    for (final title in [
-      'Meeting Notes',
-      'Daily Plan',
-      'Shopping List',
-      'Project Brief',
-      'Travel Plan',
-      'Travel Diary',
-      'Journal',
-      'Recipe',
-      'Book Notes',
-      'Expense Tracker',
-      'Workout Log',
-    ]) {
-      expect(find.text(title), findsOneWidget);
-    }
-
-    await tester.tap(find.text('Recipe'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Ingredients'), findsOneWidget);
-    expect(find.text('Steps'), findsOneWidget);
-    expect(find.text('Notes'), findsOneWidget);
-  });
-
