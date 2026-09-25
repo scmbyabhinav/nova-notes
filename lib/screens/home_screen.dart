@@ -9,6 +9,7 @@ import '../data/repositories/note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import 'note_editor_screen.dart';
+import 'orah_pro_screen.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -315,6 +316,14 @@ class _HomeScreenState extends State<HomeScreen> {
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
+                    IconButton.filledTonal(
+                      tooltip: 'Subscription',
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const OrahProScreen()),
+                      ),
+                      icon: const Icon(Icons.workspace_premium_outlined),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,10 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    const CircleAvatar(
-                      radius: 19,
-                      child: Text('A'),
-                    ),
+
                   ],
                 ),
               ),
