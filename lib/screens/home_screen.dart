@@ -103,7 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
         await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: note.id);
       }
     }
-    await _loadNotes();
   }
 
   Future<void> _showNoteMenu(Note note) async {
