@@ -138,7 +138,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       onResult: (transcript, isFinal) {
         if (!mounted || transcript.trim().isEmpty) return;
         final baseText = _voiceBaseText.trimRight();
-        final separator = baseText.isEmpty ? '' : '\\n';
+        final separator = baseText.isEmpty ? '' : '\n';
         final nextText = '$baseText$separator${transcript.trim()}';
         _contentController.value = _contentController.value.copyWith(
           text: nextText,
