@@ -71,17 +71,49 @@ class AboutNovaScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Card(
-            child: ListTile(
-              leading: const Icon(Icons.code_rounded),
-              title: const Text('Developer'),
-              subtitle: const Text('Abhinav Bajpai'),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.asset(
+                      'assets/abhinav_bajpai_developer.jpg',
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      semanticLabel: 'Abhinav Bajpai — Developer',
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Developer',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Abhinav Bajpai',
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
-            '© 2026 Abhinav Bajpai · Orah',
+            'Copyright © 2026 Abhinav Bajpai. All rights reserved.',
             textAlign: TextAlign.center,
-            style: theme.textTheme.labelMedium?.copyWith(
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Orah application code, original branding, artwork and product assets are owned by Abhinav Bajpai. Third-party components remain subject to their respective licenses.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
