@@ -98,9 +98,10 @@ the Phase 2 support/fallback matrix is finalized.
 - Task 3 — quick-capture discoverability: commit `471e2238`. The home FAB is
   now a standard circular mic FAB with a persistent first-two-visits hint while
   preserving the existing long-press capture menu behavior.
-- Task 4 — Android feature actions: commit `6db056e2`. Widget and shortcut rows
+- Task 4 — Android feature actions: commits `6db056e2` and `42551a99`. Widget and shortcut rows
   now explain/use their native actions, Share to ORAH launches a real Android
-  share intent into ORAH, and Reminders opens note creation with reminder setup.
+  share intent into ORAH, and Reminders opens note creation with reminder setup;
+  the follow-up removes an unused import before verification.
 
 Verification: CI must remain the source of truth for the full Flutter analyze/test
 suite and parallel Android jobs. Local Flutter/Dart execution was not available
