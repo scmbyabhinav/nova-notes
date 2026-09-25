@@ -17,6 +17,7 @@ import '../models/note.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
+import '../services/speech_to_text_service.dart';
 
 class NoteEditorScreen extends StatefulWidget {
   const NoteEditorScreen({
@@ -26,9 +27,11 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialType = NoteType.text,
     this.initialTitle,
     this.initialContent,
+    this.speechService,
   });
 
   final NoteRepository repository;
+  final VoiceSpeechService? speechService;
   final Note? note;
   final NoteType initialType;
   final String? initialTitle;
@@ -56,6 +59,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
+  late final VoiceSpeechService _speechService;
+  bool _speechInitializing = false;
+  bool _isListening = false;
+  bool _speechAvailable = true;
+  String _liveTranscript = '';
 
   @override
   void initState() {
@@ -77,6 +85,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _attachments = [...(existing?.attachments ?? const [])];
     _checklistItems = [...(existing?.checklistItems ?? const [])];
     if (_noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
+
+    _speechService = widget.speechService ?? SpeechToTextService();
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
@@ -205,6 +215,106 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (!mounted) return;
     Navigator.of(context).pop();
   }
+
+  Future<void> _toggleSpeech() async {
+    if (_speechInitializing) return;
+
+    if (_isListening) {
+      await _speechService.stopListening();
+      if (!mounted) return;
+      setState(() {
+        _isListening = false;
+        _liveTranscript = '';
+      });
+      return;
+    }
+
+    setState(() => _speechInitializing = true);
+
+    final available = await _speechService.initialize(
+      onStatus: (status) {
+        if (!mounted) return;
+        final normalized = status.toLowerCase();
+        setState(() {
+          _isListening = normalized == 'listening';
+          if (normalized == 'done' || normalized == 'notlistening') {
+            _isListening = false;
+          }
+        });
+      },
+      onError: (message) {
+        if (!mounted) return;
+        setState(() {
+          _isListening = false;
+          _liveTranscript = '';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Voice input error: $message')),
+        );
+      },
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _speechInitializing = false;
+      _speechAvailable = available;
+    });
+
+    if (!available) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Voice input is not available on this device.')),
+      );
+      return;
+    }
+
+    _contentFocus.requestFocus();
+    await _speechService.startListening(
+      onResult: (transcript, isFinal) {
+        if (!mounted) return;
+        if (isFinal) {
+          _insertSpeechText(transcript);
+          setState(() {
+            _isListening = false;
+            _liveTranscript = '';
+          });
+        } else {
+          setState(() => _liveTranscript = transcript);
+        }
+      },
+    );
+
+    if (!mounted) return;
+    setState(() => _isListening = true);
+  }
+
+  void _insertSpeechText(String transcript) {
+    final text = transcript.trim();
+    if (text.isEmpty) return;
+
+    final value = _contentController.value;
+    final selection = value.selection;
+    final offset = selection.isValid
+        ? selection.baseOffset.clamp(0, value.text.length)
+        : value.text.length;
+    final before = value.text.substring(0, offset);
+    final after = value.text.substring(offset);
+    final needsLeadingNewline =
+        before.isNotEmpty && !before.endsWith(RegExp(r'\\s'));
+    final needsTrailingSpace =
+        after.isNotEmpty && !after.startsWith(RegExp(r'\\s'));
+    final insertion =
+        (needsLeadingNewline ? '\\n' : '') +
+        text +
+        (needsTrailingSpace ? ' ' : '');
+
+    final newText = before + insertion + after;
+    final newOffset = before.length + insertion.length;
+    _contentController.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newOffset),
+    );
+  }
+
 
   Future<List<NoteFolder>> _folders() async {
     final repository = await FolderRepositoryProvider.instance();
@@ -528,6 +638,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   @override
+  void dispose() {
+    _saveTimer?.cancel();
+    _contentFocus.dispose();
+    _titleController.dispose();
+    _contentController.dispose();
+    _speechService.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -681,6 +801,29 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       (tag) => _MetaChip(
                         icon: Icons.tag_rounded,
                         label: tag,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_liveTranscript.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.mic_rounded, size: 18, color: theme.colorScheme.onSecondaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _liveTranscript,
+                        style: TextStyle(color: theme.colorScheme.onSecondaryContainer),
                       ),
                     ),
                   ],
@@ -862,6 +1005,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         icon: Icons.attach_file_rounded,
                         label: 'Add image or file',
                         onPressed: _showAttachmentMenu,
+                      ),
+                      _ToolButton(
+                        icon: _isListening
+                            ? Icons.stop_circle_outlined
+                            : Icons.mic_none_rounded,
+                        label: _speechInitializing
+                            ? 'Starting voice input'
+                            : (_isListening ? 'Stop voice input' : 'Voice input'),
+                        onPressed: _speechAvailable ? _toggleSpeech : null,
                       ),
                     ],
                   ),
