@@ -16,8 +16,12 @@ class OrahTemplatesScreen extends StatelessWidget {
     _OrahTemplate('Shopping List', 'A clean reusable shopping note.', 'Groceries\n\nHousehold\n\nOther:', false),
     _OrahTemplate('Project Brief', 'Turn a rough idea into an executable brief.', 'Project\n\nObjective\n\nScope\n\nMilestones\n\nRisks\n\nOwners\n\nNext actions:', true),
     _OrahTemplate('Travel Plan', 'Keep a trip in one compact note.', 'Destination\n\nDates\n\nTransport\n\nStay\n\nPlaces\n\nBookings\n\nPacking\n\nBudget:', true),
-    _OrahTemplate('Expense Log', 'Record spending with useful context.', 'Date\n\nCategory\n\nAmount\n\nPayment method\n\nNotes:', true),
-    _OrahTemplate('Journal', 'A private daily reflection starter.', 'Today I feel...\n\nWhat happened?\n\nWhat mattered?\n\nWhat I learned\n\nTomorrow I want to:', true),
+    _OrahTemplate('Travel Diary', 'Capture an offline trip memory as you go.', 'Date\n\nLocation\n\nHighlights\n\nPhotos\n[Add photos here]', false),
+    _OrahTemplate('Journal', 'Mood check-in plus open-ended writing.', 'Mood: \n\nFree write\n\n', false),
+    _OrahTemplate('Recipe', 'Keep ingredients, method and notes together.', 'Ingredients\n\n- \n- \n- \n\nSteps\n\n1. \n2. \n3. \n\nNotes\n', false),
+    _OrahTemplate('Book Notes', 'Save ideas and memorable passages from a book.', 'Title: \nAuthor: \n\nKey ideas\n\n- \n- \n- \n\nQuotes\n\n- \n', false),
+    _OrahTemplate('Expense Tracker', 'Record spending and keep a running total.', 'Date\n\nItem\n\nAmount\n\nTotal\n', false),
+    _OrahTemplate('Workout Log', 'Track exercises, sets and training notes.', 'Exercise\n\nSets\n\nNotes\n', false),
   ];
 
   Future<void> _use(BuildContext context, _OrahTemplate template) async {

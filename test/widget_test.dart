@@ -5,8 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/app.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
+import 'package:orah_notes/screens/orah_templates_screen.dart';
 
 void main() {
+
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
@@ -143,5 +145,35 @@ class _FakeSpeechService implements VoiceSpeechService {
   Future<void> cancel() async => _isListening = false;
 
   @override
-  void dispose() {}
+  void dispose() {}  testWidgets('templates sheet lists all starter templates and inserts selected content', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: OrahTemplatesScreen()),
+    );
+    await tester.pumpAndSettle();
+
+    for (final title in [
+      'Meeting Notes',
+      'Daily Plan',
+      'Shopping List',
+      'Project Brief',
+      'Travel Plan',
+      'Travel Diary',
+      'Journal',
+      'Recipe',
+      'Book Notes',
+      'Expense Tracker',
+      'Workout Log',
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+
+    await tester.tap(find.text('Recipe'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ingredients'), findsOneWidget);
+    expect(find.text('Steps'), findsOneWidget);
+    expect(find.text('Notes'), findsOneWidget);
+  });
+
+
 }
