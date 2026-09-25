@@ -609,7 +609,11 @@ class _DesktopNotesLayout extends StatelessWidget {
                         backgroundColor: WidgetStatePropertyAll(
                           theme.colorScheme.surfaceContainerHighest.withValues(alpha: .7),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const SearchScreen()),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 22),
@@ -637,34 +641,38 @@ class _DesktopNotesLayout extends StatelessWidget {
                     const _SidebarLabel(label: 'FOLDERS'),
                     ..._folderEntries(active),
                     const Spacer(),
-                    if (onNewNote != null)
+                    if (onNewNote != null || onVoiceCapture != null)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
-                        child: FilledButton.icon(
-                          onPressed: onNewNote,
-                          icon: const Icon(Icons.add_rounded, size: 19),
-                          label: const Text('New Note'),
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(44),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (onVoiceCapture != null)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-                        child: OutlinedButton.icon(
-                          onPressed: onVoiceCapture,
-                          icon: const Icon(Icons.mic_none_rounded, size: 19),
-                          label: const Text('Voice capture'),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
+                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
+                        child: Row(
+                          children: [
+                            if (onNewNote != null)
+                              Expanded(
+                                child: FilledButton.icon(
+                                  onPressed: onNewNote,
+                                  icon: const Icon(Icons.add_rounded, size: 18),
+                                  label: const Text('New Note'),
+                                  style: FilledButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(44),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            if (onNewNote != null && onVoiceCapture != null)
+                              const SizedBox(width: 8),
+                            if (onVoiceCapture != null)
+                              SizedBox(
+                                width: 48,
+                                height: 44,
+                                child: IconButton.filledTonal(
+                                  tooltip: 'Microphone',
+                                  onPressed: onVoiceCapture,
+                                  icon: const Icon(Icons.mic_none_rounded),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                   ],
