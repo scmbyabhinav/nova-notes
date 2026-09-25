@@ -32,6 +32,19 @@ if 'android.permission.RECORD_AUDIO' not in manifest:
         1,
     )
 
+# Android 11+ package visibility requires the speech recognition service
+# query so speech_to_text can discover the platform recognizer.
+if 'android.speech.RecognitionService' not in manifest:
+    manifest = manifest.replace(
+        '</manifest>',
+        '''    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+</manifest>''',
+        1,
+    )
 
 manifest = manifest.replace('android:label="orah_notes"', 'android:label="ORAH"')
 manifest = manifest.replace('android:label="Orah"', 'android:label="ORAH"')
