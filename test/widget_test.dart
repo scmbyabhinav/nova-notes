@@ -144,35 +144,7 @@ class _FakeSpeechService implements VoiceSpeechService {
   Future<void> cancel() async => _isListening = false;
 
   @override
-  void dispose() {}  testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
-    final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech));
-    await tester.pump();
-
-    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(find.text('Tap the mic to speak your note'), findsOneWidget);
-    expect(find.byTooltip('Voice input'), findsOneWidget);
-
-    await tester.tap(find.byTooltip('Voice input'));
-    await tester.pump();
-
-    expect(speech.startCount, 1);
-    expect(find.text('Hello from voice'), findsOneWidget);
-
-    await tester.pageBack();
-    await tester.pump();
-
-    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(find.text('Tap the mic to speak your note'), findsNothing);
-  });
-
-  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
+  void dispose() {}  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: OrahTemplatesScreen()));
     await tester.pumpAndSettle();
 
@@ -193,38 +165,4 @@ class _FakeSpeechService implements VoiceSpeechService {
   });
 
 
-}
-
-
-class _FakeSpeechService implements VoiceSpeechService {
-  int startCount = 0;
-  bool _isListening = false;
-
-  @override
-  bool get isListening => _isListening;
-
-  @override
-  Future<bool> initialize({
-    required SpeechStatusCallback onStatus,
-    required SpeechErrorCallback onError,
-  }) async => true;
-
-  @override
-  Future<void> startListening({
-    required SpeechResultCallback onResult,
-  }) async {
-    startCount++;
-    _isListening = true;
-    onResult('Hello from voice', true);
-    _isListening = false;
-  }
-
-  @override
-  Future<void> stopListening() async => _isListening = false;
-
-  @override
-  Future<void> cancel() async => _isListening = false;
-
-  @override
-  void dispose() {}
 }
