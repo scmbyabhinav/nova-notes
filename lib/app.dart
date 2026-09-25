@@ -226,22 +226,35 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: Tooltip(
-        key: _quickCaptureHintKey,
-        message: 'Tap to write • Long-press for checklist & quick options',
-        triggerMode: TooltipTriggerMode.manual,
-        excludeFromSemantics: true,
-        child: Listener(
-          behavior: HitTestBehavior.opaque,
-          onPointerDown: (_) => _startQuickCaptureLongPress(),
-          onPointerUp: (_) => _cancelQuickCaptureLongPress(),
-          onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
-          child: FloatingActionButton(
-            onPressed: _quickCapture,
-            tooltip: 'Quick capture. Long-press for checklist and quick options.',
-            child: const Icon(Icons.mic_none_rounded),
+      floatingActionButton: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'orah_new_note_fab',
+            onPressed: () => _openEditor(NoteType.text),
+            tooltip: 'New note',
+            child: const Icon(Icons.add_rounded),
           ),
-        ),
+          const SizedBox(width: 12),
+          Tooltip(
+            key: _quickCaptureHintKey,
+            message: 'Tap to write • Long-press for checklist & quick options',
+            triggerMode: TooltipTriggerMode.manual,
+            excludeFromSemantics: true,
+            child: Listener(
+              behavior: HitTestBehavior.opaque,
+              onPointerDown: (_) => _startQuickCaptureLongPress(),
+              onPointerUp: (_) => _cancelQuickCaptureLongPress(),
+              onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
+              child: FloatingActionButton(
+                heroTag: 'orah_voice_capture_fab',
+                onPressed: _quickCapture,
+                tooltip: 'Voice capture. Long-press for checklist and quick options.',
+                child: const Icon(Icons.mic_none_rounded),
+              ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
