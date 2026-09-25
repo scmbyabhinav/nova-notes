@@ -895,7 +895,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         message: 'Tap the mic to speak your note',
         triggerMode: TooltipTriggerMode.manual,
         child: FloatingActionButton(
-          tooltip: 'Voice input',
           onPressed: _handleVoiceFabTap,
           child: Icon(
             _isListening ? Icons.stop_rounded : Icons.mic_rounded,
