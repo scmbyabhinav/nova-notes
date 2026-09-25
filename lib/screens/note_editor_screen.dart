@@ -298,9 +298,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final before = value.text.substring(0, offset);
     final after = value.text.substring(offset);
     final needsLeadingNewline =
-        before.isNotEmpty && !before.endsWith(RegExp(r'\\s'));
-    final needsTrailingSpace =
-        after.isNotEmpty && !after.startsWith(RegExp(r'\\s'));
+        before.isNotEmpty && !RegExp(r'\s
     final insertion =
         (needsLeadingNewline ? '\\n' : '') +
         text +
@@ -630,10 +628,880 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   void dispose() {
     _saveTimer?.cancel();
+    _contentFocus.dispose();
     _titleController.dispose();
     _contentController.dispose();
-    _contentFocus.dispose();
+    _speechService.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          tooltip: 'Back',
+          onPressed: _close,
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+        title: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 150),
+          child: Text(
+            _saving
+                ? 'Saving…'
+                : (_hasChanges ? 'Unsaved changes' : 'Saved'),
+            key: ValueKey('$_saving-$_hasChanges'),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            tooltip: _previewMode ? 'Edit' : 'Preview',
+            onPressed: () => setState(() => _previewMode = !_previewMode),
+            icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
+          ),
+          IconButton(
+            tooltip: _isPinned ? 'Unpin' : 'Pin',
+            onPressed: () => _setFlag(pinned: !_isPinned),
+            icon: Icon(
+              _isPinned
+                  ? Icons.push_pin_rounded
+                  : Icons.push_pin_outlined,
+            ),
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              switch (value) {
+                case 'export':
+                  await _save();
+                  if (!mounted) return;
+                  await showModalBottomSheet<void>(
+                    context: context,
+                    showDragHandle: true,
+                    isScrollControlled: true,
+                    builder: (_) => ExportNoteSheet(
+                      note: Note(
+                        id: _noteId,
+                        title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
+                        content: _contentController.text,
+                        type: _noteType,
+                        attachments: _attachments,
+                        checklistItems: _checklistItems,
+                        createdAt: _createdAt,
+                        updatedAt: DateTime.now(),
+                        folderId: _folderId,
+                        tags: _tags,
+                        isPinned: _isPinned,
+                        isFavorite: _isFavorite,
+                        isArchived: _isArchived,
+                      ),
+                    ),
+                  );
+                  return;
+                case 'favorite':
+                  await _setFlag(favorite: !_isFavorite);
+                  return;
+                case 'organize':
+                  await _organize();
+                  return;
+                case 'archive':
+                  await _setFlag(archived: !_isArchived);
+                  return;
+                case 'delete':
+                  await _delete();
+                  return;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'export',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.ios_share_rounded),
+                  title: Text('Export'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'favorite',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    _isFavorite
+                        ? Icons.star_rounded
+                        : Icons.star_outline_rounded,
+                  ),
+                  title: Text(
+                    _isFavorite ? 'Remove favorite' : 'Add to favorites',
+                  ),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'organize',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.label_outline_rounded),
+                  title: Text('Folder & tags'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'archive',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    _isArchived
+                        ? Icons.unarchive_outlined
+                        : Icons.archive_outlined,
+                  ),
+                  title: Text(_isArchived ? 'Unarchive' : 'Archive'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.delete_outline_rounded),
+                  title: Text('Delete'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (_folderId != null || _tags.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
+                child: Row(
+                  children: [
+                    if (_folderId != null)
+                      _MetaChip(
+                        icon: Icons.folder_outlined,
+                        label: _folderId!,
+                      ),
+                    ..._tags.map(
+                      (tag) => _MetaChip(
+                        icon: Icons.tag_rounded,
+                        label: tag,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_liveTranscript.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.mic_rounded, size: 18, color: theme.colorScheme.onSecondaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _liveTranscript,
+                        style: TextStyle(color: theme.colorScheme.onSecondaryContainer),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_attachments.isNotEmpty)
+              SizedBox(
+                height: 112,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _attachments.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final path = _attachments[index];
+                    final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic']
+                        .contains(p.extension(path).toLowerCase());
+                    return Stack(
+                      children: [
+                        Container(
+                          width: 104,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: theme.colorScheme.surfaceContainerHighest,
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: isImage
+                              ? GestureDetector(onTap: () => _previewAttachment(path), child: Image.file(File(path), fit: BoxFit.cover))
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.insert_drive_file_outlined, size: 30),
+                                    const SizedBox(height: 6),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: Text(
+                                        p.basename(path),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.labelSmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: IconButton.filledTonal(
+                            tooltip: 'Remove',
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => _showAttachmentActions(path),
+                            icon: const Icon(Icons.more_horiz_rounded, size: 16),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            Expanded(
+              child: _previewMode
+                  ? ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        if (_titleController.text.trim().isNotEmpty)
+                          Text(
+                            _titleController.text.trim(),
+                            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        const SizedBox(height: 12),
+                        MarkdownBody(data: _renderableContent(), selectable: true),
+                      ],
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        TextField(
+                          controller: _titleController,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                          decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_noteType == NoteType.checklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                        else
+                          TextField(
+                            controller: _contentController,
+                            textCapitalization: TextCapitalization.sentences,
+                            keyboardType: TextInputType.multiline,
+                            focusNode: _contentFocus,
+                            textInputAction: TextInputAction.newline,
+                            minLines: 18,
+                            maxLines: null,
+                            style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
+                            decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          ),
+                      ],
+                    ),
+            ),
+            Material(
+              elevation: 4,
+              color: theme.colorScheme.surface,
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  child: Row(
+                    children: [
+                      _ToolButton(
+                        icon: Icons.format_bold_rounded,
+                        label: 'Bold',
+                        onPressed: () => _wrapSelection('**', '**'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_italic_rounded,
+                        label: 'Italic',
+                        onPressed: () => _wrapSelection('*', '*'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.strikethrough_s_rounded,
+                        label: 'Strikethrough',
+                        onPressed: () => _wrapSelection('~~', '~~'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.title_rounded,
+                        label: 'Heading',
+                        onPressed: () => _insertPrefix('## '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_bulleted_rounded,
+                        label: 'Bullets',
+                        onPressed: () => _insertPrefix('- '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_numbered_rounded,
+                        label: 'Numbered list',
+                        onPressed: () => _insertPrefix('1. '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_quote_rounded,
+                        label: 'Quote',
+                        onPressed: () => _insertPrefix('> '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.link_rounded,
+                        label: 'Link',
+                        onPressed: _insertLink,
+                      ),
+                      _ToolButton(
+                        icon: _noteType == NoteType.checklist
+                            ? Icons.check_box_rounded
+                            : Icons.check_box_outlined,
+                        label: _noteType == NoteType.checklist
+                            ? 'Text note'
+                            : 'Checklist',
+                        onPressed: () {
+                          setState(() {
+                            _noteType = _noteType == NoteType.checklist
+                                ? NoteType.text
+                                : NoteType.checklist;
+                            _hasChanges = true;
+                          });
+                          _save();
+                        },
+                      ),
+                      _ToolButton(
+                        icon: Icons.label_outline_rounded,
+                        label: 'Folder & tags',
+                        onPressed: _organize,
+                      ),
+                      _ToolButton(
+                        icon: Icons.attach_file_rounded,
+                        label: 'Add image or file',
+                        onPressed: _showAttachmentMenu,
+                      ),
+                      _ToolButton(
+                        icon: _isListening
+                            ? Icons.stop_circle_outlined
+                            : Icons.mic_none_rounded,
+                        label: _speechInitializing
+                            ? 'Starting voice input'
+                            : (_isListening ? 'Stop voice input' : 'Voice input'),
+                        onPressed: _speechAvailable ? () { _toggleSpeech(); } : null,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ChecklistEditor extends StatelessWidget {
+  const _ChecklistEditor({
+    required this.items,
+    required this.onAdd,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onReorder,
+  });
+
+  final List<ChecklistItem> items;
+  final VoidCallback onAdd;
+  final Future<void> Function(int, bool) onToggle;
+  final Future<void> Function(int) onEdit;
+  final Future<void> Function(int) onDelete;
+  final Future<void> Function(int, int) onReorder;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final done = items.where((item) => item.isDone).length;
+    final progress = items.isEmpty ? 0.0 : done / items.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (items.isNotEmpty) ...[
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(99),
+                  child: LinearProgressIndicator(value: progress, minHeight: 7),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                '$done/${items.length}',
+                style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+        ],
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 36),
+            child: Column(
+              children: [
+                Icon(Icons.checklist_rounded, size: 52, color: theme.colorScheme.primary),
+                const SizedBox(height: 12),
+                Text('Your checklist is empty', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text(
+                  'Add your first task and keep moving.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                const SizedBox(height: 14),
+                FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add first task')),
+              ],
+            ),
+          )
+        else
+          ...List.generate(items.length, (index) {
+            final item = items[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                  leading: Checkbox(
+                    value: item.isDone,
+                    onChanged: (value) => onToggle(index, value ?? false),
+                  ),
+                  title: Text(
+                    item.text,
+                    style: TextStyle(
+                      decoration: item.isDone ? TextDecoration.lineThrough : null,
+                      color: item.isDone ? theme.colorScheme.onSurfaceVariant : null,
+                    ),
+                  ),
+                  onTap: () => onToggle(index, !item.isDone),
+                  onLongPress: () => onEdit(index),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: 'Move up',
+                        onPressed: index == 0 ? null : () => onReorder(index, index - 1),
+                        icon: const Icon(Icons.keyboard_arrow_up_rounded),
+                      ),
+                      IconButton(
+                        tooltip: 'Move down',
+                        onPressed: index == items.length - 1 ? null : () => onReorder(index, index + 1),
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                      ),
+                      IconButton(
+                        tooltip: 'Delete task',
+                        onPressed: () => onDelete(index),
+                        icon: const Icon(Icons.delete_outline_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        if (items.isNotEmpty)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: const Text('Add task')),
+          ),
+      ],
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: Chip(
+        avatar: Icon(icon, size: 16),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _ToolButton extends StatelessWidget {
+  const _ToolButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: IconButton(
+        tooltip: label,
+        onPressed: onPressed,
+        icon: Icon(icon),
+      ),
+    );
+  }
+}
+).hasMatch(before);
+    final needsTrailingSpace =
+        after.isNotEmpty && !RegExp(r'^\s').hasMatch(after);
+    final insertion =
+        (needsLeadingNewline ? '\\n' : '') +
+        text +
+        (needsTrailingSpace ? ' ' : '');
+
+    final newText = before + insertion + after;
+    final newOffset = before.length + insertion.length;
+    _contentController.value = TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newOffset),
+    );
+  }
+
+
+  Future<List<NoteFolder>> _folders() async {
+    final repository = await FolderRepositoryProvider.instance();
+    return repository.getFolders();
+  }
+
+  Future<void> _organize() async {
+    await _save();
+    final folders = await _folders();
+
+    if (!mounted) return;
+
+    final result = await Navigator.of(context).push<OrganizationSelection>(
+      MaterialPageRoute(
+        builder: (_) => OrganizationPickerScreen(
+          folders: folders,
+          selectedFolderId: _folderId,
+          selectedTags: _tags,
+        ),
+      ),
+    );
+
+    if (result == null) return;
+
+    setState(() {
+      _folderId = result.folderId;
+      _tags = result.tags;
+      _hasChanges = true;
+    });
+
+    await _save();
+  }
+
+  Future<void> _setFlag({
+    bool? pinned,
+    bool? favorite,
+    bool? archived,
+  }) async {
+    setState(() {
+      if (pinned != null) _isPinned = pinned;
+      if (favorite != null) _isFavorite = favorite;
+      if (archived != null) _isArchived = archived;
+      _hasChanges = true;
+    });
+
+    await _save();
+  }
+
+
+  String _renderableContent() {
+    if (_noteType != NoteType.checklist) return _contentController.text;
+    return _checklistItems.map((item) => '- [' + (item.isDone ? 'x' : ' ') + '] ' + item.text).join('\n');
+  }
+
+  void _wrapSelection(String before, String after) {
+    final value = _contentController.value;
+    final selection = value.selection;
+    if (!selection.isValid) return;
+    final selected = selection.textInside(value.text);
+    final replacement = before + selected + after;
+    _contentController.value = value.replaced(selection, replacement);
+    _contentController.selection =
+        TextSelection.collapsed(offset: selection.start + replacement.length);
+    _contentFocus.requestFocus();
+  }
+
+  void _insertPrefix(String prefix) {
+    final value = _contentController.value;
+    final selection = value.selection;
+    final start = selection.isValid ? selection.start : value.text.length;
+    final lineStart = value.text.lastIndexOf('\n', start - 1) + 1;
+    _contentController.value = value.replaced(
+      TextSelection.collapsed(offset: lineStart),
+      prefix,
+    );
+    _contentController.selection =
+        TextSelection.collapsed(offset: start + prefix.length);
+    _contentFocus.requestFocus();
+  }
+
+  Future<void> _insertLink() async {
+    final url = await _textDialog('Insert link', 'https://example.com');
+    if (url == null || url.isEmpty) return;
+    final value = _contentController.value;
+    final selected = value.selection.textInside(value.text);
+    _contentController.value = value.replaced(
+      value.selection,
+      selected.isEmpty ? '[link](' + url + ')' : '[' + selected + '](' + url + ')',
+    );
+    _contentFocus.requestFocus();
+  }
+
+  Future<String?> _textDialog(String title, String hint) async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: hint),
+          keyboardType: TextInputType.url,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Insert')),
+        ],
+      ),
+    );
+  }
+
+
+  Future<void> _addImage(ImageSource source) async {
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: 92,
+      );
+      if (picked == null) return;
+      final path = await const NovaAttachmentService().importXFile(picked);
+      setState(() {
+        _attachments = [..._attachments, path];
+        _hasChanges = true;
+      });
+      await _save();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add image: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _addFiles() async {
+    try {
+      final files = await FilePicker.pickFiles();
+      if (files.isEmpty) return;
+      final imported = <String>[];
+      for (final file in files) {
+        if (file.path == null) continue;
+        imported.add(
+          await const NovaAttachmentService().importFile(file.path!),
+        );
+      }
+      if (imported.isEmpty) return;
+      setState(() {
+        _attachments = [..._attachments, ...imported];
+        _hasChanges = true;
+      });
+      await _save();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add files: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _removeAttachment(String path) async {
+    await const NovaAttachmentService().delete(path);
+    setState(() {
+      _attachments = _attachments.where((item) => item != path).toList();
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _shareAttachment(String path) async {
+    final file = File(path);
+    if (!await file.exists()) return;
+    await Share.shareXFiles([XFile(path)], subject: p.basename(path));
+  }
+
+  Future<void> _renameAttachment(String path) async {
+    final controller = TextEditingController(text: p.basenameWithoutExtension(path));
+    final name = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rename attachment'),
+        content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Rename')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (name == null || name.trim().isEmpty) return;
+    try {
+      final renamed = await const NovaAttachmentService().rename(path, name.trim());
+      setState(() {
+        _attachments = _attachments.map((item) => item == path ? renamed : item).toList();
+        _hasChanges = true;
+      });
+      await _save();
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not rename attachment: ' + e.toString())));
+    }
+  }
+
+  Future<void> _showAttachmentDetails(String path) async {
+    final file = File(path);
+    if (!await file.exists() || !mounted) return;
+    final bytes = await file.length();
+    final stat = await file.stat();
+    if (!mounted) return;
+    showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(p.basename(path)),
+        content: Text('Size: ' + _formatBytes(bytes) + '\nModified: ' + stat.modified.toLocal().toString()),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+      ),
+    );
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes < 1024) return bytes.toString() + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toStringAsFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toStringAsFixed(1) + ' MB';
+  }
+
+  void _previewAttachment(String path) {
+    final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic'].contains(p.extension(path).toLowerCase());
+    if (!isImage) {
+      _shareAttachment(path);
+      return;
+    }
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(12),
+        child: Stack(
+          children: [
+            InteractiveViewer(minScale: 0.5, maxScale: 4, child: ClipRRect(borderRadius: BorderRadius.circular(18), child: Image.file(File(path), fit: BoxFit.contain))),
+            Positioned(top: 4, right: 4, child: IconButton.filledTonal(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAttachmentActions(String path) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(leading: const Icon(Icons.visibility_outlined), title: const Text('Preview'), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
+            ListTile(leading: const Icon(Icons.ios_share_outlined), title: const Text('Share'), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
+            ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: const Text('Rename'), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
+            ListTile(leading: const Icon(Icons.info_outline), title: const Text('Details'), onTap: () { Navigator.pop(sheetContext); _showAttachmentDetails(path); }),
+            ListTile(leading: const Icon(Icons.delete_outline), title: const Text('Remove from note'), onTap: () { Navigator.pop(sheetContext); _removeAttachment(path); }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAttachmentMenu() {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Take a photo'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.attach_file_rounded),
+              title: const Text('Attach files'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addFiles();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _delete() async {
+    for (final path in _attachments) {
+      await const NovaAttachmentService().delete(path);
+    }
+    await widget.repository.deleteNote(_noteId);
+
+    if (!mounted) return;
+    Navigator.of(context).pop();
   }
 
   @override
