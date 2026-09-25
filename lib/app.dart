@@ -117,7 +117,7 @@ class _NovaShellState extends State<NovaShell> {
   List<Widget> get _pages => [
         HomeScreen(
           onNewNote: () => _openEditor(NoteType.text),
-          onVoiceCapture: _quickCapture,
+          onVoiceCapture: _openVoiceEditor,
         ),
         const FoldersScreen(),
         const FavoritesScreen(),
@@ -135,6 +135,21 @@ class _NovaShellState extends State<NovaShell> {
           repository: repository,
           initialType: type,
           speechService: widget.speechService,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openVoiceEditor() async {
+    final repository = await NoteRepositoryProvider.instance();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NoteEditorScreen(
+          repository: repository,
+          initialType: NoteType.text,
+          speechService: widget.speechService,
+          autoStartVoice: true,
         ),
       ),
     );
