@@ -106,3 +106,5 @@ the Phase 2 support/fallback matrix is finalized.
 Verification: CI must remain the source of truth for the full Flutter analyze/test
 suite and parallel Android jobs. Local Flutter/Dart execution was not available
 in the execution environment used for this batch.
+
+- Task 5 — templates: commit `f842ba52`. Expanded the existing local template catalog with Travel Diary, Journal, Recipe, Book Notes, Expense Tracker and Workout Log starter content, plus widget coverage for listing and insertion.
