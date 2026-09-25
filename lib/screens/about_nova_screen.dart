@@ -69,6 +69,22 @@ class AboutNovaScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
+          const SizedBox(height: 24),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.code_rounded),
+              title: const Text('Developer'),
+              subtitle: const Text('Abhinav Bajpai'),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '© 2026 Abhinav Bajpai · Orah',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
