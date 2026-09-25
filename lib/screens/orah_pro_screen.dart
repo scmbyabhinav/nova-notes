@@ -28,10 +28,11 @@ class _OrahProScreenState extends State<OrahProScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Lifetime remains supported for existing entitlements, but is no longer
+    // offered as a new purchase option.
     final plans = [
       (OrahEntitlementService.monthlyId, 'Monthly', 'Flexible access'),
       (OrahEntitlementService.yearlyId, 'Yearly', 'Best recurring value'),
-      (OrahEntitlementService.lifetimeId, 'Lifetime', 'One payment, permanent Pro'),
     ];
 
     return Scaffold(
