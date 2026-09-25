@@ -35,7 +35,8 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    await tester.longPress(find.text('Quick capture'));
+    final quickCaptureCenter = tester.getCenter(find.byType(FloatingActionButton));
+    await tester.longPressAt(quickCaptureCenter);
     debugPrint('LONG PRESS AFTER GESTURE: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
     await tester.pump();
     debugPrint('LONG PRESS AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
