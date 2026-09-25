@@ -97,7 +97,7 @@ class _NovaShellState extends State<NovaShell> {
         builder: (_) => NoteEditorScreen(
           repository: repository,
           initialType: type,
-          speechService: speechService,
+          speechService: widget.speechService,
         ),
       ),
     );
