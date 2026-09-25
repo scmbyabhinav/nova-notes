@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/app.dart';
+import 'package:orah_notes/services/speech_to_text_service.dart';
 
 void main() {
   setUp(() {
@@ -21,7 +22,7 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    await tester.tap(find.text('Quick capture'));
+    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump();
@@ -80,4 +81,67 @@ void main() {
 
     expect(find.text('Reactive note test'), findsOneWidget);
   });
+
+  testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
+    final speech = _FakeSpeechService();
+    await tester.pumpWidget(OrahApp(speechService: speech));
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Tap the mic to speak your note'), findsOneWidget);
+    expect(find.byTooltip('Voice input'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Voice input'));
+    await tester.pump();
+
+    expect(speech.startCount, 1);
+    expect(find.text('Hello from voice'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pump();
+
+    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Tap the mic to speak your note'), findsNothing);
+  });
+
+}
+
+
+class _FakeSpeechService implements VoiceSpeechService {
+  int startCount = 0;
+  bool _isListening = false;
+
+  @override
+  bool get isListening => _isListening;
+
+  @override
+  Future<bool> initialize({
+    required SpeechStatusCallback onStatus,
+    required SpeechErrorCallback onError,
+  }) async => true;
+
+  @override
+  Future<void> startListening({
+    required SpeechResultCallback onResult,
+  }) async {
+    startCount++;
+    _isListening = true;
+    onResult('Hello from voice', true);
+    _isListening = false;
+  }
+
+  @override
+  Future<void> stopListening() async => _isListening = false;
+
+  @override
+  Future<void> cancel() async => _isListening = false;
+
+  @override
+  void dispose() {}
 }

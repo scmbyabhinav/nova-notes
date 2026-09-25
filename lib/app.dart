@@ -13,9 +13,12 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 import 'core/navigation/orah_navigation.dart';
+import 'services/speech_to_text_service.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key});
+  const OrahApp({super.key, this.speechService});
+
+  final VoiceSpeechService? speechService;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -57,15 +60,16 @@ class _OrahAppState extends State<OrahApp> {
       ],
       supportedLocales: NovaLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
-      home: NovaShell(themeController: _theme),
+      home: NovaShell(themeController: _theme, speechService: widget.speechService),
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController});
+  const NovaShell({super.key, required this.themeController, this.speechService});
 
   final OrahThemeController themeController;
+  final VoiceSpeechService? speechService;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -93,6 +97,7 @@ class _NovaShellState extends State<NovaShell> {
         builder: (_) => NoteEditorScreen(
           repository: repository,
           initialType: type,
+          speechService: speechService,
         ),
       ),
     );
@@ -191,11 +196,10 @@ class _NovaShellState extends State<NovaShell> {
         onPointerDown: (_) => _startQuickCaptureLongPress(),
         onPointerUp: (_) => _cancelQuickCaptureLongPress(),
         onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
-        child: FloatingActionButton.extended(
+        child: FloatingActionButton(
           onPressed: _quickCapture,
-          icon: const Icon(Icons.bolt_rounded),
-          label: const Text('Quick capture'),
-          tooltip: 'Quick capture. Long-press for more options.',
+          tooltip: 'Quick capture. Long-press for checklist and quick options.',
+          child: const Icon(Icons.mic_none_rounded),
         ),
       ),
       bottomNavigationBar: NavigationBar(

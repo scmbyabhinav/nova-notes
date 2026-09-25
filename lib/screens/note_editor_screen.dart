@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../data/repositories/folder_repository.dart';
@@ -34,6 +35,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialTitle,
     this.initialContent,
     this.speechService,
+    this.autoStartVoice = false,
   });
 
   final NoteRepository repository;
@@ -42,6 +44,7 @@ class NoteEditorScreen extends StatefulWidget {
   final String? initialTitle;
   final String? initialContent;
   final VoiceSpeechService? speechService;
+  final bool autoStartVoice;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -74,6 +77,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _speechInitializing = false;
   bool _isListening = false;
   String _voiceBaseText = '';
+  final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
+
+  static const _voiceHintShownKey = 'orah_voice_hint_shown';
 
   @override
   void initState() {
@@ -105,6 +111,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeShowVoiceHint();
+      if (widget.autoStartVoice) _toggleVoiceInput();
+    });
+  }
+
+  Future<void> _maybeShowVoiceHint() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_voiceHintShownKey) == true || !mounted) return;
+    await prefs.setBool(_voiceHintShownKey, true);
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _voiceHintKey.currentState?.ensureTooltipVisible();
+    });
+  }
+
+  Future<void> _handleVoiceFabTap() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_voiceHintShownKey, true);
+    if (!mounted) return;
+    await _toggleVoiceInput();
   }
 
   Future<void> _toggleVoiceInput() async {
@@ -146,6 +173,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           composing: TextRange.empty,
         );
         if (isFinal) {
+          if (_titleController.text.trim().isEmpty) {
+            final firstLine = nextText
+                .split(RegExp(r'\r?\n'))
+                .map((line) => line.trim())
+                .firstWhere((line) => line.isNotEmpty, orElse: () => '');
+            if (firstLine.isNotEmpty) {
+              _titleController.text = firstLine.length > 80
+                  ? firstLine.substring(0, 80) + '…'
+                  : firstLine;
+            }
+          }
           _voiceBaseText = nextText;
           _isListening = false;
           _hasChanges = true;
@@ -848,6 +886,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
 
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Tooltip(
+        key: _voiceHintKey,
+        message: 'Tap the mic to speak your note',
+        triggerMode: TooltipTriggerMode.manual,
+        child: FloatingActionButton(
+          tooltip: 'Voice input',
+          onPressed: _handleVoiceFabTap,
+          child: Icon(
+            _isListening ? Icons.stop_rounded : Icons.mic_rounded,
+          ),
+        ),
+      ),
       appBar: AppBar(
         leading: IconButton(
           tooltip: 'Back',
