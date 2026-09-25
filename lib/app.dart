@@ -95,84 +95,63 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _quickCapture() async {
-    // Return the user's choice from the sheet first, then push the editor
-    // after the sheet route has fully closed. This avoids competing route
-    // transitions and the Flutter InheritedElement dependents assertion.
-    final action = await showModalBottomSheet<String>(
+    // Main capture action is instant: open a blank note directly.
+    await _openEditor(NoteType.text);
+  }
+
+  Future<void> _showCaptureOptions() async {
+    await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      isScrollControlled: true,
-      builder: (sheetContext) {
-        final theme = Theme.of(sheetContext);
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.bolt_rounded,
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Quick capture',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Capture first. Organize later.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Capture',
+                  style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(height: 16),
-                _QuickCaptureCard(
-                  icon: Icons.edit_note_rounded,
-                  title: 'Quick note',
-                  subtitle: 'A clean blank note, ready to type.',
-                  onTap: () => Navigator.pop(sheetContext, 'note'),
+              ),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Choose what you want to capture.',
+                  style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(sheetContext).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                const SizedBox(height: 10),
-                _QuickCaptureCard(
-                  icon: Icons.checklist_rounded,
-                  title: 'Quick checklist',
-                  subtitle: 'Start adding tasks immediately.',
-                  onTap: () => Navigator.pop(sheetContext, 'checklist'),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.edit_note_rounded)),
+                title: const Text('Quick note'),
+                subtitle: const Text('Start typing immediately'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openEditor(NoteType.text);
+                },
+              ),
+              ListTile(
+                leading: const CircleAvatar(child: Icon(Icons.checklist_rounded)),
+                title: const Text('Quick checklist'),
+                subtitle: const Text('Capture tasks without setup'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _openEditor(NoteType.checklist);
+                },
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
-
-    if (!mounted || action == null) return;
-
-    if (action == 'checklist') {
-      await _openEditor(NoteType.checklist);
-    } else {
-      await _openEditor(NoteType.text);
-    }
   }
 
   @override
@@ -182,10 +161,14 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _quickCapture,
-        icon: const Icon(Icons.bolt_rounded),
-        label: const Text('Quick capture'),
+      floatingActionButton: GestureDetector(
+        onLongPress: _showCaptureOptions,
+        child: FloatingActionButton.extended(
+          onPressed: _quickCapture,
+          icon: const Icon(Icons.bolt_rounded),
+          label: const Text('Quick capture'),
+          tooltip: 'Quick capture. Long-press for more options.',
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
