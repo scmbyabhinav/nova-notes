@@ -145,6 +145,41 @@ class _FakeSpeechService implements VoiceSpeechService {
   Future<void> cancel() async => _isListening = false;
 
   @override
+  void dispose() {}  void dispose() {}
+}
+
+
+
+class _FakeSpeechService implements VoiceSpeechService {
+  int startCount = 0;
+  bool _isListening = false;
+
+  @override
+  bool get isListening => _isListening;
+
+  @override
+  Future<bool> initialize({
+    required SpeechStatusCallback onStatus,
+    required SpeechErrorCallback onError,
+  }) async => true;
+
+  @override
+  Future<void> startListening({
+    required SpeechResultCallback onResult,
+  }) async {
+    startCount++;
+    _isListening = true;
+    onResult('Hello from voice', true);
+    _isListening = false;
+  }
+
+  @override
+  Future<void> stopListening() async => _isListening = false;
+
+  @override
+  Future<void> cancel() async => _isListening = false;
+
+  @override
   void dispose() {}  testWidgets('templates sheet lists all starter templates and inserts selected content', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(home: OrahTemplatesScreen()),
@@ -177,3 +212,34 @@ class _FakeSpeechService implements VoiceSpeechService {
 
 
 }
+
+  testWidgets('templates sheet lists all starter templates and inserts selected content', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: OrahTemplatesScreen()),
+    );
+    await tester.pumpAndSettle();
+
+    for (final title in [
+      'Meeting Notes',
+      'Daily Plan',
+      'Shopping List',
+      'Project Brief',
+      'Travel Plan',
+      'Travel Diary',
+      'Journal',
+      'Recipe',
+      'Book Notes',
+      'Expense Tracker',
+      'Workout Log',
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+
+    await tester.tap(find.text('Recipe'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ingredients'), findsOneWidget);
+    expect(find.text('Steps'), findsOneWidget);
+    expect(find.text('Notes'), findsOneWidget);
+  });
+
