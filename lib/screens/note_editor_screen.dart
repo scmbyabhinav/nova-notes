@@ -294,7 +294,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final value = _contentController.value;
     final selection = value.selection;
     final offset = selection.isValid
-        ? selection.baseOffset.clamp(0, value.text.length)
+        ? selection.baseOffset.clamp(0, value.text.length).toInt()
         : value.text.length;
     final before = value.text.substring(0, offset);
     final after = value.text.substring(offset);
