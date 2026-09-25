@@ -322,6 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             'Orah',
                             style: theme.textTheme.headlineSmall?.copyWith(
+                              fontSize: 28,
                               fontWeight: FontWeight.w900,
                               letterSpacing: -0.8,
                             ),
