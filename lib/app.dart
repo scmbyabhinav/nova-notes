@@ -115,7 +115,10 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   List<Widget> get _pages => [
-        const HomeScreen(),
+        HomeScreen(
+          onNewNote: () => _openEditor(NoteType.text),
+          onVoiceCapture: _quickCapture,
+        ),
         const FoldersScreen(),
         const FavoritesScreen(),
         SettingsScreen(themeController: widget.themeController),
@@ -221,13 +224,16 @@ class _NovaShellState extends State<NovaShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final desktop = constraints.maxWidth >= 1100;
+        return Scaffold(
+          body: IndexedStack(
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: Row(
-        mainAxisSize: MainAxisSize.min,
+          floatingActionButton: desktop ? null : Row(
+            mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton.small(
             heroTag: 'orah_new_note_fab',
@@ -256,8 +262,8 @@ class _NovaShellState extends State<NovaShell> {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
+          bottomNavigationBar: desktop ? null : NavigationBar(
+            selectedIndex: _index,
         onDestinationSelected: (value) {
           setState(() => _index = value);
         },
@@ -282,9 +288,11 @@ class _NovaShellState extends State<NovaShell> {
             selectedIcon: Icon(Icons.settings_rounded),
             label: 'Settings',
           ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    },
+  );
   }
 }
 
