@@ -59,4 +59,25 @@ void main() {
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
   });
+
+  testWidgets('new note appears in home list immediately after editor closes', (tester) async {
+    await tester.pumpWidget(const OrahApp());
+    await tester.pump();
+
+    await tester.tap(find.text('Quick capture'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump();
+
+    final titleField = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.decoration?.hintText == 'Title',
+    );
+    await tester.enterText(titleField, 'Reactive note test');
+    await tester.pump(const Duration(milliseconds: 700));
+
+    await tester.pageBack();
+    await tester.pump();
+
+    expect(find.text('Reactive note test'), findsOneWidget);
+  });
 }

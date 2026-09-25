@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
@@ -21,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _loading = true;
   String _sort = 'updated';
   List<Note> _notes = const [];
+  StreamSubscription<List<Note>>? _notesSubscription;
 
   @override
   void initState() {
@@ -46,14 +49,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadNotes() async {
     final repository = await NoteRepositoryProvider.instance();
+
+    await _notesSubscription?.cancel();
+    _notesSubscription = repository.watchNotes().listen(_applyNotes);
+
     final notes = await repository.getNotes();
+    _applyNotes(notes);
+  }
 
+  void _applyNotes(List<Note> notes) {
     if (!mounted) return;
-
     setState(() {
       _notes = notes.where((note) => !note.isTrashed).toList();
       _loading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _notesSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _openNote(Note note) async {
@@ -70,13 +85,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    _loadNotes();
   }
 
   Future<void> _updateNote(Note note, Note updated) async {
     final repository = await NoteRepositoryProvider.instance();
     await repository.saveNote(updated);
-    await _loadNotes();
   }
 
   Future<void> _restoreFromTrash(Note note) async {
@@ -186,7 +199,6 @@ class _HomeScreenState extends State<HomeScreen> {
             await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: duplicateId);
           }
         }
-        await _loadNotes();
         return;
       case 'color':
         await _showColorPicker(note);
@@ -222,7 +234,6 @@ class _HomeScreenState extends State<HomeScreen> {
         for (final item in note.checklistItems) {
           await OrahReminderService.instance.cancel('checklist:${item.id}');
         }
-        await _loadNotes();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -278,7 +289,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final repository = await NoteRepositoryProvider.instance();
     final color = selected == -1 ? null : selected;
     await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
-    await _loadNotes();
   }
 
   @override

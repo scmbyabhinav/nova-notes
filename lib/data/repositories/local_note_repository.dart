@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,8 +11,12 @@ class LocalNoteRepository implements NoteRepository {
   LocalNoteRepository(this._preferences);
 
   final SharedPreferences _preferences;
+  final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
 
   static const _storageKey = 'nova_notes_v1';
+
+  @override
+  Stream<List<Note>> watchNotes() => _notesController.stream;
 
   @override
   Future<List<Note>> getNotes() async {
@@ -62,6 +67,7 @@ class LocalNoteRepository implements NoteRepository {
     }
 
     await _write(notes);
+    _publish(notes);
   }
 
   @override
@@ -69,6 +75,7 @@ class LocalNoteRepository implements NoteRepository {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
+    _publish(notes);
   }
 
   @override
@@ -144,6 +151,11 @@ class LocalNoteRepository implements NoteRepository {
   Future<void> _write(List<Note> notes) async {
     final encoded = notes.map(_toMap).toList();
     await _preferences.setString(_storageKey, jsonEncode(encoded));
+  }
+
+  void _publish(List<Note> notes) {
+    final snapshot = [...notes]..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    _notesController.add(List<Note>.unmodifiable(snapshot));
   }
 
   Map<String, dynamic> _toMap(Note note) {
@@ -276,7 +288,9 @@ class LocalNoteRepository implements NoteRepository {
       }
     }
 
-    await _write(byId.values.toList());
+    final merged = byId.values.toList();
+    await _write(merged);
+    _publish(merged);
     return imported.length;
   }
 
