@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/app.dart';
 
 void main() {
+  SharedPreferences.setMockInitialValues({});
   testWidgets('Orah launches', (tester) async {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
