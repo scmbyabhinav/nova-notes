@@ -35,19 +35,19 @@ class NovaTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(NovaConstants.surfaceLight),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
