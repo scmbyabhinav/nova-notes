@@ -107,7 +107,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 700));
 
     expect(
-      find.textContaining('Existing note\nremember the supplier tomorrow'),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is TextField &&
+            widget.controller?.text ==
+                'Existing note\nremember the supplier tomorrow',
+      ),
       findsOneWidget,
     );
 
