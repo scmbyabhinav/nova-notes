@@ -22,6 +22,29 @@ class _ExportNoteSheetState extends State<ExportNoteSheet>{
       if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('Export failed: $e')));
     }finally{if(mounted)setState(()=>_busy=false);}
   }
+  Future<void> _sendAsEmailAttachment() async {
+    setState(() => _busy = true);
+    try {
+      final file = await const UniversalExportService().export(
+        widget.note,
+        NovaExportFormat.pdf,
+      );
+      if (!mounted) return;
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        subject: 'ORAH — ' + widget.note.title,
+        text: 'Attached from ORAH',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email attachment failed: ' + e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
   @override Widget build(BuildContext context)=>SafeArea(child:Padding(
     padding:const EdgeInsets.fromLTRB(20,8,20,24),
     child:Column(mainAxisSize:MainAxisSize.min,crossAxisAlignment:CrossAxisAlignment.start,children:[
@@ -32,6 +55,13 @@ class _ExportNoteSheetState extends State<ExportNoteSheet>{
       if(_busy)const LinearProgressIndicator(),
       _tile(Icons.picture_as_pdf_outlined,'PDF','Printable document',NovaExportFormat.pdf),
       _tile(Icons.description_outlined,'Word (.docx)','Editable Microsoft Word document',NovaExportFormat.word),
+      ListTile(
+        leading: const Icon(Icons.email_outlined),
+        title: const Text('Send as email attachment'),
+        subtitle: const Text('Attach a PDF to an email from the system share sheet'),
+        enabled: !_busy,
+        onTap: _sendAsEmailAttachment,
+      ),
       _tile(Icons.table_chart_outlined,'Excel (.xlsx)','Spreadsheet; checklists become rows',NovaExportFormat.excel),
       _tile(Icons.text_snippet_outlined,'Text (.txt)','Simple universal text',NovaExportFormat.text),
       _tile(Icons.code_outlined,'Markdown (.md)','Portable Markdown',NovaExportFormat.markdown),
