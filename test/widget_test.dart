@@ -93,7 +93,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Tap the mic to speak your note'), findsOneWidget);
-    expect(find.byTooltip('Voice input'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsOneWidget);
 
     await tester.tap(find.byTooltip('Voice input'));
     await tester.pump();
