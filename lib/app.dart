@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'core/localization/nova_localizations.dart';
 
@@ -39,6 +41,12 @@ class _OrahAppState extends State<OrahApp> {
   }
 
   @override
+  void dispose() {
+    _quickCaptureLongPressTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final light = NovaTheme.light(seed: Color(_theme.accent));
     final dark = NovaTheme.dark(seed: Color(_theme.accent));
@@ -71,6 +79,8 @@ class NovaShell extends StatefulWidget {
 
 class _NovaShellState extends State<NovaShell> {
   int _index = 0;
+  Timer? _quickCaptureLongPressTimer;
+  bool _quickCaptureLongPressTriggered = false;
 
   List<Widget> get _pages => [
         const HomeScreen(),
@@ -95,8 +105,29 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _quickCapture() async {
+    // The long-press path is driven by the outer Listener. Suppress the
+    // FloatingActionButton tap callback when the long-press has fired.
+    if (_quickCaptureLongPressTriggered) {
+      _quickCaptureLongPressTriggered = false;
+      return;
+    }
     // Main capture action is instant: open a blank note directly.
     await _openEditor(NoteType.text);
+  }
+
+  void _startQuickCaptureLongPress() {
+    _quickCaptureLongPressTimer?.cancel();
+    _quickCaptureLongPressTriggered = false;
+    _quickCaptureLongPressTimer = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      _quickCaptureLongPressTriggered = true;
+      _showCaptureOptions();
+    });
+  }
+
+  void _cancelQuickCaptureLongPress() {
+    _quickCaptureLongPressTimer?.cancel();
+    _quickCaptureLongPressTimer = null;
   }
 
   Future<void> _showCaptureOptions() async {
@@ -161,8 +192,11 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: GestureDetector(
-        onLongPress: _showCaptureOptions,
+      floatingActionButton: Listener(
+        behavior: HitTestBehavior.opaque,
+        onPointerDown: (_) => _startQuickCaptureLongPress(),
+        onPointerUp: (_) => _cancelQuickCaptureLongPress(),
+        onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
         child: FloatingActionButton.extended(
           onPressed: _quickCapture,
           icon: const Icon(Icons.bolt_rounded),
