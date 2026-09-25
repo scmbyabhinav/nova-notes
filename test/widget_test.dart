@@ -93,6 +93,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump(const Duration(milliseconds: 500));
 
+    final voiceHint = find.byWidgetPredicate(
+      (widget) => widget is Tooltip && widget.message == 'Tap the mic to speak your note',
+    );
+    expect(voiceHint, findsOneWidget);
+    tester.state<TooltipState>(voiceHint).ensureTooltipVisible();
+    await tester.pump();
     expect(find.text('Tap the mic to speak your note'), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsOneWidget);
 
