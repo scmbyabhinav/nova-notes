@@ -13,7 +13,10 @@ import 'orah_pro_screen.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture});
+
+  final Future<void> Function()? onNewNote;
+  final Future<void> Function()? onVoiceCapture;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -24,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _loading = true;
   String _sort = 'updated';
   List<Note> _notes = const [];
+  String? _selectedNoteId;
   StreamSubscription<List<Note>>? _notesSubscription;
 
   @override
@@ -63,8 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _notes = notes.where((note) => !note.isTrashed).toList();
       _loading = false;
+      if (_selectedNoteId != null && !_notes.any((note) => note.id == _selectedNoteId)) {
+        _selectedNoteId = null;
+      }
     });
   }
+
+  void _selectNote(Note note) => setState(() => _selectedNoteId = note.id);
 
   @override
   void dispose() {
@@ -305,8 +314,22 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     final completed = recent.where((n) => n.type == NoteType.checklist && n.checklistItems.isNotEmpty && n.checklistProgress == 1).length;
 
-    return SafeArea(
-      child: RefreshIndicator(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 1100) {
+          return _DesktopNotesLayout(
+            notes: _notes,
+            loading: _loading,
+            selectedNoteId: _selectedNoteId,
+            onSelect: _selectNote,
+            onOpen: _openNote,
+            onNewNote: widget.onNewNote,
+            onVoiceCapture: widget.onVoiceCapture,
+          );
+        }
+
+        return SafeArea(
+          child: RefreshIndicator(
         onRefresh: _loadNotes,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -510,11 +533,511 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+        );
+      },
     );
   }
 }
 
-class _NoteCard extends StatelessWidget {
+class _DesktopNotesLayout extends StatelessWidget {
+  const _DesktopNotesLayout({
+    required this.notes,
+    required this.loading,
+    required this.selectedNoteId,
+    required this.onSelect,
+    required this.onOpen,
+    required this.onNewNote,
+    required this.onVoiceCapture,
+  });
+
+  final List<Note> notes;
+  final bool loading;
+  final String? selectedNoteId;
+  final ValueChanged<Note> onSelect;
+  final ValueChanged<Note> onOpen;
+  final Future<void> Function()? onNewNote;
+  final Future<void> Function()? onVoiceCapture;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final active = notes.where((n) => !n.isArchived).toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    Note? selected = active.isEmpty ? null : active.first;
+    if (selectedNoteId != null) {
+      for (final note in active) {
+        if (note.id == selectedNoteId) {
+          selected = note;
+          break;
+        }
+      }
+    }
+
+    return Material(
+      color: theme.colorScheme.surface,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 250,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                border: Border(right: BorderSide(color: theme.colorScheme.outlineVariant)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 22, 18, 14),
+                      child: Text(
+                        'Notes',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: SearchBar(
+                        hintText: 'Search',
+                        leading: const Icon(Icons.search_rounded, size: 19),
+                        elevation: const WidgetStatePropertyAll(0),
+                        backgroundColor: WidgetStatePropertyAll(
+                          theme.colorScheme.surfaceContainerHighest.withValues(alpha: .7),
+                        ),
+                        onTap: () {},
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    const _SidebarLabel(label: 'LIBRARY'),
+                    _SidebarItem(
+                      icon: Icons.note_outlined,
+                      label: 'All Notes',
+                      count: active.length,
+                      selected: true,
+                      onTap: () {},
+                    ),
+                    _SidebarItem(
+                      icon: Icons.bookmark_border_rounded,
+                      label: 'Favorites',
+                      count: active.where((n) => n.isFavorite).length,
+                      onTap: () {},
+                    ),
+                    _SidebarItem(
+                      icon: Icons.access_time_rounded,
+                      label: 'Recent',
+                      count: active.length > 8 ? 8 : active.length,
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 16),
+                    const _SidebarLabel(label: 'FOLDERS'),
+                    ..._folderEntries(active),
+                    const Spacer(),
+                    if (onNewNote != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+                        child: FilledButton.icon(
+                          onPressed: onNewNote,
+                          icon: const Icon(Icons.add_rounded, size: 19),
+                          label: const Text('New Note'),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(44),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (onVoiceCapture != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+                        child: OutlinedButton.icon(
+                          onPressed: onVoiceCapture,
+                          icon: const Icon(Icons.mic_none_rounded, size: 19),
+                          label: const Text('Voice capture'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 320,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                border: Border(right: BorderSide(color: theme.colorScheme.outlineVariant)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 25, 16, 18),
+                      child: Row(
+                        children: [
+                          Text(
+                            'All Notes',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '@@ACTIVE_COUNT@@ notes',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (loading)
+                      const Expanded(child: Center(child: CircularProgressIndicator()))
+                    else if (active.isEmpty)
+                      const Expanded(child: Center(child: Text('No notes yet')))
+                    else
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+                          itemCount: active.length,
+                          itemBuilder: (context, index) {
+                            final note = active[index];
+                            return _DesktopNoteRow(
+                              note: note,
+                              selected: note.id == selected?.id,
+                              onTap: () => onSelect(note),
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: SafeArea(
+              child: selected == null
+                  ? Center(
+                      child: Text(
+                        'Select a note',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    )
+                  : _DesktopNotePreview(
+                      note: selected,
+                      onEdit: () => onOpen(selected!),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _folderEntries(List<Note> active) {
+    final folders = <String, int>{};
+    for (final note in active) {
+      final id = note.folderId;
+      if (id != null && id.trim().isNotEmpty) {
+        folders[id] = (folders[id] ?? 0) + 1;
+      }
+    }
+    if (folders.isEmpty) {
+      return [
+        _SidebarItem(
+          icon: Icons.folder_outlined,
+          label: 'Folders',
+          onTap: () {},
+        ),
+      ];
+    }
+    return folders.entries.take(5).map((entry) {
+      return _SidebarItem(
+        icon: Icons.folder_outlined,
+        label: entry.key,
+        count: entry.value,
+        onTap: () {},
+      );
+    }).toList();
+  }
+}
+
+class _SidebarLabel extends StatelessWidget {
+  const _SidebarLabel({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 12, 6),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          letterSpacing: .6,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+class _SidebarItem extends StatelessWidget {
+  const _SidebarItem({
+    required this.icon,
+    required this.label,
+    this.count,
+    this.selected = false,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final int? count;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 1),
+      child: Material(
+        color: selected
+            ? theme.colorScheme.primaryContainer.withValues(alpha: .72)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color: selected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                ),
+                if (count != null)
+                  Text(
+                    '$count',
+                    style: theme.textTheme.bodySmall,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopNoteRow extends StatelessWidget {
+  const _DesktopNoteRow({
+    required this.note,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Note note;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 3),
+      child: Material(
+        color: selected
+            ? theme.colorScheme.primaryContainer.withValues(alpha: .68)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (body.isNotEmpty) ...[
+                  const SizedBox(height: 5),
+                  Text(
+                    body,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(height: 1.35),
+                  ),
+                ],
+                const SizedBox(height: 5),
+                Text(
+                  '\${_formatDate(note.updatedAt)}  ·  \${note.folderId ?? 'Notes'}',
+                  style: theme.textTheme.labelSmall,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopNotePreview extends StatelessWidget {
+  const _DesktopNotePreview({
+    required this.note,
+    required this.onEdit,
+  });
+
+  final Note note;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final body = note.content.trim();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(28, 24, 22, 10),
+          child: Row(
+            children: [
+              Text(
+                '@@DATE@@  ·  @@FOLDER@@',
+                style: theme.textTheme.bodySmall,
+              ),
+              const Spacer(),
+              IconButton(
+                tooltip: note.isPinned ? 'Unpin' : 'Pin',
+                onPressed: () {},
+                icon: Icon(
+                  note.isPinned ? Icons.push_pin_rounded : Icons.push_pin_outlined,
+                ),
+              ),
+              IconButton(
+                tooltip: 'Favorite',
+                onPressed: () {},
+                icon: Icon(
+                  note.isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(28, 8, 48, 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    fontSize: 34,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -1.1,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                if (note.type == NoteType.checklist)
+                  _DesktopChecklistPreview(note: note)
+                else
+                  SelectableText(
+                    body.isEmpty ? 'This note is empty.' : body,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontSize: 16,
+                      height: 1.7,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(28, 0, 28, 18),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Edit note'),
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DesktopChecklistPreview extends StatelessWidget {
+  const _DesktopChecklistPreview({required this.note});
+  final Note note;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: note.checklistItems.map((item) {
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Icon(
+            item.isDone ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+          ),
+          title: Text(
+            item.text,
+            style: TextStyle(
+              decoration: item.isDone ? TextDecoration.lineThrough : null,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _DesktopNotesLayout extends StatelessWidget {
   const _NoteCard({
     required this.note,
     required this.onTap,
