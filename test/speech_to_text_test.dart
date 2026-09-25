@@ -96,7 +96,7 @@ void main() {
     final state = await _pumpEditor(tester);
 
     await tester.enterText(
-      find.byHintText('Start writing...'),
+      find.byWidgetPredicate((widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...'),
       'Existing note',
     );
     await tester.tap(find.byTooltip('Voice input'));
