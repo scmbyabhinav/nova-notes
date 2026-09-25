@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -108,14 +108,6 @@ jobs:
             }
           }
           GRADLE
-      - name: Build debug APK
-        run: flutter build apk --debug
-      - name: Upload debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: orah-debug-apk-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 14
       - name: Free runner disk before release builds
         run: |
           rm -rf build android/.gradle ~/.gradle/caches ~/.gradle/daemon
@@ -174,4 +166,101 @@ jobs:
         with:
           name: orah-release-aab-${{ github.sha }}
           path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 14
+  debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Prepare Android
+        run: |
+          flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
+          python3 tool/prepare_android_host.py
+      - name: Dependencies
+        run: flutter pub get
+      - name: Verify Android desugaring configuration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          app = Path("android/app")
+          candidates = [app / "build.gradle.kts", app / "build.gradle"]
+          gradle = next((p for p in candidates if p.exists()), None)
+          if gradle is None:
+              raise SystemExit("android/app Gradle file not found")
+          text = gradle.read_text()
+          if gradle.suffix == ".kts":
+              if "isCoreLibraryDesugaringEnabled = true" not in text:
+                  if "compileOptions {" not in text:
+                      raise SystemExit("compileOptions block not found")
+                  text = text.replace("compileOptions {", "compileOptions {\n        isCoreLibraryDesugaringEnabled = true", 1)
+              if "com.android.tools:desugar_jdk_libs" not in text:
+                  dep = 'coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")'
+                  if "dependencies {" in text:
+                      text = text.replace("dependencies {", "dependencies {\n    " + dep, 1)
+                  else:
+                      text += "\n\ndependencies {\n    " + dep + "\n}\n"
+          else:
+              if "coreLibraryDesugaringEnabled true" not in text:
+                  if "compileOptions {" not in text:
+                      raise SystemExit("compileOptions block not found")
+                  text = text.replace("compileOptions {", "compileOptions {\n        coreLibraryDesugaringEnabled true", 1)
+              if "com.android.tools:desugar_jdk_libs" not in text:
+                  dep = "coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'"
+                  if "dependencies {" in text:
+                      text = text.replace("dependencies {", "dependencies {\n    " + dep, 1)
+                  else:
+                      text += "\n\ndependencies {\n    " + dep + "\n}\n"
+          gradle.write_text(text)
+          PY
+      - name: Align Android plugin JVM targets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          roots = list(Path.home().glob('.pub-cache/hosted/pub.dev/*'))
+          if not roots:
+              raise SystemExit('pub.dev package cache not found after pub get')
+          for root in roots:
+              for path in root.rglob('build.gradle*'):
+                  text = path.read_text()
+                  updated = (text
+                      .replace('JavaVersion.VERSION_1_8', 'JavaVersion.VERSION_17')
+                      .replace('JavaVersion.VERSION_11', 'JavaVersion.VERSION_17')
+                      .replace("jvmTarget = '1.8'", "jvmTarget = '17'")
+                      .replace('jvmTarget = "1.8"', 'jvmTarget = "17"'))
+                  if updated != text:
+                      path.write_text(updated)
+          PY
+      - name: Configure Android JVM compatibility
+        run: |
+          mkdir -p ~/.gradle
+          cat > ~/.gradle/init.gradle <<'GRADLE'
+          gradle.projectsEvaluated {
+            allprojects { project ->
+              project.tasks.withType(JavaCompile).configureEach {
+                sourceCompatibility = '17'
+                targetCompatibility = '17'
+              }
+              project.tasks.configureEach { task ->
+                if (task.class.name.contains('KotlinCompile')) {
+                  try { task.kotlinOptions.jvmTarget = '17' } catch (ignored) {}
+                }
+              }
+            }
+          }
+          GRADLE
+      - name: Build debug APK
+        run: flutter build apk --debug
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: orah-debug-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 14
