@@ -261,12 +261,44 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: const Text('Create PIN'),
-          content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit PIN')),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 8,
+            decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
             FilledButton(
               onPressed: () {
-                if (RegExp(r'^\\d{4,8}
+                if (RegExp(r'^\\d{4,8}$').hasMatch(controller.text)) {
+                  Navigator.pop(dialogContext, controller.text);
+                }
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        ),
+      );
+      controller.dispose();
+      if (pin == null) return;
+      await security.setPin(pin);
+    }
+    setState(() {
+      _isLocked = true;
+      _privateUnlocked = false;
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  String _newId() =>
+      '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
     // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
