@@ -20,7 +20,9 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.text('Quick capture'));
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump();
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Start writing...'), findsOneWidget);
