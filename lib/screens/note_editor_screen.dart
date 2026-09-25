@@ -60,11 +60,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isPinned = false;
   bool _isFavorite = false;
   bool _isArchived = false;
-  late final VoiceSpeechService _speechService;
-  bool _speechInitializing = false;
-  bool _isListening = false;
-  bool _speechAvailable = true;
-  String _liveTranscript = '';
   DateTime? _dueAt;
   int? _noteColor;
   String? _folderId;
@@ -75,10 +70,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isLocked = false;
   bool _privateUnlocked = true;
   bool _unlocking = false;
+  late final VoiceSpeechService _speechService;
+  bool _speechInitializing = false;
+  bool _isListening = false;
+  bool _speechAvailable = true;
+  String _voiceBaseText = '';
 
   @override
   void initState() {
     super.initState();
+    _speechService = widget.speechService ?? SpeechToTextService();
 
     final existing = widget.note;
     _noteId = existing?.id ?? _newId();
@@ -101,13 +102,66 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _tags = [...(existing?.tags ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
     _checklistItems = [...(existing?.checklistItems ?? const [])];
-    _speechService = widget.speechService ?? SpeechToTextService();
     if (_noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
   }
 
+  Future<void> _toggleVoiceInput() async {
+    if (_speechInitializing) return;
+    if (_isListening) {
+      await _speechService.stopListening();
+      if (mounted) setState(() => _isListening = false);
+      return;
+    }
+    setState(() => _speechInitializing = true);
+    final available = await _speechService.initialize(
+      onStatus: (status) {
+        if (!mounted) return;
+        if (status == 'done' || status == 'notListening') {
+          setState(() => _isListening = false);
+        }
+      },
+      onError: (message) {
+        if (!mounted) return;
+        setState(() { _isListening = false; _speechAvailable = false; });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Voice input unavailable: $message')),
+        );
+      },
+    );
+    if (!mounted) return;
+    if (!available) {
+      setState(() { _speechInitializing = false; _speechAvailable = false; });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Voice input is unavailable on this device.')),
+      );
+      return;
+    }
+    _voiceBaseText = _contentController.text;
+    setState(() { _speechInitializing = false; _speechAvailable = true; _isListening = true; });
+    await _speechService.startListening(
+      onResult: (transcript, isFinal) {
+        if (!mounted || transcript.trim().isEmpty) return;
+        final baseText = _voiceBaseText.trimRight();
+        final separator = baseText.isEmpty ? '' : '\\n';
+        final nextText = '$baseText$separator${transcript.trim()}';
+        _contentController.value = _contentController.value.copyWith(
+          text: nextText,
+          selection: TextSelection.collapsed(offset: nextText.length),
+          composing: TextRange.empty,
+        );
+        if (isFinal) {
+          _voiceBaseText = nextText;
+          _isListening = false;
+          _hasChanges = true;
+          _save();
+          if (mounted) setState(() {});
+        }
+      },
+    );
+  }
   List<ChecklistItem> _parseChecklistContent(String content) {
     return content.split(RegExp(r'\r?\n')).where((line) => line.trim().isNotEmpty).map((line) {
       final trimmed = line.trim();
@@ -291,62 +345,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     Navigator.of(context).pop();
   }
 
-  Future<void> _toggleSpeech() async {
-    if (_speechInitializing) return;
-
-    if (_isListening) {
-      await _speechService.stopListening();
-      if (!mounted) return;
-      setState(() { _isListening = false; _liveTranscript = ''; });
-      return;
-    }
-
-    setState(() => _speechInitializing = true);
-    final available = await _speechService.initialize(
-      onStatus: (status) {
-        if (!mounted) return;
-        final normalized = status.toLowerCase();
-        setState(() {
-          _isListening = normalized == 'listening';
-          if (normalized == 'done' || normalized == 'notlistening') _isListening = false;
-        });
-      },
-      onError: (message) {
-        if (!mounted) return;
-        setState(() { _isListening = false; _speechInitializing = false; _liveTranscript = ''; });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Voice input error: $message')));
-      },
-    );
-    if (!mounted) return;
-    setState(() { _speechInitializing = false; _speechAvailable = available; });
-    if (!available) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Voice input is not available on this device.')));
-      return;
-    }
-    _contentFocus.requestFocus();
-    setState(() => _isListening = true);
-    await _speechService.startListening(
-      onResult: (transcript, isFinal) {
-        if (!mounted) return;
-        if (isFinal) {
-          _insertSpeechText(transcript);
-          setState(() { _isListening = false; _liveTranscript = ''; });
-        } else {
-          setState(() => _liveTranscript = transcript);
-        }
-      },
-    );
-  }
-
-  void _insertSpeechText(String transcript) {
-    final text = transcript.trim();
-    if (text.isEmpty) return;
-    final value = _contentController.value;
-    final selection = value.selection;
-    final offset = selection.isValid ? selection.baseOffset.clamp(0, value.text.length).toInt() : value.text.length;
-    final before = value.text.substring(0, offset);
-    final after = value.text.substring(offset);
-    final needsLeadingNewline = before.isNotEmpty && !RegExp(r'\s  Future<List<NoteFolder>> _folders() async {
+  Future<List<NoteFolder>> _folders() async {
     final repository = await FolderRepositoryProvider.instance();
     return repository.getFolders();
   }
@@ -799,11 +798,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   @override
   void dispose() {
+    _speechService.dispose();
     _saveTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
     _contentFocus.dispose();
-    _speechService.dispose();
     super.dispose();
   }
 
@@ -1006,24 +1005,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ],
                 ),
               ),
-            if (_liveTranscript.isNotEmpty)
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(20, 6, 20, 4),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.mic_rounded, size: 18, color: theme.colorScheme.onSecondaryContainer),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(_liveTranscript, style: TextStyle(color: theme.colorScheme.onSecondaryContainer))),
-                  ],
-                ),
-              ),
             if (_attachments.isNotEmpty)
               SizedBox(
                 height: 112,
@@ -1203,8 +1184,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                       _ToolButton(
                         icon: _isListening ? Icons.stop_circle_outlined : Icons.mic_none_rounded,
-                        label: _speechInitializing ? 'Starting voice input' : (_isListening ? 'Stop voice input' : 'Voice input'),
-                        onPressed: _speechAvailable ? () { _toggleSpeech(); } : null,
+                        label: _isListening ? 'Stop voice input' : 'Voice input',
+                        onPressed: _speechAvailable ? _toggleVoiceInput : null,
                       ),
                     ],
                   ),
