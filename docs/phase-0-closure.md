@@ -92,9 +92,7 @@ the Phase 2 support/fallback matrix is finalized.
 - Task 1 — reactive note-library updates: commit `6a40f62b`; follow-up cleanup `c7977803`.
   Home now listens to the same `LocalNoteRepository` stream used by the editor,
   and the widget suite includes a create → pop → immediate library assertion.
-- Task 2 — voice capture prominence: commit `54c8fb05`; follow-up wiring fix
-  `c94ac565`. Added the editor M3 mic FAB, one-time voice hint, mocked speech
-  widget coverage, and automatic title generation from the first transcript line.
+- Task 2 — voice capture prominence: commits `54c8fb05`, `c94ac565`, `8cdabd05`, and `fd9547f3`. Added the editor M3 mic FAB, one-time voice hint, mocked speech widget coverage, and automatic title generation from the first transcript line; follow-ups remove the duplicate nested tooltip and update voice tests to target the FAB directly.
 - Task 3 — quick-capture discoverability: commit `471e2238`. The home FAB is
   now a standard circular mic FAB with a persistent first-two-visits hint while
   preserving the existing long-press capture menu behavior.
@@ -107,4 +105,4 @@ Verification: CI must remain the source of truth for the full Flutter analyze/te
 suite and parallel Android jobs. Local Flutter/Dart execution was not available
 in the execution environment used for this batch.
 
-- Task 5 — templates: commits `f842ba52` and `6f0cbca9`. Expanded the existing local template catalog with Travel Diary, Journal, Recipe, Book Notes, Expense Tracker and Workout Log starter content, plus widget coverage for listing and insertion; the follow-up places that test in the correct widget-suite scope.
+- Task 5 — templates: commits `f842ba52`, `6f0cbca9`, and `b72888ba`. Expanded the existing local template catalog with Travel Diary, Journal, Recipe, Book Notes, Expense Tracker and Workout Log starter content, plus widget coverage for listing and insertion; follow-ups place the test correctly and make template selection use the active navigator.
