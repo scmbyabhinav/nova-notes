@@ -45,34 +45,6 @@ class _OrahAppState extends State<OrahApp> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadQuickCaptureHint();
-  }
-
-  Future<void> _loadQuickCaptureHint() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_quickCaptureHintDismissedKey) == true || !mounted) return;
-    final visits = prefs.getInt(_quickCaptureHintVisitsKey) ?? 0;
-    if (visits >= 2) return;
-    await prefs.setInt(_quickCaptureHintVisitsKey, visits + 1);
-    if (!mounted) return;
-    setState(() => _showQuickCaptureHint = true);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _showQuickCaptureHint) {
-        _quickCaptureHintKey.currentState?.ensureTooltipVisible();
-      }
-    });
-  }
-
-  Future<void> _dismissQuickCaptureHint() async {
-    if (!_showQuickCaptureHint) return;
-    if (mounted) setState(() => _showQuickCaptureHint = false);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_quickCaptureHintDismissedKey, true);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final light = NovaTheme.light(seed: Color(_theme.accent));
     final dark = NovaTheme.dark(seed: Color(_theme.accent));
@@ -113,6 +85,34 @@ class _NovaShellState extends State<NovaShell> {
 
   static const _quickCaptureHintDismissedKey = 'orah_quick_capture_hint_dismissed';
   static const _quickCaptureHintVisitsKey = 'orah_quick_capture_hint_visits';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuickCaptureHint();
+  }
+
+  Future<void> _loadQuickCaptureHint() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_quickCaptureHintDismissedKey) == true || !mounted) return;
+    final visits = prefs.getInt(_quickCaptureHintVisitsKey) ?? 0;
+    if (visits >= 2) return;
+    await prefs.setInt(_quickCaptureHintVisitsKey, visits + 1);
+    if (!mounted) return;
+    setState(() => _showQuickCaptureHint = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _showQuickCaptureHint) {
+        _quickCaptureHintKey.currentState?.ensureTooltipVisible();
+      }
+    });
+  }
+
+  Future<void> _dismissQuickCaptureHint() async {
+    if (!_showQuickCaptureHint) return;
+    if (mounted) setState(() => _showQuickCaptureHint = false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_quickCaptureHintDismissedKey, true);
+  }
 
   List<Widget> get _pages => [
         const HomeScreen(),
