@@ -32,6 +32,7 @@ class AboutNovaScreen extends StatelessWidget {
             'Orah',
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
+              fontSize: 28,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -79,10 +80,11 @@ class AboutNovaScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14),
                     child: Image.asset(
-                      'assets/abhinav_bajpai_developer.jpg',
+                      'assets/abhinav_bajpai_signature.png',
                       fit: BoxFit.contain,
-                      width: double.infinity,
-                      semanticLabel: 'Abhinav Bajpai — Developer',
+                      width: 260,
+                      height: 88,
+                      semanticLabel: 'Abhinav Bajpai — Developer signature',
                     ),
                   ),
                   const SizedBox(height: 14),

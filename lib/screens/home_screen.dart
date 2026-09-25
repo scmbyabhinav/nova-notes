@@ -704,7 +704,7 @@ class _NoteText extends StatelessWidget {
             note.content.isEmpty ? 'No content' : note.content,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall?.copyWith(height: 1.35, color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.copyWith(fontSize: 14, height: 1.35, color: const Color(0xFF5B5B66)),
           ),
       ],
     );
