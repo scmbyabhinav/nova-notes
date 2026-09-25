@@ -30,9 +30,7 @@ class OrahTemplatesScreen extends StatelessWidget {
       return;
     }
     final repository = await NoteRepositoryProvider.instance();
-    final navigator = orahNavigatorKey.currentState;
-    if (navigator == null) return;
-    await navigator.push(MaterialPageRoute(
+    await Navigator.of(context).push(MaterialPageRoute(
       builder: (_) => NoteEditorScreen(
         repository: repository,
         initialType: NoteType.text,
