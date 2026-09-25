@@ -13,6 +13,14 @@ class OrahAndroidIntentService {
   bool _initialized = false;
   String? _pendingAction;
 
+  Future<bool> shareIntoOrah() async {
+    try {
+      return await _channel.invokeMethod<bool>('shareIntoOrah') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;

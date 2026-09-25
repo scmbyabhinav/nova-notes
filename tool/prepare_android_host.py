@@ -146,6 +146,16 @@ class MainActivity : FlutterActivity() {
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
         channel?.setMethodCallHandler { call, result ->
             when (call.method) {
+                "shareIntoOrah" -> {
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, "Shared from ORAH Android features")
+                        setPackage(packageName)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    }
+                    startActivity(shareIntent)
+                    result.success(true)
+                }
                 "getLaunchAction" -> {
                     val prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                     val value = prefs.getString(KEY_ACTION, null)

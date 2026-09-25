@@ -36,6 +36,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialContent,
     this.speechService,
     this.autoStartVoice = false,
+    this.autoOpenReminder = false,
   });
 
   final NoteRepository repository;
@@ -45,6 +46,7 @@ class NoteEditorScreen extends StatefulWidget {
   final String? initialContent;
   final VoiceSpeechService? speechService;
   final bool autoStartVoice;
+  final bool autoOpenReminder;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -114,6 +116,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _maybeShowVoiceHint();
       if (widget.autoStartVoice) _toggleVoiceInput();
+      if (widget.autoOpenReminder) _setDueDate();
     });
   }
 
