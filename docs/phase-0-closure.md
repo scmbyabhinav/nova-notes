@@ -22,23 +22,66 @@ Gate: two consecutive fully-green push-triggered Orah runs.
   intended timer cleanup in `_NovaShellState`.
 - Runs #42 and #43 — analysis and the complete Flutter test suite passed;
   both Quick Capture tests executed successfully.
+- Run #44 — docs-only baseline run also passed, giving four consecutive
+  successful test suites after the Quick Capture repair.
 
 ## Phase 0 exit criteria
 
 **MET.** Two consecutive fully-green, push-triggered Orah runs (#42 and #43)
 validated the repaired Quick Capture behavior.
 
-## Follow-up: legacy workflow
+## Phase 1 — Debug APK decoupling: CLOSED 2026-09-25
 
-The legacy `.github/workflows/nova-android-ci.yml` remains separately tracked.
-It is not part of the Phase 0 gate and currently produces failures on this
-branch. Phase 1 will address CI workflow separation/quarantine so persistent
-legacy red checks do not obscure the authoritative Orah workflow.
+**Verification run:** #46 (SHA `5555b2a5`).
 
-## Phase 1 baseline
+- `test` and `debug-apk` started at 10:34:48 / 10:34:49 UTC — parallel,
+  with no `needs:` dependency.
+- Both jobs succeeded.
+- Release APK (44.0 MB) and AAB (76.0 MB) were produced behind the test job.
+- Debug artifact `orah-debug-apk-5555b2a5...` was uploaded at 106.9 MB
+  with 14-day retention.
+- The legacy `nova-android-ci.yml` workflow was removed before #46.
 
-The authoritative `.github/workflows/orah-android-build.yml` currently uses
-one `build` job. Debug APK creation/upload is already present, but it occurs
-after Analyze/Test in that same job. Phase 1 will split the debug APK into an
-independent job with no `needs:` dependency while keeping release builds
-behind the test job.
+### Run numbering / implementation note
+
+- Run #45 (SHA `ff427344`) was the intermediate state: the job split had
+  landed, but the legacy workflow still existed. It is not the final Phase 1
+  verification run.
+- Run #46 (SHA `5555b2a5`) is the first clean graph with only the Orah
+  workflow.
+- The Phase 1 change required two sequential commits because the GitHub
+  Contents API applied the workflow split and legacy-workflow removal
+  separately.
+
+### Timing
+
+- #44 pre-split: **26m22s** sequential wall-clock.
+- #46 post-split: **15m35s** wall-clock.
+- The critical path lost the serial debug build/upload because those steps now
+  overlap the test/release job. Duplicated setup overlapped with that work.
+- Trade accepted: higher total CI runner-minutes in exchange for approximately
+  41% lower developer wall-clock time and debug-APK availability while tests
+  are red.
+
+### Open item
+
+Branch protection may still reference the old `build` job name after the
+rename to `test`. This is not verifiable through the current API token;
+verify Settings → Branches before merging PR #74.
+
+## Phase 2 planning decisions
+
+### Embedding model packaging
+
+Decision pending final Phase 2 implementation review: prefer an offline-capable
+bundled quantized embedding model rather than a first-launch network download.
+The one-time model-size increase should be explicitly exempted from the
+>10% build-size regression baseline, while subsequent regressions remain
+enforced. Play-delivered on-demand packaging can be evaluated as an
+optimization, with keyword-search fallback for installs that do not receive
+the model.
+
+### Device-support homework
+
+SDK values still need to be read from the Android Gradle configuration before
+the Phase 2 support/fallback matrix is finalized.
