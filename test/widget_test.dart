@@ -108,12 +108,14 @@ void main() {
     expect(speech.startCount, 1);
     expect(find.text('Hello from voice'), findsAtLeastNWidgets(1));
 
-    await tester.pageBack();
-    await tester.pump();
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('orah_voice_hint_shown'), isTrue);
 
+    await tester.pumpWidget(OrahApp(speechService: speech));
+    await tester.pump();
     await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Tap the mic to speak your note'), findsNothing);
   });
