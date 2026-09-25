@@ -268,6 +268,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
 
     _contentFocus.requestFocus();
+    if (mounted) setState(() => _isListening = true);
+
     await _speechService.startListening(
       onResult: (transcript, isFinal) {
         if (!mounted) return;
@@ -282,9 +284,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         }
       },
     );
-
-    if (!mounted) return;
-    setState(() => _isListening = true);
   }
 
   void _insertSpeechText(String transcript) {
