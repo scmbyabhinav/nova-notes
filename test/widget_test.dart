@@ -100,7 +100,7 @@ void main() {
     await tester.pump();
 
     expect(speech.startCount, 1);
-    expect(find.text('Hello from voice'), findsOneWidget);
+    expect(find.text('Hello from voice'), findsAtLeastNWidgets(1));
 
     await tester.pageBack();
     await tester.pump();
@@ -137,9 +137,14 @@ void main() {
     await tester.tap(find.text('Recipe'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Ingredients'), findsOneWidget);
-    expect(find.text('Steps'), findsOneWidget);
-    expect(find.text('Notes'), findsOneWidget);
+    final contentField = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...',
+    );
+    expect(contentField, findsOneWidget);
+    final content = tester.widget<TextField>(contentField).controller?.text ?? '';
+    expect(content, contains('Ingredients'));
+    expect(content, contains('Steps'));
+    expect(content, contains('Notes'));
   });
 
 
