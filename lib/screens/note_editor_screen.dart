@@ -888,8 +888,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       );
     }
 
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    return PopScope<void>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _close();
+      },
+      child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Tooltip(
         key: _voiceHintKey,
         message: 'Tap the mic to speak your note',
@@ -1269,6 +1274,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
