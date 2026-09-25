@@ -67,7 +67,7 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    await tester.tap(find.text('Quick capture'));
+    await tester.tap(find.byTooltip('Quick capture. Long-press for checklist and quick options.'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump();
