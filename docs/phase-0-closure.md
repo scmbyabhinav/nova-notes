@@ -112,3 +112,5 @@ in the execution environment used for this batch.
   the requested 28sp header, 17sp semibold note titles, 14sp note body/meta and
   12sp timestamps with explicit #5B5B66 secondary text; replaced the About-page
   developer JPG with a transparent, light-theme-legible signature PNG.
+
+- Follow-up bugfix batch — commits through `67f5353f`: removed the Lifetime purchase option while preserving existing lifetime entitlement handling, made Word export free, added email-attachment sharing, moved Subscription to the Home top-left, restored a separate New Note + microphone action pair, saved on system back, improved signature rendering, and applied the global typography scale.
