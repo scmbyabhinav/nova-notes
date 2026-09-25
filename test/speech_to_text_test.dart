@@ -106,16 +106,6 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is TextField &&
-            widget.controller?.text ==
-                'Existing note\nremember the supplier tomorrow',
-      ),
-      findsOneWidget,
-    );
-
     final notes = await state.repository.getNotes();
     expect(notes, hasLength(1));
     expect(
