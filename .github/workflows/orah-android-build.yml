@@ -3,7 +3,7 @@ name: Orah Android Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, reconcile-main]
   pull_request:
     branches: [main]
   workflow_dispatch:
