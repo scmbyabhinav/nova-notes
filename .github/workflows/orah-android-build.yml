@@ -3,7 +3,7 @@ name: Orah Android Build
 
 on:
   push:
-    branches: [attack-125-ci-fix]
+    branches: [main]
   workflow_dispatch:
     inputs:
       production_release:
