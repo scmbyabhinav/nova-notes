@@ -278,14 +278,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(Icons.format_color_reset_outlined),
               ),
             ), ...[for (final color in colors) InkWell(
-              onTap: () => Navigator.pop(context, color.value),
+              onTap: () => Navigator.pop(context, color.toARGB32()),
               borderRadius: BorderRadius.circular(28),
               child: Container(
                 width: 50, height: 50,
                 decoration: BoxDecoration(
                   color: color,
                   shape: BoxShape.circle,
-                  border: Border.all(color: note.color == color.value ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
+                  border: Border.all(color: note.color == color.toARGB32() ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outlineVariant, width: 2),
                 ),
               ),
             )]],
@@ -916,7 +916,7 @@ class _DesktopNoteRow extends StatelessWidget {
                 ],
                 const SizedBox(height: 5),
                 Text(
-                  '\${_formatDate(note.updatedAt)}  ·  \${note.folderId ?? 'Notes'}',
+                  '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? 'Notes'}',
                   style: theme.textTheme.labelSmall,
                 ),
               ],
@@ -1042,121 +1042,6 @@ class _DesktopChecklistPreview extends StatelessWidget {
         );
       }).toList(),
     );
-  }
-}
-
-class _DesktopNotesLayout extends StatelessWidget {
-  const _NoteCard({
-    required this.note,
-    required this.onTap,
-    this.compact = false,
-  });
-
-  final Note note;
-  final VoidCallback onTap;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: note.color == null
-                ? theme.colorScheme.surface
-                : Color(note.color!),
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: compact
-              ? Row(
-                  children: [
-                    _NoteIcon(type: note.type),
-                    const SizedBox(width: 14),
-                    Expanded(child: _NoteText(note: note)),
-                    if (note.dueAt != null)
-                      _SmartBadge(icon: Icons.notifications_active_outlined, label: _dueLabel(note.dueAt!)),
-                    if (note.type == NoteType.checklist && note.checklistItems.any((item) => item.dueAt != null && !item.isDone && item.dueAt!.isBefore(DateTime.now())))
-                      const _SmartBadge(icon: Icons.warning_amber_rounded, label: 'Overdue'),
-                    if (note.isLocked)
-                      const _SmartBadge(icon: Icons.lock_outline_rounded, label: 'Private'),
-                    if (note.isFavorite)
-                      const Padding(
-                        padding: EdgeInsets.only(left: 6),
-                        child: Icon(Icons.star_rounded, size: 18),
-                      ),
-                    const Icon(Icons.chevron_right_rounded),
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _NoteIcon(type: note.type),
-                    const Spacer(),
-                    _NoteText(note: note),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 4,
-                      children: [
-                        if (note.dueAt != null)
-                          _SmartBadge(
-                            icon: Icons.notifications_active_outlined,
-                            label: _dueLabel(note.dueAt!),
-                          ),
-                        if (note.type == NoteType.checklist && note.checklistItems.any((item) => item.dueAt != null && !item.isDone && item.dueAt!.isBefore(DateTime.now())))
-                          const _SmartBadge(icon: Icons.warning_amber_rounded, label: 'Overdue'),
-                        if (note.isFavorite)
-                          const Icon(Icons.star_rounded, size: 16),
-                        if (note.attachments.isNotEmpty)
-                          const Icon(Icons.attach_file_rounded, size: 16),
-                        if (note.isPinned)
-                          const Icon(Icons.push_pin_rounded, size: 16),
-                        if (note.tags.isNotEmpty)
-                          Text(
-                            '#${note.tags.first}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      _formatDate(note.updatedAt),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
-
-  String _dueLabel(DateTime date) {
-    final now = DateTime.now();
-    if (date.isBefore(now)) return 'Overdue';
-    final difference = date.difference(now);
-    if (difference.inHours < 24) return 'Today';
-    if (difference.inHours < 48) return 'Tomorrow';
-    return '${date.day}/${date.month}';
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day) {
-      return 'Today';
-    }
-    return '${date.day}/${date.month}/${date.year}';
   }
 }
 
@@ -1287,3 +1172,62 @@ class _EmptyState extends StatelessWidget {
     );
   }
 }
+
+class _NoteCard extends StatelessWidget {
+  const _NoteCard({
+    required this.note,
+    required this.onTap,
+    this.compact = false,
+  });
+
+  final Note note;
+  final VoidCallback onTap;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final title = note.title.trim().isEmpty ? 'Untitled note' : note.title;
+    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      color: note.color == null ? null : Color(note.color!),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.all(compact ? 14 : 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                maxLines: compact ? 1 : 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (body.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  body,
+                  maxLines: compact ? 2 : 4,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+              const SizedBox(height: 10),
+              Text(
+                _formatDate(note.updatedAt),
+                style: theme.textTheme.labelSmall,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

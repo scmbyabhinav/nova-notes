@@ -32,7 +32,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet>{
       if (!mounted) return;
       await Share.shareXFiles(
         [XFile(file.path)],
-        subject: 'ORAH — ' + widget.note.title,
+        subject: 'ORAH — ${widget.note.title}',
         text: 'Attached from ORAH',
       );
     } catch (e) {
