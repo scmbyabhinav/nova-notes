@@ -23,10 +23,9 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    final quickCaptureFab = find.byWidgetPredicate(
-      (widget) => widget is FloatingActionButton && 
-                  widget.tooltip == 'Quick capture. Long-press for checklist and quick options.',
-    ).first;
+    final quickCaptureFab = find.byTooltip(
+      'Quick capture. Long-press for checklist and quick options.',
+    );
     await tester.tap(quickCaptureFab);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -43,10 +42,9 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    final quickCaptureFab = find.byWidgetPredicate(
-      (widget) => widget is FloatingActionButton && 
-                  widget.tooltip == 'Quick capture. Long-press for checklist and quick options.',
-    ).first;
+    final quickCaptureFab = find.byTooltip(
+      'Quick capture. Long-press for checklist and quick options.',
+    );
     final quickCaptureCenter = tester.getCenter(quickCaptureFab);
     await tester.longPressAt(quickCaptureCenter);
     debugPrint('LONG PRESS AFTER GESTURE: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
@@ -74,10 +72,9 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    final quickCaptureFab = find.byWidgetPredicate(
-      (widget) => widget is FloatingActionButton && 
-                  widget.tooltip == 'Quick capture. Long-press for checklist and quick options.',
-    ).first;
+    final quickCaptureFab = find.byTooltip(
+      'Quick capture. Long-press for checklist and quick options.',
+    );
     await tester.tap(quickCaptureFab);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -100,10 +97,9 @@ void main() {
     await tester.pumpWidget(OrahApp(speechService: speech));
     await tester.pump();
 
-    final quickCaptureFab = find.byWidgetPredicate(
-      (widget) => widget is FloatingActionButton && 
-                  widget.tooltip == 'Quick capture. Long-press for checklist and quick options.',
-    ).first;
+    final quickCaptureFab = find.byTooltip(
+      'Quick capture. Long-press for checklist and quick options.',
+    );
     await tester.tap(quickCaptureFab);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));

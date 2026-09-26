@@ -270,7 +270,7 @@ class _NovaShellState extends State<NovaShell> {
               child: FloatingActionButton(
                 heroTag: 'orah_voice_capture_fab',
                 onPressed: _quickCapture,
-                tooltip: 'Voice capture. Long-press for checklist and quick options.',
+                tooltip: 'Quick capture. Long-press for checklist and quick options.',
                 child: const Icon(Icons.mic_none_rounded),
               ),
             ),
