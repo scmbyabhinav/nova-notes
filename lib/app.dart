@@ -253,7 +253,7 @@ class _NovaShellState extends State<NovaShell> {
           FloatingActionButton.small(
             heroTag: 'orah_new_note_fab',
             onPressed: () => _openEditor(NoteType.text),
-            tooltip: 'New note',
+            tooltip: null,
             child: const Icon(Icons.add_rounded),
           ),
           const SizedBox(width: 12),
