@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../core/widgets/nova_polish.dart';
-
 import '../data/repositories/note_repository_provider.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../models/folder.dart';
@@ -115,6 +113,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
     for (final note in _allNotes) {
       if (note.isTrashed) continue;
+      if (_filter.favoritesOnly && !note.isFavorite) continue;
+      if (_filter.pinnedOnly && !note.isPinned) continue;
+      if (_filter.archivedOnly && !note.isArchived) continue;
+      if (_filter.noteType != null && note.type != _filter.noteType) continue;
+      if (_filter.folderId != null && note.folderId != _filter.folderId) continue;
       if (locked == true && !note.isLocked) continue;
       if (locked != true && note.isLocked && terms.isNotEmpty) continue;
       if (pinned == true && !note.isPinned) continue;
