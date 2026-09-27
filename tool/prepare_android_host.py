@@ -395,6 +395,30 @@ for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.g
     gradle_path.write_text(text)
     print(f"Configured core library desugaring in {gradle_path}")
 
+# Configure release shrinking so Play's release artifacts use R8/resource shrinking.
+for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.gradle.kts"):
+    if not gradle_path.exists():
+        continue
+    text = gradle_path.read_text()
+    if "buildTypes {" not in text or "release {" not in text:
+        raise SystemExit(f"Release build type not found in {gradle_path}")
+    if gradle_path.suffix == ".kts":
+        if "isMinifyEnabled = true" not in text:
+            text = text.replace("        release {", '        release {\n            isMinifyEnabled = true', 1)
+        if "isShrinkResources = true" not in text:
+            text = text.replace("        release {", '        release {\n            isShrinkResources = true', 1)
+        if "getDefaultProguardFile" not in text:
+            text = text.replace("        release {", '        release {\n            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")', 1)
+    else:
+        if "minifyEnabled true" not in text:
+            text = text.replace("        release {", "        release {\n            minifyEnabled true", 1)
+        if "shrinkResources true" not in text:
+            text = text.replace("        release {", "        release {\n            shrinkResources true", 1)
+        if "getDefaultProguardFile" not in text:
+            text = text.replace("        release {", '        release {\n            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"', 1)
+    gradle_path.write_text(text)
+    print(f"Configured R8/resource shrinking in {gradle_path}")
+
 # Validate generated AndroidManifest.xml is well-formed before Gradle sees it.
 manifest = ANDROID / "app" / "src" / "main" / "AndroidManifest.xml"
 if manifest.exists():

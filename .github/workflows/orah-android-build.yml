@@ -144,7 +144,7 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release
       - name: Build release AAB
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --tree-shake-icons --analyze-size
       - name: Verify release artifacts
         shell: bash
         run: |
