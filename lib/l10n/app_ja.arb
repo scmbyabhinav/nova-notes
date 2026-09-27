@@ -1,0 +1,19 @@
+{
+  "appTitle": "Orah",
+  "newNote": "新しいノート",
+  "settings": "設定",
+  "searchHint": "ノートを検索...",
+  "recentNotes": "最近のノート",
+  "pinned": "ピン留め",
+  "accountAndPro": "アカウントと Pro",
+  "orahPro": "ORAH Pro",
+  "proSubtitle": "サブスクリプション — 高度な機能を解放",
+  "appearanceAndUi": "外観と UI",
+  "appearance": "外観",
+  "securityAndPrivacy": "セキュリティとプライバシー",
+  "androidFeatures": "Android 機能",
+  "backupAndStorage": "バックアップとストレージ",
+  "aboutAndFeatures": "概要と機能",
+  "orahFeatures": "Orah の機能",
+  "exploreOrah": "Orah でできることを見る"
+}

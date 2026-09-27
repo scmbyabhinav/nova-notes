@@ -1,0 +1,19 @@
+{
+  "appTitle": "Orah",
+  "newNote": "新建笔记",
+  "settings": "设置",
+  "searchHint": "搜索你的笔记...",
+  "recentNotes": "最近笔记",
+  "pinned": "置顶",
+  "accountAndPro": "账户与 Pro",
+  "orahPro": "ORAH Pro",
+  "proSubtitle": "订阅 — 解锁高级功能",
+  "appearanceAndUi": "外观与界面",
+  "appearance": "外观",
+  "securityAndPrivacy": "安全与隐私",
+  "androidFeatures": "Android 功能",
+  "backupAndStorage": "备份与存储",
+  "aboutAndFeatures": "关于与功能",
+  "orahFeatures": "Orah 功能",
+  "exploreOrah": "探索 Orah 的功能"
+}

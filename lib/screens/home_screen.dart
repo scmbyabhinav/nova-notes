@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
@@ -324,6 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final pinned = _notes
         .where((note) => note.isPinned && !note.isArchived)
         .toList();
@@ -379,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Orah',
+                            l10n.appTitle,
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontSize: 28,
                               fontWeight: FontWeight.w900,
@@ -410,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               sliver: SliverToBoxAdapter(
                 child: SearchBar(
-                  hintText: 'Search your notes...',
+                  hintText: l10n.searchHint,
                   leading: const Icon(Icons.search_rounded),
                   onTap: () {
                     Navigator.of(context).push(
@@ -446,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                   sliver: SliverToBoxAdapter(
                     child: Text(
-                      'Pinned',
+                      l10n.pinned,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -477,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Text(
-                        'Recent Notes',
+                        l10n.recentNotes,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),

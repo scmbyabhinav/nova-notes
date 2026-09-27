@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'core/localization/nova_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
 import 'core/theme/orah_theme_controller.dart';
@@ -49,17 +49,13 @@ class _OrahAppState extends State<OrahApp> {
     final light = NovaTheme.light(seed: Color(_theme.accent));
     final dark = NovaTheme.dark(seed: Color(_theme.accent));
     return MaterialApp(
-      title: 'Orah',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
       theme: light,
       darkTheme: dark,
       themeMode: _theme.mode,
-      localizationsDelegates: const [
-        NovaLocalizationsDelegate(),
-        DefaultMaterialLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: NovaLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       home: NovaShell(themeController: _theme, speechService: widget.speechService),
     );
