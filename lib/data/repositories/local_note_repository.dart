@@ -111,7 +111,9 @@ class LocalNoteRepository implements NoteRepository {
     }
 
     await _write(notes);
-    _publish(notes);
+    // Publish the persisted snapshot, not the pre-write working list. This
+    // guarantees every subscriber receives exactly what is now on disk.
+    _publish(await getNotes());
   }
 
   @override
