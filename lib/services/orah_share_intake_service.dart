@@ -14,6 +14,7 @@ class OrahShareIntakeService {
 
   StreamSubscription<List<SharedMediaFile>>? _subscription;
   bool _initialized = false;
+  List<SharedMediaFile>? _pendingMedia;
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -23,21 +24,27 @@ class OrahShareIntakeService {
       final initial = await ReceiveSharingIntent.instance.getInitialMedia();
       if (initial.isNotEmpty) await _consume(initial);
       await ReceiveSharingIntent.instance.reset();
+      final pending = _pendingMedia;
+      _pendingMedia = null;
+      if (pending != null && pending.isNotEmpty) await _consume(pending);
     } catch (_) {}
   }
 
   Future<void> _consume(List<SharedMediaFile> media) async {
     if (media.isEmpty) return;
     final navigator = orahNavigatorKey.currentState;
-    if (navigator == null) return;
+    if (navigator == null) {
+      _pendingMedia = [...media];
+      return;
+    }
 
     final textItems = media
-        .where((item) => item.type == SharedMediaType.text)
+        .where((item) => item.type == SharedMediaType.text || item.type == SharedMediaType.url)
         .map((item) => item.path.trim())
         .where((value) => value.isNotEmpty)
         .toList();
 
-    final fileItems = media.where((item) => item.type != SharedMediaType.text).toList();
+    final fileItems = media.where((item) => item.type != SharedMediaType.text && item.type != SharedMediaType.url).toList();
     final repository = await NoteRepositoryProvider.instance();
 
     if (fileItems.isEmpty) {
@@ -45,7 +52,7 @@ class OrahShareIntakeService {
         MaterialPageRoute(
           builder: (_) => NoteEditorScreen(
             repository: repository,
-            initialTitle: 'Shared from another app',
+            initialTitle: textItems.isEmpty ? 'Shared from another app' : textItems.first.length > 60 ? '${textItems.first.substring(0, 60)}…' : textItems.first,
             initialContent: textItems.join('\n\n'),
           ),
         ),

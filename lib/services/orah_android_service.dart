@@ -21,24 +21,9 @@ class OrahAndroidService {
 
     await _quickActions.initialize(_handleShortcut);
     await _quickActions.setShortcutItems(const [
-      ShortcutItem(
-        type: 'new_note',
-        localizedTitle: 'New note',
-        localizedSubtitle: 'Capture a thought',
-        icon: 'ic_launcher',
-      ),
-      ShortcutItem(
-        type: 'new_checklist',
-        localizedTitle: 'New checklist',
-        localizedSubtitle: 'Capture a task list',
-        icon: 'ic_launcher',
-      ),
-      ShortcutItem(
-        type: 'search',
-        localizedTitle: 'Search Orah',
-        localizedSubtitle: 'Find a note',
-        icon: 'ic_launcher',
-      ),
+      ShortcutItem(type: 'new_note', localizedTitle: 'New note', localizedSubtitle: 'Capture a thought', icon: 'ic_launcher'),
+      ShortcutItem(type: 'new_checklist', localizedTitle: 'New checklist', localizedSubtitle: 'Capture a task list', icon: 'ic_launcher'),
+      ShortcutItem(type: 'search', localizedTitle: 'Search Orah', localizedSubtitle: 'Find a note', icon: 'ic_launcher'),
     ]);
 
     await HomeWidget.saveWidgetData<String>('orah_quick_action', 'new_note');
@@ -50,26 +35,13 @@ class OrahAndroidService {
     if (navigator == null) return;
 
     if (type == 'search') {
-      await _openSearch(navigator);
+      navigator.popUntil((route) => route.isFirst);
       return;
     }
 
     final repository = await NoteRepositoryProvider.instance();
     final noteType = type == 'new_checklist' ? NoteType.checklist : NoteType.text;
-    navigator.push(
-      MaterialPageRoute(
-        builder: (_) => NoteEditorScreen(
-          repository: repository,
-          initialType: noteType,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _openSearch(NavigatorState navigator) async {
-    // Keep the shortcut dependency-light: the shell's search surface can be
-    // opened by the normal app navigation without a second native activity.
-    navigator.popUntil((route) => route.isFirst);
+    navigator.push(MaterialPageRoute(builder: (_) => NoteEditorScreen(repository: repository, initialType: noteType)));
   }
 
   Future<void> updateWidgetSnapshot() async {
@@ -85,10 +57,7 @@ class OrahAndroidService {
         recent.map((note) => note.isLocked ? 'Private note' : (note.title.trim().isEmpty ? 'Untitled note' : note.title.trim())).join('\n'),
       );
       await HomeWidget.saveWidgetData<int>('orah_note_count', notes.length);
-      await HomeWidget.updateWidget(
-        name: 'OrahWidgetProvider',
-        iOSName: 'OrahWidget',
-      );
+      await HomeWidget.updateWidget(name: 'OrahWidgetProvider', iOSName: 'OrahWidget');
     } catch (e) {
       if (kDebugMode) debugPrint('Orah widget update skipped: $e');
     }

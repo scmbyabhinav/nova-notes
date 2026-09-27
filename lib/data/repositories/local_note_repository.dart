@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,8 +11,12 @@ class LocalNoteRepository implements NoteRepository {
   LocalNoteRepository(this._preferences);
 
   final SharedPreferences _preferences;
+  final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
 
   static const _storageKey = 'nova_notes_v1';
+
+  @override
+  Stream<List<Note>> watchNotes() => _notesController.stream;
 
   @override
   Future<List<Note>> getNotes() async {
@@ -19,10 +24,19 @@ class LocalNoteRepository implements NoteRepository {
     if (raw == null || raw.isEmpty) return [];
 
     try {
-      final decoded = jsonDecode(raw) as List<dynamic>;
-      final notes = decoded
-          .map((item) => _fromMap(Map<String, dynamic>.from(item as Map)))
-          .toList();
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      final seen = <String>{};
+      final notes = <Note>[];
+      for (final item in decoded) {
+        if (item is! Map) continue;
+        try {
+          final note = _fromMap(Map<String, dynamic>.from(item));
+          if (note.id.trim().isNotEmpty && seen.add(note.id)) notes.add(note);
+        } catch (_) {
+          // Skip one malformed record without hiding otherwise valid notes.
+        }
+      }
 
       notes.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
       return notes;
@@ -45,6 +59,7 @@ class LocalNoteRepository implements NoteRepository {
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
 
+    if (note.id.trim().isEmpty) throw const FormatException('Note ID cannot be empty.');
     if (index == -1) {
       notes.add(note);
     } else {
@@ -52,6 +67,7 @@ class LocalNoteRepository implements NoteRepository {
     }
 
     await _write(notes);
+    _publish(notes);
   }
 
   @override
@@ -59,6 +75,7 @@ class LocalNoteRepository implements NoteRepository {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
+    _publish(notes);
   }
 
   @override
@@ -70,12 +87,18 @@ class LocalNoteRepository implements NoteRepository {
     SearchFilter filter = const SearchFilter(),
   }) async {
     final normalized = query.trim().toLowerCase();
+    if (normalized.length > 200) {
+      throw const FormatException('Search query is too long.');
+    }
     final notes = await getNotes();
 
     final terms = normalized
-        .split(RegExp(r'\\s+'))
+        .split(RegExp(r'\s+'))
         .where((term) => term.isNotEmpty)
         .toList();
+    if (terms.length > 200) {
+      throw const FormatException('Search query contains too many terms.');
+    }
 
     final ranked = <({Note note, int score})>[];
 
@@ -130,6 +153,11 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_storageKey, jsonEncode(encoded));
   }
 
+  void _publish(List<Note> notes) {
+    final snapshot = [...notes]..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    _notesController.add(List<Note>.unmodifiable(snapshot));
+  }
+
   Map<String, dynamic> _toMap(Note note) {
     return {
       'id': note.id,
@@ -153,26 +181,28 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   Note _fromMap(Map<String, dynamic> map) {
+    final createdAt = DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now();
+    final updatedAt = DateTime.tryParse(map['updatedAt'] as String? ?? '') ?? createdAt;
     return Note(
-      id: map['id'] as String,
+      id: map['id'] as String? ?? '',
       title: map['title'] as String? ?? '',
       content: map['content'] as String? ?? '',
       type: NoteType.values.firstWhere(
         (type) => type.name == map['type'],
         orElse: () => NoteType.text,
       ),
-      createdAt: DateTime.parse(map['createdAt'] as String),
-      updatedAt: DateTime.parse(map['updatedAt'] as String),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
       folderId: map['folderId'] as String?,
-      tags: List<String>.from(map['tags'] as List? ?? const []),
+      tags: (map['tags'] is List) ? List<String>.from((map['tags'] as List).whereType<String>()) : const [],
       color: map['color'] as int?,
       isPinned: map['isPinned'] as bool? ?? false,
       isFavorite: map['isFavorite'] as bool? ?? false,
       isArchived: map['isArchived'] as bool? ?? false,
       isLocked: map['isLocked'] as bool? ?? false,
       isTrashed: map['isTrashed'] as bool? ?? false,
-      dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
-      attachments: List<String>.from(map['attachments'] as List? ?? const []),
+      dueAt: map['dueAt'] is String ? DateTime.tryParse(map['dueAt'] as String) : null,
+      attachments: (map['attachments'] is List) ? List<String>.from((map['attachments'] as List).whereType<String>()) : const [],
       checklistItems: _checklistItemsFromMap(map),
     );
   }
@@ -180,11 +210,20 @@ class LocalNoteRepository implements NoteRepository {
   List<ChecklistItem> _checklistItemsFromMap(Map<String, dynamic> map) {
     final raw = map['checklistItems'];
     if (raw is List && raw.isNotEmpty) {
-      return raw.map((item) => ChecklistItem.fromMap(Map<String, dynamic>.from(item as Map))).toList();
+      final items = <ChecklistItem>[];
+      for (final item in raw) {
+        if (item is! Map) continue;
+        try {
+          items.add(ChecklistItem.fromMap(Map<String, dynamic>.from(item)));
+        } catch (_) {
+          // Skip malformed checklist entries while preserving the note.
+        }
+      }
+      return items;
     }
     final content = map['content'] as String? ?? '';
     if (map['type'] == NoteType.checklist.name && content.trim().isNotEmpty) {
-      return content.split(RegExp(r'\\r?\\n')).where((line) => line.trim().isNotEmpty).map((line) {
+      return content.split(RegExp(r'\r?\n')).where((line) => line.trim().isNotEmpty).map((line) {
         final trimmed = line.trim();
         final done = trimmed.startsWith('[x]') || trimmed.startsWith('[X]') || trimmed.startsWith('☑');
         final text = trimmed.replaceFirst(RegExp(r'^(?:\\[[ xX]\\]|☐|☑)\\s*'), '').replaceFirst(RegExp(r'^[-*•]\\s*'), '');
@@ -197,6 +236,9 @@ class LocalNoteRepository implements NoteRepository {
   /// Returns a portable JSON backup containing all notes.
   Future<String> exportJson() async {
     final notes = await getNotes();
+    if (notes.length > 100000) {
+      throw const FormatException('Too many notes to export safely.');
+    }
     return jsonEncode({
       'format': 'nova_notes_backup',
       'version': 1,
@@ -217,9 +259,23 @@ class LocalNoteRepository implements NoteRepository {
       throw const FormatException('Backup contains no valid notes.');
     }
 
-    final imported = rawNotes
-        .map((item) => _fromMap(Map<String, dynamic>.from(item as Map)))
-        .toList();
+    if (rawNotes.length > 100000) {
+      throw const FormatException('Backup contains too many notes.');
+    }
+
+    final imported = <Note>[];
+    final seenIds = <String>{};
+    for (final item in rawNotes) {
+      if (item is! Map) {
+        throw const FormatException('Backup contains a malformed note record.');
+      }
+      final note = _fromMap(Map<String, dynamic>.from(item));
+      if (note.id.length > 256 || note.title.length > 10000 || note.content.length > 1000000) {
+        throw const FormatException('Backup contains an oversized note field.');
+      }
+      if (note.id.trim().isEmpty || !seenIds.add(note.id)) continue;
+      imported.add(note);
+    }
 
     final existing = await getNotes();
     final byId = <String, Note>{for (final n in existing) n.id: n};
@@ -232,7 +288,9 @@ class LocalNoteRepository implements NoteRepository {
       }
     }
 
-    await _write(byId.values.toList());
+    final merged = byId.values.toList();
+    await _write(merged);
+    _publish(merged);
     return imported.length;
   }
 

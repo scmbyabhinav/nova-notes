@@ -17,6 +17,14 @@ class NovaTheme {
       scaffoldBackgroundColor:
           const Color(NovaConstants.backgroundLight),
       fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+        titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(fontSize: 14),
+        bodyMedium: TextStyle(fontSize: 14),
+        bodySmall: TextStyle(fontSize: 12, color: Color(0xFF5B5B66)),
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -27,29 +35,29 @@ class NovaTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(NovaConstants.surfaceLight),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );
@@ -67,6 +75,14 @@ class NovaTheme {
       scaffoldBackgroundColor:
           const Color(NovaConstants.backgroundDark),
       fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        headlineSmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+        titleLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(fontSize: 14),
+        bodyMedium: TextStyle(fontSize: 14),
+        bodySmall: TextStyle(fontSize: 12),
+      ),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -78,19 +94,19 @@ class NovaTheme {
         color: const Color(NovaConstants.surfaceDark),
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(NovaConstants.surfaceDark),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),

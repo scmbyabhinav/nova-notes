@@ -1,4 +1,4 @@
-# Orah
+# Orah 
 
 Orah is a fast, private, offline-first note-taking app.
 

@@ -7,7 +7,11 @@ import '../data/repositories/note_repository_provider.dart';
 class NovaAttachmentService {
   const NovaAttachmentService();
 
+  static const maxAttachmentBytes = 100 * 1024 * 1024;
+
   Future<String> importXFile(XFile source) async {
+    final length = await source.length();
+    if (length > maxAttachmentBytes) throw const FileSystemException('Attachment is too large');
     final root = await _attachmentDirectory();
     final name = _uniqueName(root.path, p.basename(source.path));
     final target = File(p.join(root.path, name));
@@ -16,22 +20,36 @@ class NovaAttachmentService {
   }
 
   Future<String> importFile(String sourcePath) async {
+    final source = File(sourcePath);
+    if (!await source.exists()) throw const FileSystemException('Source attachment not found');
+    if (await source.length() > maxAttachmentBytes) throw const FileSystemException('Attachment is too large');
     final root = await _attachmentDirectory();
     final name = _uniqueName(root.path, p.basename(sourcePath));
     final target = File(p.join(root.path, name));
-    await File(sourcePath).copy(target.path);
+    await source.copy(target.path);
     return target.path;
   }
 
   Future<void> delete(String path) async {
     final file = File(path);
-    if (await file.exists()) await file.delete();
+    if (!await file.exists()) return;
+    final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
+    final filePath = file.absolute.path;
+    if (filePath != rootPath && !p.isWithin(rootPath, filePath)) throw const FileSystemException('Attachment is outside the Orah attachment directory');
+    await file.delete();
   }
 
   Future<String> rename(String sourcePath, String newName) async {
     final source = File(sourcePath);
     if (!await source.exists()) throw const FileSystemException('Attachment not found');
-    final directory = source.parent.path;
+    final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
+    final sourceAbsolute = source.absolute.path;
+    if (sourceAbsolute != rootPath && !p.isWithin(rootPath, sourceAbsolute)) {
+      throw const FileSystemException('Attachment is outside the Orah attachment directory');
+    }
+    final directory = root.path;
     final safe = p.basename(newName).replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
     if (safe.isEmpty) throw const FileSystemException('Invalid file name');
     final extension = p.extension(source.path);
@@ -79,7 +97,14 @@ class NovaAttachmentService {
 
   Future<int> size(String path) async {
     final file = File(path);
-    return file.existsSync() ? file.length() : 0;
+    if (!await file.exists()) return 0;
+    final root = await _attachmentDirectory();
+    final rootPath = root.absolute.path;
+    final filePath = file.absolute.path;
+    if (filePath != rootPath && !p.isWithin(rootPath, filePath)) {
+      throw const FileSystemException('Attachment is outside the Orah attachment directory');
+    }
+    return file.length();
   }
 
   Future<Directory> _attachmentDirectory() async {
@@ -91,7 +116,12 @@ class NovaAttachmentService {
 
   String _uniqueName(String directory, String original) {
     final safe = p.basename(original).replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
-    final stamp = DateTime.now().microsecondsSinceEpoch;
-    return '$stamp-$safe';
+    var counter = 0;
+    while (true) {
+      final stamp = DateTime.now().microsecondsSinceEpoch;
+      final candidate = counter == 0 ? '$stamp-$safe' : '$stamp-$counter-$safe';
+      if (!File(p.join(directory, candidate)).existsSync()) return candidate;
+      counter++;
+    }
   }
 }

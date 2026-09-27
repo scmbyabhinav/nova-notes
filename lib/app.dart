@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/localization/nova_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
@@ -11,9 +14,12 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 import 'core/navigation/orah_navigation.dart';
+import 'services/speech_to_text_service.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key});
+  const OrahApp({super.key, this.speechService});
+
+  final VoiceSpeechService? speechService;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -55,15 +61,16 @@ class _OrahAppState extends State<OrahApp> {
       ],
       supportedLocales: NovaLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
-      home: NovaShell(themeController: _theme),
+      home: NovaShell(themeController: _theme, speechService: widget.speechService),
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController});
+  const NovaShell({super.key, required this.themeController, this.speechService});
 
   final OrahThemeController themeController;
+  final VoiceSpeechService? speechService;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -71,13 +78,51 @@ class NovaShell extends StatefulWidget {
 
 class _NovaShellState extends State<NovaShell> {
   int _index = 0;
+  Timer? _quickCaptureLongPressTimer;
+  bool _quickCaptureLongPressTriggered = false;
+  bool _showQuickCaptureHint = false;
+  final GlobalKey<TooltipState> _quickCaptureHintKey = GlobalKey<TooltipState>();
+
+  static const _quickCaptureHintDismissedKey = 'orah_quick_capture_hint_dismissed';
+  static const _quickCaptureHintVisitsKey = 'orah_quick_capture_hint_visits';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuickCaptureHint();
+  }
+
+  Future<void> _loadQuickCaptureHint() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_quickCaptureHintDismissedKey) == true || !mounted) return;
+    final visits = prefs.getInt(_quickCaptureHintVisitsKey) ?? 0;
+    if (visits >= 2) return;
+    await prefs.setInt(_quickCaptureHintVisitsKey, visits + 1);
+    if (!mounted) return;
+    setState(() => _showQuickCaptureHint = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _showQuickCaptureHint) {
+        _quickCaptureHintKey.currentState?.ensureTooltipVisible();
+      }
+    });
+  }
+
+  Future<void> _dismissQuickCaptureHint() async {
+    if (!_showQuickCaptureHint) return;
+    if (mounted) setState(() => _showQuickCaptureHint = false);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_quickCaptureHintDismissedKey, true);
+  }
 
   List<Widget> get _pages => [
-    const HomeScreen(),
-    const FoldersScreen(),
-    const FavoritesScreen(),
-    SettingsScreen(themeController: widget.themeController),
-  ];
+        HomeScreen(
+          onNewNote: () => _openEditor(NoteType.text),
+          onVoiceCapture: _openVoiceEditor,
+        ),
+        const FoldersScreen(),
+        const FavoritesScreen(),
+        SettingsScreen(themeController: widget.themeController),
+      ];
 
   Future<void> _openEditor(NoteType type) async {
     final repository = await NoteRepositoryProvider.instance();
@@ -89,12 +134,55 @@ class _NovaShellState extends State<NovaShell> {
         builder: (_) => NoteEditorScreen(
           repository: repository,
           initialType: type,
+          speechService: widget.speechService,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openVoiceEditor() async {
+    final repository = await NoteRepositoryProvider.instance();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NoteEditorScreen(
+          repository: repository,
+          initialType: NoteType.text,
+          speechService: widget.speechService,
+          autoStartVoice: true,
         ),
       ),
     );
   }
 
   Future<void> _quickCapture() async {
+    // The long-press path is driven by the outer Listener. Suppress the
+    // FloatingActionButton tap callback when the long-press has fired.
+    if (_quickCaptureLongPressTriggered) {
+      _quickCaptureLongPressTriggered = false;
+      return;
+    }
+    // Main capture action is instant: open a blank note directly.
+    await _openEditor(NoteType.text);
+  }
+
+  void _startQuickCaptureLongPress() {
+    _dismissQuickCaptureHint();
+    _quickCaptureLongPressTimer?.cancel();
+    _quickCaptureLongPressTriggered = false;
+    _quickCaptureLongPressTimer = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      _quickCaptureLongPressTriggered = true;
+      _showCaptureOptions();
+    });
+  }
+
+  void _cancelQuickCaptureLongPress() {
+    _quickCaptureLongPressTimer?.cancel();
+    _quickCaptureLongPressTimer = null;
+  }
+
+  Future<void> _showCaptureOptions() async {
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -107,32 +195,25 @@ class _NovaShellState extends State<NovaShell> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Quick capture',
+                  'Capture',
                   style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Capture the thought first. Organize it later.',
-                  style: Theme.of(sheetContext)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                        color: Theme.of(sheetContext)
-                            .colorScheme
-                            .onSurfaceVariant,
-                      ),
+                  'Choose what you want to capture.',
+                  style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(sheetContext).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.edit_note_rounded),
-                ),
+                leading: const CircleAvatar(child: Icon(Icons.edit_note_rounded)),
                 title: const Text('Quick note'),
                 subtitle: const Text('Start typing immediately'),
                 onTap: () {
@@ -141,9 +222,7 @@ class _NovaShellState extends State<NovaShell> {
                 },
               ),
               ListTile(
-                leading: const CircleAvatar(
-                  child: Icon(Icons.checklist_rounded),
-                ),
+                leading: const CircleAvatar(child: Icon(Icons.checklist_rounded)),
                 title: const Text('Quick checklist'),
                 subtitle: const Text('Capture tasks without setup'),
                 onTap: () {
@@ -160,18 +239,46 @@ class _NovaShellState extends State<NovaShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final desktop = constraints.maxWidth >= 1100;
+        return Scaffold(
+          body: IndexedStack(
         index: _index,
         children: _pages,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _quickCapture,
-        icon: const Icon(Icons.bolt_rounded),
-        label: const Text('Quick capture'),
+          floatingActionButton: desktop ? null : Row(
+            mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'orah_new_note_fab',
+            onPressed: () => _openEditor(NoteType.text),
+            tooltip: null,
+            child: const Icon(Icons.add_rounded),
+          ),
+          const SizedBox(width: 12),
+          Tooltip(
+            key: _quickCaptureHintKey,
+            message: 'Tap to write • Long-press for checklist & quick options',
+            triggerMode: TooltipTriggerMode.manual,
+            excludeFromSemantics: true,
+            child: Listener(
+              behavior: HitTestBehavior.opaque,
+              onPointerDown: (_) => _startQuickCaptureLongPress(),
+              onPointerUp: (_) => _cancelQuickCaptureLongPress(),
+              onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
+              child: FloatingActionButton(
+                heroTag: 'orah_voice_capture_fab',
+                onPressed: _quickCapture,
+                tooltip: 'Quick capture. Long-press for checklist and quick options.',
+                child: const Icon(Icons.mic_none_rounded),
+              ),
+            ),
+          ),
+        ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
+          bottomNavigationBar: desktop ? null : NavigationBar(
+            selectedIndex: _index,
         onDestinationSelected: (value) {
           setState(() => _index = value);
         },
@@ -196,7 +303,73 @@ class _NovaShellState extends State<NovaShell> {
             selectedIcon: Icon(Icons.settings_rounded),
             label: 'Settings',
           ),
-        ],
+          ],
+        ),
+      );
+    },
+  );
+  }
+}
+
+class _QuickCaptureCard extends StatelessWidget {
+  const _QuickCaptureCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.55),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: theme.colorScheme.primaryContainer,
+                child: Icon(
+                  icon,
+                  color: theme.colorScheme.onPrimaryContainer,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_rounded),
+            ],
+          ),
+        ),
       ),
     );
   }

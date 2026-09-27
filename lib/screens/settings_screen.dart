@@ -53,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.workspace_premium_outlined),
                   title: const Text('ORAH Pro'),
-                  subtitle: const Text('Subscription or lifetime — unlock advanced features'),
+                  subtitle: const Text('Subscription — unlock advanced features'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const OrahProScreen()),

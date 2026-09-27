@@ -119,6 +119,8 @@ class Note {
   int get completedChecklistItems =>
       checklistItems.where((item) => item.isDone).length;
 
+  bool get hasContent => title.trim().isNotEmpty || content.trim().isNotEmpty || attachments.isNotEmpty || checklistItems.isNotEmpty;
+
   double get checklistProgress => checklistItems.isEmpty
       ? 0
       : completedChecklistItems / checklistItems.length;

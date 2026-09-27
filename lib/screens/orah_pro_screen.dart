@@ -28,10 +28,11 @@ class _OrahProScreenState extends State<OrahProScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Lifetime remains supported for existing entitlements, but is no longer
+    // offered as a new purchase option.
     final plans = [
       (OrahEntitlementService.monthlyId, 'Monthly', 'Flexible access'),
       (OrahEntitlementService.yearlyId, 'Yearly', 'Best recurring value'),
-      (OrahEntitlementService.lifetimeId, 'Lifetime', 'One payment, permanent Pro'),
     ];
 
     return Scaffold(
@@ -49,15 +50,15 @@ class _OrahProScreenState extends State<OrahProScreen> {
                   const SizedBox(height: 12),
                   Text('Capture more. Find faster.', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
                   const SizedBox(height: 8),
-                  const Text('ORAH Free stays useful forever: unlimited local notes, checklists, folders, tags, search, basic attachments, themes, export, backup/restore and device privacy. Pro adds advanced capture, organization and automation. Choose a recurring subscription or a one-time Lifetime license.'),
+                  const Text('ORAH Pro unlocks advanced tools while keeping the core local note experience free.'),
                   const SizedBox(height: 18),
                   for (final feature in const [
                     'OCR and smart capture',
                     'Advanced search and intelligence',
-                    'Advanced reminders and task tools',
+                    'Advanced capture, search and export tools',
                     'Premium templates and organization',
-                    'Advanced export and future annotation tools',
-                    'Future encrypted sync and cloud features',
+                    'Advanced export tools',
+                    'Future cloud features will be added separately when available',
                   ])
                     Padding(
                       padding: const EdgeInsets.only(bottom: 9),
@@ -105,7 +106,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Billing products: monthly subscription, yearly subscription, or one-time lifetime purchase. Store product IDs: orah_pro_monthly, orah_pro_yearly, orah_pro_lifetime.',
+            'Store product IDs: orah_pro_monthly, orah_pro_yearly, orah_pro_lifetime.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),

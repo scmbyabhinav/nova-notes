@@ -32,6 +32,7 @@ class AboutNovaScreen extends StatelessWidget {
             'Orah',
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
+              fontSize: 28,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -68,6 +69,57 @@ class AboutNovaScreen extends StatelessWidget {
             'Orah is built to stay out of the way: open, capture, organize, find.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 24),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/abhinav_bajpai_signature.png',
+                    fit: BoxFit.contain,
+                    width: 300,
+                    height: 100,
+                    filterQuality: FilterQuality.high,
+                    semanticLabel: 'Abhinav Bajpai — Developer signature',
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.draw_outlined,
+                      size: 56,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Developer',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Abhinav Bajpai',
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Copyright © 2026 Abhinav Bajpai. All rights reserved.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Orah application code, original branding, artwork and product assets are owned by Abhinav Bajpai. Third-party components remain subject to their respective licenses.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
