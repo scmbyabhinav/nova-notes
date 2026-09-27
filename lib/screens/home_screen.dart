@@ -57,9 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadNotes() async {
     final repository = await NoteRepositoryProvider.instance();
 
-    await _notesSubscription?.cancel();
-    _notesSubscription = repository.watchNotes().listen(_applyNotes);
+    // Keep one live subscription for the lifetime of HomeScreen. Replacing
+    // the subscription during navigation can create a small window in which
+    // a broadcast emission is dropped while the editor is closing.
+    _notesSubscription ??= repository.watchNotes().listen(_applyNotes);
 
+    // Read the persisted snapshot as well. This covers startup and any
+    // update that happened before the stream listener was attached.
     final notes = await repository.getNotes();
     _applyNotes(notes);
   }
