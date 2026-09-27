@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
-import '../data/repositories/folder_repository.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
@@ -23,7 +22,6 @@ import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
-import '../services/orah_smart_detection.dart';
 import '../core/services/nova_security_service.dart';
 import 'package:intl/intl.dart';
 
@@ -459,31 +457,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     });
 
     await _save();
-  }
-
-  Future<void> _detectSmartInfo() async {
-    final text = _titleController.text + '\n' + _contentController.text + '\n' + _checklistItems.map((item) => item.text).join('\n');
-    final dates = OrahSmartDetection.dates(text);
-    final amounts = OrahSmartDetection.amounts(text);
-    if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Smart details'),
-        content: Text(OrahSmartDetection.summary(text)),
-        actions: [
-          if (dates.isNotEmpty)
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _setDetectedReminder(dates.first);
-              },
-              child: const Text('Use first date as reminder'),
-            ),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Done')),
-        ],
-      ),
-    );
   }
 
   Future<void> _setDetectedReminder(DateTime date) async {
