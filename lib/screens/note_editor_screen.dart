@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
+import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
@@ -400,6 +401,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           );
 
     await widget.repository.saveNote(note);
+    // Explicitly re-publish the persisted snapshot after the awaited write.
+    // This makes the save-to-list handoff deterministic even if a stream
+    // emission raced with route navigation.
+    if (widget.repository is LocalNoteRepository) {
+      await (widget.repository as LocalNoteRepository).refresh();
+    }
     try {
       for (final item in _checklistItems) {
         if (item.dueAt != null && !item.isDone) {
