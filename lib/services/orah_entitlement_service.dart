@@ -186,10 +186,10 @@ class OrahEntitlementService extends ChangeNotifier {
     }
 
     if (verifiedPlan != null && verifiedExpiry != null) {
-      plan = verifiedPlan!;
+      plan = verifiedPlan;
       expiresAt = verifiedExpiry;
       await prefs.setString(_entitlementKey, plan.name);
-      await prefs.setString(_expiryKey, expiresAt.toIso8601String());
+      await prefs.setString(_expiryKey, verifiedExpiry.toIso8601String());
       await prefs.setBool(_verifiedKey, true);
       await prefs.setString(
         _purchaseDateKey,
