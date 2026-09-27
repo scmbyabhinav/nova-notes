@@ -64,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Read the persisted snapshot as well. This covers startup and any
     // update that happened before the stream listener was attached.
+    await repository.refresh();
     final notes = await repository.getNotes();
     _applyNotes(notes);
   }
