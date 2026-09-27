@@ -77,7 +77,7 @@ class PurchaseVerificationService {
 
     return PurchaseVerificationResult(
       valid: true,
-      productId: verifiedProductId,
+      productId: productId,
       expiresAt: expiresAt,
     );
   }

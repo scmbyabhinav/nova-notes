@@ -1229,7 +1229,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
                 ),
               ),
-            ),
             Material(
               elevation: 4,
               color: theme.colorScheme.surface,
