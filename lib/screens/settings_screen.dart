@@ -16,6 +16,7 @@ import 'security_settings_screen.dart';
 import 'android_features_screen.dart';
 import 'about_nova_screen.dart';
 import 'orah_pro_screen.dart';
+import 'orah_features_screen.dart';
 import 'trash_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -39,39 +40,67 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
+          _sectionHeader(theme, 'Account & Pro'),
+          Card(
+            child: ListTile(
+              leading: Icon(
+                Icons.workspace_premium_rounded,
+                color: theme.colorScheme.primary,
+              ),
+              title: const Text('ORAH Pro'),
+              subtitle: const Text('Subscription — unlock advanced features'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const OrahProScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _sectionHeader(theme, 'Appearance & UI'),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.palette_outlined),
+              title: const Text('Appearance'),
+              subtitle: Text(_appearanceLabel()),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => _showAppearance(context),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _sectionHeader(theme, 'Security & Privacy'),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.shield_outlined),
+              title: const Text('Security & Privacy'),
+              subtitle: const Text('PIN and biometric protection'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SecuritySettingsScreen(),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _sectionHeader(theme, 'Android features'),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.android_outlined),
+              title: const Text('Android features'),
+              subtitle: const Text('Widgets, shortcuts and sharing'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AndroidFeaturesScreen(),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _sectionHeader(theme, 'Backup & Storage'),
           Card(
             child: Column(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.palette_outlined),
-                  title: const Text('Appearance'),
-                  subtitle: Text(_appearanceLabel()),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => _showAppearance(context),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.workspace_premium_outlined),
-                  title: const Text('ORAH Pro'),
-                  subtitle: const Text('Subscription — unlock advanced features'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const OrahProScreen()),
-                  ),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.shield_outlined),
-                  title: const Text('Security & Privacy'),
-                  subtitle: const Text('PIN and biometric protection'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const SecuritySettingsScreen(),
-                    ),
-                  ),
-                ),
-                const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.folder_copy_outlined),
                   title: const Text('Backup & Export'),
@@ -85,33 +114,38 @@ class SettingsScreen extends StatelessWidget {
                   title: const Text('Trash'),
                   subtitle: const Text('Restore or permanently delete notes'),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TrashScreen())),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.android_outlined),
-                  title: const Text('Android features'),
-                  subtitle: const Text('Widgets, shortcuts and sharing'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const AndroidFeaturesScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const TrashScreen()),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
+          _sectionHeader(theme, 'About & Features'),
           Card(
-            child: ListTile(
-              leading: const Icon(Icons.info_outline_rounded),
-              title: const Text('About Orah'),
-              subtitle: const Text('Product information and privacy approach'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const AboutNovaScreen()),
-              ),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.auto_awesome_outlined),
+                  title: const Text('Orah Features'),
+                  subtitle: const Text('Explore what Orah can do'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.info_outline_rounded),
+                  title: const Text('About Orah'),
+                  subtitle: const Text('Product information and privacy approach'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const AboutNovaScreen()),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -131,6 +165,19 @@ class SettingsScreen extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _sectionHeader(ThemeData theme, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        title,
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w800,
+          color: theme.colorScheme.primary,
+        ),
       ),
     );
   }
