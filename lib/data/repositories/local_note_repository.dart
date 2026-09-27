@@ -16,7 +16,49 @@ class LocalNoteRepository implements NoteRepository {
   static const _storageKey = 'nova_notes_v1';
 
   @override
-  Stream<List<Note>> watchNotes() => _notesController.stream;
+  Stream<List<Note>> watchNotes() {
+    return Stream.multi(
+      (controller) {
+        var sawLiveUpdate = false;
+
+        late final StreamSubscription<List<Note>> subscription;
+        subscription = _notesController.stream.listen(
+          (notes) {
+            sawLiveUpdate = true;
+            controller.add(notes);
+          },
+          onError: controller.addError,
+        );
+        controller.onCancel = subscription.cancel;
+
+        // Broadcast streams intentionally do not buffer events for listeners
+        // that were not present when the event was published. Seed each new
+        // Home subscriber from persistent storage so it cannot miss the note
+        // created immediately before/around navigation.
+        getNotes().then(
+          (notes) {
+            if (!sawLiveUpdate && !controller.isClosed) {
+              controller.add(List<Note>.unmodifiable(notes));
+            }
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            if (!controller.isClosed) {
+              controller.addError(error, stackTrace);
+            }
+          },
+        );
+      },
+      isBroadcast: true,
+    );
+  }
+
+  /// Re-publish the persisted snapshot after a navigation boundary.
+  ///
+  /// This is intentionally separate from [saveNote]: callers use it when a
+  /// screen returns to a list that may have missed a transient broadcast.
+  Future<void> refresh() async {
+    _publish(await getNotes());
+  }
 
   @override
   Future<List<Note>> getNotes() async {

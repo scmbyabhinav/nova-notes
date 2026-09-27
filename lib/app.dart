@@ -138,6 +138,10 @@ class _NovaShellState extends State<NovaShell> {
         ),
       ),
     );
+
+    // Re-publish the persisted snapshot after the editor route closes so the
+    // Home stream receives the latest state even if a broadcast was missed.
+    await repository.refresh();
   }
 
   Future<void> _openVoiceEditor() async {
@@ -153,6 +157,8 @@ class _NovaShellState extends State<NovaShell> {
         ),
       ),
     );
+
+    await repository.refresh();
   }
 
   Future<void> _quickCapture() async {
@@ -183,7 +189,7 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _showCaptureOptions() async {
-    await showModalBottomSheet<void>(
+    final capture = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) => SafeArea(
@@ -216,24 +222,30 @@ class _NovaShellState extends State<NovaShell> {
                 leading: const CircleAvatar(child: Icon(Icons.edit_note_rounded)),
                 title: const Text('Quick note'),
                 subtitle: const Text('Start typing immediately'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _openEditor(NoteType.text);
-                },
+                onTap: () => Navigator.pop(sheetContext, 'text'),
               ),
               ListTile(
                 leading: const CircleAvatar(child: Icon(Icons.checklist_rounded)),
                 title: const Text('Quick checklist'),
                 subtitle: const Text('Capture tasks without setup'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _openEditor(NoteType.checklist);
-                },
+                onTap: () => Navigator.pop(sheetContext, 'checklist'),
               ),
             ],
           ),
         ),
       ),
+    );
+
+    if (!mounted || capture == null) return;
+
+    // showModalBottomSheet completes from the route's pop future. Waiting for
+    // the next frame keeps the sheet's inherited/overlay subtree fully
+    // deactivated before the editor route is pushed.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    await _openEditor(
+      capture == 'checklist' ? NoteType.checklist : NoteType.text,
     );
   }
 

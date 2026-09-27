@@ -95,6 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
+    // The editor persists before it closes. Re-read on return as a
+    // deterministic lifecycle boundary in addition to the live stream.
+    await _loadNotes();
   }
 
   Future<void> _updateNote(Note note, Note updated) async {
@@ -340,11 +343,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     IconButton.filledTonal(
-                      tooltip: 'Subscription',
+                      tooltip: 'ORAH Pro',
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const OrahProScreen()),
                       ),
-                      icon: const Icon(Icons.workspace_premium_outlined),
+                      icon: const Text(
+                        'O',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
