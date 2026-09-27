@@ -342,7 +342,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
-  String _newId()  String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
+  String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
     // Avoid rebuilding the editor on every keystroke. This keeps text/checklist

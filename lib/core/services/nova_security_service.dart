@@ -139,7 +139,7 @@ class NovaSecurityService {
     final key = await _vaultCipher.newSecretKey();
     final bytes = await key.extractBytes();
     if (bytes.length != 32) {
-      throw const StateError(
+      throw StateError(
         'ORAH AES-256 key generation returned an invalid length.',
       );
     }
