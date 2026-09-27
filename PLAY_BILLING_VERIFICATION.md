@@ -1,53 +1,37 @@
 # ORAH Billing Verification Architecture
 
-## Current client
+ORAH uses Google Play Billing through Flutter's `in_app_purchase` package. The only Pro products are `orah_pro_monthly` and `orah_pro_yearly`.
 
-ORAH uses Google Play Billing through Flutter's `in_app_purchase` package.
+## Client verification boundary
 
-Product IDs are fixed in source:
+The app sends `PurchaseDetails.verificationData.serverVerificationData` (the Google Play purchase token) and the product ID to a server endpoint before granting Pro.
 
-- `orah_pro_monthly`
-- `orah_pro_yearly`
+Configure the endpoint at build time:
 
-The app listens to the purchase stream, completes pending purchases, restores purchases, and persists the current entitlement locally.
+```text
+--dart-define=ORAH_VERIFY_PURCHASE_URL=https://<your-backend>/v1/billing/google-play/verify
+```
 
-## Important production boundary
+Request:
 
-A client-only purchase cache is not a trustworthy source of subscription expiry. Subscription renewals, cancellations, refunds, grace periods, account changes, and reinstalls are ultimately controlled by Google Play.
+```json
+{"purchaseToken":"<Google Play purchase token>","productId":"orah_pro_monthly"}
+```
 
-The current app therefore treats its local entitlement logic as a **client fallback**, not as the final billing authority.
+Response:
 
-## Production verification target
+```json
+{"valid":true,"productId":"orah_pro_monthly","expiresAt":"2026-10-27T12:00:00Z"}
+```
 
-The production architecture should become:
+The client grants Pro only when the server returns `valid: true`, the same product ID, and a future expiry. A missing endpoint, HTTP error, invalid response, or failed validation never grants Pro.
 
-1. App receives a Google Play purchase.
-2. App sends the purchase token plus product ID to an ORAH billing backend over HTTPS.
-3. Backend authenticates the request and calls the Google Play Developer API.
-4. Backend verifies the product, package name, purchase state, acknowledgement state, expiry, and cancellation/refund state.
-5. Backend returns a short-lived entitlement result to the app.
-6. App caches that result for offline use, with an explicit expiry/grace policy.
-7. Google Play Real-time Developer Notifications update the backend when a subscription renews, enters grace/hold, is cancelled, or expires.
+## Backend responsibility
 
-## Security rules
+The endpoint must authenticate the request and validate the purchase token with the Google Play Developer API. For subscriptions, it should return the authoritative expiry and cancellation/refund state. A Firebase Callable Cloud Function named `verifyPurchase` is a suitable deployment target.
 
-- Never put Google Play service-account JSON, private keys, or access tokens in the mobile app.
-- Never commit billing credentials to Git.
-- Never trust a product ID supplied by the client without checking the purchase token against Google Play.
-- Never treat a locally fabricated expiry date as proof of an active subscription.
+The Google Play service-account credentials and API access remain server-side and are never shipped in the mobile app.
 
-## What remains for Play production
+## Release rule
 
-The repository is prepared for this backend boundary, but the actual Google Play Developer API credentials and Play Console configuration belong outside the mobile repository.
-
-A future backend can expose a minimal endpoint such as:
-
-`POST /v1/billing/google-play/verify`
-
-with product ID and purchase token, returning only the verified entitlement state needed by ORAH.
-
-## Release implication
-
-Monthly/yearly subscriptions must be driven by Google Play's verified expiry/state rather than a fixed 31/366-day calculation.
-
-Until backend verification exists, the app must not claim that its local subscription date is authoritative.
+Only server-verified entitlements are cached locally. The mobile client no longer fabricates a 31/366-day expiry from the transaction date.

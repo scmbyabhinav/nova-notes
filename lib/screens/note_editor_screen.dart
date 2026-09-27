@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
+import 'package:screenshot/screenshot.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -80,6 +81,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isListening = false;
   String _voiceBaseText = '';
   final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
+  final ScreenshotController _noteCardScreenshotController = ScreenshotController();
 
   static const _voiceHintShownKey = 'orah_voice_hint_shown';
 
@@ -714,6 +716,35 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<void> _shareNoteCard() async {
+    await _save();
+    if (!mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+    try {
+      final bytes = await _noteCardScreenshotController.capture(pixelRatio: 2);
+      if (bytes == null || bytes.isEmpty) {
+        throw StateError('The note card could not be captured.');
+      }
+      await Share.shareXFiles(
+        [
+          XFile.fromData(
+            bytes,
+            mimeType: 'image/png',
+            name: 'orah-note-card.png',
+          ),
+        ],
+        subject: 'Orah note card',
+        text: 'Shared from Orah',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not share note card: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _shareAttachment(String path) async {
     final file = File(path);
     if (!await file.exists()) return;
@@ -946,6 +977,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 case 'color':
                   await _showNoteColorPicker();
                   return;
+                case 'share_card':
+                  await _shareNoteCard();
+                  return;
                 case 'export':
                   await _save();
                   if (!mounted) return;
@@ -992,6 +1026,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'share_card',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.image_outlined),
+                  title: Text('Export as Card'),
+                ),
+              ),
               const PopupMenuItem(
                 value: 'export',
                 child: ListTile(
@@ -1141,7 +1183,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 ),
               ),
             Expanded(
-              child: _previewMode
+              child: Screenshot(
+                controller: _noteCardScreenshotController,
+                child: RepaintBoundary(
+                  child: _previewMode
                   ? ListView(
                       padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
                       children: [
@@ -1181,6 +1226,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           ),
                       ],
                     ),
+            ),
+                ),
+              ),
             ),
             Material(
               elevation: 4,

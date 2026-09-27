@@ -19,6 +19,8 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.1
   share_plus: ^13.3.0
+  screenshot: ^3.0.0
+  http: ^1.6.0
   pdf: ^3.11.3
   archive: ^4.0.7
   flutter_markdown_plus: ^1.0.12

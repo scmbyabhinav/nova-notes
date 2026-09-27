@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'purchase_verification_service.dart';
+
 enum OrahPlan { free, monthly, yearly }
 
 class OrahEntitlementService extends ChangeNotifier {
@@ -15,6 +17,7 @@ class OrahEntitlementService extends ChangeNotifier {
   static const _entitlementKey = 'orah_entitlement';
   static const _purchaseDateKey = 'orah_purchase_date';
   static const _expiryKey = 'orah_entitlement_expiry';
+  static const _verifiedKey = 'orah_entitlement_verified';
 
   StreamSubscription<List<PurchaseDetails>>? _subscription;
   List<ProductDetails> products = const [];
@@ -86,11 +89,13 @@ class OrahEntitlementService extends ChangeNotifier {
     };
     final rawExpiry = prefs.getString(_expiryKey);
     expiresAt = rawExpiry == null ? null : DateTime.tryParse(rawExpiry);
-    if (plan != OrahPlan.monthly && plan != OrahPlan.yearly) {
+    final verified = prefs.getBool(_verifiedKey) ?? false;
+    if (!verified || (plan != OrahPlan.monthly && plan != OrahPlan.yearly)) {
       plan = OrahPlan.free;
       expiresAt = null;
       prefs.remove(_entitlementKey);
       prefs.remove(_expiryKey);
+      prefs.remove(_verifiedKey);
     }
   }
 
@@ -130,19 +135,14 @@ class OrahEntitlementService extends ChangeNotifier {
 
   Future<void> _handlePurchases(List<PurchaseDetails> purchases) async {
     final prefs = await SharedPreferences.getInstance();
-
-    // A restore can contain several purchases. Resolve the strongest entitlement
-    // first so a restored monthly purchase can never accidentally downgrade
-    // an existing lifetime entitlement.
-    OrahPlan? restoredPlan;
-    String? restoredTransactionDate;
+    OrahPlan? verifiedPlan;
+    DateTime? verifiedExpiry;
 
     for (final purchase in purchases) {
       if (purchase.status == PurchaseStatus.error) {
         error = purchase.error?.message ?? 'Purchase failed.';
         continue;
       }
-
       if (purchase.status != PurchaseStatus.purchased &&
           purchase.status != PurchaseStatus.restored) {
         continue;
@@ -155,53 +155,54 @@ class OrahEntitlementService extends ChangeNotifier {
       };
       if (candidate == null) continue;
 
-      final currentRank = _planRank(restoredPlan);
-      final candidateRank = _planRank(candidate);
-      if (candidateRank > currentRank) {
-        restoredPlan = candidate;
-        restoredTransactionDate = purchase.transactionDate;
+      try {
+        final result = await PurchaseVerificationService.instance.verify(
+          // Google Play serverVerificationData is the purchase token.
+          // The backend must validate it with the Google Play Developer API.
+          purchaseToken: purchase.verificationData.serverVerificationData,
+          productId: purchase.productID,
+        );
+        final expiry = result.expiresAt;
+        final active = result.valid &&
+            result.productId == purchase.productID &&
+            expiry != null &&
+            expiry.isAfter(DateTime.now());
+
+        if (active && _planRank(candidate) > _planRank(verifiedPlan)) {
+          verifiedPlan = candidate;
+          verifiedExpiry = expiry;
+        }
+      } catch (e) {
+        error = 'Purchase verification unavailable: $e';
       }
 
-      if (purchase.pendingCompletePurchase) {
+      // Do not acknowledge/complete an unverified purchase. Keeping it pending
+      // allows a later purchase-stream event to retry server verification.
+      if (purchase.pendingCompletePurchase &&
+          verifiedPlan == candidate &&
+          verifiedExpiry != null) {
         await InAppPurchase.instance.completePurchase(purchase);
       }
     }
 
-    if (restoredPlan != null) {
-      final now = DateTime.now();
-      plan = restoredPlan!;
-      final transactionDate = restoredTransactionDate == null
-          ? null
-          : DateTime.tryParse(restoredTransactionDate!);
-
-      // Keep the entitlement date anchored to the store transaction when the
-      // plugin supplies one. This avoids extending a restored subscription
-      // simply because the user reopened ORAH.
-      final anchor = transactionDate ?? now;
-      expiresAt = switch (restoredPlan) {
-        OrahPlan.monthly => anchor.add(const Duration(days: 31)),
-        OrahPlan.yearly => anchor.add(const Duration(days: 366)),
-        OrahPlan.free => null,
-      };
-
-      // Never turn a restored expired subscription into a fresh subscription.
-      // A production billing backend should replace this client-side fallback
-      // with Google Play server-side subscription verification.
-      if (expiresAt != null && !expiresAt!.isAfter(now)) {
-        plan = OrahPlan.free;
-        expiresAt = null;
-        await prefs.remove(_entitlementKey);
-        await prefs.remove(_expiryKey);
-      } else {
-        await prefs.setString(_entitlementKey, plan.name);
-        await prefs.setString(_purchaseDateKey, anchor.toIso8601String());
-        if (expiresAt == null) {
-          await prefs.remove(_expiryKey);
-        } else {
-          await prefs.setString(_expiryKey, expiresAt!.toIso8601String());
-        }
-        error = null;
-      }
+    if (verifiedPlan != null && verifiedExpiry != null) {
+      plan = verifiedPlan!;
+      expiresAt = verifiedExpiry;
+      await prefs.setString(_entitlementKey, plan.name);
+      await prefs.setString(_expiryKey, expiresAt!.toIso8601String());
+      await prefs.setBool(_verifiedKey, true);
+      await prefs.setString(
+        _purchaseDateKey,
+        DateTime.now().toIso8601String(),
+      );
+      error = null;
+    } else if (plan != OrahPlan.free &&
+        (expiresAt == null || !expiresAt!.isAfter(DateTime.now()))) {
+      plan = OrahPlan.free;
+      expiresAt = null;
+      await prefs.remove(_entitlementKey);
+      await prefs.remove(_expiryKey);
+      await prefs.remove(_verifiedKey);
     }
 
     notifyListeners();

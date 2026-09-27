@@ -10,6 +10,7 @@ import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import 'note_editor_screen.dart';
 import 'orah_pro_screen.dart';
+import 'reflection_prompt_screen.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -75,6 +76,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _selectNote(Note note) => setState(() => _selectedNoteId = note.id);
+
+  Future<void> _openReflection() async {
+    final repository = await NoteRepositoryProvider.instance();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ReflectionPromptScreen(repository: repository),
+      ),
+    );
+    await _loadNotes();
+  }
 
   @override
   void dispose() {
@@ -378,6 +390,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: 'Daily Reflection',
+                      onPressed: _openReflection,
+                      icon: const Icon(Icons.auto_awesome_rounded),
                     ),
 
                   ],
