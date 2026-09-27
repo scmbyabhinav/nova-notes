@@ -13,10 +13,11 @@ import 'orah_pro_screen.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture});
+  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onSettings});
 
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
+  final VoidCallback? onSettings;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
