@@ -1,0 +1,19 @@
+{
+  "appTitle": "Orah",
+  "newNote": "New Note",
+  "settings": "Settings",
+  "searchHint": "Search your notes...",
+  "recentNotes": "Recent Notes",
+  "pinned": "Pinned",
+  "accountAndPro": "Account & Pro",
+  "orahPro": "ORAH Pro",
+  "proSubtitle": "Subscription — unlock advanced features",
+  "appearanceAndUi": "Appearance & UI",
+  "appearance": "Appearance",
+  "securityAndPrivacy": "Security & Privacy",
+  "androidFeatures": "Android features",
+  "backupAndStorage": "Backup & Storage",
+  "aboutAndFeatures": "About & Features",
+  "orahFeatures": "Orah Features",
+  "exploreOrah": "Explore what Orah can do"
+}
