@@ -889,7 +889,9 @@ class _DesktopNoteRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final body = note.isLocked
+        ? 'Locked content'
+        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Material(
