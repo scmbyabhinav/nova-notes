@@ -53,8 +53,16 @@ if 'android.speech.RecognitionService' not in manifest:
         1,
     )
 
-manifest = manifest.replace('android:label="orah_notes"', 'android:label="ORAH"')
-manifest = manifest.replace('android:label="Orah"', 'android:label="ORAH"')
+manifest = manifest.replace('android:label="orah_notes"', 'android:label="@string/app_name"')
+manifest = manifest.replace('android:label="Orah"', 'android:label="@string/app_name"')
+
+# Android is generated in CI, so the canonical app display name lives here
+# rather than in a checked-in android/app/src/main/res/values/strings.xml.
+RES_VALUES.joinpath("strings.xml").write_text('''<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Orah Notes</string>
+</resources>
+''')
 
 activity_marker = 'android:name=".MainActivity"'
 if activity_marker not in manifest:

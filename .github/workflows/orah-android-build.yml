@@ -37,6 +37,8 @@ jobs:
           python3 tool/prepare_android_host.py
       - name: Dependencies
         run: flutter pub get
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
       - name: Verify Android desugaring configuration
         run: |
           python3 - <<'PY'
