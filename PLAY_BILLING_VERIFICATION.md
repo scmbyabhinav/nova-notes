@@ -8,7 +8,6 @@ Product IDs are fixed in source:
 
 - `orah_pro_monthly`
 - `orah_pro_yearly`
-- `orah_pro_lifetime`
 
 The app listens to the purchase stream, completes pending purchases, restores purchases, and persists the current entitlement locally.
 
@@ -49,6 +48,6 @@ with product ID and purchase token, returning only the verified entitlement stat
 
 ## Release implication
 
-Lifetime purchases are permanent entitlements after successful Google Play verification. Monthly/yearly subscriptions must be driven by Google Play's verified expiry/state rather than a fixed 31/366-day calculation.
+Monthly/yearly subscriptions must be driven by Google Play's verified expiry/state rather than a fixed 31/366-day calculation.
 
 Until backend verification exists, the app must not claim that its local subscription date is authoritative.

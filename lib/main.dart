@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cryptography_flutter/cryptography_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'app.dart';
@@ -10,6 +11,7 @@ import 'services/orah_entitlement_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterCryptography.enable();
   tz.initializeTimeZones();
   await OrahReminderService.instance.initialize();
   // Resolve the cached/store entitlement before the first frame so existing

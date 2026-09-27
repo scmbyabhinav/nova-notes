@@ -6,13 +6,11 @@ void main() {
   test('ORAH Pro product IDs are stable', () {
     expect(OrahEntitlementService.monthlyId, 'orah_pro_monthly');
     expect(OrahEntitlementService.yearlyId, 'orah_pro_yearly');
-    expect(OrahEntitlementService.lifetimeId, 'orah_pro_lifetime');
   });
 
   test('free entitlement starts locked', () {
     final service = OrahEntitlementService.instance;
     expect(service.plan, OrahPlan.free);
-    expect(service.isLifetime, isFalse);
     expect(service.isPremium, isFalse);
   });
 

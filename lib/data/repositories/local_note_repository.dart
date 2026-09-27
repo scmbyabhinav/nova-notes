@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/note.dart';
+import '../../core/services/nova_security_service.dart';
 import '../../models/search_filter.dart';
 import 'note_repository.dart';
 
@@ -11,6 +12,7 @@ class LocalNoteRepository implements NoteRepository {
   LocalNoteRepository(this._preferences);
 
   final SharedPreferences _preferences;
+  final NovaSecurityService _security = NovaSecurityService();
   final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
 
   static const _storageKey = 'nova_notes_v1';
@@ -191,7 +193,10 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   Future<void> _write(List<Note> notes) async {
-    final encoded = notes.map(_toMap).toList();
+    final encoded = <Map<String, dynamic>>[];
+    for (final note in notes) {
+      encoded.add(await _toMap(note));
+    }
     await _preferences.setString(_storageKey, jsonEncode(encoded));
   }
 
@@ -200,7 +205,38 @@ class LocalNoteRepository implements NoteRepository {
     _notesController.add(List<Note>.unmodifiable(snapshot));
   }
 
-  Map<String, dynamic> _toMap(Note note) {
+  Future<Map<String, dynamic>> _toMap(Note note) async {
+    if (note.isLocked) {
+      final payload = jsonEncode({
+        'version': 1,
+        'title': note.title,
+        'content': note.content,
+        'tags': note.tags,
+        'checklistItems':
+            note.checklistItems.map((item) => item.toMap()).toList(),
+      });
+      final ciphertext = await _security.encryptPrivatePayload(payload);
+      return {
+        'id': note.id,
+        'title': 'Private note',
+        'content': ciphertext,
+        'type': note.type.name,
+        'createdAt': note.createdAt.toIso8601String(),
+        'updatedAt': note.updatedAt.toIso8601String(),
+        'folderId': note.folderId,
+        'tags': const <String>[],
+        'color': note.color,
+        'isPinned': note.isPinned,
+        'isFavorite': note.isFavorite,
+        'isArchived': note.isArchived,
+        'isLocked': true,
+        'isTrashed': note.isTrashed,
+        'dueAt': note.dueAt?.toIso8601String(),
+        'attachments': note.attachments,
+        'checklistItems': const <Map<String, dynamic>>[],
+      };
+    }
+
     return {
       'id': note.id,
       'title': note.title,
@@ -285,7 +321,7 @@ class LocalNoteRepository implements NoteRepository {
       'format': 'nova_notes_backup',
       'version': 1,
       'exportedAt': DateTime.now().toIso8601String(),
-      'notes': notes.map(_toMap).toList(),
+      'notes': [for (final note in notes) await _toMap(note)],
     });
   }
 

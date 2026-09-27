@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -75,6 +76,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isLocked = false;
   bool _privateUnlocked = true;
   bool _unlocking = false;
+  String? _lockedCiphertext;
   late final VoiceSpeechService _speechService;
   bool _speechInitializing = false;
   bool _isListening = false;
@@ -93,23 +95,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
 
-    _titleController = TextEditingController(text: existing?.title ?? widget.initialTitle ?? '');
-    _contentController =
-        TextEditingController(text: existing?.content ?? widget.initialContent ?? '');
+    final locked = existing?.isLocked ?? false;
+    _titleController = TextEditingController(
+      text: locked ? '' : (existing?.title ?? widget.initialTitle ?? ''),
+    );
+    _contentController = TextEditingController(
+      text: locked ? '' : (existing?.content ?? widget.initialContent ?? ''),
+    );
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
     _isArchived = existing?.isArchived ?? false;
-    _isLocked = existing?.isLocked ?? false;
-    _privateUnlocked = !_isLocked;
-    if (_isLocked) WidgetsBinding.instance.addPostFrameCallback((_) => _unlockPrivateNote());
+    _isLocked = locked;
+    _privateUnlocked = !locked;
+    if (locked) _lockedCiphertext = existing?.content;
     _dueAt = existing?.dueAt;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
-    _tags = [...(existing?.tags ?? const [])];
+    _tags = locked ? const [] : [...(existing?.tags ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
-    _checklistItems = [...(existing?.checklistItems ?? const [])];
-    if (_noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
+    _checklistItems = locked ? [] : [...(existing?.checklistItems ?? const [])];
+    if (!locked && _noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
@@ -258,67 +264,85 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _unlockPrivateNote() async {
     if (!_isLocked || _unlocking || !mounted) return;
     setState(() => _unlocking = true);
+
     final security = NovaSecurityService();
-    var ok = false;
-    if (await security.isBiometricEnabled() && await security.canUseBiometrics()) {
-      ok = await security.authenticateBiometric();
+    if (!await security.canUseBiometrics() ||
+        !await security.authenticateBiometric()) {
+      if (mounted) Navigator.of(context).pop();
+      return;
     }
-    if (!ok && await security.hasPin()) {
-      final controller = TextEditingController();
-      final pin = await showDialog<String>(
-        context: context,
-        barrierDismissible: false,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Private note'),
-          content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: 'Enter PIN')),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text), child: const Text('Unlock')),
-          ],
-        ),
-      );
-      controller.dispose();
-      if (pin != null) ok = await security.verifyPin(pin);
-    }
-    if (!mounted) return;
-    if (ok) {
-      setState(() { _unlocking = false; _privateUnlocked = true; });
-    } else {
-      Navigator.of(context).pop();
+
+    try {
+      final ciphertext = _lockedCiphertext;
+      Map<String, dynamic>? payload;
+      if (ciphertext != null && ciphertext.startsWith('vault:v1:')) {
+        payload = jsonDecode(
+          await security.decryptPrivatePayload(ciphertext),
+        ) as Map<String, dynamic>;
+      }
+
+      final existing = widget.note;
+      final title = payload?['title'] as String? ?? existing?.title ?? '';
+      final content = payload?['content'] as String? ?? existing?.content ?? '';
+      final tags = payload?['tags'] is List
+          ? List<String>.from((payload?['tags'] as List).whereType<String>())
+          : (existing?.tags ?? const <String>[]);
+      final checklist = payload?['checklistItems'] is List
+          ? (payload?['checklistItems'] as List)
+              .whereType<Map>()
+              .map((item) => ChecklistItem.fromMap(
+                    Map<String, dynamic>.from(item),
+                  ))
+              .toList()
+          : (existing?.checklistItems ?? const <ChecklistItem>[]);
+
+      _titleController.text = title;
+      _contentController.text = content;
+      _tags = tags;
+      _checklistItems = checklist;
+
+      if (!mounted) return;
+      setState(() {
+        _unlocking = false;
+        _privateUnlocked = true;
+        _hasChanges = ciphertext == null || !ciphertext.startsWith('vault:v1:');
+      });
+      if (_hasChanges) await _save();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Private note could not be unlocked: $e')),
+        );
+        Navigator.of(context).pop();
+      }
     }
   }
 
   Future<void> _lockNote() async {
     final security = NovaSecurityService();
-    if (!await security.hasPin()) {
-      final controller = TextEditingController();
-      final pin = await showDialog<String>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: const Text('Create PIN'),
-          content: TextField(controller: controller, autofocus: true, keyboardType: TextInputType.number, obscureText: true, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit PIN')),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-            FilledButton(
-              onPressed: () {
-                if (RegExp(r'^\\d{4,8}$').hasMatch(controller.text)) {
-                  Navigator.pop(dialogContext, controller.text);
-                }
-              },
-              child: const Text('Create'),
+    if (!await security.canUseBiometrics()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Private notes require fingerprint or face unlock on this device.',
             ),
-          ],
-        ),
-      );
-      controller.dispose();
-      if (pin == null) return;
-      await security.setPin(pin);
+          ),
+        );
+      }
+      return;
     }
-    setState(() { _isLocked = true; _privateUnlocked = false; _hasChanges = true; });
+    if (!await security.authenticateBiometric()) return;
+
+    setState(() {
+      _isLocked = true;
+      _privateUnlocked = true;
+      _hasChanges = true;
+    });
     await _save();
   }
 
-  String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
+  String _newId()  String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
     // Avoid rebuilding the editor on every keystroke. This keeps text/checklist

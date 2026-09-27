@@ -28,8 +28,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Lifetime remains supported for existing entitlements, but is no longer
-    // offered as a new purchase option.
+    // Only recurring Google Play subscriptions are offered.
     final plans = [
       (OrahEntitlementService.monthlyId, 'Monthly', 'Flexible access'),
       (OrahEntitlementService.yearlyId, 'Yearly', 'Best recurring value'),
@@ -84,7 +83,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
-                  leading: Icon(entry.$1 == OrahEntitlementService.lifetimeId ? Icons.workspace_premium_rounded : Icons.star_rounded),
+                  leading: const Icon(Icons.star_rounded),
                   title: Text(entry.$2, style: const TextStyle(fontWeight: FontWeight.w800)),
                   subtitle: Text(product == null ? entry.$3 : product.price + ' • ' + entry.$3),
                   trailing: FilledButton(
@@ -106,7 +105,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Store product IDs: orah_pro_monthly, orah_pro_yearly, orah_pro_lifetime.',
+            'Store product IDs: orah_pro_monthly, orah_pro_yearly.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),

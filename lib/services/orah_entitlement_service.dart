@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum OrahPlan { free, monthly, yearly, lifetime }
+enum OrahPlan { free, monthly, yearly }
 
 class OrahEntitlementService extends ChangeNotifier {
   OrahEntitlementService._();
@@ -12,7 +12,6 @@ class OrahEntitlementService extends ChangeNotifier {
 
   static const monthlyId = 'orah_pro_monthly';
   static const yearlyId = 'orah_pro_yearly';
-  static const lifetimeId = 'orah_pro_lifetime';
   static const _entitlementKey = 'orah_entitlement';
   static const _purchaseDateKey = 'orah_purchase_date';
   static const _expiryKey = 'orah_entitlement_expiry';
@@ -26,16 +25,13 @@ class OrahEntitlementService extends ChangeNotifier {
   Future<void>? _initializationFuture;
 
   bool get isPremium {
-    if (plan == OrahPlan.lifetime) return true;
     if (plan == OrahPlan.free) return false;
     return expiresAt == null || expiresAt!.isAfter(DateTime.now());
   }
 
-  bool get isLifetime => plan == OrahPlan.lifetime;
   String get planLabel => switch (plan) {
     OrahPlan.monthly => 'Pro Monthly',
     OrahPlan.yearly => 'Pro Yearly',
-    OrahPlan.lifetime => 'Pro Lifetime',
     OrahPlan.free => 'Free',
   };
 
@@ -67,7 +63,7 @@ class OrahEntitlementService extends ChangeNotifier {
       final available = await InAppPurchase.instance.isAvailable();
       if (available) {
         final response = await InAppPurchase.instance.queryProductDetails(
-          {monthlyId, yearlyId, lifetimeId},
+          {monthlyId, yearlyId},
         );
         products = response.productDetails;
         if (response.error != null) error = response.error!.message;
@@ -86,13 +82,11 @@ class OrahEntitlementService extends ChangeNotifier {
     plan = switch (stored) {
       'monthly' => OrahPlan.monthly,
       'yearly' => OrahPlan.yearly,
-      'lifetime' => OrahPlan.lifetime,
       _ => OrahPlan.free,
     };
     final rawExpiry = prefs.getString(_expiryKey);
     expiresAt = rawExpiry == null ? null : DateTime.tryParse(rawExpiry);
-    if (plan != OrahPlan.lifetime && expiresAt != null &&
-        !expiresAt!.isAfter(DateTime.now())) {
+    if (plan != OrahPlan.monthly && plan != OrahPlan.yearly) {
       plan = OrahPlan.free;
       expiresAt = null;
       prefs.remove(_entitlementKey);
@@ -157,7 +151,6 @@ class OrahEntitlementService extends ChangeNotifier {
       final candidate = switch (purchase.productID) {
         monthlyId => OrahPlan.monthly,
         yearlyId => OrahPlan.yearly,
-        lifetimeId => OrahPlan.lifetime,
         _ => null,
       };
       if (candidate == null) continue;
@@ -188,16 +181,13 @@ class OrahEntitlementService extends ChangeNotifier {
       expiresAt = switch (restoredPlan) {
         OrahPlan.monthly => anchor.add(const Duration(days: 31)),
         OrahPlan.yearly => anchor.add(const Duration(days: 366)),
-        OrahPlan.lifetime => null,
         OrahPlan.free => null,
       };
 
       // Never turn a restored expired subscription into a fresh subscription.
       // A production billing backend should replace this client-side fallback
       // with Google Play server-side subscription verification.
-      if (restoredPlan != OrahPlan.lifetime &&
-          expiresAt != null &&
-          !expiresAt!.isAfter(now)) {
+      if (expiresAt != null && !expiresAt!.isAfter(now)) {
         plan = OrahPlan.free;
         expiresAt = null;
         await prefs.remove(_entitlementKey);
@@ -219,8 +209,6 @@ class OrahEntitlementService extends ChangeNotifier {
 
   int _planRank(OrahPlan? value) {
     switch (value) {
-      case OrahPlan.lifetime:
-        return 3;
       case OrahPlan.yearly:
         return 2;
       case OrahPlan.monthly:

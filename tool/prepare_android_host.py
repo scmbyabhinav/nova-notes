@@ -25,6 +25,13 @@ if not MANIFEST.exists():
 # speech_to_text needs microphone access on Android. The host is generated
 # during CI, so keep the permission in this preparation step rather than in
 # a non-existent checked-in Android host.
+if 'android.permission.USE_BIOMETRIC' not in manifest:
+    manifest = manifest.replace(
+        '<application',
+        '    <uses-permission android:name="android.permission.USE_BIOMETRIC" />\\n    <application',
+        1,
+    )
+
 if 'android.permission.RECORD_AUDIO' not in manifest:
     manifest = manifest.replace(
         '<application',
