@@ -10,7 +10,7 @@ import '../services/nova_backup_service.dart';
 import '../services/nova_attachment_service.dart';
 import '../data/repositories/note_repository_provider.dart';
 
-import '../core/localization/nova_localizations.dart';
+import '../l10n/app_localizations.dart';
 import '../core/theme/orah_theme_controller.dart';
 import 'security_settings_screen.dart';
 import 'android_features_screen.dart';
@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = NovaLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
       child: ListView(
@@ -40,15 +40,15 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          _sectionHeader(theme, 'Account & Pro'),
+          _sectionHeader(theme, l10n.accountAndPro),
           Card(
             child: ListTile(
               leading: Icon(
                 Icons.workspace_premium_rounded,
                 color: theme.colorScheme.primary,
               ),
-              title: const Text('ORAH Pro'),
-              subtitle: const Text('Subscription — unlock advanced features'),
+              title: Text(l10n.orahPro),
+              subtitle: Text(l10n.proSubtitle),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const OrahProScreen()),
@@ -56,22 +56,22 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Appearance & UI'),
+          _sectionHeader(theme, l10n.appearanceAndUi),
           Card(
             child: ListTile(
               leading: const Icon(Icons.palette_outlined),
-              title: const Text('Appearance'),
+              title: Text(l10n.appearance),
               subtitle: Text(_appearanceLabel()),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showAppearance(context),
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Security & Privacy'),
+          _sectionHeader(theme, l10n.securityAndPrivacy),
           Card(
             child: ListTile(
               leading: const Icon(Icons.shield_outlined),
-              title: const Text('Security & Privacy'),
+              title: Text(l10n.securityAndPrivacy),
               subtitle: const Text('PIN and biometric protection'),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
@@ -82,11 +82,11 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Android features'),
+          _sectionHeader(theme, l10n.androidFeatures),
           Card(
             child: ListTile(
               leading: const Icon(Icons.android_outlined),
-              title: const Text('Android features'),
+              title: Text(l10n.androidFeatures),
               subtitle: const Text('Widgets, shortcuts and sharing'),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
@@ -97,7 +97,7 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Backup & Storage'),
+          _sectionHeader(theme, l10n.backupAndStorage),
           Card(
             child: Column(
               children: [
@@ -122,7 +122,7 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'About & Features'),
+          _sectionHeader(theme, l10n.aboutAndFeatures),
           Card(
             child: Column(
               children: [
