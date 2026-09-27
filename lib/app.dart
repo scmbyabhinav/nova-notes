@@ -118,6 +118,7 @@ class _NovaShellState extends State<NovaShell> {
         HomeScreen(
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
+          onSettings: () => setState(() => _index = 3),
         ),
         const FoldersScreen(),
         const FavoritesScreen(),
