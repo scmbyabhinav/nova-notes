@@ -34,7 +34,7 @@ void main() {
     final note = makeNote('save-stream-test');
 
     final event = expectLater(
-      repository.watchNotes(),
+      repository.watchNotes().skip(1),
       emits(
         predicate<List<Note>>(
           (notes) =>
