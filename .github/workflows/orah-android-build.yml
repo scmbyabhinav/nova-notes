@@ -39,6 +39,24 @@ jobs:
         run: flutter pub get
       - name: Generate launcher icons
         run: dart run flutter_launcher_icons
+      - name: Verify generated launcher icons
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s assets/app_icon.png
+          mapfile -t icon_pngs < <(find android/app/src/main/res -type f -path '*/mipmap-*/*.png' -name '*.png' | sort)
+          if [ "${#icon_pngs[@]}" -eq 0 ]; then
+            echo "No generated launcher PNGs found under android/app/src/main/res/mipmap-*"
+            exit 1
+          fi
+          printf 'Generated launcher PNGs:\n%s\n' "${icon_pngs[@]}"
+          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            if ! find "android/app/src/main/res/mipmap-${density}" -maxdepth 1 -type f -name 'ic_launcher.png' -size +0c -print -quit | grep -q .; then
+              echo "Missing non-empty ic_launcher.png for mipmap-${density}"
+              exit 1
+            fi
+          done
+          echo "Launcher icon generation verified for all Android density buckets."
       - name: Verify Android desugaring configuration
         run: |
           python3 - <<'PY'
