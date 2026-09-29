@@ -22,6 +22,7 @@ void main() {
       id: id,
       title: 'Stream regression',
       content: 'Persisted note',
+      type: NoteType.text,
       createdAt: now,
       updatedAt: now,
       isTrashed: isTrashed,
