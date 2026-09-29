@@ -56,7 +56,7 @@ void main() {
     await repository.saveNote(note);
 
     final event = expectLater(
-      repository.watchNotes(),
+      repository.watchNotes().skip(1),
       emits(
         predicate<List<Note>>((notes) => notes.isEmpty),
       ),
@@ -72,7 +72,7 @@ void main() {
     await repository.saveNote(note);
 
     final trashEvent = expectLater(
-      repository.watchNotes(),
+      repository.watchNotes().skip(1),
       emits(
         predicate<List<Note>>(
           (notes) => notes.length == 1 && notes.single.isTrashed,
@@ -83,7 +83,7 @@ void main() {
     await trashEvent;
 
     final restoreEvent = expectLater(
-      repository.watchNotes(),
+      repository.watchNotes().skip(1),
       emits(
         predicate<List<Note>>(
           (notes) => notes.length == 1 && !notes.single.isTrashed,
