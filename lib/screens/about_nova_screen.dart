@@ -19,10 +19,9 @@ class AboutNovaScreen extends StatelessWidget {
               width: 88,
               height: 88,
               decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(28),
               ),
-              color: Colors.white,
               child: const OrahLogo(size: 88),
             ),
           ),
