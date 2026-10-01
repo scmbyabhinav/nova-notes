@@ -307,10 +307,22 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           await OrahReminderService.instance.cancel('checklist:${item.id}');
         }
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        // Replace any older snackbar and give this confirmation a bounded
+        // lifetime so the Undo affordance cannot remain stuck on screen.
+        messenger.hideCurrentSnackBar();
+        messenger.showSnackBar(
           SnackBar(
-            content: const Text('Moved to Trash'),
-            action: SnackBarAction(label: 'Undo', onPressed: () => _restoreFromTrash(note)),
+            content: const Text('Moved to trash'),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'Undo',
+              onPressed: () {
+                messenger.hideCurrentSnackBar();
+                _restoreFromTrash(note);
+              },
+            ),
           ),
         );
         return;
