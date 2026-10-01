@@ -245,6 +245,29 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<void> _setChecklistDueDate(int index) async {
+    final item = _checklistItems[index];
+    final now = DateTime.now();
+    final initial = item.dueAt ?? now.add(const Duration(hours: 1));
+    final picked = await showDatePicker(context: context, initialDate: initial.isBefore(now) ? now : initial, firstDate: now, lastDate: DateTime(now.year + 10));
+    if (picked == null || !mounted) return;
+    final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
+    if (time == null) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(dueAt: DateTime(picked.year, picked.month, picked.day, time.hour, time.minute));
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _clearChecklistDueDate(int index) async {
+    setState(() {
+      _checklistItems[index] = _checklistItems[index].copyWith(clearDueAt: true);
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
   Future<void> _removeChecklistItem(int index) async {
     final removed = _checklistItems[index];
     await OrahReminderService.instance.cancel('checklist:${removed.id}');
@@ -1405,6 +1428,8 @@ class _ChecklistEditor extends StatelessWidget {
                   onMoveDown: index < items.length - 1
                       ? () => onReorder(index, index + 1)
                       : null,
+                  onSetDueDate: () => _setChecklistDueDate(index),
+                  onClearDueDate: () => _clearChecklistDueDate(index),
                 ),
             ],
           ),
@@ -1433,6 +1458,8 @@ class _ChecklistRow extends StatelessWidget {
     required this.onDelete,
     required this.onMoveUp,
     required this.onMoveDown,
+    required this.onSetDueDate,
+    required this.onClearDueDate,
   });
 
   final ChecklistItem item;
@@ -1443,6 +1470,8 @@ class _ChecklistRow extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
+  final VoidCallback onSetDueDate;
+  final VoidCallback onClearDueDate;
 
   @override
   Widget build(BuildContext context) {
@@ -1474,6 +1503,18 @@ class _ChecklistRow extends StatelessWidget {
               tooltip: 'Move down',
               onPressed: canMoveDown ? onMoveDown : null,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            PopupMenuButton<String>(
+              tooltip: 'Task options',
+              onSelected: (value) {
+                if (value == 'due') onSetDueDate();
+                if (value == 'clear') onClearDueDate();
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(value: 'due', child: Text(item.dueAt == null ? 'Set due date' : 'Change due date')),
+                if (item.dueAt != null)
+                  const PopupMenuItem(value: 'clear', child: Text('Clear due date')),
+              ],
             ),
             IconButton(
               tooltip: 'Delete task',
