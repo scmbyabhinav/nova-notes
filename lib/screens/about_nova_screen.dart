@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_wordmark.dart';
 
 class AboutNovaScreen extends StatelessWidget {
   const AboutNovaScreen({super.key});
@@ -20,22 +21,16 @@ class AboutNovaScreen extends StatelessWidget {
                 color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(28),
               ),
-              child: Icon(
-                Icons.auto_awesome,
-                size: 44,
-                color: theme.colorScheme.onPrimaryContainer,
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(
+                'assets/app_icon.png',
+                fit: BoxFit.cover,
+                semanticLabel: 'Orah app logo',
               ),
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            'Orah',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+          const OrahWordmark(fontSize: 38, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
             'Think it. Write it. Keep it.',
@@ -100,6 +95,23 @@ class AboutNovaScreen extends StatelessWidget {
                   Text(
                     'Abhinav Bajpai',
                     style: theme.textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'For feature suggestions, feedback, or ideas:',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  SelectableText(
+                    'vajpaiabhinav@gmail.com',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
