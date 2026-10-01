@@ -18,6 +18,7 @@ import 'about_nova_screen.dart';
 import 'orah_pro_screen.dart';
 import 'orah_features_screen.dart';
 import 'trash_screen.dart';
+import '../core/widgets/orah_wordmark.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.themeController});
@@ -149,8 +150,10 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+          const OrahWordmark(fontSize: 28, textAlign: TextAlign.center),
+          const SizedBox(height: 4),
           Text(
-            'Orah 1.0.0',
+            'Version 1.0.0',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
