@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
+import '../core/widgets/orah_wordmark.dart';
 import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository.dart';
@@ -433,14 +434,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            l10n.appTitle,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.8,
-                            ),
-                          ),
+                          const OrahWordmark(fontSize: 34),
                           const SizedBox(height: 2),
                           Text(
                             'Think it. Write it. Keep it.',
