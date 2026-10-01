@@ -57,6 +57,7 @@ class _OrahAppState extends State<OrahApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
+      navigatorObservers: [orahRouteObserver],
       home: NovaShell(themeController: _theme, speechService: widget.speechService),
     );
   }
