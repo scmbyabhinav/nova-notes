@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../core/widgets/orah_wordmark.dart';
+import '../core/widgets/orah_logo.dart';
 
 class AboutNovaScreen extends StatelessWidget {
   const AboutNovaScreen({super.key});
@@ -21,12 +22,8 @@ class AboutNovaScreen extends StatelessWidget {
                 color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(28),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                'assets/app_icon.png',
-                fit: BoxFit.cover,
-                semanticLabel: 'Orah app logo',
-              ),
+              color: Colors.white,
+              child: const OrahLogo(size: 88),
             ),
           ),
           const SizedBox(height: 20),
