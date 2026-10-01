@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
+import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
@@ -25,18 +26,41 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
   bool _gridView = true;
   bool _loading = true;
   String _sort = 'updated';
   List<Note> _notes = const [];
   String? _selectedNoteId;
   StreamSubscription<List<Note>>? _notesSubscription;
+  PageRoute<dynamic>? _subscribedRoute;
 
   @override
   void initState() {
     super.initState();
     _loadPreferences();
+    _loadNotes();
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute<dynamic> && route != _subscribedRoute) {
+      if (_subscribedRoute != null) {
+        orahRouteObserver.unsubscribe(this);
+      }
+      _subscribedRoute = route;
+      orahRouteObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // The editor, Trash, or another pushed screen may have changed notes.
+    // Read persistent storage directly when returning instead of relying only
+    // on a broadcast event that may have been missed while this screen was idle.
     _loadNotes();
   }
 
@@ -96,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
     super.dispose();
   }
@@ -127,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _restoreFromTrash(Note note) async {
     final repository = await NoteRepositoryProvider.instance();
     await repository.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
+    await _loadNotes();
     if (note.dueAt != null && note.dueAt!.isAfter(DateTime.now())) {
       await OrahReminderService.instance.schedule(noteId: note.id, title: note.title, when: note.dueAt!);
     }
@@ -261,6 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
         await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
+        await _loadNotes();
         await OrahReminderService.instance.cancel(note.id);
         for (final item in note.checklistItems) {
           await OrahReminderService.instance.cancel('checklist:${item.id}');
