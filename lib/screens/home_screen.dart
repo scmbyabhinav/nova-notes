@@ -26,7 +26,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with RouteAware {
+class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
   bool _gridView = true;
   bool _loading = true;
   String _sort = 'updated';
@@ -34,10 +34,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   String? _selectedNoteId;
   StreamSubscription<List<Note>>? _notesSubscription;
   PageRoute<dynamic>? _subscribedRoute;
+  int _notesLoadGeneration = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
     _loadNotes();
   }
@@ -64,6 +66,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     _loadNotes();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Reconcile persisted state after Android suspends/resumes the app.
+      _loadNotes();
+    }
+  }
+
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
@@ -80,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   }
 
   Future<void> _loadNotes() async {
+    final loadGeneration = ++_notesLoadGeneration;
     final repository = await NoteRepositoryProvider.instance();
 
     // Keep one live subscription for the lifetime of HomeScreen. Replacing
@@ -90,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     // Read the persisted snapshot as well. This covers startup and any
     // update that happened before the stream listener was attached.
     await repository.refresh();
+    if (!mounted || loadGeneration != _notesLoadGeneration) return;
     final notes = await repository.getNotes();
+    if (!mounted || loadGeneration != _notesLoadGeneration) return;
     _applyNotes(notes);
   }
 
@@ -120,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
     super.dispose();
