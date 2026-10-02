@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 
 class OrahFeaturesScreen extends StatelessWidget {
   const OrahFeaturesScreen({super.key});
@@ -10,12 +11,12 @@ class OrahFeaturesScreen extends StatelessWidget {
       description: 'Protect private notes with encrypted local storage and biometric access.',
     ),
     _Feature(
-      icon: Icons.mic_none_rounded,
+      assetIcon: 'microphone',
       title: 'Voice Capture',
       description: 'Capture thoughts quickly with voice-first note creation.',
     ),
     _Feature(
-      icon: Icons.checklist_rounded,
+      assetIcon: 'checklist',
       title: 'Checklist',
       description: 'Turn notes into actionable checklists with completion tracking.',
     ),
@@ -25,7 +26,7 @@ class OrahFeaturesScreen extends StatelessWidget {
       description: 'Keep notes available locally so you can write without an internet connection.',
     ),
     _Feature(
-      icon: Icons.ios_share_rounded,
+      assetIcon: 'share',
       title: 'Share & Export',
       description: 'Share notes and export your content in portable formats.',
     ),
@@ -53,7 +54,7 @@ class OrahFeaturesScreen extends StatelessWidget {
               leading: CircleAvatar(
                 backgroundColor: theme.colorScheme.primaryContainer,
                 foregroundColor: theme.colorScheme.onPrimaryContainer,
-                child: Icon(feature.icon),
+                child: feature.assetIcon != null ? OrahAssetIcon(feature.assetIcon!, color: theme.colorScheme.onPrimaryContainer) : Icon(feature.icon),
               ),
               title: Text(feature.title, style: const TextStyle(fontWeight: FontWeight.w700)),
               subtitle: Padding(
@@ -70,12 +71,14 @@ class OrahFeaturesScreen extends StatelessWidget {
 
 class _Feature {
   const _Feature({
-    required this.icon,
+    this.icon,
+    this.assetIcon,
     required this.title,
     required this.description,
   });
 
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
   final String title;
   final String description;
 }
