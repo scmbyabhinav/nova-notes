@@ -375,15 +375,32 @@ class _NovaShellState extends State<NovaShell> {
             ],
           ),
           bottomNavigationBar: desktop ? null : NavigationBar(
-            selectedIndex: _index < 2 ? 0 : _index,
+            selectedIndex: switch (_index) {
+              0 => 0, // Notes / Home
+              1 => 1, // Calendar
+              2 => 3, // Favorites
+              _ => 4, // Settings
+            },
             onDestinationSelected: (value) {
-              if (value == 1) {
-                _openEditor(NoteType.text);
-                return;
+              switch (value) {
+                case 0:
+                  setState(() => _index = 0);
+                case 1:
+                  setState(() => _index = 1);
+                case 2:
+                  _openEditor(NoteType.text);
+                case 3:
+                  setState(() => _index = 2);
+                case 4:
+                  setState(() => _index = 3);
               }
-              setState(() => _index = value == 0 ? 1 : value);
             },
             destinations: [
+              NavigationDestination(
+                icon: OrahAssetIcon('notes', color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: OrahAssetIcon('notes', color: theme.colorScheme.onSecondaryContainer),
+                label: 'Notes',
+              ),
               NavigationDestination(
                 icon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
                 selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
