@@ -25,6 +25,7 @@ dependencies:
   pdf: ^3.11.3
   archive: ^4.0.7
   flutter_markdown_plus: ^1.0.12
+  flutter_svg: ^2.2.0
   image_picker: ^1.2.3
   google_mlkit_text_recognition: ^0.15.0
   file_picker: ^13.1.0
@@ -50,5 +51,5 @@ flutter_launcher_icons:
   android: true
   ios: false
   image_path: "assets/app_icon.png"
-  adaptive_icon_background: "#2A1B3D"
+  adaptive_icon_background: "#F0FDF6"
   adaptive_icon_foreground: "assets/app_icon.png"
