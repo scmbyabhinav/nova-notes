@@ -719,7 +719,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                               Expanded(
                                 child: FilledButton.icon(
                                   onPressed: onNewNote,
-                                  icon: OrahAssetIcon('plus', size: 18, color: theme.colorScheme.onPrimaryContainer),
+                                  icon: OrahAssetIcon('new-note', size: 18, color: theme.colorScheme.onPrimary),
                                   label: const Text('New Note'),
                                   style: FilledButton.styleFrom(
                                     minimumSize: const Size.fromHeight(44),
