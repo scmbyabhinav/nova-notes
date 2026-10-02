@@ -22,6 +22,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
 import '../core/services/nova_security_service.dart';
@@ -946,9 +947,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         triggerMode: TooltipTriggerMode.manual,
         child: FloatingActionButton(
           onPressed: _handleVoiceFabTap,
-          child: Icon(
-            _isListening ? Icons.stop_rounded : Icons.mic_rounded,
-          ),
+          child: _isListening
+              ? const Icon(Icons.stop_rounded)
+              : const OrahAssetIcon('microphone', color: Colors.white),
         ),
       ),
       appBar: AppBar(
@@ -978,13 +979,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
-            icon: Icon(
-              _isPinned
-                  ? Icons.push_pin_rounded
-                  : Icons.push_pin_outlined,
-            ),
+            icon: const OrahAssetIcon('pin'),
           ),
           PopupMenuButton<String>(
+            icon: const OrahAssetIcon('menu'),
             onSelected: (value) async {
               switch (value) {
                 case 'ocr': await _scanTextFromImage(); return;
@@ -1055,7 +1053,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 value: 'export',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.ios_share_rounded),
+                  leading: OrahAssetIcon('share'),
                   title: Text('Export'),
                 ),
               ),
@@ -1063,11 +1061,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 value: 'favorite',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(
-                    _isFavorite
-                        ? Icons.star_rounded
-                        : Icons.star_outline_rounded,
-                  ),
+                  leading: const OrahAssetIcon('star'),
                   title: Text(
                     _isFavorite ? 'Remove favorite' : 'Add to favorites',
                   ),
@@ -1086,7 +1080,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 value: 'organize',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.label_outline_rounded),
+                  leading: OrahAssetIcon('tag'),
                   title: Text('Folder & tags'),
                 ),
               ),
@@ -1111,7 +1105,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 value: 'delete',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.delete_outline_rounded),
+                  leading: OrahAssetIcon('trash'),
                   title: Text('Delete'),
                 ),
               ),
@@ -1130,12 +1124,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   children: [
                     if (_folderId != null)
                       _MetaChip(
-                        icon: Icons.folder_outlined,
+                        icon: const OrahAssetIcon('folder', size: 16),
                         label: _folderId!,
                       ),
                     ..._tags.map(
                       (tag) => _MetaChip(
-                        icon: Icons.tag_rounded,
+                        icon: const OrahAssetIcon('tag', size: 16),
                         label: tag,
                       ),
                     ),
@@ -1417,17 +1411,13 @@ class _ChecklistEditor extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 36),
             child: Column(
               children: [
-                Icon(
-                  Icons.checklist_rounded,
-                  size: 52,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                OrahAssetIcon('checklist', size: 52, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 12),
                 const Text('Your checklist is empty'),
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: onAdd,
-                  icon: const Icon(Icons.add),
+                  icon: const OrahAssetIcon('plus'),
                   label: const Text('Add first task'),
                 ),
               ],
@@ -1459,7 +1449,7 @@ class _ChecklistEditor extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed: onAdd,
-              icon: const Icon(Icons.add),
+              icon: const OrahAssetIcon('plus'),
               label: const Text('Add task'),
             ),
           ),
@@ -1524,7 +1514,7 @@ class _ChecklistRow extends StatelessWidget {
             IconButton(
               tooltip: 'Delete task',
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline_rounded),
+              icon: const OrahAssetIcon('trash'),
             ),
           ],
         ),
@@ -1536,7 +1526,7 @@ class _ChecklistRow extends StatelessWidget {
 class _MetaChip extends StatelessWidget {
   const _MetaChip({required this.icon, required this.label});
 
-  final IconData icon;
+  final Widget icon;
   final String label;
 
   @override
@@ -1544,7 +1534,7 @@ class _MetaChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: Chip(
-        avatar: Icon(icon, size: 16),
+        avatar: SizedBox(width: 16, height: 16, child: icon),
         label: Text(label),
       ),
     );
