@@ -122,7 +122,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       : CalendarDatePicker(
                           key: ValueKey('${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}'),
                           initialDate: _selectedDate,
-                          firstDate: DateTime(2000, 1, 1),
+                          firstDate: DateTime(1, 1, 1),
                           lastDate: DateTime(9999, 12, 31),
                           currentDate: DateUtils.dateOnly(DateTime.now()),
                           onDateChanged: (date) => setState(() => _selectedDate = DateUtils.dateOnly(date)),
