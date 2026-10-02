@@ -98,8 +98,13 @@ class OrahUserProfileService {
   }
 
   Future<void> speakGreeting(String name) async {
+    // Explicitly reset the TTS engine before speaking so a previous utterance
+    // or interrupted session cannot leave the startup greeting queued silently.
+    await _tts.stop();
     await _tts.setLanguage('en-US');
     await _tts.setSpeechRate(0.48);
+    await _tts.setVolume(1.0);
+    await _tts.setPitch(1.0);
     await _tts.speak('Hello, $name');
   }
 
