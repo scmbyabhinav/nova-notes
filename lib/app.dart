@@ -10,7 +10,7 @@ import 'core/widgets/orah_asset_icon.dart';
 import 'data/repositories/note_repository_provider.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
-import 'screens/folders_screen.dart';
+import 'screens/calendar_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
@@ -117,8 +117,10 @@ class _NovaShellState extends State<NovaShell> {
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
           onSettings: () => setState(() => _index = 3),
+          onNotes: () => setState(() => _index = 0),
+          onFolders: () => setState(() => _index = 0),
         ),
-        const FoldersScreen(),
+        const CalendarScreen(),
         const FavoritesScreen(),
         SettingsScreen(themeController: widget.themeController),
       ];
@@ -290,29 +292,24 @@ class _NovaShellState extends State<NovaShell> {
             ],
           ),
           bottomNavigationBar: desktop ? null : NavigationBar(
-            selectedIndex: _index < 2 ? _index : _index + 1,
+            selectedIndex: _index < 2 ? 0 : _index,
             onDestinationSelected: (value) {
-              if (value == 2) {
+              if (value == 1) {
                 _openEditor(NoteType.text);
                 return;
               }
-              setState(() => _index = value < 2 ? value : value - 1);
+              setState(() => _index = value == 0 ? 1 : value);
             },
             destinations: [
               NavigationDestination(
-                icon: OrahAssetIcon('notes', color: theme.colorScheme.onSurfaceVariant),
-                selectedIcon: OrahAssetIcon('notes', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Notes',
+                icon: Icon(Icons.calendar_month_outlined, color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: Icon(Icons.calendar_month_rounded, color: theme.colorScheme.onSecondaryContainer),
+                label: 'Calendar',
               ),
               NavigationDestination(
-                icon: OrahAssetIcon('folder', color: theme.colorScheme.onSurfaceVariant),
-                selectedIcon: OrahAssetIcon('folder', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Folders',
-              ),
-              NavigationDestination(
-                icon: OrahAssetIcon('plus', color: theme.colorScheme.primary),
-                selectedIcon: OrahAssetIcon('plus', color: theme.colorScheme.primary),
-                label: 'New Note',
+                icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
+                selectedIcon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
+                label: 'Add',
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('star', color: theme.colorScheme.onSurfaceVariant),
