@@ -197,9 +197,11 @@ class _NovaShellState extends State<NovaShell> {
         HomeScreen(
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
+          onChecklist: () => _openEditor(NoteType.checklist),
           onSettings: () => setState(() => _index = 3),
           onNotes: () => setState(() => _index = 0),
           onFolders: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FoldersScreen())),
+          onFavorites: () => setState(() => _index = 2),
         ),
         CalendarScreen(onNotes: () => setState(() => _index = 0)),
         const FavoritesScreen(),
