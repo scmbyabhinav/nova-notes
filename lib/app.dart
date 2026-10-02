@@ -18,6 +18,8 @@ import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
+import 'services/orah_user_profile_service.dart';
+import 'screens/orah_registration_screen.dart';
 
 class OrahApp extends StatefulWidget {
   const OrahApp({super.key, this.speechService});
@@ -61,16 +63,65 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: NovaShell(themeController: _theme, speechService: widget.speechService),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService),
+    );
+  }
+}
+
+class OrahEntryGate extends StatefulWidget {
+  const OrahEntryGate({super.key, required this.themeController, this.speechService});
+
+  final OrahThemeController themeController;
+  final VoiceSpeechService? speechService;
+
+  @override
+  State<OrahEntryGate> createState() => _OrahEntryGateState();
+}
+
+class _OrahEntryGateState extends State<OrahEntryGate> {
+  OrahUserProfile? _profile;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final profile = await OrahUserProfileService.instance.loadProfile();
+    if (!mounted) return;
+    setState(() {
+      _profile = profile;
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    final profile = _profile;
+    if (profile == null) {
+      return OrahRegistrationScreen(
+        onRegistered: (value) => setState(() => _profile = value),
+      );
+    }
+    return NovaShell(
+      themeController: widget.themeController,
+      speechService: widget.speechService,
+      profile: profile,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, this.speechService});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
+  final OrahUserProfile profile;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -90,6 +141,25 @@ class _NovaShellState extends State<NovaShell> {
   void initState() {
     super.initState();
     _loadQuickCaptureHint();
+    _greetUserAtStartup();
+  }
+
+  Future<void> _greetUserAtStartup() async {
+    final voiceEnabled = await OrahUserProfileService.instance.voiceGreetingEnabled();
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Hello, ${widget.profile.fullName}'),
+          duration: const Duration(seconds: 4),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      if (voiceEnabled) {
+        OrahUserProfileService.instance.speakGreeting(widget.profile.fullName).catchError((_) {});
+      }
+    });
   }
 
   Future<void> _loadQuickCaptureHint() async {
