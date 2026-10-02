@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 
 import '../models/folder.dart';
 
@@ -92,7 +93,7 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
                     value: folder.id,
                     groupValue: _folderId,
                     title: Text(folder.name),
-                    secondary: const Icon(Icons.folder_outlined),
+                    secondary: const OrahAssetIcon('folder'),
                     onChanged: (value) => setState(() => _folderId = value),
                   ),
                 ),
