@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
@@ -30,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
   bool _gridView = true;
+  bool _showFeatures = false;
   bool _loading = true;
   String _sort = 'updated';
   List<Note> _notes = const [];
@@ -409,23 +411,27 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
-                    Material(
-                      elevation: 3,
-                      color: theme.colorScheme.primary,
-                      shape: const CircleBorder(),
-                      shadowColor: theme.colorScheme.primary.withValues(alpha: 0.28),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const OrahProScreen()),
-                        ),
-                        child: const SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Icon(
-                            Icons.auto_stories_rounded,
-                            color: Colors.white,
-                            size: 27,
+                    Tooltip(
+                      message: _showFeatures ? 'Hide Orah features' : 'Show Orah features',
+                      child: Material(
+                        elevation: 3,
+                        color: theme.colorScheme.primary,
+                        shape: const CircleBorder(),
+                        shadowColor: theme.colorScheme.primary.withValues(alpha: 0.24),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () => setState(() => _showFeatures = !_showFeatures),
+                          child: SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                'assets/orah_header_icon.svg',
+                                fit: BoxFit.contain,
+                                semanticsLabel: 'Orah features',
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -449,11 +455,120 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                     IconButton.filledTonal(
                       tooltip: 'Daily Reflection',
                       onPressed: _openReflection,
-                      icon: const Icon(Icons.auto_stories_rounded),
+                      icon: SvgPicture.asset(
+                        'assets/daily_reflection_icon.svg',
+                        width: 26,
+                        height: 26,
+                        semanticsLabel: 'Daily Reflection',
+                      ),
                     ),
-
+                    if (_showFeatures)
+                      IconButton.filledTonal(
+                        tooltip: 'Appearance',
+                        onPressed: widget.onSettings,
+                        icon: SvgPicture.asset(
+                          'assets/appearance_icon.svg',
+                          width: 26,
+                          height: 26,
+                          semanticsLabel: 'Appearance settings',
+                        ),
+                      ),
                   ],
                 ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOutCubic,
+                alignment: Alignment.topCenter,
+                child: _showFeatures
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                        child: Card(
+                          elevation: 1,
+                          clipBehavior: Clip.antiAlias,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Explore Orah',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'A calm space for notes, plans, and reflection.',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: [
+                                    Chip(
+                                      avatar: const Icon(Icons.note_alt_outlined, size: 18),
+                                      label: const Text('Notes'),
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.folder_outlined, size: 18),
+                                      label: const Text('Folders'),
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.star_outline_rounded, size: 18),
+                                      label: const Text('Favorites'),
+                                    ),
+                                    ActionChip(
+                                      avatar: SvgPicture.asset(
+                                        'assets/daily_reflection_icon.svg',
+                                        width: 20,
+                                        height: 20,
+                                      ),
+                                      label: const Text('Daily Reflection'),
+                                      onPressed: _openReflection,
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.mic_none_rounded, size: 18),
+                                      label: const Text('Voice Capture'),
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.checklist_rounded, size: 18),
+                                      label: const Text('Checklists'),
+                                    ),
+                                    ActionChip(
+                                      avatar: SvgPicture.asset(
+                                        'assets/appearance_icon.svg',
+                                        width: 20,
+                                        height: 20,
+                                      ),
+                                      label: const Text('Appearance'),
+                                      onPressed: widget.onSettings,
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.search_rounded, size: 18),
+                                      label: const Text('Search'),
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.cloud_off_outlined, size: 18),
+                                      label: const Text('Offline access'),
+                                    ),
+                                    Chip(
+                                      avatar: const Icon(Icons.ios_share_rounded, size: 18),
+                                      label: const Text('Backup & Export'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
             ),
             SliverPadding(
