@@ -68,16 +68,30 @@ class AboutNovaScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
               child: Column(
                 children: [
-                  Image.asset(
-                    'assets/abhinav_bajpai_signature.png',
-                    fit: BoxFit.contain,
-                    width: 300,
-                    height: 100,
-                    filterQuality: FilterQuality.high,
-                    semanticLabel: 'Abhinav Bajpai — Developer signature',
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.draw_outlined,
-                      size: 56,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE7EAF0)),
+                    ),
+                    child: Image.asset(
+                      'assets/abhinav_bajpai_signature.png',
+                      fit: BoxFit.contain,
+                      width: 320,
+                      height: 112,
+                      filterQuality: FilterQuality.high,
+                      semanticLabel: 'Abhinav Bajpai — Developer signature',
+                      errorBuilder: (context, error, stackTrace) => const SizedBox(
+                        height: 64,
+                        child: Center(
+                          child: Icon(Icons.draw_outlined, size: 48),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),
