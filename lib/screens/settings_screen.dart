@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../services/nova_backup_service.dart';
+import '../services/orah_user_profile_service.dart';
 import '../services/nova_attachment_service.dart';
 import '../data/repositories/note_repository_provider.dart';
 
@@ -67,6 +68,11 @@ class SettingsScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showAppearance(context),
             ),
+          ),
+          const SizedBox(height: 16),
+          _sectionHeader(theme, 'Personalized greeting'),
+          const Card(
+            child: _VoiceGreetingSettingTile(),
           ),
           const SizedBox(height: 16),
           _sectionHeader(theme, l10n.securityAndPrivacy),
@@ -302,5 +308,47 @@ class SettingsScreen extends StatelessWidget {
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
     if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+  }
+}
+class _VoiceGreetingSettingTile extends StatefulWidget {
+  const _VoiceGreetingSettingTile();
+
+  @override
+  State<_VoiceGreetingSettingTile> createState() => _VoiceGreetingSettingTileState();
+}
+
+class _VoiceGreetingSettingTileState extends State<_VoiceGreetingSettingTile> {
+  late Future<bool> _enabledFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _enabledFuture = OrahUserProfileService.instance.voiceGreetingEnabled();
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    await OrahUserProfileService.instance.setVoiceGreetingEnabled(value);
+    if (!value) await OrahUserProfileService.instance.stopGreeting();
+    if (!mounted) return;
+    setState(() => _enabledFuture = Future<bool>.value(value));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _enabledFuture,
+      builder: (context, snapshot) {
+        final enabled = snapshot.data ?? true;
+        return SwitchListTile(
+          secondary: const Icon(Icons.record_voice_over_rounded),
+          title: const Text('Speak my name at startup'),
+          subtitle: Text(enabled
+              ? 'Orah will say “Hello, your name” when it opens.'
+              : 'The greeting stays silent.'),
+          value: enabled,
+          onChanged: snapshot.connectionState == ConnectionState.waiting ? null : _setEnabled,
+        );
+      },
+    );
   }
 }
