@@ -7,7 +7,7 @@ import 'package:orah_notes/app.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
-import 'package:orah_notes/screens/orah_registration_screen.dart';
+import 'package:orah_notes/screens/orah_registration_screen.dart' as registration;
 
 void main() {
   setUp(() {
@@ -15,7 +15,7 @@ void main() {
   });
   testWidgets('registration form requires name and email fields', (tester) async {
     await tester.pumpWidget(MaterialApp(
-      home: OrahRegistrationScreen(onRegistered: (_) {}),
+      home: registration.OrahRegistrationScreen(onRegistered: (_) {}),
     ));
 
     expect(find.text('Welcome to Orah'), findsOneWidget);
