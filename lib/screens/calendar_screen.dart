@@ -6,7 +6,9 @@ import '../models/note.dart';
 import 'note_editor_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  const CalendarScreen({super.key, this.onNotes});
+
+  final VoidCallback? onNotes;
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -102,6 +104,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Text('Notes by day and scheduled reminders', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         ],
                       ),
+                    ),
+                    IconButton(
+                      tooltip: 'Notes',
+                      onPressed: widget.onNotes,
+                      icon: const Icon(Icons.note_alt_outlined),
                     ),
                     IconButton(
                       tooltip: 'Go to today',
