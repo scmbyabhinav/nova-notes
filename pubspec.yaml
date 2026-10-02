@@ -47,6 +47,7 @@ flutter:
   assets:
     - assets/abhinav_bajpai_signature.png
     - assets/orah_app_icon.svg
+    - assets/orah_logo.svg
 
 flutter_launcher_icons:
   android: true
