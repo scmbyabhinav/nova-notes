@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
 import '../core/widgets/orah_wordmark.dart';
+import '../core/widgets/orah_asset_icon.dart';
 import '../core/widgets/orah_logo.dart';
 import '../core/navigation/orah_navigation.dart';
 
@@ -188,20 +189,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(
-                note.isPinned
-                    ? Icons.push_pin_rounded
-                    : Icons.push_pin_outlined,
-              ),
+              leading: const OrahAssetIcon('pin'),
               title: Text(note.isPinned ? 'Unpin note' : 'Pin note'),
               onTap: () => Navigator.pop(context, 'pin'),
             ),
             ListTile(
-              leading: Icon(
-                note.isFavorite
-                    ? Icons.star_rounded
-                    : Icons.star_outline_rounded,
-              ),
+              leading: const OrahAssetIcon('star'),
               title: Text(
                 note.isFavorite ? 'Remove favorite' : 'Add to favorites',
               ),
@@ -223,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'color'),
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline_rounded),
+              leading: const OrahAssetIcon('trash'),
               title: const Text('Move to Trash'),
               onTap: () => Navigator.pop(context, 'delete'),
             ),
@@ -455,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               sliver: SliverToBoxAdapter(
                 child: SearchBar(
                   hintText: l10n.searchHint,
-                  leading: const Icon(Icons.search_rounded),
+                  leading: const OrahAssetIcon('search'),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -473,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           ),
                         );
                       },
-                      icon: const Icon(Icons.tune_rounded),
+                      icon: const OrahAssetIcon('menu'),
                     ),
                   ],
                 ),
@@ -680,7 +673,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: SearchBar(
                         hintText: 'Search',
-                        leading: const Icon(Icons.search_rounded, size: 19),
+                        leading: const OrahAssetIcon('search', size: 19),
                         elevation: const WidgetStatePropertyAll(0),
                         backgroundColor: WidgetStatePropertyAll(
                           theme.colorScheme.surfaceContainerHighest.withValues(alpha: .7),
@@ -726,7 +719,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                               Expanded(
                                 child: FilledButton.icon(
                                   onPressed: onNewNote,
-                                  icon: const Icon(Icons.add_rounded, size: 18),
+                                  icon: OrahAssetIcon('plus', size: 18, color: theme.colorScheme.onPrimaryContainer),
                                   label: const Text('New Note'),
                                   style: FilledButton.styleFrom(
                                     minimumSize: const Size.fromHeight(44),
@@ -745,7 +738,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 child: IconButton.filledTonal(
                                   tooltip: 'Microphone',
                                   onPressed: onVoiceCapture,
-                                  icon: const Icon(Icons.mic_none_rounded),
+                                  icon: OrahAssetIcon('microphone', color: theme.colorScheme.onSecondaryContainer),
                                 ),
                               ),
                           ],
@@ -1034,16 +1027,12 @@ class _DesktopNotePreview extends StatelessWidget {
               IconButton(
                 tooltip: note.isPinned ? 'Unpin' : 'Pin',
                 onPressed: () {},
-                icon: Icon(
-                  note.isPinned ? Icons.push_pin_rounded : Icons.push_pin_outlined,
-                ),
+                icon: const OrahAssetIcon('pin'),
               ),
               IconButton(
                 tooltip: 'Favorite',
                 onPressed: () {},
-                icon: Icon(
-                  note.isFavorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                ),
+                icon: const OrahAssetIcon('star'),
               ),
             ],
           ),
@@ -1145,15 +1134,14 @@ class _NoteIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = switch (type) {
-      NoteType.checklist => Icons.checklist_rounded,
-      NoteType.voice => Icons.mic_none_rounded,
-      NoteType.image => Icons.image_outlined,
-      NoteType.drawing => Icons.draw_outlined,
-      NoteType.text => Icons.note_alt_outlined,
-    };
-
     final color = Theme.of(context).colorScheme.primary;
+    final Widget icon = switch (type) {
+      NoteType.checklist => OrahAssetIcon('checklist', color: color, size: 21),
+      NoteType.voice => OrahAssetIcon('microphone', color: color, size: 21),
+      NoteType.image => Icon(Icons.image_outlined, color: color, size: 21),
+      NoteType.drawing => Icon(Icons.draw_outlined, color: color, size: 21),
+      NoteType.text => OrahAssetIcon('notes', color: color, size: 21),
+    };
 
     return Container(
       width: 38,
@@ -1224,11 +1212,7 @@ class _EmptyState extends StatelessWidget {
         padding: const EdgeInsets.all(28),
         child: Column(
           children: [
-            Icon(
-              Icons.note_add_outlined,
-              size: 42,
-              color: theme.colorScheme.primary,
-            ),
+            OrahAssetIcon('notes', size: 42, color: theme.colorScheme.primary),
             const SizedBox(height: 14),
             Text(
               'Your notes live here',
