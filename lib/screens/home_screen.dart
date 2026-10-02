@@ -18,11 +18,13 @@ import 'reflection_prompt_screen.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onSettings});
+  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onSettings, this.onNotes, this.onFolders});
 
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
   final VoidCallback? onSettings;
+  final VoidCallback? onNotes;
+  final VoidCallback? onFolders;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -510,13 +512,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   spacing: 8,
                                   runSpacing: 8,
                                   children: [
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.note_alt_outlined, size: 18),
                                       label: const Text('Notes'),
+                                      onPressed: widget.onNotes,
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.folder_outlined, size: 18),
                                       label: const Text('Folders'),
+                                      onPressed: widget.onFolders,
                                     ),
                                     Chip(
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
