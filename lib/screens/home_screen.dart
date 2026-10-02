@@ -688,14 +688,14 @@ class _DesktopNotesLayout extends StatelessWidget {
                     const SizedBox(height: 22),
                     const _SidebarLabel(label: 'LIBRARY'),
                     _SidebarItem(
-                      icon: Icons.note_outlined,
+                      assetIcon: 'notes',
                       label: 'All Notes',
                       count: active.length,
                       selected: true,
                       onTap: () {},
                     ),
                     _SidebarItem(
-                      icon: Icons.bookmark_border_rounded,
+                      assetIcon: 'star',
                       label: 'Favorites',
                       count: active.where((n) => n.isFavorite).length,
                       onTap: () {},
@@ -836,7 +836,7 @@ class _DesktopNotesLayout extends StatelessWidget {
     if (folders.isEmpty) {
       return [
         _SidebarItem(
-          icon: Icons.folder_outlined,
+          assetIcon: 'folder',
           label: 'Folders',
           onTap: () {},
         ),
@@ -844,7 +844,7 @@ class _DesktopNotesLayout extends StatelessWidget {
     }
     return folders.entries.take(5).map((entry) {
       return _SidebarItem(
-        icon: Icons.folder_outlined,
+        assetIcon: 'folder',
         label: entry.key,
         count: entry.value,
         onTap: () {},
@@ -875,14 +875,16 @@ class _SidebarLabel extends StatelessWidget {
 
 class _SidebarItem extends StatelessWidget {
   const _SidebarItem({
-    required this.icon,
+    this.icon,
+    this.assetIcon,
     required this.label,
     this.count,
     this.selected = false,
     required this.onTap,
-  });
+  }) : assert(icon != null || assetIcon != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
   final String label;
   final int? count;
   final bool selected;
@@ -905,13 +907,22 @@ class _SidebarItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
             child: Row(
               children: [
-                Icon(
-                  icon,
-                  size: 18,
-                  color: selected
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
+                if (assetIcon != null)
+                  OrahAssetIcon(
+                    assetIcon!,
+                    size: 18,
+                    color: selected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurfaceVariant,
+                  )
+                else
+                  Icon(
+                    icon!,
+                    size: 18,
+                    color: selected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
