@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/note_repository_provider.dart';
@@ -160,7 +161,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                           IconButton(
                             tooltip: 'New folder',
                             onPressed: _addFolder,
-                            icon: const Icon(Icons.create_new_folder_outlined),
+                            icon: const OrahAssetIcon('folder-plus'),
                           ),
                         ],
                       ),
@@ -177,7 +178,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                           child: Card(
                             child: ListTile(
                               leading: const CircleAvatar(
-                                child: Icon(Icons.folder_rounded),
+                                child: const OrahAssetIcon('folder', size: 24, color: Colors.white),
                               ),
                               title: Text(
                                 folder.name,
@@ -191,7 +192,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                               trailing: IconButton(
                                 tooltip: 'Delete folder',
                                 onPressed: () => _deleteFolder(folder),
-                                icon: const Icon(Icons.more_vert_rounded),
+                                icon: const OrahAssetIcon('menu'),
                               ),
                             ),
                           ),
