@@ -21,7 +21,6 @@ class OrahUserProfileService {
   static const _voiceGreetingKey = 'orah_voice_greeting_enabled';
 
   static const _subscriberApiUrl = String.fromEnvironment('ORAH_SUBSCRIBER_API_URL');
-  static const _subscriberApiToken = String.fromEnvironment('ORAH_SUBSCRIBER_API_TOKEN');
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final FlutterTts _tts = FlutterTts();
@@ -57,18 +56,17 @@ class OrahUserProfileService {
       await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
     }
 
-    // Optional secure HTTPS sync to a newsletter/subscriber backend. Configure
-    // both values at build time; never embed a service-role key in the app.
+    // Optional HTTPS sync to a public signup endpoint. The endpoint must validate
+    // requests server-side; never embed database/service-role credentials in the app.
     if (_subscriberApiUrl.isNotEmpty) {
       final uri = Uri.tryParse(_subscriberApiUrl);
-      if (uri == null || uri.scheme != 'https' || _subscriberApiToken.isEmpty) {
-        throw StateError('Subscriber service must use HTTPS and a configured public API token.');
+      if (uri == null || uri.scheme != 'https') {
+        throw StateError('Subscriber service must use HTTPS.');
       }
       final response = await http.post(
         uri,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_subscriberApiToken',
         },
         body: jsonEncode({
           'full_name': normalizedName,
