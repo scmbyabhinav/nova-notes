@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 
 import '../core/services/nova_security_service.dart';
 
@@ -201,7 +202,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
             ),
           if (_hasPin)
             ListTile(
-              leading: const Icon(Icons.delete_outline),
+              leading: const OrahAssetIcon('trash'),
               title: const Text('Remove PIN'),
               subtitle: const Text('Turn off PIN protection'),
               trailing: const Icon(Icons.chevron_right),
