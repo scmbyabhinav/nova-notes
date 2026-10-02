@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'l10n/app_localizations.dart';
 
@@ -303,8 +304,8 @@ class _NovaShellState extends State<NovaShell> {
             },
             destinations: [
               NavigationDestination(
-                icon: Icon(Icons.calendar_month_outlined, color: theme.colorScheme.onSurfaceVariant),
-                selectedIcon: Icon(Icons.calendar_month_rounded, color: theme.colorScheme.onSecondaryContainer),
+                icon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
+                selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
                 label: 'Calendar',
               ),
               NavigationDestination(
