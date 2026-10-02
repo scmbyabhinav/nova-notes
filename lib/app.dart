@@ -11,6 +11,7 @@ import 'data/repositories/note_repository_provider.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar_screen.dart';
+import 'screens/folders_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
@@ -118,7 +119,7 @@ class _NovaShellState extends State<NovaShell> {
           onVoiceCapture: _openVoiceEditor,
           onSettings: () => setState(() => _index = 3),
           onNotes: () => setState(() => _index = 0),
-          onFolders: () => setState(() => _index = 0),
+          onFolders: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FoldersScreen())),
         ),
         const CalendarScreen(),
         const FavoritesScreen(),
