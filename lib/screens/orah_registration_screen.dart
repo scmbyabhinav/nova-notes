@@ -115,7 +115,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       ),
                       validator: (value) {
                         final email = value?.trim() ?? '';
-                        return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+).hasMatch(email)
+                        return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)
                             ? null
                             : 'Enter a valid email address.';
                       },
