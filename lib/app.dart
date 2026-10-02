@@ -87,7 +87,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    if (!widget.skipRegistrationForTesting) _loadProfile();
   }
 
   Future<void> _loadProfile() async {
