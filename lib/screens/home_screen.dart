@@ -14,7 +14,6 @@ import '../data/repositories/note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import 'note_editor_screen.dart';
-import 'orah_pro_screen.dart';
 import 'reflection_prompt_screen.dart';
 import 'search_screen.dart';
 
