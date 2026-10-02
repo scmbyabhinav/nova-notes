@@ -12,8 +12,18 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
-  testWidgets('Orah launches', (tester) async {
+  testWidgets('first launch requires name and email registration', (tester) async {
     await tester.pumpWidget(const OrahApp());
+    await tester.pump();
+
+    expect(find.text('Welcome to Orah'), findsOneWidget);
+    expect(find.text('Full name'), findsOneWidget);
+    expect(find.text('Email address'), findsOneWidget);
+    expect(find.text('Register & continue'), findsOneWidget);
+  });
+
+  testWidgets('Orah launches', (tester) async {
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
     await tester.pump();
 
     // The brand is rendered as a gradient OrahWordmark, not a plain Text('Orah').
@@ -22,7 +32,7 @@ void main() {
   });
 
   testWidgets('quick capture opens a note immediately', (tester) async {
-    await tester.pumpWidget(const OrahApp());
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -41,7 +51,7 @@ void main() {
   });
 
   testWidgets('long-press quick capture opens checklist options', (tester) async {
-    await tester.pumpWidget(const OrahApp());
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -71,7 +81,7 @@ void main() {
   });
 
   testWidgets('new note appears in home list immediately after editor closes', (tester) async {
-    await tester.pumpWidget(const OrahApp());
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -96,7 +106,7 @@ void main() {
 
   testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
     final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech));
+    await tester.pumpWidget(OrahApp(speechService: speech, skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
