@@ -385,14 +385,19 @@ class _NovaShellState extends State<NovaShell> {
               switch (value) {
                 case 0:
                   setState(() => _index = 0);
+                  break;
                 case 1:
                   setState(() => _index = 1);
+                  break;
                 case 2:
                   _openEditor(NoteType.text);
+                  break;
                 case 3:
                   setState(() => _index = 2);
+                  break;
                 case 4:
                   setState(() => _index = 3);
+                  break;
               }
             },
             destinations: [
