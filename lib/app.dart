@@ -218,13 +218,13 @@ class _NovaShellState extends State<NovaShell> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.edit_note_rounded)),
+                leading: const CircleAvatar(child: OrahAssetIcon('compose', size: 24, color: Colors.white)),
                 title: const Text('Quick note'),
                 subtitle: const Text('Start typing immediately'),
                 onTap: () => Navigator.pop(sheetContext, 'text'),
               ),
               ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.checklist_rounded)),
+                leading: const CircleAvatar(child: OrahAssetIcon('checklist', size: 24, color: Colors.white)),
                 title: const Text('Quick checklist'),
                 subtitle: const Text('Capture tasks without setup'),
                 onTap: () => Navigator.pop(sheetContext, 'checklist'),
