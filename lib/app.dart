@@ -259,17 +259,7 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-          floatingActionButton: desktop ? null : Row(
-            mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton.small(
-            heroTag: 'orah_new_note_fab',
-            onPressed: () => _openEditor(NoteType.text),
-            tooltip: null,
-            child: OrahAssetIcon('plus', color: theme.colorScheme.onPrimaryContainer),
-          ),
-          const SizedBox(width: 12),
-          Tooltip(
+          floatingActionButton: desktop ? null : Tooltip(
             key: _quickCaptureHintKey,
             message: 'Tap to write • Long-press for checklist & quick options',
             triggerMode: TooltipTriggerMode.manual,
@@ -287,8 +277,6 @@ class _NovaShellState extends State<NovaShell> {
               ),
             ),
           ),
-        ],
-      ),
           bottomNavigationBar: desktop ? null : NavigationBar(
             selectedIndex: _index < 2 ? _index : _index + 1,
             onDestinationSelected: (value) {
