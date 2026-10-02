@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
@@ -80,11 +81,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.star_outline_rounded,
-                              size: 48,
-                              color: theme.colorScheme.primary,
-                            ),
+                            OrahAssetIcon('star', size: 48, color: theme.colorScheme.primary),
                             const SizedBox(height: 12),
                             Text(
                               'No favorites yet',
@@ -117,8 +114,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           child: Card(
                             child: ListTile(
                               onTap: () => _open(note),
-                              leading:
-                                  const Icon(Icons.star_rounded),
+                              leading: const OrahAssetIcon('star'),
                               title: Text(
                                 note.title,
                                 maxLines: 1,
