@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
 import '../core/widgets/orah_wordmark.dart';
+import '../core/widgets/orah_logo.dart';
 import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository.dart';
@@ -421,13 +422,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const OrahProScreen()),
                       ),
-                      icon: const Text(
-                        'O',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
+                      icon: const OrahLogo(size: 28),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
