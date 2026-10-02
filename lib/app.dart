@@ -259,23 +259,35 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-          floatingActionButton: desktop ? null : Tooltip(
-            key: _quickCaptureHintKey,
-            message: 'Tap to write • Long-press for checklist & quick options',
-            triggerMode: TooltipTriggerMode.manual,
-            excludeFromSemantics: true,
-            child: Listener(
-              behavior: HitTestBehavior.opaque,
-              onPointerDown: (_) => _startQuickCaptureLongPress(),
-              onPointerUp: (_) => _cancelQuickCaptureLongPress(),
-              onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
-              child: FloatingActionButton(
-                heroTag: 'orah_voice_capture_fab',
-                onPressed: _quickCapture,
-                tooltip: 'Quick capture. Long-press for checklist and quick options.',
-                child: OrahAssetIcon('microphone', color: theme.colorScheme.onPrimary),
+          floatingActionButton: desktop ? null : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton.small(
+                heroTag: 'orah_checklist_fab',
+                tooltip: 'Daily checklist',
+                onPressed: () => _openEditor(NoteType.checklist),
+                child: const Icon(Icons.checklist_rounded),
               ),
-            ),
+              const SizedBox(width: 12),
+              Tooltip(
+                key: _quickCaptureHintKey,
+                message: 'Tap to write • Long-press for checklist & quick options',
+                triggerMode: TooltipTriggerMode.manual,
+                excludeFromSemantics: true,
+                child: Listener(
+                  behavior: HitTestBehavior.opaque,
+                  onPointerDown: (_) => _startQuickCaptureLongPress(),
+                  onPointerUp: (_) => _cancelQuickCaptureLongPress(),
+                  onPointerCancel: (_) => _cancelQuickCaptureLongPress(),
+                  child: FloatingActionButton(
+                    heroTag: 'orah_voice_capture_fab',
+                    onPressed: _quickCapture,
+                    tooltip: 'Quick capture. Long-press for checklist and quick options.',
+                    child: OrahAssetIcon('microphone', color: theme.colorScheme.onPrimary),
+                  ),
+                ),
+              ),
+            ],
           ),
           bottomNavigationBar: desktop ? null : NavigationBar(
             selectedIndex: _index < 2 ? _index : _index + 1,
