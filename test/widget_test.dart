@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/app.dart';
+import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
 
@@ -15,7 +16,8 @@ void main() {
     await tester.pumpWidget(const OrahApp());
     await tester.pump();
 
-    expect(find.text('Orah'), findsOneWidget);
+    // The brand is rendered as a gradient OrahWordmark, not a plain Text('Orah').
+    expect(find.byType(OrahWordmark), findsOneWidget);
     expect(find.byTooltip('New note'), findsNothing);
   });
 
