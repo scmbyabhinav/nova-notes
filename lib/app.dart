@@ -122,7 +122,7 @@ class _NovaShellState extends State<NovaShell> {
           onNotes: () => setState(() => _index = 0),
           onFolders: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FoldersScreen())),
         ),
-        const CalendarScreen(),
+        CalendarScreen(onNotes: () => setState(() => _index = 0)),
         const FavoritesScreen(),
         SettingsScreen(themeController: widget.themeController),
       ];
