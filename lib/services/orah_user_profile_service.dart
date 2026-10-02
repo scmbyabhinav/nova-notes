@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrahUserProfile {
   const OrahUserProfile({required this.fullName, required this.email});
+
   final String fullName;
   final String email;
 }
@@ -19,7 +20,6 @@ class OrahUserProfileService {
   static const _emailKey = 'orah_profile_email';
   static const _subscribersKey = 'orah_subscriber_database_v1';
   static const _voiceGreetingKey = 'orah_voice_greeting_enabled';
-
   static const _subscriberApiUrl = String.fromEnvironment('ORAH_SUBSCRIBER_API_URL');
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -28,7 +28,9 @@ class OrahUserProfileService {
   Future<OrahUserProfile?> loadProfile() async {
     final name = await _storage.read(key: _nameKey);
     final email = await _storage.read(key: _emailKey);
-    if (name == null || email == null || name.trim().isEmpty || email.trim().isEmpty) return null;
+    if (name == null || email == null || name.trim().isEmpty || email.trim().isEmpty) {
+      return null;
+    }
     return OrahUserProfile(fullName: name, email: email);
   }
 
@@ -40,24 +42,10 @@ class OrahUserProfileService {
       throw ArgumentError('Please enter a valid email address.');
     }
 
-    // Store the profile and subscriber roster in platform-protected storage.
-    await _storage.write(key: _nameKey, value: normalizedName);
-    await _storage.write(key: _emailKey, value: normalizedEmail);
-    final raw = await _storage.read(key: _subscribersKey);
-    final List<dynamic> roster = raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
-    final exists = roster.any((entry) => entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
-    if (!exists) {
-      roster.add({
-        'fullName': normalizedName,
-        'email': normalizedEmail,
-        'subscribedAt': DateTime.now().toUtc().toIso8601String(),
-        'source': 'orah_android_app',
-      });
-      await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
-    }
-
-    // Optional HTTPS sync to a public signup endpoint. The endpoint must validate
-    // requests server-side; never embed database/service-role credentials in the app.
+    // If a newsletter endpoint is configured, confirm subscription before
+    // marking registration complete locally. The endpoint must enforce its
+    // own validation and abuse protection; no server/database secret belongs
+    // in a mobile app.
     if (_subscriberApiUrl.isNotEmpty) {
       final uri = Uri.tryParse(_subscriberApiUrl);
       if (uri == null || uri.scheme != 'https') {
@@ -65,9 +53,7 @@ class OrahUserProfileService {
       }
       final response = await http.post(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: const {'Content-Type': 'application/json'},
         body: jsonEncode({
           'full_name': normalizedName,
           'email': normalizedEmail,
@@ -76,39 +62,20 @@ class OrahUserProfileService {
         }),
       );
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw StateError('Subscriber service returned HTTP ${response.statusCode}.');
+        throw StateError('Subscriber service returned HTTP ' + response.statusCode.toString() + '.');
       }
     }
-  }
 
-  Future<bool> voiceGreetingEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_voiceGreetingKey) ?? true;
-  }
-
-  Future<void> setVoiceGreetingEnabled(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_voiceGreetingKey, enabled);
-  }
-
-  Future<void> speakGreeting(String name) async {
-    await _tts.setLanguage('en-US');
-    await _tts.setSpeechRate(0.48);
-    await _tts.speak('Hello, $name');
-  }
-
-  Future<void> stopGreeting() => _tts.stop();
-}
-).hasMatch(normalizedEmail)) {
-      throw ArgumentError('Please enter a valid email address.');
-    }
-
-    // Store the profile and subscriber roster in platform-protected storage.
+    // Profile and local subscriber roster are protected by Android secure
+    // storage. Without a configured remote endpoint, the roster stays on this
+    // device; central newsletter delivery needs a backend endpoint.
     await _storage.write(key: _nameKey, value: normalizedName);
     await _storage.write(key: _emailKey, value: normalizedEmail);
     final raw = await _storage.read(key: _subscribersKey);
-    final List<dynamic> roster = raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
-    final exists = roster.any((entry) => entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
+    final List<dynamic> roster =
+        raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
+    final exists = roster.any((entry) =>
+        entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
     if (!exists) {
       roster.add({
         'fullName': normalizedName,
@@ -117,31 +84,6 @@ class OrahUserProfileService {
         'source': 'orah_android_app',
       });
       await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
-    }
-
-    // Optional secure HTTPS sync to a newsletter/subscriber backend. Configure
-    // both values at build time; never embed a service-role key in the app.
-    if (_subscriberApiUrl.isNotEmpty) {
-      final uri = Uri.tryParse(_subscriberApiUrl);
-      if (uri == null || uri.scheme != 'https' || _subscriberApiToken.isEmpty) {
-        throw StateError('Subscriber service must use HTTPS and a configured public API token.');
-      }
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_subscriberApiToken',
-        },
-        body: jsonEncode({
-          'full_name': normalizedName,
-          'email': normalizedEmail,
-          'source': 'orah_android_app',
-          'subscribed_at': DateTime.now().toUtc().toIso8601String(),
-        }),
-      );
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw StateError('Subscriber service returned HTTP ${response.statusCode}.');
-      }
     }
   }
 
