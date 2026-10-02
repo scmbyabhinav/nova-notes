@@ -54,7 +54,7 @@ const Map<String, String> _orahIcons = {
   'trash': '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5h17"/><path d="M8.5 6.5V5a1.5 1.5 0 0 1 1.5-1.5h4A1.5 1.5 0 0 1 15.5 5v1.5"/><path d="M18.5 6.5v12a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-12"/><line x1="10" y1="11" x2="10" y2="16.5"/><line x1="14" y1="11" x2="14" y2="16.5"/></svg>''',
 };
 
-export const orahProvidedIconNames = <String>{
+const orahProvidedIconNames = <String>{
   'checklist', 'compose', 'folder', 'folder-plus', 'menu', 'microphone',
   'new-note', 'notes', 'pin', 'plus', 'search', 'settings', 'share', 'star',
   'tag', 'trash',
