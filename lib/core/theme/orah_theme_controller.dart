@@ -5,8 +5,8 @@ class OrahThemeController extends ChangeNotifier {
   static const _modeKey = 'orah_theme_mode';
   static const _accentKey = 'orah_accent_color';
 
-  ThemeMode _mode = ThemeMode.system;
-  int _accent = 0xFF2A1B3D;
+  ThemeMode _mode = ThemeMode.light;
+  int _accent = 0xFF2563EB;
 
   ThemeMode get mode => _mode;
   int get accent => _accent;
@@ -16,7 +16,7 @@ class OrahThemeController extends ChangeNotifier {
     final mode = prefs.getString(_modeKey);
     final accent = prefs.getInt(_accentKey);
     if (mode != null) {
-      _mode = ThemeMode.values.firstWhere((m) => m.name == mode, orElse: () => ThemeMode.system);
+      _mode = ThemeMode.values.firstWhere((m) => m.name == mode, orElse: () => ThemeMode.light);
     }
     if (accent != null) _accent = accent;
     notifyListeners();
