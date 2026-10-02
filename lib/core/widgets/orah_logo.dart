@@ -11,7 +11,7 @@ class OrahLogo extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox.square(
         dimension: size,
         child: SvgPicture.asset(
-          'assets/orah_app_icon.svg',
+          'assets/orah_logo.svg',
           width: size,
           height: size,
           fit: BoxFit.contain,
