@@ -73,6 +73,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
+  bool _isCapturingNoteCard = false;
   bool _isLocked = false;
   bool _privateUnlocked = true;
   bool _unlocking = false;
@@ -726,12 +727,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _shareNoteCard() async {
     await _save();
     if (!mounted) return;
-    await WidgetsBinding.instance.endOfFrame;
+
     try {
+      // Temporarily rebuild the captured surface with a known light theme and
+      // opaque background, then restore the user's theme immediately.
+      setState(() => _isCapturingNoteCard = true);
+      await WidgetsBinding.instance.endOfFrame;
+
       final bytes = await _noteCardScreenshotController.capture(pixelRatio: 2);
       if (bytes == null || bytes.isEmpty) {
         throw StateError('The note card could not be captured.');
       }
+
+      if (mounted) setState(() => _isCapturingNoteCard = false);
+
       await Share.shareXFiles(
         [
           XFile.fromData(
@@ -745,6 +754,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       );
     } catch (e) {
       if (mounted) {
+        setState(() => _isCapturingNoteCard = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Could not share note card: $e')),
         );
@@ -1192,7 +1202,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             Expanded(
               child: Screenshot(
                 controller: _noteCardScreenshotController,
-                child: RepaintBoundary(
+                child: Theme(
+                  data: _isCapturingNoteCard ? ThemeData.light() : theme,
+                  child: Container(
+                    color: _isCapturingNoteCard
+                        ? const Color(0xFFFAFAFA)
+                        : theme.colorScheme.surface,
+                    child: RepaintBoundary(
                   child: _previewMode
                   ? ListView(
                       padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
@@ -1200,7 +1216,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         if (_titleController.text.trim().isNotEmpty)
                           Text(
                             _titleController.text.trim(),
-                            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                            style: (_isCapturingNoteCard
+                                    ? ThemeData.light().textTheme
+                                    : theme.textTheme)
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: _isCapturingNoteCard
+                                      ? const Color(0xFF202124)
+                                      : null,
+                                  fontWeight: FontWeight.w800,
+                                ),
                           ),
                         const SizedBox(height: 12),
                         MarkdownBody(data: _renderableContent(), selectable: true),
@@ -1212,7 +1237,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         TextField(
                           controller: _titleController,
                           textCapitalization: TextCapitalization.sentences,
-                          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5),
+                          style: (_isCapturingNoteCard
+                                  ? ThemeData.light().textTheme
+                                  : theme.textTheme)
+                              .headlineSmall
+                              ?.copyWith(
+                                color: _isCapturingNoteCard
+                                    ? const Color(0xFF202124)
+                                    : null,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
                           decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           maxLines: 2,
                         ),
@@ -1228,14 +1263,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             textInputAction: TextInputAction.newline,
                             minLines: 18,
                             maxLines: null,
-                            style: theme.textTheme.bodyLarge?.copyWith(height: 1.55),
+                            style: (_isCapturingNoteCard
+                                    ? ThemeData.light().textTheme
+                                    : theme.textTheme)
+                                .bodyLarge
+                                ?.copyWith(
+                                  color: _isCapturingNoteCard
+                                      ? const Color(0xFF202124)
+                                      : null,
+                                  height: 1.55,
+                                ),
                             decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           ),
                       ],
                     ),
-            ),
+                    ),
+                  ),
                 ),
               ),
+            ),
             Material(
               elevation: 4,
               color: theme.colorScheme.surface,
