@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../services/orah_user_profile_service.dart' as profile;
+import '../services/orah_user_profile_service.dart';
 
 class OrahRegistrationScreen extends StatefulWidget {
   const OrahRegistrationScreen({super.key, required this.onRegistered});
 
-  final ValueChanged<profile.OrahUserProfile> onRegistered;
+  final ValueChanged<OrahUserProfile> onRegistered;
 
   @override
   State<OrahRegistrationScreen> createState() => _OrahRegistrationScreenState();
@@ -32,7 +32,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
       _error = null;
     });
     try {
-      await profile.OrahUserProfileService.instance.register(
+      await OrahUserProfileService.instance.register(
         fullName: _nameController.text,
         email: _emailController.text,
       );
@@ -116,42 +116,6 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       validator: (value) {
                         final email = value?.trim() ?? '';
                         return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)
-                            ? null
-                            : 'Enter a valid email address.';
-                      },
-                      onFieldSubmitted: (_) => _register(),
-                    ),
-                    if (_error != null) ...[
-                      const SizedBox(height: 12),
-                      Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
-                    ],
-                    const SizedBox(height: 24),
-                    FilledButton(
-                      onPressed: _saving ? null : _register,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: _saving
-                            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Text('Register & continue'),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service.',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-).hasMatch(email)
                             ? null
                             : 'Enter a valid email address.';
                       },
