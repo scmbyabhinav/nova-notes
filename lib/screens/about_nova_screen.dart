@@ -75,15 +75,16 @@ class AboutNovaScreen extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xFFF1F6FF),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFFE7EAF0)),
+                      border: Border.all(color: const Color(0xFFD7E4F5)),
                     ),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 124,
+                      height: 156,
                       child: Image.asset(
                         'assets/abhinav_bajpai_signature.png',
+                        width: double.infinity,
                         fit: BoxFit.contain,
                         alignment: Alignment.center,
                         filterQuality: FilterQuality.high,
