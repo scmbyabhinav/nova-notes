@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 import 'package:quick_actions/quick_actions.dart';
 
 import '../data/repositories/note_repository_provider.dart';
@@ -106,7 +107,7 @@ class AndroidFeaturesScreen extends StatelessWidget {
             onTap: () => _setupQuickShortcuts(context),
           ),
           _FeatureTile(
-            icon: Icons.share_outlined,
+            assetIcon: 'share',
             title: 'Share to ORAH',
             subtitle: 'Send supported text and content into a new ORAH note.',
             onTap: () => _shareIntoOrah(context),
@@ -145,13 +146,15 @@ class AndroidFeaturesScreen extends StatelessWidget {
 
 class _FeatureTile extends StatelessWidget {
   const _FeatureTile({
-    required this.icon,
+    this.icon,
+    this.assetIcon,
     required this.title,
     required this.subtitle,
     this.onTap,
   });
 
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
   final String title;
   final String subtitle;
   final VoidCallback? onTap;
@@ -161,7 +164,7 @@ class _FeatureTile extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4),
       leading: CircleAvatar(
-        child: Icon(icon),
+        child: assetIcon != null ? OrahAssetIcon(assetIcon!, color: Theme.of(context).colorScheme.onPrimaryContainer) : Icon(icon!),
       ),
       title: Text(title),
       subtitle: Text(subtitle),
