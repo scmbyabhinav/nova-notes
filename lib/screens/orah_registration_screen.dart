@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/widgets/orah_logo.dart';
 import '../services/orah_user_profile_service.dart';
 
 class OrahRegistrationScreen extends StatefulWidget {
@@ -63,21 +64,24 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                      width: 72,
-                      height: 72,
+                      width: 88,
+                      height: 88,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.16),
                             blurRadius: 18,
                             offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.auto_stories_rounded, color: Colors.white, size: 38),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: OrahLogo(size: 72),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     Text('Welcome to Orah', textAlign: TextAlign.center, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800)),
