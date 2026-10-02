@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../services/orah_reminder_service.dart';
@@ -91,7 +92,7 @@ class _TrashScreenState extends State<TrashScreen> {
       appBar: AppBar(
         title: const Text('Trash'),
         actions: [
-          if (_notes.isNotEmpty) IconButton(tooltip: 'Empty Trash', onPressed: _emptyTrash, icon: const Icon(Icons.delete_sweep_outlined)),
+          if (_notes.isNotEmpty) IconButton(tooltip: 'Empty Trash', onPressed: _emptyTrash, icon: const OrahAssetIcon('trash')),
         ],
       ),
       body: _loading
@@ -106,7 +107,7 @@ class _TrashScreenState extends State<TrashScreen> {
                     final note = _notes[index];
                     return Card(
                       child: ListTile(
-                        leading: const Icon(Icons.delete_outline_rounded),
+                        leading: const OrahAssetIcon('trash'),
                         title: Text(note.isLocked ? 'Private note' : note.title),
                         subtitle: Text(note.isLocked ? 'Locked note' : (note.type == NoteType.checklist ? 'Checklist' : 'Note')),
                         trailing: PopupMenuButton<String>(
