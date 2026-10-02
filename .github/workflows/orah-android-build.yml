@@ -35,6 +35,10 @@ jobs:
         run: |
           flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
           python3 tool/prepare_android_host.py
+      - name: Prepare supplied Orah launcher icon
+        run: |
+          python3 -m pip install --disable-pip-version-check CairoSVG
+          python3 tool/prepare_brand_assets.py
       - name: Dependencies
         run: flutter pub get
       - name: Generate launcher icons
@@ -207,8 +211,14 @@ jobs:
         run: |
           flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
           python3 tool/prepare_android_host.py
+      - name: Prepare supplied Orah launcher icon
+        run: |
+          python3 -m pip install --disable-pip-version-check CairoSVG
+          python3 tool/prepare_brand_assets.py
       - name: Dependencies
         run: flutter pub get
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
       - name: Verify Android desugaring configuration
         run: |
           python3 - <<'PY'
