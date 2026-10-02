@@ -115,7 +115,43 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       ),
                       validator: (value) {
                         final email = value?.trim() ?? '';
-                        return RegExp(r'^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$').hasMatch(email)
+                        return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+).hasMatch(email)
+                            ? null
+                            : 'Enter a valid email address.';
+                      },
+                      onFieldSubmitted: (_) => _register(),
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 12),
+                      Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
+                    ],
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: _saving ? null : _register,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        child: _saving
+                            ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                            : const Text('Register & continue'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+).hasMatch(email)
                             ? null
                             : 'Enter a valid email address.';
                       },
