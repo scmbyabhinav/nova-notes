@@ -1185,7 +1185,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             tooltip: 'Remove',
                             visualDensity: VisualDensity.compact,
                             onPressed: () => _showAttachmentActions(path),
-                            icon: const Icon(Icons.more_horiz_rounded, size: 16),
+                            icon: const OrahAssetIcon('menu', size: 16),
                           ),
                         ),
                       ],
@@ -1328,9 +1328,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: _insertLink,
                       ),
                       _ToolButton(
-                        icon: _noteType == NoteType.checklist
-                            ? Icons.check_box_rounded
-                            : Icons.check_box_outlined,
+                        assetIcon: _noteType == NoteType.checklist ? 'notes' : 'checklist',
                         label: _noteType == NoteType.checklist
                             ? 'Text note'
                             : 'Checklist',
@@ -1345,7 +1343,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         },
                       ),
                       _ToolButton(
-                        icon: Icons.label_outline_rounded,
+                        assetIcon: 'tag',
                         label: 'Folder & tags',
                         onPressed: _organize,
                       ),
@@ -1355,7 +1353,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: _showAttachmentMenu,
                       ),
                       _ToolButton(
-                        icon: _isListening ? Icons.stop_circle_outlined : Icons.mic_none_rounded,
+                        icon: _isListening ? Icons.stop_circle_outlined : null,
+                        assetIcon: _isListening ? null : 'microphone',
                         label: _isListening ? 'Stop voice input' : 'Voice input',
                         onPressed: _toggleVoiceInput,
                       ),
@@ -1543,12 +1542,14 @@ class _MetaChip extends StatelessWidget {
 
 class _ToolButton extends StatelessWidget {
   const _ToolButton({
-    required this.icon,
+    this.icon,
+    this.assetIcon,
     required this.label,
     required this.onPressed,
-  });
+  }) : assert(icon != null || assetIcon != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
   final String label;
   final VoidCallback onPressed;
 
@@ -1559,7 +1560,7 @@ class _ToolButton extends StatelessWidget {
       child: IconButton(
         tooltip: label,
         onPressed: onPressed,
-        icon: Icon(icon),
+        icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
       ),
     );
   }
