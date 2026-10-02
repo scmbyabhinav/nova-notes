@@ -22,9 +22,10 @@ import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService});
+  const OrahApp({super.key, this.speechService, this.skipRegistrationForTesting = false});
 
   final VoiceSpeechService? speechService;
+  final bool skipRegistrationForTesting;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -63,16 +64,17 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, skipRegistrationForTesting: widget.skipRegistrationForTesting),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.skipRegistrationForTesting = false});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
+  final bool skipRegistrationForTesting;
 
   @override
   State<OrahEntryGate> createState() => _OrahEntryGateState();
@@ -99,6 +101,13 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.skipRegistrationForTesting) {
+      return NovaShell(
+        themeController: widget.themeController,
+        speechService: widget.speechService,
+        profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
+      );
+    }
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
