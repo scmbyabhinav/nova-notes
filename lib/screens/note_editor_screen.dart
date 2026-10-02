@@ -39,6 +39,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.speechService,
     this.autoStartVoice = false,
     this.autoOpenReminder = false,
+    this.initialDueAt,
   });
 
   final NoteRepository repository;
@@ -49,6 +50,7 @@ class NoteEditorScreen extends StatefulWidget {
   final VoiceSpeechService? speechService;
   final bool autoStartVoice;
   final bool autoOpenReminder;
+  final DateTime? initialDueAt;
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -112,7 +114,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _isLocked = locked;
     _privateUnlocked = !locked;
     if (locked) _lockedCiphertext = existing?.content;
-    _dueAt = existing?.dueAt;
+    _dueAt = existing?.dueAt ?? widget.initialDueAt;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _tags = locked ? const [] : [...(existing?.tags ?? const [])];
@@ -555,7 +557,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _setDueDate() async {
     final now = DateTime.now();
     final initial = _dueAt ?? now.add(const Duration(hours: 1));
-    final picked = await showDatePicker(context: context, initialDate: initial.isBefore(now) ? now : initial, firstDate: now, lastDate: DateTime(now.year + 10));
+    final picked = await showDatePicker(context: context, initialDate: initial.isBefore(now) ? now : initial, firstDate: now, lastDate: DateTime(9999, 12, 31));
     if (picked == null || !mounted) return;
     final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
     if (time == null) return;
