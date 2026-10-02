@@ -19,7 +19,7 @@ import 'screens/note_editor_screen.dart';
 import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
 import 'services/orah_user_profile_service.dart';
-import 'screens/orah_registration_screen.dart';
+import 'screens/orah_registration_screen.dart' as registration;
 
 class OrahApp extends StatefulWidget {
   const OrahApp({super.key, this.speechService, this.skipRegistrationForTesting = false});
@@ -113,7 +113,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     }
     final profile = _profile;
     if (profile == null) {
-      return OrahRegistrationScreen(
+      return registration.OrahRegistrationScreen(
         onRegistered: (value) => setState(() => _profile = value),
       );
     }
