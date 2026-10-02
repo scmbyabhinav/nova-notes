@@ -24,6 +24,19 @@ void main() {
     expect(find.text('Register & continue'), findsOneWidget);
   });
 
+  testWidgets('registration rejects malformed email addresses', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: OrahRegistrationScreen(onRegistered: (_) {}),
+    ));
+
+    await tester.enterText(find.byType(TextFormField).at(0), 'Ravi Kumar');
+    await tester.enterText(find.byType(TextFormField).at(1), 'not-an-email');
+    await tester.tap(find.text('Register & continue'));
+    await tester.pump();
+
+    expect(find.text('Enter a valid email address.'), findsOneWidget);
+  });
+
   testWidgets('Orah launches', (tester) async {
     await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
     await tester.pump();
