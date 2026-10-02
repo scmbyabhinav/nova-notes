@@ -6,6 +6,7 @@ import 'l10n/app_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
 import 'core/theme/orah_theme_controller.dart';
+import 'core/widgets/orah_asset_icon.dart';
 import 'data/repositories/note_repository_provider.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
@@ -251,6 +252,7 @@ class _NovaShellState extends State<NovaShell> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final theme = Theme.of(context);
         final desktop = constraints.maxWidth >= 1100;
         return Scaffold(
           body: IndexedStack(
@@ -264,7 +266,7 @@ class _NovaShellState extends State<NovaShell> {
             heroTag: 'orah_new_note_fab',
             onPressed: () => _openEditor(NoteType.text),
             tooltip: null,
-            child: const Icon(Icons.add_rounded),
+            child: OrahAssetIcon('plus', color: theme.colorScheme.onPrimaryContainer),
           ),
           const SizedBox(width: 12),
           Tooltip(
@@ -281,40 +283,49 @@ class _NovaShellState extends State<NovaShell> {
                 heroTag: 'orah_voice_capture_fab',
                 onPressed: _quickCapture,
                 tooltip: 'Quick capture. Long-press for checklist and quick options.',
-                child: const Icon(Icons.mic_none_rounded),
+                child: OrahAssetIcon('microphone', color: theme.colorScheme.onPrimary),
               ),
             ),
           ),
         ],
       ),
           bottomNavigationBar: desktop ? null : NavigationBar(
-            selectedIndex: _index,
-        onDestinationSelected: (value) {
-          setState(() => _index = value);
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.note_alt_outlined),
-            selectedIcon: Icon(Icons.note_alt_rounded),
-            label: 'Notes',
+            selectedIndex: _index < 2 ? _index : _index + 1,
+            onDestinationSelected: (value) {
+              if (value == 2) {
+                _openEditor(NoteType.text);
+                return;
+              }
+              setState(() => _index = value < 2 ? value : value - 1);
+            },
+            destinations: [
+              NavigationDestination(
+                icon: OrahAssetIcon('notes', color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: OrahAssetIcon('notes', color: theme.colorScheme.onSecondaryContainer),
+                label: 'Notes',
+              ),
+              NavigationDestination(
+                icon: OrahAssetIcon('folder', color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: OrahAssetIcon('folder', color: theme.colorScheme.onSecondaryContainer),
+                label: 'Folders',
+              ),
+              NavigationDestination(
+                icon: OrahAssetIcon('plus', color: theme.colorScheme.primary),
+                selectedIcon: OrahAssetIcon('plus', color: theme.colorScheme.primary),
+                label: 'New Note',
+              ),
+              NavigationDestination(
+                icon: OrahAssetIcon('star', color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: OrahAssetIcon('star', color: theme.colorScheme.onSecondaryContainer),
+                label: 'Favorites',
+              ),
+              NavigationDestination(
+                icon: OrahAssetIcon('settings', color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: OrahAssetIcon('settings', color: theme.colorScheme.onSecondaryContainer),
+                label: 'Settings',
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.folder_outlined),
-            selectedIcon: Icon(Icons.folder_rounded),
-            label: 'Folders',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.star_outline_rounded),
-            selectedIcon: Icon(Icons.star_rounded),
-            label: 'Favorites',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings_rounded),
-            label: 'Settings',
-          ),
-          ],
-        ),
       );
     },
   );
