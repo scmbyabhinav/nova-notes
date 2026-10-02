@@ -16,15 +16,18 @@ import '../models/note.dart';
 import 'note_editor_screen.dart';
 import 'reflection_prompt_screen.dart';
 import 'search_screen.dart';
+import 'orah_features_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onSettings, this.onNotes, this.onFolders});
+  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites});
 
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
+  final Future<void> Function()? onChecklist;
   final VoidCallback? onSettings;
   final VoidCallback? onNotes;
   final VoidCallback? onFolders;
+  final VoidCallback? onFavorites;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -522,9 +525,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       label: const Text('Folders'),
                                       onPressed: widget.onFolders,
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
                                       label: const Text('Favorites'),
+                                      onPressed: widget.onFavorites,
                                     ),
                                     ActionChip(
                                       avatar: SvgPicture.asset(
@@ -535,13 +539,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       label: const Text('Daily Reflection'),
                                       onPressed: _openReflection,
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.mic_none_rounded, size: 18),
                                       label: const Text('Voice Capture'),
+                                      onPressed: widget.onVoiceCapture,
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.checklist_rounded, size: 18),
                                       label: const Text('Checklists'),
+                                      onPressed: widget.onChecklist,
                                     ),
                                     ActionChip(
                                       avatar: SvgPicture.asset(
@@ -552,17 +558,24 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       label: const Text('Appearance'),
                                       onPressed: widget.onSettings,
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.search_rounded, size: 18),
                                       label: const Text('Search'),
+                                      onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (_) => const SearchScreen()),
+                                      ),
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.cloud_off_outlined, size: 18),
                                       label: const Text('Offline access'),
+                                      onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
+                                      ),
                                     ),
-                                    Chip(
+                                    ActionChip(
                                       avatar: const Icon(Icons.ios_share_rounded, size: 18),
                                       label: const Text('Backup & Export'),
+                                      onPressed: widget.onSettings,
                                     ),
                                   ],
                                 ),
