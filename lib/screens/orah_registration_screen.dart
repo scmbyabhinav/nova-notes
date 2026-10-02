@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../services/orah_user_profile_service.dart';
+import '../services/orah_user_profile_service.dart' as profile;
 
 class OrahRegistrationScreen extends StatefulWidget {
   const OrahRegistrationScreen({super.key, required this.onRegistered});
 
-  final ValueChanged<OrahUserProfile> onRegistered;
+  final ValueChanged<profile.OrahUserProfile> onRegistered;
 
   @override
   State<OrahRegistrationScreen> createState() => _OrahRegistrationScreenState();
@@ -32,7 +32,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
       _error = null;
     });
     try {
-      await OrahUserProfileService.instance.register(
+      await profile.OrahUserProfileService.instance.register(
         fullName: _nameController.text,
         email: _emailController.text,
       );
