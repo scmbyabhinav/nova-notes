@@ -1161,7 +1161,7 @@ class _NoteIcon extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(icon, color: color, size: 21),
+      child: icon,
     );
   }
 }
