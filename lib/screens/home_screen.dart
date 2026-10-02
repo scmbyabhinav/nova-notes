@@ -7,7 +7,6 @@ import '../services/orah_reminder_service.dart';
 import '../core/widgets/nova_polish.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
-import '../core/widgets/orah_logo.dart';
 import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository.dart';
@@ -410,12 +409,26 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
-                    IconButton.filledTonal(
-                      tooltip: 'ORAH Pro',
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const OrahProScreen()),
+                    Material(
+                      elevation: 3,
+                      color: theme.colorScheme.primary,
+                      shape: const CircleBorder(),
+                      shadowColor: theme.colorScheme.primary.withValues(alpha: 0.28),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const OrahProScreen()),
+                        ),
+                        child: const SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: Icon(
+                            Icons.auto_stories_rounded,
+                            color: Colors.white,
+                            size: 27,
+                          ),
+                        ),
                       ),
-                      icon: const OrahLogo(size: 28),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -436,7 +449,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                     IconButton.filledTonal(
                       tooltip: 'Daily Reflection',
                       onPressed: _openReflection,
-                      icon: const Icon(Icons.auto_awesome_rounded),
+                      icon: const Icon(Icons.auto_stories_rounded),
                     ),
 
                   ],
