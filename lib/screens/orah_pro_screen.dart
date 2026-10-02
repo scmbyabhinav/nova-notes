@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_entitlement_service.dart';
 
 class OrahProScreen extends StatefulWidget {
@@ -83,7 +84,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
-                  leading: const Icon(Icons.star_rounded),
+                  leading: const OrahAssetIcon('star'),
                   title: Text(entry.$2, style: const TextStyle(fontWeight: FontWeight.w800)),
                   subtitle: Text(product == null ? entry.$3 : product.price + ' • ' + entry.$3),
                   trailing: FilledButton(
