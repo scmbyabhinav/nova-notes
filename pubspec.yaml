@@ -51,6 +51,7 @@ flutter:
     - assets/orah_header_icon.svg
     - assets/daily_reflection_icon.svg
     - assets/appearance_icon.svg
+    - assets/calendar_icon.svg
 
 flutter_launcher_icons:
   android: true
