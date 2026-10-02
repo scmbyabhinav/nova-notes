@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../models/folder.dart';
@@ -349,7 +350,7 @@ class _SearchScreenState extends State<SearchScreen> {
             onPressed: _showFilters,
             icon: Badge(
               isLabelVisible: !_filter.isEmpty,
-              child: const Icon(Icons.tune_rounded),
+              child: const OrahAssetIcon('menu'),
             ),
           ),
         ],
@@ -365,7 +366,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       controller: _controller,
                       focusNode: _focusNode,
                       hintText: 'Search title, content or tags...',
-                      leading: const Icon(Icons.search_rounded),
+                      leading: const OrahAssetIcon('search'),
                       trailing: [
                         if (query.isNotEmpty)
                           IconButton(
@@ -490,7 +491,7 @@ class _SearchResultTile extends StatelessWidget {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
         leading: const CircleAvatar(
-          child: Icon(Icons.note_alt_outlined),
+          child: const OrahAssetIcon('notes', size: 24),
         ),
         title: _HighlightedText(
           text: note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
