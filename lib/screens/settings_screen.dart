@@ -19,6 +19,7 @@ import 'orah_pro_screen.dart';
 import 'orah_features_screen.dart';
 import 'trash_screen.dart';
 import '../core/widgets/orah_wordmark.dart';
+import '../core/widgets/orah_asset_icon.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.themeController});
@@ -60,7 +61,7 @@ class SettingsScreen extends StatelessWidget {
           _sectionHeader(theme, l10n.appearanceAndUi),
           Card(
             child: ListTile(
-              leading: const Icon(Icons.palette_outlined),
+              leading: const OrahAssetIcon('settings'),
               title: Text(l10n.appearance),
               subtitle: Text(_appearanceLabel()),
               trailing: const Icon(Icons.chevron_right_rounded),
@@ -103,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.folder_copy_outlined),
+                  leading: const OrahAssetIcon('folder'),
                   title: const Text('Backup & Export'),
                   subtitle: const Text('Local backup and portable data'),
                   trailing: const Icon(Icons.chevron_right_rounded),
@@ -111,7 +112,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.delete_outline_rounded),
+                  leading: const OrahAssetIcon('trash'),
                   title: const Text('Trash'),
                   subtitle: const Text('Restore or permanently delete notes'),
                   trailing: const Icon(Icons.chevron_right_rounded),
@@ -230,7 +231,7 @@ class SettingsScreen extends StatelessWidget {
             subtitle: Text('Notes, folders and attached files in one .nova package.'),
           ),
           ListTile(
-            leading: const Icon(Icons.upload_file_rounded),
+            leading: const OrahAssetIcon('share'),
             title: const Text('Create backup'),
             onTap: () => Navigator.pop(context, 'create'),
           ),
