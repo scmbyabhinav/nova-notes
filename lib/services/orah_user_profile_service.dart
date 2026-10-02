@@ -37,7 +37,7 @@ class OrahUserProfileService {
     final normalizedName = fullName.trim().replaceAll(RegExp(r'\s+'), ' ');
     final normalizedEmail = email.trim().toLowerCase();
     if (normalizedName.isEmpty) throw ArgumentError('Please enter your full name.');
-    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+).hasMatch(normalizedEmail)) {
+    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(normalizedEmail)) {
       throw ArgumentError('Please enter a valid email address.');
     }
 
