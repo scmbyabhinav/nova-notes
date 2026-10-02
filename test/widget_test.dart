@@ -26,7 +26,7 @@ void main() {
 
   testWidgets('registration rejects malformed email addresses', (tester) async {
     await tester.pumpWidget(MaterialApp(
-      home: OrahRegistrationScreen(onRegistered: (_) {}),
+      home: registration.OrahRegistrationScreen(onRegistered: (_) {}),
     ));
 
     await tester.enterText(find.byType(TextFormField).at(0), 'Ravi Kumar');
