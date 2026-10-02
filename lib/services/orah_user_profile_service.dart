@@ -35,7 +35,7 @@ class OrahUserProfileService {
   }
 
   Future<void> register({required String fullName, required String email}) async {
-    final normalizedName = fullName.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final normalizedName = fullName.trim();
     final normalizedEmail = email.trim().toLowerCase();
     if (normalizedName.isEmpty) throw ArgumentError('Please enter your full name.');
     if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(normalizedEmail)) {
