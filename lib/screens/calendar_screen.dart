@@ -120,6 +120,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: _loading
                       ? const SizedBox(height: 340, child: Center(child: CircularProgressIndicator()))
                       : CalendarDatePicker(
+                          key: ValueKey('${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}'),
                           initialDate: _selectedDate,
                           firstDate: DateTime(2000, 1, 1),
                           lastDate: DateTime(9999, 12, 31),
