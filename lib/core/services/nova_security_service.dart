@@ -49,7 +49,21 @@ class NovaSecurityService {
       (await _storage.read(key: _vaultPinHashKey)) != null;
 
   Future<void> setVaultPin(String pin) async {
-    if (!RegExp(r'^\\d{4,8}
+    if (!RegExp('^[0-9]{4,8}$').hasMatch(pin)) {
+      throw const FormatException('Vault PIN must contain 4 to 8 digits.');
+    }
+    final salt = _randomSalt();
+    await _storage.write(key: _vaultPinSaltKey, value: salt);
+    await _storage.write(key: _vaultPinHashKey, value: _hash(pin, salt));
+  }
+
+  Future<bool> verifyVaultPin(String pin) async {
+    final hash = await _storage.read(key: _vaultPinHashKey);
+    final salt = await _storage.read(key: _vaultPinSaltKey);
+    if (hash == null || salt == null) return false;
+    return _hash(pin, salt) == hash;
+  }
+
   Future<void> setPin(String pin) async {
     if (!RegExp(r'^\d{4,8}$').hasMatch(pin)) {
       throw const FormatException('PIN must contain 4 to 8 digits.');
