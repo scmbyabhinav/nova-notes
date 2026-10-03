@@ -98,7 +98,39 @@ class _TrashScreenState extends State<TrashScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _notes.isEmpty
-              ? const Center(child: Text('Trash is empty'))
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 64,
+                          color: Color(0xFF8CE7BE),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'No notes yet.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF1D4D37),
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tap the + button to capture your first thought.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                height: 1.5,
+                                color: const Color(0xFF6A9A84),
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               : ListView.separated(
                   padding: const EdgeInsets.all(20),
                   itemCount: _notes.length,

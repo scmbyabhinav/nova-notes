@@ -844,11 +844,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 ),
               ),
               if (recent.isEmpty)
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                  sliver: SliverToBoxAdapter(
-                    child: _EmptyState(theme: theme),
-                  ),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _EmptyState(theme: theme),
                 )
               else
                 SliverPadding(
@@ -1509,25 +1507,35 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(28),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            OrahAssetIcon('notes', size: 42, color: theme.colorScheme.primary),
-            const SizedBox(height: 14),
+            const Icon(
+              Icons.auto_awesome_rounded,
+              size: 64,
+              color: Color(0xFF8CE7BE),
+            ),
+            const SizedBox(height: 20),
             Text(
-              'Your notes live here',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+              'No notes yet.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1D4D37),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
-              'Tap + to capture your first thought.',
+              'Tap the + button to capture your first thought.',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 14,
+                height: 1.5,
+                color: const Color(0xFF6A9A84),
               ),
             ),
           ],

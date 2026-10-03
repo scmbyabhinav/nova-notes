@@ -32,10 +32,10 @@ class _WelcomeSplashScreenState extends State<WelcomeSplashScreen>
     _breathingController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
-      lowerBound: 0.96,
-      upperBound: 1.04,
+      lowerBound: 1.0,
+      upperBound: 1.03,
     )..repeat(reverse: true);
-    _navigationTimer = Timer(const Duration(seconds: 2), () {
+    _navigationTimer = Timer(const Duration(milliseconds: 2500), () {
       if (mounted) widget.onComplete();
     });
   }

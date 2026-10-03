@@ -84,6 +84,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
+  bool _isZenMode = false;
   bool _isCapturingNoteCard = false;
   bool _isLocked = false;
   bool _privateUnlocked = true;
@@ -1169,8 +1170,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         if (!didPop) _close();
       },
       child: Scaffold(
+        backgroundColor: _isZenMode ? const Color(0xFFF2FBF7) : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Tooltip(
+      floatingActionButton: _isZenMode
+          ? FloatingActionButton.small(
+              tooltip: 'Exit Zen Mode',
+              onPressed: () => setState(() => _isZenMode = false),
+              child: const Icon(Icons.center_focus_strong),
+            )
+          : Tooltip(
         key: _voiceHintKey,
         message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
         triggerMode: TooltipTriggerMode.manual,
@@ -1195,7 +1203,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
       ),
-      appBar: AppBar(
+      appBar: _isZenMode ? null : AppBar(
         leading: IconButton(
           tooltip: 'Back',
           onPressed: _close,
@@ -1214,6 +1222,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
+            onPressed: () => setState(() => _isZenMode = !_isZenMode),
+            icon: const Icon(Icons.center_focus_strong),
+          ),
           IconButton(
             tooltip: _previewMode ? 'Edit' : 'Preview',
             onPressed: () => setState(() => _previewMode = !_previewMode),
