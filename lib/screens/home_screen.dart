@@ -1363,7 +1363,7 @@ class _DesktopNotePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final body = note.content.trim();
+    final body = note.isLocked ? '' : note.content.trim();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1395,16 +1395,48 @@ class _DesktopNotePreview extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -1.1,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        note.isLocked
+                            ? 'Private note'
+                            : (note.title.trim().isEmpty ? 'Untitled note' : note.title),
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -1.1,
+                        ),
+                      ),
+                    ),
+                    if (note.isLocked)
+                      Icon(Icons.lock_rounded, color: theme.colorScheme.primary, size: 28),
+                  ],
                 ),
                 const SizedBox(height: 14),
-                if (note.type == NoteType.checklist)
+                if (note.isLocked)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.lock_outline_rounded, size: 34, color: theme.colorScheme.primary),
+                        const SizedBox(height: 12),
+                        Text(
+                          'This note is private',
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text('Open the note to authenticate and view its content.'),
+                      ],
+                    ),
+                  )
+                else if (note.type == NoteType.checklist)
                   _DesktopChecklistPreview(note: note)
                 else
                   SelectableText(
@@ -1619,8 +1651,12 @@ class _NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final title = note.title.trim().isEmpty ? 'Untitled note' : note.title;
-    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final title = note.isLocked
+        ? 'Private note'
+        : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
+    final body = note.isLocked
+        ? 'Locked note • unlock to view content'
+        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
 
     return Card(
       margin: EdgeInsets.zero,
@@ -1633,13 +1669,27 @@ class _NoteCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                maxLines: compact ? 1 : 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: compact ? 1 : 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  if (note.isLocked) ...[
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.lock_rounded,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ],
+                ],
               ),
               if (body.isNotEmpty) ...[
                 const SizedBox(height: 8),
