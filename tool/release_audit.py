@@ -68,7 +68,7 @@ else:
     workflow_text = workflow.read_text()
     if workflow_text.count("workflow_dispatch:") != 1:
         errors.append("Android CI must contain exactly one workflow_dispatch trigger.")
-    for required in ("flutter analyze", "flutter test", "flutter build apk --release", "flutter build appbundle --release"):
+    for required in ("flutter analyze", "flutter test", "flutter build apk --release", "flutter build appbundle --release", "verify_android_config.py --min-api 36", "production_release", "ORAH_UPLOAD_KEYSTORE_B64", "tool/configure_release_signing.py", "tool/verify_release_artifacts.py"):
         if required not in workflow_text:
             errors.append(f"Android CI is missing required step: {required}")
 
@@ -105,7 +105,7 @@ if workflow.exists():
     wf = workflow.read_text()
     if "production_release" not in wf: errors.append("CI is missing the production_release signing gate.")
     if "ORAH_UPLOAD_KEYSTORE_B64" not in wf: errors.append("CI is missing the upload keystore secret.")
-    if "Configure production signing in Gradle" not in wf: errors.append("CI is missing Gradle release-signing configuration.")
+    if "Configure production signing" not in wf: errors.append("CI is missing the production signing step.")
     if "tool/configure_release_signing.py" not in wf: errors.append("CI is missing the release-signing configurator.")
 signing_tool = ROOT / 'tool/configure_release_signing.py'
 if not signing_tool.exists(): errors.append('Missing release signing configurator.')
