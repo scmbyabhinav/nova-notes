@@ -214,25 +214,39 @@ class LocalNoteRepository implements NoteRepository {
       // metadata (such as archived state) changes; otherwise it would be
       // encrypted a second time and could no longer be unlocked.
       if (note.title == 'Private note' && note.content.startsWith('vault:v1:')) {
-        return {
-          'id': note.id,
-          'title': 'Private note',
-          'content': note.content,
-          'type': note.type.name,
-          'createdAt': note.createdAt.toIso8601String(),
-          'updatedAt': note.updatedAt.toIso8601String(),
-          'folderId': note.folderId,
-          'tags': const <String>[],
-          'color': note.color,
-          'isPinned': note.isPinned,
-          'isFavorite': note.isFavorite,
-          'isArchived': note.isArchived,
-          'isLocked': true,
-          'isTrashed': note.isTrashed,
-          'dueAt': note.dueAt?.toIso8601String(),
-          'attachments': note.attachments,
-          'checklistItems': const <Map<String, dynamic>>[],
-        };
+        // Verify that this is actually an encrypted private payload before
+        // preserving it. A user-entered string that merely starts with the
+        // marker must still be encrypted as ordinary note content.
+        try {
+          final plaintext = await _security.decryptPrivatePayload(note.content);
+          final decoded = jsonDecode(plaintext);
+          if (decoded is Map &&
+              decoded['version'] == 1 &&
+              decoded['title'] is String &&
+              decoded['content'] is String) {
+            return {
+              'id': note.id,
+              'title': 'Private note',
+              'content': note.content,
+              'type': note.type.name,
+              'createdAt': note.createdAt.toIso8601String(),
+              'updatedAt': note.updatedAt.toIso8601String(),
+              'folderId': note.folderId,
+              'tags': const <String>[],
+              'color': note.color,
+              'isPinned': note.isPinned,
+              'isFavorite': note.isFavorite,
+              'isArchived': note.isArchived,
+              'isLocked': true,
+              'isTrashed': note.isTrashed,
+              'dueAt': note.dueAt?.toIso8601String(),
+              'attachments': note.attachments,
+              'checklistItems': const <Map<String, dynamic>>[],
+            };
+          }
+        } catch (_) {
+          // Treat invalid marker-like text as normal content and encrypt it.
+        }
       }
 
       final payload = jsonEncode({
