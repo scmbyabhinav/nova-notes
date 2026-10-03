@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../services/nova_backup_service.dart';
+import '../services/orah_reminder_service.dart';
 import '../services/orah_user_profile_service.dart';
 import '../services/nova_attachment_service.dart';
 import '../data/repositories/note_repository_provider.dart';
@@ -81,6 +82,11 @@ class SettingsScreen extends StatelessWidget {
           _sectionHeader(theme, 'Daily inspiration'),
           const Card(
             child: _DailyInspirationSettingTile(),
+          ),
+          const SizedBox(height: 12),
+          _sectionHeader(theme, 'Daily Reflection schedule'),
+          const Card(
+            child: _DailyReflectionScheduleSettingTile(),
           ),
           const SizedBox(height: 16),
           _sectionHeader(theme, l10n.securityAndPrivacy),
@@ -453,6 +459,124 @@ class _DailyInspirationSettingTileState
       subtitle: const Text('Display a daily reflection prompt above your notes.'),
       value: _showDailyInspiration,
       onChanged: _loading ? null : _setVisible,
+    );
+  }
+}
+
+
+class _DailyReflectionScheduleSettingTile extends StatefulWidget {
+  const _DailyReflectionScheduleSettingTile();
+
+  @override
+  State<_DailyReflectionScheduleSettingTile> createState() =>
+      _DailyReflectionScheduleSettingTileState();
+}
+
+class _DailyReflectionScheduleSettingTileState
+    extends State<_DailyReflectionScheduleSettingTile> {
+  bool _enabled = false;
+  bool _loading = true;
+  int _hour = 20;
+  int _minute = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _enabled = prefs.getBool('orah_daily_reflection_enabled') ?? false;
+      _hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
+      _minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
+      _loading = false;
+    });
+  }
+
+  TimeOfDay get _time => TimeOfDay(hour: _hour, minute: _minute);
+
+  String get _formattedTime {
+    final hour = _hour % 12 == 0 ? 12 : _hour % 12;
+    final minute = _minute.toString().padLeft(2, '0');
+    final period = _hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    try {
+      if (value) {
+        await OrahReminderService.instance.scheduleDailyReflection(time: _time);
+      } else {
+        await OrahReminderService.instance.cancelDailyReflection();
+      }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('orah_daily_reflection_enabled', value);
+      if (!mounted) return;
+      setState(() => _enabled = value);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not update Daily Reflection reminder: $error')),
+      );
+    }
+  }
+
+  Future<void> _pickTime() async {
+    final selected = await showTimePicker(
+      context: context,
+      initialTime: _time,
+      helpText: 'Choose daily reflection time',
+    );
+    if (selected == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('orah_daily_reflection_hour', selected.hour);
+    await prefs.setInt('orah_daily_reflection_minute', selected.minute);
+    if (_enabled) {
+      try {
+        await OrahReminderService.instance.scheduleDailyReflection(time: selected);
+      } catch (error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not schedule Daily Reflection: $error')),
+          );
+        }
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _hour = selected.hour;
+      _minute = selected.minute;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SwitchListTile(
+          secondary: const Icon(Icons.notifications_active_outlined),
+          title: const Text('Daily Reflection reminder'),
+          subtitle: Text(_loading
+              ? 'Loading schedule…'
+              : _enabled
+                  ? 'Enabled • Every day at $_formattedTime'
+                  : 'Disabled • Turn on to receive a daily reflection reminder'),
+          value: _enabled,
+          onChanged: _loading ? null : _setEnabled,
+        ),
+        const Divider(height: 1),
+        ListTile(
+          leading: const Icon(Icons.schedule_rounded),
+          title: const Text('Reminder time'),
+          subtitle: Text(_formattedTime),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: _loading ? null : _pickTime,
+        ),
+      ],
     );
   }
 }
