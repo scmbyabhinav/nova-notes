@@ -152,13 +152,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     });
   }
 
-  Future<void> _handleVoiceFabTap() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    await _toggleVoiceInput();
-  }
-
   String _formatVoiceDuration() {
     final minutes = (_voiceElapsedSeconds ~/ 60).toString().padLeft(2, '0');
     final seconds = (_voiceElapsedSeconds % 60).toString().padLeft(2, '0');
@@ -184,9 +177,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       builder: (dialogContext) => AlertDialog(
         icon: const Icon(Icons.mic_off_rounded, size: 36),
         title: const Text('Microphone access needed'),
-        content: const Text(
-          'Orah Notes needs microphone access to transcribe your voice. '
-          'You can enable this in Settings.',
+        content: Text(
+          permanentlyDenied
+              ? 'Orah Notes needs microphone access to transcribe your voice. You can enable this in Settings.'
+              : 'Orah Notes needs microphone access to transcribe your voice. Please allow access, or enable it in Settings.',
         ),
         actions: [
           TextButton(
@@ -307,7 +301,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   .firstWhere((line) => line.isNotEmpty, orElse: () => '');
               if (firstLine.isNotEmpty) {
                 _titleController.text = firstLine.length > 80
-                    ? '\${firstLine.substring(0, 80)}…'
+                    ? '${firstLine.substring(0, 80)}…'
                     : firstLine;
               }
             }
@@ -1384,7 +1378,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           Expanded(
                             child: Text(
                               _isListening
-                                  ? 'Recording • \${_formatVoiceDuration()}'
+                                  ? 'Recording • ${_formatVoiceDuration()}'
                                   : (_voiceProcessing ? 'Saving voice text…' : 'Preparing microphone…'),
                               style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                             ),
