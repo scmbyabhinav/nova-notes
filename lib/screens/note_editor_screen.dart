@@ -593,13 +593,48 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, firstController.text), child: Text(hasPin ? 'Verify' : 'Create')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, firstController.text),
+            child: Text(hasPin ? 'Verify' : 'Create'),
+          ),
         ],
       ),
     );
     if (pin == null) return;
-    if (!RegExp(r'^\\d{4,8}
+    if (!RegExp('^[0-9]{4,8}$').hasMatch(pin)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PIN must contain 4–8 digits.')),
+        );
+      }
+      return;
+    }
+    if (hasPin) {
+      if (!await security.verifyVaultPin(pin)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Incorrect Vault PIN.')),
+          );
+        }
+        return;
+      }
+    } else {
+      if (secondController.text != pin) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('PINs do not match.')),
+          );
+        }
+        return;
+      }
+      await security.setVaultPin(pin);
+    }
+
+    setState(() {
       _isLocked = true;
       _privateUnlocked = true;
       _hasChanges = true;
