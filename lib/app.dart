@@ -202,6 +202,7 @@ class _NovaShellState extends State<NovaShell> {
 
   List<Widget> get _pages => [
         HomeScreen(
+          isActive: _index == 0,
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
           onChecklist: () => _openEditor(NoteType.checklist),
