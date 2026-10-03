@@ -38,6 +38,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialTitle,
     this.initialContent,
     this.speechService,
+    this.requestMicrophonePermission,
     this.autoStartVoice = false,
     this.autoOpenReminder = false,
     this.initialDueAt,
@@ -49,6 +50,7 @@ class NoteEditorScreen extends StatefulWidget {
   final String? initialTitle;
   final String? initialContent;
   final VoiceSpeechService? speechService;
+  final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool autoStartVoice;
   final bool autoOpenReminder;
   final DateTime? initialDueAt;
@@ -223,7 +225,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
 
     setState(() => _speechInitializing = true);
-    final permission = await Permission.microphone.request();
+    final permission = await (widget.requestMicrophonePermission?.call() ??
+        Permission.microphone.request());
     if (!mounted) return;
     if (!permission.isGranted) {
       setState(() => _speechInitializing = false);

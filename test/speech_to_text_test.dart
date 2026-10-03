@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/data/repositories/local_note_repository.dart';
 import 'package:orah_notes/screens/note_editor_screen.dart';
@@ -67,6 +68,7 @@ Future<({WidgetTester tester, _FakeVoiceSpeechService speech, LocalNoteRepositor
       home: NoteEditorScreen(
         repository: repository,
         speechService: speech,
+        requestMicrophonePermission: () async => PermissionStatus.granted,
       ),
     ),
   );
