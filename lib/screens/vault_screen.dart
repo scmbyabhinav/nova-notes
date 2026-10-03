@@ -133,6 +133,19 @@ class _VaultScreenState extends State<VaultScreen> {
     }
   }
 
+  Future<void> _changeVaultPin() async {
+    final current = await _pinDialog(title: 'Verify current Vault PIN');
+    if (current == null) return;
+    if (!await _security.verifyVaultPin(current)) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect current Vault PIN.')));
+      return;
+    }
+    final next = await _pinDialog(title: 'Create new Vault PIN', confirm: true);
+    if (next == null) return;
+    await _security.setVaultPin(next);
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN changed.')));
+  }
+
   Future<void> _loadVaultContents() async {
     final repository = await NoteRepositoryProvider.instance();
     final encryptedNotes = await repository.getVaultNotes();
@@ -221,6 +234,14 @@ class _VaultScreenState extends State<VaultScreen> {
       appBar: AppBar(
         title: const Text('Vault'),
         actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'change_pin') _changeVaultPin();
+            },
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'change_pin', child: Text('Change Vault PIN')),
+            ],
+          ),
           IconButton(
             tooltip: 'Lock Vault',
             icon: const Icon(Icons.lock_outline),
