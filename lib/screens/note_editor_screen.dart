@@ -23,6 +23,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/orah_in_app_review_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
