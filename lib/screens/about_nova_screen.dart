@@ -75,15 +75,15 @@ class AboutNovaScreen extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F6FF),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: const Color(0xFFD7E4F5)),
                     ),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 156,
+                      height: 100,
                       child: Image.asset(
-                        'assets/abhinav_bajpai_signature.png',
+                        'assets/developer_signature.png',
                         width: double.infinity,
                         fit: BoxFit.contain,
                         alignment: Alignment.center,
@@ -105,17 +105,13 @@ class AboutNovaScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'Developer',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 16),
                   Text(
                     'Abhinav Bajpai',
-                    style: theme.textTheme.bodyLarge,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF123B78),
+                    ),
                   ),
                   const SizedBox(height: 14),
                   Text(

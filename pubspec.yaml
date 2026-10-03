@@ -48,7 +48,7 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
-    - assets/abhinav_bajpai_signature.png
+    - assets/developer_signature.png
     - assets/orah_app_icon.svg
     - assets/orah_logo.svg
     - assets/orah_header_icon.svg
