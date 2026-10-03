@@ -90,6 +90,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   OrahUserProfile? _profile;
   bool _loading = true;
   bool _showWelcome = false;
+  String _welcomeUserName = 'Friend';
 
   @override
   void initState() {
@@ -100,10 +101,15 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   Future<void> _loadProfile() async {
     final profile = await OrahUserProfileService.instance.loadProfile();
     final prefs = await SharedPreferences.getInstance();
+    if (profile != null && prefs.getString('user_name') == null) {
+      await prefs.setString('user_name', profile.fullName);
+    }
+    final userName = prefs.getString('user_name') ?? 'Friend';
     final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     if (!mounted) return;
     setState(() {
       _profile = profile;
+      _welcomeUserName = userName;
       _showWelcome = profile != null && showWelcome;
       _loading = false;
     });
@@ -130,7 +136,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     }
     if (_showWelcome) {
       return WelcomeSplashScreen(
-        userName: profile.fullName,
+        userName: _welcomeUserName,
         onComplete: () {
           if (mounted) setState(() => _showWelcome = false);
         },
