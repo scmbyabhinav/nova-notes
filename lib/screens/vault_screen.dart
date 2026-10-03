@@ -83,7 +83,7 @@ class _VaultScreenState extends State<VaultScreen> {
       ),
     );
     if (result == null) return null;
-    if (!RegExp(r'^\\d{4,8}$').hasMatch(result)) {
+    if (!RegExp(r'^\d{4,8}$').hasMatch(result)) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PIN must contain 4–8 digits.')));
       return null;
     }
