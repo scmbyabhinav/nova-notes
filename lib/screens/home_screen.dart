@@ -47,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   StreamSubscription<List<Note>>? _notesSubscription;
   PageRoute<dynamic>? _subscribedRoute;
   int _notesLoadGeneration = 0;
+  Timer? _trashSnackBarTimer;
 
   @override
   void initState() {
@@ -163,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
+    _trashSnackBarTimer?.cancel();
     super.dispose();
   }
 
@@ -329,8 +331,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         final messenger = ScaffoldMessenger.of(context);
         // Replace any older snackbar and give this confirmation a bounded
         // lifetime so the Undo affordance cannot remain stuck on screen.
+        _trashSnackBarTimer?.cancel();
         messenger.hideCurrentSnackBar();
-        messenger.showSnackBar(
+        late final ScaffoldFeatureController<SnackBar, SnackBarClosedReason> trashSnackBar;
+        trashSnackBar = messenger.showSnackBar(
           SnackBar(
             content: const Text('Moved to trash'),
             duration: const Duration(seconds: 3),
@@ -338,12 +342,18 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             action: SnackBarAction(
               label: 'Undo',
               onPressed: () {
-                messenger.hideCurrentSnackBar();
+                _trashSnackBarTimer?.cancel();
+                trashSnackBar.close();
                 _restoreFromTrash(note);
               },
             ),
           ),
         );
+        // Enforce dismissal even when Android accessibility timeout settings
+        // extend action-bearing SnackBars beyond their configured duration.
+        _trashSnackBarTimer = Timer(const Duration(seconds: 3), () {
+          if (mounted) trashSnackBar.close();
+        });
         return;
     }
   }
