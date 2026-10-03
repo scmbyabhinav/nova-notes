@@ -444,16 +444,16 @@ for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.g
     text = gradle_path.read_text()
     if gradle_path.suffix == ".kts":
         import re
-        text = re.sub(r"targetSdk\s*=\s*\d+", "targetSdk = 36", text)
-        text = re.sub(r"compileSdk\s*=\s*\d+", "compileSdk = 36", text)
+        text = re.sub(r"targetSdk\s*=\s*[^\n]+", "targetSdk = 36", text)
+        text = re.sub(r"compileSdk\s*=\s*[^\n]+", "compileSdk = 36", text)
         if "targetSdk =" not in text:
             text = text.replace("android {", "android {\n    targetSdk = 36", 1)
         if "compileSdk =" not in text:
             text = text.replace("android {", "android {\n    compileSdk = 36", 1)
     else:
         import re
-        text = re.sub(r"targetSdkVersion\s+\d+", "targetSdkVersion 36", text)
-        text = re.sub(r"compileSdkVersion\s+\d+", "compileSdkVersion 36", text)
+        text = re.sub(r"targetSdkVersion\s+[^\n]+", "targetSdkVersion 36", text)
+        text = re.sub(r"compileSdkVersion\s+[^\n]+", "compileSdkVersion 36", text)
         if "targetSdkVersion 36" not in text:
             text = text.replace("android {", "android {\n    targetSdkVersion 36", 1)
         if "compileSdkVersion 36" not in text:
