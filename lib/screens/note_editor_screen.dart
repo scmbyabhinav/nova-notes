@@ -566,11 +566,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         return;
       }
       if (!await security.authenticateBiometric()) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Authentication cancelled. Note was not locked.')),
-          );
-        }
+        // A dismissed system prompt is a normal cancellation, not an app error.
+        // Leave the note unchanged and let the user retry when ready.
         return;
       }
 
