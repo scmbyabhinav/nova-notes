@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
@@ -13,6 +14,7 @@ import '../core/navigation/orah_navigation.dart';
 import '../data/repositories/note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
+import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
 import 'reflection_prompt_screen.dart';
 import 'search_screen.dart';
@@ -129,6 +131,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   }
 
   void _selectNote(Note note) => setState(() => _selectedNoteId = note.id);
+
+  Future<void> _openPromptNote(ReflectionPrompt prompt) async {
+    final repository = await NoteRepositoryProvider.instance();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NoteEditorScreen(
+          repository: repository,
+          initialTitle: prompt.text,
+          initialContent: '',
+        ),
+      ),
+    );
+    await _loadNotes();
+  }
 
   Future<void> _openReflection() async {
     final repository = await NoteRepositoryProvider.instance();
@@ -625,6 +642,86 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       icon: const OrahAssetIcon('menu'),
                     ),
                   ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              sliver: SliverToBoxAdapter(
+                child: Builder(
+                  builder: (context) {
+                    final prompt = PromptService.instance.getPromptOfDay();
+                    return Material(
+                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.58),
+                      borderRadius: BorderRadius.circular(22),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(22),
+                        onTap: () => _openPromptNote(prompt),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(18, 16, 12, 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(
+                                  Icons.auto_awesome_rounded,
+                                  color: theme.colorScheme.primary,
+                                  size: 23,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'DAILY INSPIRATION  •  ${prompt.category.toUpperCase()}',
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.8,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      prompt.text,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.lora(
+                                        textStyle: theme.textTheme.titleMedium?.copyWith(
+                                          color: theme.colorScheme.onSurface,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Tap to begin a note',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_outward_rounded,
+                                size: 19,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
