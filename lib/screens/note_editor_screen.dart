@@ -540,27 +540,60 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _lockNote() async {
-    final security = NovaSecurityService();
-    if (!await security.canUseBiometrics()) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Private notes require fingerprint or face unlock on this device.',
-            ),
-          ),
-        );
-      }
+    final hasContent = _titleController.text.trim().isNotEmpty ||
+        _contentController.text.trim().isNotEmpty ||
+        _attachments.isNotEmpty ||
+        _checklistItems.isNotEmpty;
+    if (!hasContent) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Add a title or content before locking this note.')),
+      );
       return;
     }
-    if (!await security.authenticateBiometric()) return;
 
-    setState(() {
-      _isLocked = true;
-      _privateUnlocked = true;
-      _hasChanges = true;
-    });
-    await _save();
+    final security = NovaSecurityService();
+    try {
+      if (!await security.canUseBiometrics()) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Private notes require fingerprint or face unlock on this device.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
+      if (!await security.authenticateBiometric()) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Authentication cancelled. Note was not locked.')),
+          );
+        }
+        return;
+      }
+
+      _saveTimer?.cancel();
+      setState(() {
+        _isLocked = true;
+        _privateUnlocked = true;
+        _hasChanges = true;
+      });
+      await _save();
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Note locked. Authenticate to open its private content.')),
+      );
+      Navigator.of(context).pop();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not lock note: $error')),
+        );
+      }
+    }
   }
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
@@ -601,6 +634,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
@@ -617,6 +651,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
