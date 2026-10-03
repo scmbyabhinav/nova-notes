@@ -119,14 +119,15 @@ class OrahReminderService {
   }
 
   Future<void> _openDailyReflection() async {
+    final navigator = orahNavigatorKey.currentState;
+    if (navigator == null) return;
+
     final now = DateTime.now();
     final today = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString('orah_daily_reflection_last_shown', today);
 
     final repository = await NoteRepositoryProvider.instance();
-    final navigator = orahNavigatorKey.currentState;
-    if (navigator == null) return;
     navigator.push(
       MaterialPageRoute(
         builder: (_) => ReflectionPromptScreen(repository: repository),
