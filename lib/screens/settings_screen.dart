@@ -75,6 +75,11 @@ class SettingsScreen extends StatelessWidget {
             child: _VoiceGreetingSettingTile(),
           ),
           const SizedBox(height: 16),
+          _sectionHeader(theme, 'Daily inspiration'),
+          const Card(
+            child: _DailyInspirationSettingTile(),
+          ),
+          const SizedBox(height: 16),
           _sectionHeader(theme, l10n.securityAndPrivacy),
           Card(
             child: ListTile(
@@ -349,6 +354,53 @@ class _VoiceGreetingSettingTileState extends State<_VoiceGreetingSettingTile> {
           onChanged: snapshot.connectionState == ConnectionState.waiting ? null : _setEnabled,
         );
       },
+    );
+  }
+}
+ 
+class _DailyInspirationSettingTile extends StatefulWidget {
+  const _DailyInspirationSettingTile();
+
+  @override
+  State<_DailyInspirationSettingTile> createState() =>
+      _DailyInspirationSettingTileState();
+}
+
+class _DailyInspirationSettingTileState
+    extends State<_DailyInspirationSettingTile> {
+  bool _showDailyInspiration = true;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreference();
+  }
+
+  Future<void> _loadPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _showDailyInspiration =
+          !(prefs.getBool('orah_hide_daily_prompt') ?? false);
+      _loading = false;
+    });
+  }
+
+  Future<void> _setVisible(bool visible) async {
+    setState(() => _showDailyInspiration = visible);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('orah_hide_daily_prompt', !visible);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: const Icon(Icons.auto_awesome_outlined),
+      title: const Text('Show Daily Inspiration on Home Screen'),
+      subtitle: const Text('Display a daily reflection prompt above your notes.'),
+      value: _showDailyInspiration,
+      onChanged: _loading ? null : _setVisible,
     );
   }
 }

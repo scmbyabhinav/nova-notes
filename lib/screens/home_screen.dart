@@ -40,6 +40,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
   bool _gridView = true;
   bool _showFeatures = false;
+  bool _hideDailyPrompt = false;
   bool _loading = true;
   String _sort = 'updated';
   List<Note> _notes = const [];
@@ -73,10 +74,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
   @override
   void didPopNext() {
-    // The editor, Trash, or another pushed screen may have changed notes.
-    // Read persistent storage directly when returning instead of relying only
-    // on a broadcast event that may have been missed while this screen was idle.
+    // Refresh persisted notes and display preferences when returning from another screen.
     _loadNotes();
+    _loadPreferences();
   }
 
   @override
@@ -93,7 +93,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     setState(() {
       _gridView = prefs.getBool('orah_grid_view') ?? true;
       _sort = prefs.getString('orah_note_sort') ?? 'updated';
+      _hideDailyPrompt = prefs.getBool('orah_hide_daily_prompt') ?? false;
     });
+  }
+
+  Future<void> _setDailyPromptHidden(bool hidden) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('orah_hide_daily_prompt', hidden);
+    if (!mounted) return;
+    setState(() => _hideDailyPrompt = hidden);
   }
 
   Future<void> _savePreferences() async {
@@ -655,7 +663,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 ),
               ),
             ),
-            SliverPadding(
+            if (!_hideDailyPrompt)
+              SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               sliver: SliverToBoxAdapter(
                 child: Builder(
@@ -721,10 +730,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   ],
                                 ),
                               ),
-                              Icon(
-                                Icons.arrow_outward_rounded,
-                                size: 19,
-                                color: theme.colorScheme.primary,
+                              IconButton(
+                                tooltip: 'Hide daily inspiration',
+                                visualDensity: VisualDensity.compact,
+                                onPressed: () => _setDailyPromptHidden(true),
+                                icon: Icon(
+                                  Icons.close_rounded,
+                                  size: 19,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),
