@@ -114,16 +114,19 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           child: Card(
                             child: ListTile(
                               onTap: () => _open(note),
-                              leading: const OrahAssetIcon('star'),
+                              leading: Icon(
+                                note.isLocked ? Icons.lock_rounded : Icons.star_rounded,
+                                color: theme.colorScheme.primary,
+                              ),
                               title: Text(
-                                note.title,
+                                note.isLocked ? 'Private note' : note.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               subtitle: Text(
-                                note.content.isEmpty
-                                    ? 'No content'
-                                    : note.content,
+                                note.isLocked
+                                    ? 'Locked note • unlock to view content'
+                                    : (note.content.isEmpty ? 'No content' : note.content),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),

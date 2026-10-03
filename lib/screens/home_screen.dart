@@ -18,6 +18,7 @@ import '../models/note.dart';
 import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
 import 'reflection_prompt_screen.dart';
+import 'archived_notes_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
 
@@ -51,6 +52,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   PageRoute<dynamic>? _subscribedRoute;
   int _notesLoadGeneration = 0;
   Timer? _trashSnackBarTimer;
+  Timer? _reflectionCheckTimer;
+  bool _openingScheduledReflection = false;
 
   @override
   void initState() {
@@ -58,6 +61,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
     _loadNotes();
+    _reflectionCheckTimer = Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => _checkScheduledReflection(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
   }
 
 
@@ -68,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     // not fire when switching tabs, so refresh preferences when Home returns.
     if (!oldWidget.isActive && widget.isActive) {
       _loadPreferences();
+      _checkScheduledReflection();
     }
   }
 
@@ -89,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     // Refresh persisted notes and display preferences when returning from another screen.
     _loadNotes();
     _loadPreferences();
+    _checkScheduledReflection();
   }
 
   @override
@@ -96,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (state == AppLifecycleState.resumed) {
       // Reconcile persisted state after Android suspends/resumes the app.
       _loadNotes();
+      _checkScheduledReflection();
     }
   }
 
@@ -180,12 +191,46 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     await _loadNotes();
   }
 
+  Future<void> _checkScheduledReflection() async {
+    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+    if (!(prefs.getBool('orah_daily_reflection_enabled') ?? false)) return;
+
+    final hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
+    final minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
+    final now = DateTime.now();
+    if (now.hour * 60 + now.minute < hour * 60 + minute) return;
+
+    final today = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    if (prefs.getString('orah_daily_reflection_last_shown') == today) return;
+
+    _openingScheduledReflection = true;
+    await prefs.setString('orah_daily_reflection_last_shown', today);
+    try {
+      // If the app is open at the scheduled time, show the reflection window
+      // in-app and move the repeating notification to the next day.
+      try {
+        await OrahReminderService.instance.scheduleDailyReflection(
+          time: TimeOfDay(hour: hour, minute: minute),
+        );
+      } catch (_) {
+        // The in-app reflection should still open if notifications are blocked.
+      }
+      await _openReflection();
+    } finally {
+      _openingScheduledReflection = false;
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
     _trashSnackBarTimer?.cancel();
+    _reflectionCheckTimer?.cancel();
     super.dispose();
   }
 
@@ -590,6 +635,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
                                       label: const Text('Favorites'),
                                       onPressed: widget.onFavorites,
+                                    ),
+                                    ActionChip(
+                                      avatar: const Icon(Icons.archive_outlined, size: 18),
+                                      label: const Text('Archived Notes'),
+                                      onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (_) => const ArchivedNotesScreen()),
+                                      ),
                                     ),
                                     ActionChip(
                                       avatar: SvgPicture.asset(
@@ -1311,7 +1363,7 @@ class _DesktopNotePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final body = note.content.trim();
+    final body = note.isLocked ? '' : note.content.trim();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1343,16 +1395,48 @@ class _DesktopNotePreview extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -1.1,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        note.isLocked
+                            ? 'Private note'
+                            : (note.title.trim().isEmpty ? 'Untitled note' : note.title),
+                        style: theme.textTheme.displaySmall?.copyWith(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -1.1,
+                        ),
+                      ),
+                    ),
+                    if (note.isLocked)
+                      Icon(Icons.lock_rounded, color: theme.colorScheme.primary, size: 28),
+                  ],
                 ),
                 const SizedBox(height: 14),
-                if (note.type == NoteType.checklist)
+                if (note.isLocked)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.lock_outline_rounded, size: 34, color: theme.colorScheme.primary),
+                        const SizedBox(height: 12),
+                        Text(
+                          'This note is private',
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text('Open the note to authenticate and view its content.'),
+                      ],
+                    ),
+                  )
+                else if (note.type == NoteType.checklist)
                   _DesktopChecklistPreview(note: note)
                 else
                   SelectableText(
@@ -1567,8 +1651,12 @@ class _NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final title = note.title.trim().isEmpty ? 'Untitled note' : note.title;
-    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final title = note.isLocked
+        ? 'Private note'
+        : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
+    final body = note.isLocked
+        ? 'Locked note • unlock to view content'
+        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
 
     return Card(
       margin: EdgeInsets.zero,
@@ -1581,13 +1669,27 @@ class _NoteCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                maxLines: compact ? 1 : 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: compact ? 1 : 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  if (note.isLocked) ...[
+                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.lock_rounded,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ],
+                ],
               ),
               if (body.isNotEmpty) ...[
                 const SizedBox(height: 8),

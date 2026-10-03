@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cryptography_flutter/cryptography_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'services/orah_reminder_service.dart';
@@ -14,6 +15,15 @@ Future<void> main() async {
   FlutterCryptography.enable();
   tz.initializeTimeZones();
   await OrahReminderService.instance.initialize();
+  final preferences = await SharedPreferences.getInstance();
+  if (preferences.getBool('orah_daily_reflection_enabled') ?? false) {
+    await OrahReminderService.instance.scheduleDailyReflection(
+      time: TimeOfDay(
+        hour: preferences.getInt('orah_daily_reflection_hour') ?? 20,
+        minute: preferences.getInt('orah_daily_reflection_minute') ?? 0,
+      ),
+    );
+  }
   // Resolve the cached/store entitlement before the first frame so existing
   // Pro users are not briefly treated as Free when opening premium features.
   await OrahEntitlementService.instance.initialize();
