@@ -21,8 +21,9 @@ import 'search_screen.dart';
 import 'orah_features_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
 
+  final bool isActive;
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
   final Future<void> Function()? onChecklist;
@@ -58,6 +59,16 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     _loadNotes();
   }
 
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Home and Settings remain mounted in an IndexedStack; route callbacks do
+    // not fire when switching tabs, so refresh preferences when Home returns.
+    if (!oldWidget.isActive && widget.isActive) {
+      _loadPreferences();
+    }
+  }
 
   @override
   void didChangeDependencies() {
