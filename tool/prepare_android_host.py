@@ -454,7 +454,7 @@ if settings_gradle.suffix == ".kts":
             raise SystemExit("Gradle plugins block not found in settings file")
         settings_text = settings_text.replace(
             "plugins {",
-            'plugins {\\n    id("com.google.gms.google-services") version "4.4.2" apply false',
+            'plugins {\n    id("com.google.gms.google-services") version "4.4.2" apply false',
             1,
         )
 else:
@@ -463,7 +463,7 @@ else:
             raise SystemExit("Gradle plugins block not found in settings file")
         settings_text = settings_text.replace(
             "plugins {",
-            'plugins {\\n    id "com.google.gms.google-services" version "4.4.2" apply false',
+            'plugins {\n    id "com.google.gms.google-services" version "4.4.2" apply false',
             1,
         )
 settings_gradle.write_text(settings_text)
@@ -475,7 +475,7 @@ if app_gradle.suffix == ".kts":
             raise SystemExit("Gradle plugins block not found in app file")
         app_text = app_text.replace(
             "plugins {",
-            'plugins {\\n    id("com.google.gms.google-services")',
+            'plugins {\n    id("com.google.gms.google-services")',
             1,
         )
 else:
@@ -484,7 +484,7 @@ else:
             raise SystemExit("Gradle plugins block not found in app file")
         app_text = app_text.replace(
             "plugins {",
-            'plugins {\\n    id "com.google.gms.google-services"',
+            'plugins {\n    id "com.google.gms.google-services"',
             1,
         )
 app_gradle.write_text(app_text)
