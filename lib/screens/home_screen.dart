@@ -18,6 +18,7 @@ import '../models/note.dart';
 import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
 import 'reflection_prompt_screen.dart';
+import 'archived_notes_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
 
@@ -590,6 +591,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
                                       label: const Text('Favorites'),
                                       onPressed: widget.onFavorites,
+                                    ),
+                                    ActionChip(
+                                      avatar: const Icon(Icons.archive_outlined, size: 18),
+                                      label: const Text('Archived Notes'),
+                                      onPressed: () => Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (_) => const ArchivedNotesScreen()),
+                                      ),
                                     ),
                                     ActionChip(
                                       avatar: SvgPicture.asset(
