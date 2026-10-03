@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
 import '../core/navigation/orah_navigation.dart';
@@ -118,6 +119,11 @@ class OrahReminderService {
   }
 
   Future<void> _openDailyReflection() async {
+    final now = DateTime.now();
+    final today = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString('orah_daily_reflection_last_shown', today);
+
     final repository = await NoteRepositoryProvider.instance();
     final navigator = orahNavigatorKey.currentState;
     if (navigator == null) return;
