@@ -8,6 +8,7 @@ import 'package:timezone/data/latest.dart' as tzdata;
 import '../core/navigation/orah_navigation.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../screens/note_editor_screen.dart';
+import '../screens/reflection_prompt_screen.dart';
 
 class OrahReminderService {
   OrahReminderService._();
@@ -93,6 +94,18 @@ class OrahReminderService {
   }
 
   Future<void> openPayload(String? payload) async {
+    if (payload != null && payload.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(payload);
+        if (decoded is Map && decoded['type'] == 'daily_reflection') {
+          await _openDailyReflection();
+          return;
+        }
+      } catch (_) {
+        // Existing note reminders may use a plain note ID payload.
+      }
+    }
+
     final target = _decodePayload(payload);
     final noteId = target.noteId;
     if (noteId == null || noteId.isEmpty) return;
@@ -102,6 +115,53 @@ class OrahReminderService {
     final navigator = orahNavigatorKey.currentState;
     if (navigator == null) return;
     navigator.push(MaterialPageRoute(builder: (_) => NoteEditorScreen(repository: repository, note: note)));
+  }
+
+  Future<void> _openDailyReflection() async {
+    final repository = await NoteRepositoryProvider.instance();
+    final navigator = orahNavigatorKey.currentState;
+    if (navigator == null) return;
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => ReflectionPromptScreen(repository: repository),
+      ),
+    );
+  }
+
+  Future<void> scheduleDailyReflection({required TimeOfDay time}) async {
+    if (!_initialized) await initialize();
+
+    final now = DateTime.now();
+    var next = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    if (!next.isAfter(now)) {
+      next = next.add(const Duration(days: 1));
+    }
+
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'orah_daily_reflection',
+        'Daily Reflection',
+        channelDescription: 'A gentle daily prompt to pause and reflect',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+      ),
+    );
+
+    await _plugin.zonedSchedule(
+      id: _notificationId('daily-reflection'),
+      title: 'Time for your Daily Reflection',
+      body: 'Take a quiet moment to write down what is on your mind.',
+      scheduledDate: tz.TZDateTime.from(next.toLocal(), tz.local),
+      notificationDetails: details,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
+      payload: jsonEncode({'type': 'daily_reflection'}),
+    );
+  }
+
+  Future<void> cancelDailyReflection() async {
+    if (!_initialized) await initialize();
+    await _plugin.cancel(id: _notificationId('daily-reflection'));
   }
 
   int _notificationId(String key) =>
