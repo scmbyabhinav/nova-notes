@@ -267,6 +267,7 @@ class _NovaShellState extends State<NovaShell> {
           repository: repository,
           initialType: NoteType.text,
           speechService: widget.speechService,
+          requestMicrophonePermission: widget.requestMicrophonePermission,
           autoStartVoice: true,
         ),
       ),
