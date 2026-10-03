@@ -50,14 +50,14 @@ class StatisticsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
-            Text('Small moments add up.', style: theme.textTheme.titleLarge?.copyWith(color: indigo, fontWeight: FontWeight.w800)),
+            Text('Small moments add up.', style: theme.textTheme.titleLarge?.copyWith(color: StatisticsScreen.indigo, fontWeight: FontWeight.w800)),
             const SizedBox(height: 5),
             Text('A gentle look at your writing habits and reflections.', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 20),
             Row(children: [
               Expanded(child: _MetricCard(label: 'Current Streak', value: '$streak', detail: streak == 1 ? 'day in a row' : 'days in a row', icon: Icons.local_fire_department_rounded, accent: const Color(0xFFEA580C))),
               const SizedBox(width: 12),
-              Expanded(child: _MetricCard(label: 'Total Notes', value: '${activeNotes.length}', detail: 'notes saved', icon: Icons.description_rounded, accent: emerald)),
+              Expanded(child: _MetricCard(label: 'Total Notes', value: '${activeNotes.length}', detail: 'notes saved', icon: Icons.description_rounded, accent: StatisticsScreen.emerald)),
             ]),
             const SizedBox(height: 22),
             _SectionCard(
@@ -143,7 +143,7 @@ class StatisticsScreen extends StatelessWidget {
                           toY: weekly[i].toDouble(),
                           width: 18,
                           borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
-                          color: i == 6 ? emerald : indigo.withValues(alpha: 0.72),
+                          color: i == 6 ? StatisticsScreen.emerald : StatisticsScreen.indigo.withValues(alpha: 0.72),
                         ),
                       ]),
                   ],
@@ -183,7 +183,7 @@ class _MetricCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(label, style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600)),
           const SizedBox(height: 3),
-          Text(value, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: label == 'Current Streak' ? indigo : const Color(0xFF059669))),
+          Text(value, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: label == 'Current Streak' ? StatisticsScreen.indigo : StatisticsScreen.emerald)),
           Text(detail, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ]),
       ),
