@@ -51,6 +51,7 @@ class Note {
     this.isLocked = false,
     this.isTrashed = false,
     this.dueAt,
+    this.mood,
   });
 
   final String id;
@@ -70,6 +71,8 @@ class Note {
   final bool isLocked;
   final bool isTrashed;
   final DateTime? dueAt;
+  /// Optional mood selected by the user when creating or editing this note.
+  final String? mood;
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -89,6 +92,7 @@ class Note {
         'isLocked': isLocked,
         'isTrashed': isTrashed,
         'dueAt': dueAt?.toIso8601String(),
+        'mood': mood,
       };
 
   factory Note.fromMap(Map<String, dynamic> map) => Note(
@@ -114,6 +118,7 @@ class Note {
         isLocked: map['isLocked'] as bool? ?? false,
         isTrashed: map['isTrashed'] as bool? ?? false,
         dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
+        mood: map['mood'] as String?,
       );
 
   int get completedChecklistItems =>
@@ -145,6 +150,8 @@ class Note {
     bool? isTrashed,
     DateTime? dueAt,
     bool clearDueAt = false,
+    String? mood,
+    bool clearMood = false,
   }) {
     return Note(
       id: id,
@@ -164,6 +171,7 @@ class Note {
       isLocked: isLocked ?? this.isLocked,
       isTrashed: isTrashed ?? this.isTrashed,
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
+      mood: clearMood ? null : (mood ?? this.mood),
     );
   }
 }

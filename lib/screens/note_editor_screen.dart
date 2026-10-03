@@ -70,6 +70,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isFavorite = false;
   bool _isArchived = false;
   DateTime? _dueAt;
+  String? _mood;
   int? _noteColor;
   String? _folderId;
   List<String> _tags = const [];
@@ -115,6 +116,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _privateUnlocked = !locked;
     if (locked) _lockedCiphertext = existing?.content;
     _dueAt = existing?.dueAt ?? widget.initialDueAt;
+    _mood = existing?.mood;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _tags = locked ? const [] : [...(existing?.tags ?? const [])];
@@ -365,7 +367,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final title = _titleController.text.trim();
     final content = _noteType == NoteType.checklist ? _checklistContent() : _contentController.text;
 
-    if (title.isEmpty && content.trim().isEmpty) {
+    if (title.isEmpty && content.trim().isEmpty && _mood == null && _attachments.isEmpty && _checklistItems.isEmpty) {
       if (mounted) setState(() => _saving = false);
       return;
     }
@@ -387,6 +389,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isArchived: _isArchived,
             color: _noteColor,
             dueAt: _dueAt,
+            mood: _mood,
           )
         : widget.note!.copyWith(
             title: title.isEmpty ? 'Untitled note' : title,
@@ -402,6 +405,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isArchived: _isArchived,
             color: _noteColor,
             dueAt: _dueAt,
+            mood: _mood,
           );
 
     await widget.repository.saveNote(note);
@@ -1021,6 +1025,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         isArchived: _isArchived,
                         isTrashed: false,
                         dueAt: _dueAt,
+                        mood: _mood,
                       ),
                     ),
                   );
@@ -1230,6 +1235,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
                       children: [
+                        if (!_previewMode) _MoodSelector(
+                          selectedMood: _mood,
+                          onSelected: (mood) async {
+                            setState(() {
+                              _mood = mood;
+                              _hasChanges = true;
+                            });
+                            await _save();
+                          },
+                        ),
                         TextField(
                           controller: _titleController,
                           textCapitalization: TextCapitalization.sentences,
@@ -1368,6 +1383,58 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ],
         ),
         ),
+      ),
+    );
+  }
+}
+
+class _MoodSelector extends StatelessWidget {
+  const _MoodSelector({
+    required this.selectedMood,
+    required this.onSelected,
+  });
+
+  final String? selectedMood;
+  final ValueChanged<String?> onSelected;
+
+  static const moods = <(String, String, String)>[
+    ('happy', '😊', 'Happy'),
+    ('neutral', '😐', 'Neutral'),
+    ('sad', '😢', 'Sad'),
+    ('angry', '😡', 'Angry'),
+    ('thoughtful', '🤔', 'Thoughtful'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('How are you feeling?', style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          )),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final mood in moods)
+                Tooltip(
+                  message: mood.$3,
+                  child: ChoiceChip(
+                    label: Text(mood.$2, style: const TextStyle(fontSize: 20)),
+                    selected: selectedMood == mood.$1,
+                    onSelected: (_) => onSelected(selectedMood == mood.$1 ? null : mood.$1),
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }
