@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -85,7 +86,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late final VoiceSpeechService _speechService;
   bool _speechInitializing = false;
   bool _isListening = false;
+  bool _voiceProcessing = false;
+  bool _voiceSessionActive = false;
+  bool _voiceStopRequested = false;
   String _voiceBaseText = '';
+  String _voiceTranscript = '';
+  Timer? _voiceDurationTimer;
+  int _voiceElapsedSeconds = 0;
   final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
   final ScreenshotController _noteCardScreenshotController = ScreenshotController();
 
@@ -150,64 +157,268 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _toggleVoiceInput();
   }
 
-  Future<void> _toggleVoiceInput() async {
-    if (_speechInitializing) return;
-    if (_isListening) {
-      await _speechService.stopListening();
-      if (mounted) setState(() => _isListening = false);
-      return;
-    }
-    setState(() => _speechInitializing = true);
-    final available = await _speechService.initialize(
-      onStatus: (status) {
-        if (!mounted) return;
-        if (status == 'done' || status == 'notListening') setState(() => _isListening = false);
-      },
-      onError: (message) {
-        if (!mounted) return;
-        setState(() => _isListening = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Voice input unavailable: $message')));
-      },
-    );
+  String _formatVoiceDuration() {
+    final minutes = (_voiceElapsedSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_voiceElapsedSeconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  void _startVoiceDurationTimer() {
+    _voiceDurationTimer?.cancel();
+    _voiceElapsedSeconds = 0;
+    _voiceDurationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && _isListening) {
+        setState(() => _voiceElapsedSeconds++);
+      }
+    });
+  }
+
+  Future<void> _showMicrophonePermissionDialog({
+    required bool permanentlyDenied,
+  }) async {
     if (!mounted) return;
-    if (!available) {
-      setState(() => _speechInitializing = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Voice input is unavailable on this device.')));
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: const Icon(Icons.mic_off_rounded, size: 36),
+        title: const Text('Microphone access needed'),
+        content: const Text(
+          'Orah Notes needs microphone access to transcribe your voice. '
+          'You can enable this in Settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Not now'),
+          ),
+          FilledButton.icon(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              await openAppSettings();
+            },
+            icon: const Icon(Icons.settings_outlined),
+            label: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleVoiceFabTap() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_voiceHintShownKey, true);
+    if (!mounted) return;
+    if (_isListening) {
+      await _stopAndSaveVoiceInput();
+    } else {
+      await _toggleVoiceInput();
+    }
+  }
+
+  Future<void> _toggleVoiceInput() async {
+    if (_speechInitializing || _voiceProcessing) return;
+    if (_isListening) {
+      await _stopAndSaveVoiceInput();
       return;
     }
-    _voiceBaseText = _contentController.text;
-    setState(() { _speechInitializing = false; _isListening = true; });
-    await _speechService.startListening(
-      onResult: (transcript, isFinal) {
-        if (!mounted || transcript.trim().isEmpty) return;
-        final baseText = _voiceBaseText.trimRight();
-        final separator = baseText.isEmpty ? '' : '\n';
-        final nextText = '$baseText$separator${transcript.trim()}';
-        _contentController.value = _contentController.value.copyWith(
-          text: nextText,
-          selection: TextSelection.collapsed(offset: nextText.length),
-          composing: TextRange.empty,
-        );
-        if (isFinal) {
-          if (_titleController.text.trim().isEmpty) {
-            final firstLine = nextText
-                .split(RegExp(r'\r?\n'))
-                .map((line) => line.trim())
-                .firstWhere((line) => line.isNotEmpty, orElse: () => '');
-            if (firstLine.isNotEmpty) {
-              _titleController.text = firstLine.length > 80
-                  ? firstLine.substring(0, 80) + '…'
-                  : firstLine;
-            }
+
+    setState(() => _speechInitializing = true);
+    final permission = await Permission.microphone.request();
+    if (!mounted) return;
+    if (!permission.isGranted) {
+      setState(() => _speechInitializing = false);
+      await _showMicrophonePermissionDialog(
+        permanentlyDenied: permission.isPermanentlyDenied,
+      );
+      return;
+    }
+
+    try {
+      final available = await _speechService.initialize(
+        onStatus: (status) {
+          if (!mounted) return;
+          if ((status == 'done' || status == 'notListening') &&
+              _voiceSessionActive &&
+              !_voiceStopRequested) {
+            unawaited(_handleUnexpectedVoiceStop());
           }
-          _voiceBaseText = nextText;
-          _isListening = false;
-          _hasChanges = true;
-          _save();
-          if (mounted) setState(() {});
-        }
-      },
+        },
+        onError: (message) {
+          if (!mounted) return;
+          if (_voiceSessionActive && !_voiceStopRequested) {
+            unawaited(_handleUnexpectedVoiceStop());
+          } else {
+            setState(() {
+              _speechInitializing = false;
+              _voiceProcessing = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Voice input unavailable: $message')),
+            );
+          }
+        },
+      );
+      if (!mounted) return;
+      if (!available) {
+        setState(() => _speechInitializing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Voice input is unavailable on this device.'),
+          ),
+        );
+        return;
+      }
+
+      _voiceBaseText = _contentController.text;
+      _voiceTranscript = '';
+      _voiceStopRequested = false;
+      _voiceSessionActive = true;
+      _startVoiceDurationTimer();
+      setState(() {
+        _speechInitializing = false;
+        _voiceProcessing = false;
+        _isListening = true;
+      });
+      await _speechService.startListening(
+        onResult: (transcript, isFinal) {
+          if (!mounted || transcript.trim().isEmpty) return;
+          _voiceTranscript = transcript.trim();
+          final baseText = _voiceBaseText.trimRight();
+          final separator = baseText.isEmpty ? '' : '\n';
+          final nextText = '$baseText$separator$_voiceTranscript';
+          _contentController.value = _contentController.value.copyWith(
+            text: nextText,
+            selection: TextSelection.collapsed(offset: nextText.length),
+            composing: TextRange.empty,
+          );
+          if (isFinal) {
+            _voiceBaseText = nextText;
+            _voiceTranscript = '';
+            _voiceSessionActive = false;
+            _voiceStopRequested = true;
+            _voiceDurationTimer?.cancel();
+            if (_titleController.text.trim().isEmpty) {
+              final firstLine = nextText
+                  .split(RegExp(r'\r?\n'))
+                  .map((line) => line.trim())
+                  .firstWhere((line) => line.isNotEmpty, orElse: () => '');
+              if (firstLine.isNotEmpty) {
+                _titleController.text = firstLine.length > 80
+                    ? '\${firstLine.substring(0, 80)}…'
+                    : firstLine;
+              }
+            }
+            _hasChanges = true;
+            _isListening = false;
+            _voiceProcessing = false;
+            unawaited(_save());
+            if (mounted) setState(() {});
+          }
+        },
+      );
+    } catch (error) {
+      if (!mounted) return;
+      _voiceSessionActive = false;
+      _voiceStopRequested = true;
+      _voiceDurationTimer?.cancel();
+      setState(() {
+        _speechInitializing = false;
+        _voiceProcessing = false;
+        _isListening = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not start voice capture: $error')),
+      );
+    }
+  }
+
+  Future<void> _stopAndSaveVoiceInput() async {
+    if (!_isListening || _voiceProcessing) return;
+    _voiceStopRequested = true;
+    _voiceDurationTimer?.cancel();
+    setState(() {
+      _isListening = false;
+      _voiceProcessing = true;
+    });
+    try {
+      await _speechService.stopListening();
+    } catch (_) {
+      // The latest partial text is already in the editor and will still be saved.
+    }
+    if (!mounted) return;
+    _voiceSessionActive = false;
+    _voiceBaseText = _contentController.text;
+    _voiceTranscript = '';
+    _hasChanges = true;
+    setState(() => _voiceProcessing = false);
+    await _save();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Voice text saved to note.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Future<void> _cancelVoiceInput() async {
+    _voiceStopRequested = true;
+    _voiceSessionActive = false;
+    _voiceDurationTimer?.cancel();
+    try {
+      await _speechService.cancel();
+    } catch (_) {
+      // Discard should still restore the text from before this voice session.
+    }
+    if (!mounted) return;
+    _contentController.value = TextEditingValue(
+      text: _voiceBaseText,
+      selection: TextSelection.collapsed(offset: _voiceBaseText.length),
     );
+    _voiceTranscript = '';
+    setState(() {
+      _speechInitializing = false;
+      _voiceProcessing = false;
+      _isListening = false;
+    });
+  }
+
+  Future<void> _retryVoiceInput() async {
+    final baseline = _voiceBaseText;
+    await _cancelVoiceInput();
+    if (!mounted) return;
+    _contentController.value = TextEditingValue(
+      text: baseline,
+      selection: TextSelection.collapsed(offset: baseline.length),
+    );
+    await _toggleVoiceInput();
+  }
+
+  Future<void> _handleUnexpectedVoiceStop() async {
+    if (!_voiceSessionActive || !mounted) return;
+    _voiceSessionActive = false;
+    _voiceStopRequested = true;
+    _voiceDurationTimer?.cancel();
+    final hasPartialText = _voiceTranscript.trim().isNotEmpty;
+    _voiceBaseText = _contentController.text;
+    _voiceTranscript = '';
+    setState(() {
+      _speechInitializing = false;
+      _voiceProcessing = false;
+      _isListening = false;
+    });
+    if (!hasPartialText) return;
+    _hasChanges = true;
+    await _save();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Recording stopped. Partial text saved.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   List<ChecklistItem> _parseChecklistContent(String content) {
@@ -915,6 +1126,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   void dispose() {
     _speechService.dispose();
+    _voiceDurationTimer?.cancel();
     _saveTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
@@ -949,13 +1161,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Tooltip(
         key: _voiceHintKey,
-        message: 'Tap the mic to speak your note',
+        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
         triggerMode: TooltipTriggerMode.manual,
-        child: FloatingActionButton(
-          onPressed: _handleVoiceFabTap,
-          child: _isListening
-              ? const Icon(Icons.stop_rounded)
-              : const OrahAssetIcon('microphone', color: Colors.white),
+        child: FloatingActionButton.extended(
+          onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
+          backgroundColor: _isListening ? Colors.red.shade600 : const Color(0xFFF97316),
+          foregroundColor: Colors.white,
+          icon: _speechInitializing || _voiceProcessing
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Icon(_isListening ? Icons.stop_rounded : Icons.mic_rounded, size: 26),
+          label: Text(
+            _isListening
+                ? _formatVoiceDuration()
+                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
+          ),
         ),
       ),
       appBar: AppBar(
@@ -1123,6 +1349,78 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            if (_isListening || _speechInitializing || _voiceProcessing)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: (_isListening ? Colors.red : const Color(0xFFF97316))
+                        .withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: (_isListening ? Colors.red : const Color(0xFFF97316))
+                          .withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (_speechInitializing || _voiceProcessing)
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          else
+                            const Icon(Icons.fiber_manual_record_rounded, color: Colors.red, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _isListening
+                                  ? 'Recording • \${_formatVoiceDuration()}'
+                                  : (_voiceProcessing ? 'Saving voice text…' : 'Preparing microphone…'),
+                              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_speechInitializing || _voiceProcessing) ...[
+                        const SizedBox(height: 8),
+                        const LinearProgressIndicator(),
+                      ],
+                      if (_isListening) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          alignment: WrapAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              onPressed: _cancelVoiceInput,
+                              icon: const Icon(Icons.close_rounded, size: 18),
+                              label: const Text('Cancel'),
+                            ),
+                            TextButton.icon(
+                              onPressed: _retryVoiceInput,
+                              icon: const Icon(Icons.refresh_rounded, size: 18),
+                              label: const Text('Retry'),
+                            ),
+                            FilledButton.icon(
+                              onPressed: _stopAndSaveVoiceInput,
+                              icon: const Icon(Icons.check_rounded, size: 18),
+                              label: const Text('Stop & Save'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
             if (_folderId != null || _tags.isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
