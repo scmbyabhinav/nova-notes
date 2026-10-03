@@ -74,6 +74,9 @@ class SettingsScreen extends StatelessWidget {
           const Card(
             child: _VoiceGreetingSettingTile(),
           ),
+          const Card(
+            child: _WelcomeAnimationSettingTile(),
+          ),
           const SizedBox(height: 16),
           _sectionHeader(theme, 'Daily inspiration'),
           const Card(
@@ -358,6 +361,55 @@ class _VoiceGreetingSettingTileState extends State<_VoiceGreetingSettingTile> {
   }
 }
  
+class _WelcomeAnimationSettingTile extends StatefulWidget {
+  const _WelcomeAnimationSettingTile();
+
+  @override
+  State<_WelcomeAnimationSettingTile> createState() =>
+      _WelcomeAnimationSettingTileState();
+}
+
+class _WelcomeAnimationSettingTileState
+    extends State<_WelcomeAnimationSettingTile> {
+  bool _enabled = true;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPreference();
+  }
+
+  Future<void> _loadPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _enabled = prefs.getBool('orah_welcome_animation_enabled') ?? true;
+      _loading = false;
+    });
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('orah_welcome_animation_enabled', value);
+    if (!mounted) return;
+    setState(() => _enabled = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: const Icon(Icons.waving_hand_outlined),
+      title: const Text('Show Welcome Animation'),
+      subtitle: Text(_enabled
+          ? 'Show a short personalized welcome when Orah opens.'
+          : 'Open Orah directly without the welcome animation.'),
+      value: _enabled,
+      onChanged: _loading ? null : _setEnabled,
+    );
+  }
+}
+
 class _DailyInspirationSettingTile extends StatefulWidget {
   const _DailyInspirationSettingTile();
 
