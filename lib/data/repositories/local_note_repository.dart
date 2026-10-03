@@ -16,6 +16,7 @@ class LocalNoteRepository implements NoteRepository {
   final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
 
   static const _storageKey = 'nova_notes_v1';
+  static const _vaultStorageKey = 'orah_vault_notes_v1';
 
   @override
   Stream<List<Note>> watchNotes() {
@@ -67,8 +68,44 @@ class LocalNoteRepository implements NoteRepository {
     final raw = _preferences.getString(_storageKey);
     if (raw == null || raw.isEmpty) return [];
 
+    // One-time migration: older versions kept encrypted private notes in the
+    // ordinary note list. Move their encrypted records into the Vault store.
     try {
       final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        final ordinary = <dynamic>[];
+        final locked = <dynamic>[];
+        for (final item in decoded) {
+          if (item is Map && item['isLocked'] == true) {
+            locked.add(item);
+          } else {
+            ordinary.add(item);
+          }
+        }
+        if (locked.isNotEmpty) {
+          final vaultRaw = _preferences.getString(_vaultStorageKey);
+          final existing = vaultRaw == null || vaultRaw.isEmpty
+              ? <dynamic>[]
+              : (jsonDecode(vaultRaw) as List);
+          final byId = <String, dynamic>{};
+          for (final item in existing) {
+            if (item is Map && item['id'] is String) byId[item['id'] as String] = item;
+          }
+          for (final item in locked) {
+            if (item is Map && item['id'] is String) byId[item['id'] as String] = item;
+          }
+          await _preferences.setString(_vaultStorageKey, jsonEncode(byId.values.toList()));
+          await _preferences.setString(_storageKey, jsonEncode(ordinary));
+        }
+      }
+    } catch (_) {
+      // The normal tolerant parser below handles malformed storage.
+    }
+    final refreshedRaw = _preferences.getString(_storageKey);
+    if (refreshedRaw == null || refreshedRaw.isEmpty) return [];
+
+    try {
+      final decoded = jsonDecode(refreshedRaw);
       if (decoded is! List) return [];
       final seen = <String>{};
       final notes = <Note>[];
@@ -195,11 +232,101 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   Future<void> _write(List<Note> notes) async {
-    final encoded = <Map<String, dynamic>>[];
-    for (final note in notes) {
-      encoded.add(await _toMap(note));
+    final ordinary = <Map<String, dynamic>>[];
+    final vault = <Map<String, dynamic>>[];
+    final existingVaultRaw = _preferences.getString(_vaultStorageKey);
+    if (existingVaultRaw != null && existingVaultRaw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(existingVaultRaw);
+        if (decoded is List) {
+          for (final item in decoded) {
+            if (item is Map) vault.add(Map<String, dynamic>.from(item));
+          }
+        }
+      } catch (_) {
+        throw const FormatException('Vault storage could not be read safely.');
+      }
     }
-    await _preferences.setString(_storageKey, jsonEncode(encoded));
+    final vaultById = <String, Map<String, dynamic>>{
+      for (final item in vault)
+        if (item['id'] is String) item['id'] as String: item,
+    };
+    for (final note in notes) {
+      final encoded = await _toMap(note);
+      if (note.isLocked) {
+        vaultById[note.id] = encoded;
+      } else {
+        ordinary.add(encoded);
+        vaultById.remove(note.id);
+      }
+    }
+    // Persist both snapshots before publishing. Vault records never enter the
+    // ordinary notes JSON array.
+    await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()));
+    await _preferences.setString(_storageKey, jsonEncode(ordinary));
+  }
+
+  /// Returns encrypted Vault records only. Callers must authenticate before
+  /// displaying or opening any record.
+  Future<List<Note>> getVaultNotes() async {
+    final raw = _preferences.getString(_vaultStorageKey);
+    if (raw == null || raw.isEmpty) return [];
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) return [];
+    final notes = <Note>[];
+    for (final item in decoded) {
+      if (item is! Map) continue;
+      final note = _fromMap(Map<String, dynamic>.from(item));
+      if (note.id.isNotEmpty && note.isLocked) notes.add(note);
+    }
+    notes.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    return notes;
+  }
+
+  /// Moves an authenticated Vault note back into ordinary note storage.
+  Future<void> unlockVaultNote(String id) async {
+    final raw = _preferences.getString(_vaultStorageKey);
+    if (raw == null || raw.isEmpty) return;
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) return;
+    final remaining = <dynamic>[];
+    Map<String, dynamic>? record;
+    for (final item in decoded) {
+      if (item is Map && item['id'] == id) {
+        record = Map<String, dynamic>.from(item);
+      } else {
+        remaining.add(item);
+      }
+    }
+    if (record == null) return;
+    final encrypted = record['content'] as String? ?? '';
+    final payload = jsonDecode(await _security.decryptPrivatePayload(encrypted)) as Map<String, dynamic>;
+    final restoredMap = <String, dynamic>{
+      ...record,
+      ...payload,
+      'id': id,
+      'isLocked': false,
+      'title': payload['title'] as String? ?? '',
+      'content': payload['content'] as String? ?? '',
+      'tags': payload['tags'] ?? const <String>[],
+      'checklistItems': payload['checklistItems'] ?? const <Map<String, dynamic>>[],
+    };
+    final restored = _fromMap(restoredMap);
+    final ordinary = await getNotes();
+    ordinary.removeWhere((note) => note.id == id);
+    ordinary.add(restored);
+    await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
+    await _write(ordinary);
+    _publish(await getNotes());
+  }
+
+  Future<void> deleteVaultNote(String id) async {
+    final raw = _preferences.getString(_vaultStorageKey);
+    if (raw == null || raw.isEmpty) return;
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) return;
+    decoded.removeWhere((item) => item is Map && item['id'] == id);
+    await _preferences.setString(_vaultStorageKey, jsonEncode(decoded));
   }
 
   void _publish(List<Note> notes) {
