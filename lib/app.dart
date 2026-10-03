@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'l10n/app_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
@@ -24,9 +25,10 @@ import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart' as registration;
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
 
   final VoiceSpeechService? speechService;
+  final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
 
   @override
@@ -66,16 +68,17 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, skipRegistrationForTesting: widget.skipRegistrationForTesting),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.skipRegistrationForTesting = false});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
+  final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
 
   @override
@@ -107,6 +110,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
       return NovaShell(
         themeController: widget.themeController,
         speechService: widget.speechService,
+        requestMicrophonePermission: widget.requestMicrophonePermission,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
@@ -128,10 +132,11 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
+  final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
 
   @override
@@ -223,6 +228,7 @@ class _NovaShellState extends State<NovaShell> {
           repository: repository,
           initialType: type,
           speechService: widget.speechService,
+          requestMicrophonePermission: widget.requestMicrophonePermission,
         ),
       ),
     );

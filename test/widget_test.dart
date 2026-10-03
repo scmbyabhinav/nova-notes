@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/app.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
@@ -121,7 +122,7 @@ void main() {
 
   testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
     final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech, skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
