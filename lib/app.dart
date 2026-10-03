@@ -17,6 +17,7 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/note_editor_screen.dart';
 import 'screens/statistics_screen.dart';
+import 'screens/calendar_history_screen.dart';
 import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
 import 'services/orah_user_profile_service.dart';
@@ -204,6 +205,7 @@ class _NovaShellState extends State<NovaShell> {
           onFolders: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FoldersScreen())),
           onFavorites: () => setState(() => _index = 2),
           onStatistics: _openStatistics,
+          onCalendarHistory: _openCalendarHistory,
         ),
         CalendarScreen(onNotes: () => setState(() => _index = 0)),
         const FavoritesScreen(),
@@ -237,6 +239,16 @@ class _NovaShellState extends State<NovaShell> {
     if (!mounted) return;
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => StatisticsScreen(notes: notes)),
+    );
+  }
+
+  Future<void> _openCalendarHistory() async {
+    final repository = await NoteRepositoryProvider.instance();
+    await repository.refresh();
+    final notes = await repository.getNotes();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CalendarHistoryScreen(notes: notes)),
     );
   }
 

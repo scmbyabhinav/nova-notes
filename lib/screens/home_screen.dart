@@ -19,7 +19,7 @@ import 'search_screen.dart';
 import 'orah_features_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics});
+  const HomeScreen({super.key, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
 
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
@@ -29,6 +29,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback? onFolders;
   final VoidCallback? onFavorites;
   final VoidCallback? onStatistics;
+  final VoidCallback? onCalendarHistory;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -456,6 +457,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           ),
                         ],
                       ),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: 'Calendar & history',
+                      onPressed: widget.onCalendarHistory,
+                      icon: const Icon(Icons.calendar_month_rounded),
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Statistics & insights',
