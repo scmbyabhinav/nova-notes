@@ -23,6 +23,7 @@ import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
 import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart' as registration;
+import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
   const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
@@ -88,6 +89,7 @@ class OrahEntryGate extends StatefulWidget {
 class _OrahEntryGateState extends State<OrahEntryGate> {
   OrahUserProfile? _profile;
   bool _loading = true;
+  bool _showWelcome = false;
 
   @override
   void initState() {
@@ -97,9 +99,12 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
 
   Future<void> _loadProfile() async {
     final profile = await OrahUserProfileService.instance.loadProfile();
+    final prefs = await SharedPreferences.getInstance();
+    final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     if (!mounted) return;
     setState(() {
       _profile = profile;
+      _showWelcome = profile != null && showWelcome;
       _loading = false;
     });
   }
@@ -121,6 +126,14 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     if (profile == null) {
       return registration.OrahRegistrationScreen(
         onRegistered: (value) => setState(() => _profile = value),
+      );
+    }
+    if (_showWelcome) {
+      return WelcomeSplashScreen(
+        userName: profile.fullName,
+        onComplete: () {
+          if (mounted) setState(() => _showWelcome = false);
+        },
       );
     }
     return NovaShell(
@@ -162,20 +175,10 @@ class _NovaShellState extends State<NovaShell> {
 
   Future<void> _greetUserAtStartup() async {
     final voiceEnabled = await OrahUserProfileService.instance.voiceGreetingEnabled();
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Hello, ${widget.profile.fullName}'),
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      if (voiceEnabled) {
-        OrahUserProfileService.instance.speakGreeting(widget.profile.fullName).catchError((_) {});
-      }
-    });
+    if (!mounted || !voiceEnabled) return;
+    OrahUserProfileService.instance
+        .speakGreeting(widget.profile.fullName)
+        .catchError((_) {});
   }
 
   Future<void> _loadQuickCaptureHint() async {
