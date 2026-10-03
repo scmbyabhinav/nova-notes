@@ -28,7 +28,7 @@ class _WelcomeSplashScreenState extends State<WelcomeSplashScreen>
   void initState() {
     super.initState();
     final trimmedName = widget.userName.trim();
-    _greetingName = trimmedName.isEmpty ? 'Friend' : trimmedName.split(RegExp(r'\\s+')).first;
+    _greetingName = trimmedName.isEmpty ? 'Friend' : trimmedName.split(RegExp(r'\s+')).first;
     _breathingController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
