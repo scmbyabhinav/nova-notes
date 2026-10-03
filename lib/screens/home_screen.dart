@@ -52,6 +52,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   PageRoute<dynamic>? _subscribedRoute;
   int _notesLoadGeneration = 0;
   Timer? _trashSnackBarTimer;
+  Timer? _reflectionCheckTimer;
+  bool _openingScheduledReflection = false;
 
   @override
   void initState() {
@@ -59,6 +61,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
     _loadNotes();
+    _reflectionCheckTimer = Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => _checkScheduledReflection(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
   }
 
 
@@ -69,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     // not fire when switching tabs, so refresh preferences when Home returns.
     if (!oldWidget.isActive && widget.isActive) {
       _loadPreferences();
+      _checkScheduledReflection();
     }
   }
 
@@ -90,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     // Refresh persisted notes and display preferences when returning from another screen.
     _loadNotes();
     _loadPreferences();
+    _checkScheduledReflection();
   }
 
   @override
@@ -97,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (state == AppLifecycleState.resumed) {
       // Reconcile persisted state after Android suspends/resumes the app.
       _loadNotes();
+      _checkScheduledReflection();
     }
   }
 
@@ -181,12 +191,46 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     await _loadNotes();
   }
 
+  Future<void> _checkScheduledReflection() async {
+    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+    if (!(prefs.getBool('orah_daily_reflection_enabled') ?? false)) return;
+
+    final hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
+    final minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
+    final now = DateTime.now();
+    if (now.hour * 60 + now.minute < hour * 60 + minute) return;
+
+    final today = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    if (prefs.getString('orah_daily_reflection_last_shown') == today) return;
+
+    _openingScheduledReflection = true;
+    await prefs.setString('orah_daily_reflection_last_shown', today);
+    try {
+      // If the app is open at the scheduled time, show the reflection window
+      // in-app and move the repeating notification to the next day.
+      try {
+        await OrahReminderService.instance.scheduleDailyReflection(
+          time: TimeOfDay(hour: hour, minute: minute),
+        );
+      } catch (_) {
+        // The in-app reflection should still open if notifications are blocked.
+      }
+      await _openReflection();
+    } finally {
+      _openingScheduledReflection = false;
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
     _trashSnackBarTimer?.cancel();
+    _reflectionCheckTimer?.cancel();
     super.dispose();
   }
 
