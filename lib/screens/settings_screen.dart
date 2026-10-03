@@ -20,6 +20,7 @@ import 'about_nova_screen.dart';
 import 'orah_pro_screen.dart';
 import 'orah_features_screen.dart';
 import 'trash_screen.dart';
+import 'archived_notes_screen.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
@@ -129,6 +130,16 @@ class SettingsScreen extends StatelessWidget {
                   subtitle: const Text('Local backup and portable data'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showBackup(context),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.archive_outlined),
+                  title: const Text('Archived Notes'),
+                  subtitle: const Text('Open or restore notes you have archived'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ArchivedNotesScreen()),
+                  ),
                 ),
                 const Divider(height: 1),
                 ListTile(
