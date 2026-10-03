@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
@@ -111,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Future<void> _setDailyPromptHidden(bool hidden) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('orah_hide_daily_prompt', hidden);
+    await HapticFeedback.selectionClick();
     if (!mounted) return;
     setState(() => _hideDailyPrompt = hidden);
   }
@@ -341,6 +343,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
         await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
+        await HapticFeedback.mediumImpact();
         await _loadNotes();
         await OrahReminderService.instance.cancel(note.id);
         for (final item in note.checklistItems) {

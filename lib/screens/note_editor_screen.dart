@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
@@ -23,6 +24,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/orah_in_app_review_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
@@ -69,6 +71,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late NoteType _noteType;
   bool _saving = false;
   bool _hasChanges = false;
+  bool _hasHapticSaved = false;
+  bool _reviewCounted = false;
   bool _isPinned = false;
   bool _isFavorite = false;
   bool _isArchived = false;
@@ -106,6 +110,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _speechService = widget.speechService ?? SpeechToTextService();
 
     final existing = widget.note;
+    _reviewCounted = existing != null;
     _noteId = existing?.id ?? _newId();
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
@@ -617,6 +622,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           );
 
     await widget.repository.saveNote(note);
+    if (!_hasHapticSaved) {
+      _hasHapticSaved = true;
+      unawaited(HapticFeedback.lightImpact());
+    }
+    if (!_reviewCounted && widget.note == null) {
+      _reviewCounted = true;
+      unawaited(checkAndRequestReview());
+    }
     // Explicitly re-publish the persisted snapshot after the awaited write.
     // This makes the save-to-list handoff deterministic even if a stream
     // emission raced with route navigation.
@@ -1115,6 +1128,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       await const NovaAttachmentService().delete(path);
     }
     await widget.repository.deleteNote(_noteId);
+    await HapticFeedback.mediumImpact();
 
     if (!mounted) return;
     Navigator.of(context).pop();
