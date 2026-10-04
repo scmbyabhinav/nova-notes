@@ -220,7 +220,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     ));
     first.dispose();
     if (newPin == null || newPin.length < 4 || newPin.length > 8 || int.tryParse(newPin) == null) {
-      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared. Set a new PIN in Security & Privacy.'))); Navigator.of(context).pop(); }
+      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared. Set a new PIN in Security & Privacy.'))); }
       return;
     }
     final second = TextEditingController();
@@ -233,10 +233,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     if (confirm == newPin) {
       await security.setPin(newPin);
       await security.setAppLockEnabled(true);
-      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared and new PIN saved.'))); Navigator.of(context).pop(); }
+      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared and new PIN saved.'))); }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PINs did not match. Vault cleared; set a PIN in Security & Privacy.')));
-      Navigator.of(context).pop();
     }
   }
 
