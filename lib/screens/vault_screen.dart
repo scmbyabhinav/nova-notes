@@ -171,20 +171,143 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('New Vault folder'),
-        content: TextField(controller: controller, autofocus: true, maxLength: 40, decoration: const InputDecoration(labelText: 'Folder name')),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 40,
+          decoration: const InputDecoration(labelText: 'Folder name'),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text.trim()), child: const Text('Create')),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: const Text('Create'),
+          ),
         ],
       ),
     );
     controller.dispose();
-    if (name == null || name.isEmpty) return;
-    final folder = VaultFolder(id: DateTime.now().microsecondsSinceEpoch.toString(), name: name);
+
+    if (!mounted || name == null || name.isEmpty || name.length > 40) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    final folder = VaultFolder(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      name: name,
+    );
     final folders = [..._folders, folder];
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_foldersKey, jsonEncode(folders.map((item) => item.toMap()).toList()));
-    if (mounted) setState(() { _folders = folders; _selectedFolderId = folder.id; });
+    await prefs.setString(
+      _foldersKey,
+      jsonEncode(folders.map((item) => item.toMap()).toList()),
+    );
+    if (!mounted) return;
+    setState(() {
+      _folders = folders;
+      _selectedFolderId = folder.id;
+    });
+  }
+
+  Future<void> _renameFolder(VaultFolder folder) async {
+    final controller = TextEditingController(text: folder.name);
+    final name = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rename Vault folder'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 40,
+          decoration: const InputDecoration(labelText: 'Folder name'),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+
+    if (!mounted || name == null || name.isEmpty || name.length > 40) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    final renamed = VaultFolder(id: folder.id, name: name);
+    final folders = _folders
+        .map((item) => item.id == folder.id ? renamed : item)
+        .toList();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _foldersKey,
+      jsonEncode(folders.map((item) => item.toMap()).toList()),
+    );
+    if (!mounted) return;
+    setState(() => _folders = folders);
+  }
+
+  Future<void> _deleteFolder(VaultFolder folder) async {
+    final noteCount = _lockedNotes.where((note) => note.vaultFolderId == folder.id).length;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('Delete ${folder.name}?'),
+        content: Text(
+          noteCount == 0
+              ? 'This folder is empty.'
+              : 'Are you sure? $noteCount private note(s) will be moved to Unfiled.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || confirmed != true) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    final repository = _repository;
+    if (repository != null) {
+      final notesToUnassign = _lockedNotes
+          .where((note) => note.vaultFolderId == folder.id)
+          .toList();
+      for (final note in notesToUnassign) {
+        await repository.saveNote(
+          note.copyWith(clearVaultFolder: true, updatedAt: DateTime.now()),
+        );
+      }
+    }
+
+    final folders = _folders.where((item) => item.id != folder.id).toList();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _foldersKey,
+      jsonEncode(folders.map((item) => item.toMap()).toList()),
+    );
+    if (!mounted) return;
+    setState(() {
+      _folders = folders;
+      if (_selectedFolderId == folder.id) _selectedFolderId = null;
+    });
   }
 
   Future<void> _assignFolder(Note note, String? folderId) async {
@@ -298,7 +421,44 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                       ChoiceChip(label: const Text('All folders'), selected: _selectedFolderId == null, onSelected: (_) => setState(() => _selectedFolderId = null)),
                       const SizedBox(width: 6),
                       for (final folder in _folders) ...[
-                        ChoiceChip(label: Text(folder.name), selected: _selectedFolderId == folder.id, onSelected: (_) => setState(() => _selectedFolderId = folder.id)),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ChoiceChip(
+                              label: Text(folder.name),
+                              selected: _selectedFolderId == folder.id,
+                              onSelected: (_) => setState(() => _selectedFolderId = folder.id),
+                            ),
+                            PopupMenuButton<String>(
+                              tooltip: 'Vault folder options',
+                              onSelected: (action) {
+                                if (action == 'rename') {
+                                  _renameFolder(folder);
+                                } else if (action == 'delete') {
+                                  _deleteFolder(folder);
+                                }
+                              },
+                              itemBuilder: (context) => const [
+                                PopupMenuItem(
+                                  value: 'rename',
+                                  child: ListTile(
+                                    dense: true,
+                                    leading: Icon(Icons.drive_file_rename_outline),
+                                    title: Text('Rename'),
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: ListTile(
+                                    dense: true,
+                                    leading: Icon(Icons.delete_outline),
+                                    title: Text('Delete'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                         const SizedBox(width: 6),
                       ],
                       ActionChip(avatar: const Icon(Icons.create_new_folder_outlined, size: 18), label: const Text('New folder'), onPressed: _createFolder),
