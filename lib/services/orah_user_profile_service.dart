@@ -20,6 +20,7 @@ class OrahUserProfileService {
   static const _emailKey = 'orah_profile_email';
   static const _subscribersKey = 'orah_subscriber_database_v1';
   static const _voiceGreetingKey = 'orah_voice_greeting_enabled';
+  static const _voiceGenderKey = 'orah_tts_voice_gender';
   static const _subscriberApiUrl = String.fromEnvironment('ORAH_SUBSCRIBER_API_URL');
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -97,14 +98,58 @@ class OrahUserProfileService {
     await prefs.setBool(_voiceGreetingKey, enabled);
   }
 
-  Future<void> speakGreeting(String name) async {
-    // Explicitly reset the TTS engine before speaking so a previous utterance
-    // or interrupted session cannot leave the startup greeting queued silently.
-    await _tts.stop();
+  Future<String> voiceGender() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_voiceGenderKey) ?? 'female';
+  }
+
+  Future<void> setVoiceGender(String gender) async {
+    if (gender != 'male' && gender != 'female') {
+      throw ArgumentError.value(gender, 'gender', 'Expected male or female.');
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_voiceGenderKey, gender);
+    await _applyVoice(gender);
+  }
+
+  Future<void> _applyVoice(String gender) async {
     await _tts.setLanguage('en-US');
+    final rawVoices = await _tts.getVoices;
+    if (rawVoices is List) {
+      final voices = rawVoices.whereType<Map>().map(
+        (voice) => Map<String, dynamic>.from(voice),
+      ).toList();
+      final englishVoices = voices.where((voice) {
+        final locale = (voice['locale'] ?? voice['language'] ?? '').toString().toLowerCase();
+        return locale.isEmpty || locale.startsWith('en');
+      }).toList();
+      final candidates = englishVoices.isEmpty ? voices : englishVoices;
+      final matching = candidates.where((voice) {
+        final metadata = [voice['gender'], voice['name'], voice['identifier']]
+            .whereType<Object>().join(' ').toLowerCase();
+        if (gender == 'female') {
+          return metadata.contains('female') || metadata.contains('woman');
+        }
+        return metadata.contains('male') || metadata.contains('man');
+      }).toList();
+      if (matching.isNotEmpty) {
+        final selected = matching.first;
+        await _tts.setVoice(selected.map(
+          (key, value) => MapEntry(key.toString(), value.toString()),
+        ));
+        await _tts.setPitch(1.0);
+        return;
+      }
+    }
+    // Some Android TTS engines expose no gender metadata; pitch is a fallback.
+    await _tts.setPitch(gender == 'female' ? 1.15 : 0.85);
+  }
+
+  Future<void> speakGreeting(String name) async {
+    await _tts.stop();
+    await _applyVoice(await voiceGender());
     await _tts.setSpeechRate(0.48);
     await _tts.setVolume(1.0);
-    await _tts.setPitch(1.0);
     await _tts.speak('Hello, $name');
   }
 

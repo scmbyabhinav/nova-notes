@@ -19,6 +19,7 @@ import 'about_nova_screen.dart';
 import 'orah_pro_screen.dart';
 import 'orah_features_screen.dart';
 import 'trash_screen.dart';
+import 'vault_screen.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
@@ -75,6 +76,9 @@ class SettingsScreen extends StatelessWidget {
             child: _VoiceGreetingSettingTile(),
           ),
           const Card(
+            child: _VoiceGenderSettingTile(),
+          ),
+          const Card(
             child: _WelcomeAnimationSettingTile(),
           ),
           const SizedBox(height: 16),
@@ -84,6 +88,17 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _sectionHeader(theme, l10n.securityAndPrivacy),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.lock_outline_rounded),
+              title: const Text('Vault / Locked Notes'),
+              subtitle: const Text('Open your private, encrypted notes'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const VaultScreen()),
+              ),
+            ),
+          ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.shield_outlined),
@@ -361,6 +376,62 @@ class _VoiceGreetingSettingTileState extends State<_VoiceGreetingSettingTile> {
   }
 }
  
+class _VoiceGenderSettingTile extends StatefulWidget {
+  const _VoiceGenderSettingTile();
+
+  @override
+  State<_VoiceGenderSettingTile> createState() => _VoiceGenderSettingTileState();
+}
+
+class _VoiceGenderSettingTileState extends State<_VoiceGenderSettingTile> {
+  String _gender = 'female';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final gender = await OrahUserProfileService.instance.voiceGender();
+    if (!mounted) return;
+    setState(() {
+      _gender = gender;
+      _loading = false;
+    });
+  }
+
+  Future<void> _setGender(String? gender) async {
+    if (gender == null) return;
+    await OrahUserProfileService.instance.setVoiceGender(gender);
+    if (!mounted) return;
+    setState(() => _gender = gender);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text((gender == 'female' ? 'Female' : 'Male') + ' voice selected for spoken greetings.')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.record_voice_over_rounded),
+      title: const Text('Voice gender'),
+      subtitle: const Text('Choose the voice used for spoken greetings'),
+      trailing: _loading
+          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+          : DropdownButton<String>(
+              value: _gender,
+              onChanged: _setGender,
+              items: const [
+                DropdownMenuItem(value: 'female', child: Text('Female')),
+                DropdownMenuItem(value: 'male', child: Text('Male')),
+              ],
+            ),
+    );
+  }
+}
+
 class _WelcomeAnimationSettingTile extends StatefulWidget {
   const _WelcomeAnimationSettingTile();
 

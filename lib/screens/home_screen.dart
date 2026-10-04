@@ -20,6 +20,7 @@ import 'note_editor_screen.dart';
 import 'reflection_prompt_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
+import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
@@ -212,6 +213,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Future<void> _updateNote(Note note, Note updated) async {
     final repository = await NoteRepositoryProvider.instance();
     await repository.saveNote(updated);
+    // Reconcile the persisted snapshot as well as the live stream, so changes
+    // are visible immediately without restarting the app.
+    await repository.refresh();
+    await _loadNotes();
   }
 
   Future<void> _restoreFromTrash(Note note) async {
@@ -520,6 +525,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           ),
                         ],
                       ),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: 'Vault / Locked Notes',
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const VaultScreen()),
+                      ),
+                      icon: const Icon(Icons.lock_outline_rounded),
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Calendar & history',
