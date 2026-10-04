@@ -130,7 +130,7 @@ class OrahUserProfileService {
         if (gender == 'female') {
           return metadata.contains('female') || metadata.contains('woman');
         }
-        return metadata.contains('male') || metadata.contains('man');
+        return (metadata.contains('male') && !metadata.contains('female')) || metadata.contains('man');
       }).toList();
       if (matching.isNotEmpty) {
         final selected = matching.first;
