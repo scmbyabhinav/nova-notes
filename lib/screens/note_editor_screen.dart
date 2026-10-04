@@ -582,6 +582,115 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<bool> _ensureSecurityForLock() async {
+    final security = NovaSecurityService();
+    final hasPin = await security.hasPin();
+    final biometricEnabled = await security.isBiometricEnabled();
+    final biometricAvailable = biometricEnabled && await security.canUseBiometrics();
+    if (hasPin || biometricAvailable) return false;
+    if (!mounted) return false;
+
+    final shouldSetup = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          Icons.shield_outlined,
+          size: 42,
+          color: Theme.of(dialogContext).colorScheme.primary,
+        ),
+        title: const Text('Secure Your Vault'),
+        content: const Text(
+          'To lock this note, you need to set up a PIN or Biometric authentication first. '
+          'This ensures only you can access it.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Set Up Security'),
+          ),
+        ],
+      ),
+    );
+    if (shouldSetup != true || !mounted) return false;
+
+    final first = await _requestLockSetupPin('Create Vault PIN');
+    if (first == null || !mounted) return false;
+    final second = await _requestLockSetupPin('Confirm Vault PIN');
+    if (second == null || !mounted) return false;
+    if (first != second) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PINs do not match. Your note was not locked.')),
+      );
+      return false;
+    }
+
+    try {
+      await security.setPin(first);
+      await security.setAppLockEnabled(true);
+      if (!mounted) return false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vault PIN created. Securing your note now…')),
+      );
+      // Creating and confirming this PIN is the setup action authorizing this lock.
+      return true;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('FormatException: ', ''))),
+        );
+      }
+      return false;
+    }
+  }
+
+  Future<String?> _requestLockSetupPin(String title) async {
+    final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final pin = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            obscureText: true,
+            maxLength: 8,
+            decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+            validator: (value) {
+              if (value == null || !RegExp(r'^\\d{4,8}$').hasMatch(value)) {
+                return 'Enter 4–8 digits';
+              }
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(dialogContext).pop(controller.text);
+              }
+            },
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    return pin;
+  }
+
   Future<void> _lockNote() async {
     if (_titleController.text.trim().isEmpty &&
         _contentController.text.trim().isEmpty &&
@@ -591,14 +700,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       );
       return;
     }
+
+    final setupCompleted = await _ensureSecurityForLock();
     final security = NovaSecurityService();
-    if (!await security.canUseBiometrics() && !await security.hasPin()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Set a Vault PIN in Settings > Security & Privacy, or enable device biometrics, before locking notes.')),
-      );
-      return;
-    }
-    if (!await _authenticatePrivateAccess()) {
+    final hasPin = await security.hasPin();
+    final biometricEnabled = await security.isBiometricEnabled();
+    final biometricAvailable = biometricEnabled && await security.canUseBiometrics();
+    if (!setupCompleted && !hasPin && !biometricAvailable) return;
+
+    if (!setupCompleted && !await _authenticatePrivateAccess()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Authentication was not completed. Note was not locked.')),
