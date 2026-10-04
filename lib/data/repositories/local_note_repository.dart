@@ -19,25 +19,34 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Stream<List<Note>> watchNotes() {
+    return _watchNotesFiltered(includeLocked: false);
+  }
+
+  /// Emits locked notes only. Subscribe to this stream only after Vault auth.
+  Stream<List<Note>> watchVaultNotes() {
+    return _watchNotesFiltered(includeLocked: true);
+  }
+
+  Stream<List<Note>> _watchNotesFiltered({required bool includeLocked}) {
     return Stream.multi(
       (controller) {
         var sawLiveUpdate = false;
+        List<Note> filterNotes(List<Note> notes) => notes
+            .where((note) => includeLocked ? note.isLocked : !note.isLocked)
+            .toList(growable: false);
 
         late final StreamSubscription<List<Note>> subscription;
         subscription = _notesController.stream.listen(
           (notes) {
             sawLiveUpdate = true;
-            controller.add(notes);
+            controller.add(List<Note>.unmodifiable(filterNotes(notes)));
           },
           onError: controller.addError,
         );
         controller.onCancel = subscription.cancel;
 
-        // Broadcast streams intentionally do not buffer events for listeners
-        // that were not present when the event was published. Seed each new
-        // Home subscriber from persistent storage so it cannot miss the note
-        // created immediately before/around navigation.
-        getNotes().then(
+        final initial = includeLocked ? getVaultNotes() : getNotes();
+        initial.then(
           (notes) {
             if (!sawLiveUpdate && !controller.isClosed) {
               controller.add(List<Note>.unmodifiable(notes));
@@ -59,11 +68,22 @@ class LocalNoteRepository implements NoteRepository {
   /// This is intentionally separate from [saveNote]: callers use it when a
   /// screen returns to a list that may have missed a transient broadcast.
   Future<void> refresh() async {
-    _publish(await getNotes());
+    _publish(await _getAllNotes());
   }
 
   @override
   Future<List<Note>> getNotes() async {
+    final notes = await _getAllNotes();
+    return notes.where((note) => !note.isLocked).toList();
+  }
+
+  /// Returns private notes only for the authenticated Vault screen.
+  Future<List<Note>> getVaultNotes() async {
+    final notes = await _getAllNotes();
+    return notes.where((note) => note.isLocked).toList();
+  }
+
+  Future<List<Note>> _getAllNotes() async {
     final raw = _preferences.getString(_storageKey);
     if (raw == null || raw.isEmpty) return [];
 
@@ -91,7 +111,7 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Future<Note?> getNote(String id) async {
-    final notes = await getNotes();
+    final notes = await _getAllNotes();
     for (final note in notes) {
       if (note.id == id) return note;
     }
@@ -100,7 +120,7 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Future<void> saveNote(Note note) async {
-    final notes = await getNotes();
+    final notes = await _getAllNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
 
     if (note.id.trim().isEmpty) throw const FormatException('Note ID cannot be empty.');
@@ -118,7 +138,7 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Future<void> deleteNote(String id) async {
-    final notes = await getNotes();
+    final notes = await _getAllNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
     _publish(notes);
@@ -136,7 +156,7 @@ class LocalNoteRepository implements NoteRepository {
     if (normalized.length > 200) {
       throw const FormatException('Search query is too long.');
     }
-    final notes = await getNotes();
+    final notes = (await _getAllNotes()).where((note) => !note.isLocked).toList();
 
     final terms = normalized
         .split(RegExp(r'\s+'))
@@ -315,7 +335,7 @@ class LocalNoteRepository implements NoteRepository {
 
   /// Returns a portable JSON backup containing all notes.
   Future<String> exportJson() async {
-    final notes = await getNotes();
+    final notes = await _getAllNotes();
     if (notes.length > 100000) {
       throw const FormatException('Too many notes to export safely.');
     }
@@ -357,7 +377,7 @@ class LocalNoteRepository implements NoteRepository {
       imported.add(note);
     }
 
-    final existing = await getNotes();
+    final existing = await _getAllNotes();
     final byId = <String, Note>{for (final n in existing) n.id: n};
 
     for (final note in imported) {

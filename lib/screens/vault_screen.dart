@@ -35,10 +35,10 @@ class _VaultScreenState extends State<VaultScreen> {
     final repository = await NoteRepositoryProvider.instance();
     if (!mounted) return;
     _repository = repository;
-    _subscription = repository.watchNotes().listen((notes) {
+    _subscription = repository.watchVaultNotes().listen((notes) {
       if (!mounted) return;
       setState(() {
-        _lockedNotes = notes.where((note) => note.isLocked && !note.isTrashed).toList()
+        _lockedNotes = notes.where((note) => !note.isTrashed).toList()
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         _loading = false;
       });

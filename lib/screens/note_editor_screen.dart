@@ -1193,6 +1193,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _delete() async {
+    if (_isLocked && !await _authenticatePrivateAccess()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Authentication failed. Note was not deleted.')),
+        );
+      }
+      return;
+    }
     for (final path in _attachments) {
       await const NovaAttachmentService().delete(path);
     }
