@@ -169,10 +169,13 @@ jobs:
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
       - name: Build release APK
+        if: ${{ inputs.production_release == true }}
         run: flutter build apk --release
       - name: Build release AAB
+        if: ${{ inputs.production_release == true }}
         run: flutter build appbundle --release --tree-shake-icons
       - name: Verify release artifacts
+        if: ${{ inputs.production_release == true }}
         shell: bash
         run: |
           set -euo pipefail
@@ -186,12 +189,14 @@ jobs:
             grep -q "jar verified" /tmp/orah-jarsigner.txt
           fi
       - name: Upload release APK
+        if: ${{ inputs.production_release == true }}
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-apk-${{ github.sha }}
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
       - name: Upload release AAB
+        if: ${{ inputs.production_release == true }}
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-aab-${{ github.sha }}
