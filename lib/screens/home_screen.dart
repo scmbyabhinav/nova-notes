@@ -1715,7 +1715,6 @@ class _NoteCard extends StatelessWidget {
                   ),
                 ),
               ],
-              const Spacer(),
               const SizedBox(height: 9),
               Row(
                 children: [
