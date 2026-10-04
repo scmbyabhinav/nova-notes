@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import '../core/services/nova_security_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../data/repositories/folder_repository_provider.dart';
@@ -8,6 +11,7 @@ import '../models/search_filter.dart';
 import 'note_editor_screen.dart' show NoteEditorScreen;
 import '../services/orah_feature_gate.dart';
 import 'orah_pro_screen.dart';
+import 'vault_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -37,20 +41,21 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _load() async {
     final repository = await NoteRepositoryProvider.instance();
     final notes = await repository.getNotes();
+    final vaultNotes = await repository.getVaultNotes();
     final folderRepository = await FolderRepositoryProvider.instance();
     final folders = await folderRepository.getFolders();
 
     if (!mounted) return;
 
     setState(() {
-      _allNotes = notes;
+      _allNotes = [...notes, ...vaultNotes];
       _folders = folders;
       _results = notes.where((note) => !note.isArchived && !note.isTrashed).toList();
       _loading = false;
     });
   }
 
-  void _search() {
+  Future<void> _search() async {
     final rawQuery = _controller.text.trim().toLowerCase();
     final tokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
     final hasAdvancedOperator = tokens.any((token) =>
@@ -120,7 +125,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_filter.noteType != null && note.type != _filter.noteType) continue;
       if (_filter.folderId != null && note.folderId != _filter.folderId) continue;
       if (locked == true && !note.isLocked) continue;
-      if (locked != true && note.isLocked && terms.isNotEmpty) continue;
+      if (note.isLocked && terms.isEmpty && locked != true) continue;
       if (pinned == true && !note.isPinned) continue;
       if (favorite == true && !note.isFavorite) continue;
       if (archived == true && !note.isArchived) continue;
@@ -135,12 +140,37 @@ class _SearchScreenState extends State<SearchScreen> {
       if (folderTerm != null && noteFolder != folderTerm && note.folderId != folderTerm) continue;
       if (tagTerm != null && !note.tags.any((tag) => tag.toLowerCase() == tagTerm || tag.toLowerCase().contains(tagTerm!))) continue;
 
-      final title = note.title.toLowerCase();
-      final content = note.content.toLowerCase();
-      final tags = note.tags.map((tag) => tag.toLowerCase()).toList();
-      final checklist = note.checklistItems.map((item) => item.text.toLowerCase()).toList();
-      final haystack = [title, content, ...tags, ...checklist, noteFolder].join(' ');
+      var title = note.title.toLowerCase();
+      var content = note.content.toLowerCase();
+      var tags = note.tags.map((tag) => tag.toLowerCase()).toList();
+      var checklist = note.checklistItems.map((item) => item.text.toLowerCase()).toList();
 
+      if (note.isLocked && terms.isNotEmpty) {
+        try {
+          final clearText = await NovaSecurityService().decryptPrivatePayload(note.content);
+          final payload = jsonDecode(clearText);
+          if (payload is Map) {
+            title = (payload['title'] as String? ?? '').toLowerCase();
+            content = (payload['content'] as String? ?? '').toLowerCase();
+            tags = (payload['tags'] is List)
+                ? List<String>.from((payload['tags'] as List).whereType<String>())
+                    .map((tag) => tag.toLowerCase()).toList()
+                : <String>[];
+            checklist = (payload['checklistItems'] is List)
+                ? (payload['checklistItems'] as List)
+                    .whereType<Map>()
+                    .map((item) => (item['text'] as String? ?? '').toLowerCase())
+                    .toList()
+                : <String>[];
+          }
+        } catch (_) {
+          continue;
+        }
+      }
+
+      final haystack = note.isLocked && terms.isEmpty
+          ? 'locked note private note'
+          : [title, content, ...tags, ...checklist, noteFolder].join(' ');
       if (terms.isNotEmpty && !terms.every(haystack.contains)) continue;
 
       var score = 0;
@@ -169,6 +199,13 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _open(Note note) async {
+    if (note.isLocked) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const VaultScreen()),
+      );
+      await _load();
+      return;
+    }
     final repository = await NoteRepositoryProvider.instance();
 
     if (!mounted) return;
@@ -410,10 +447,17 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.search_off_rounded,
-                                    size: 48,
-                                    color: theme.colorScheme.primary,
+                                  Container(
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.55),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.search_off_rounded,
+                                      size: 42,
+                                      color: theme.colorScheme.primary,
+                                    ),
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
@@ -483,18 +527,21 @@ class _SearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final text = note.isLocked ? 'Locked note — unlock to view' : (note.content.isEmpty ? 'No content' : note.content);
+    final text = note.isLocked ? 'Authenticate to open this private note' : (note.content.isEmpty ? 'No content' : note.content);
 
     return Card(
       child: ListTile(
         onTap: onTap,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-        leading: const CircleAvatar(
-          child: const OrahAssetIcon('notes', size: 24),
+        leading: CircleAvatar(
+          backgroundColor: note.isLocked ? theme.colorScheme.primaryContainer : null,
+          child: note.isLocked
+              ? Icon(Icons.lock_rounded, color: theme.colorScheme.onPrimaryContainer)
+              : const OrahAssetIcon('notes', size: 24),
         ),
         title: _HighlightedText(
-          text: note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
+          text: note.isLocked ? '🔒 Locked Note' : (note.title.isEmpty ? 'Untitled note' : note.title),
           query: query,
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w800,
@@ -511,7 +558,7 @@ class _SearchResultTile extends StatelessWidget {
             ),
           ),
         ),
-        trailing: const Icon(Icons.chevron_right_rounded),
+        trailing: Icon(note.isLocked ? Icons.lock_outline_rounded : Icons.chevron_right_rounded, color: note.isLocked ? theme.colorScheme.primary : null),
       ),
     );
   }
