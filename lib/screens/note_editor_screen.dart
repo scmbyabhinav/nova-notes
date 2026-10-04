@@ -605,7 +605,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       ),
     );
     if (pin == null) return;
-    if (!RegExp('^[0-9]{4,8}$').hasMatch(pin)) {
+    if (!RegExp(r'^[0-9]{4,8}.hasMatch(pin)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('PIN must contain 4–8 digits.')),
@@ -2038,17 +2038,29 @@ class _ToolButton extends StatelessWidget {
   }
 }
 ).hasMatch(pin)) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PIN must contain 4–8 digits.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PIN must contain 4–8 digits.')),
+        );
+      }
       return;
     }
     if (hasPin) {
       if (!await security.verifyVaultPin(pin)) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect Vault PIN.')));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Incorrect Vault PIN.')),
+          );
+        }
         return;
       }
     } else {
       if (secondController.text != pin) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PINs do not match.')));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('PINs do not match.')),
+          );
+        }
         return;
       }
       await security.setVaultPin(pin);
@@ -2100,6 +2112,7 @@ class _ToolButton extends StatelessWidget {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
@@ -2116,6 +2129,7 @@ class _ToolButton extends StatelessWidget {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
