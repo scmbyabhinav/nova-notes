@@ -137,18 +137,18 @@ class OrahUserProfileService {
         await _tts.setVoice(selected.map(
           (key, value) => MapEntry(key.toString(), value.toString()),
         ));
-        await _tts.setPitch(1.0);
+        await _tts.setPitch(gender == 'female' ? 1.08 : 0.68);
         return;
       }
     }
     // Some Android TTS engines expose no gender metadata; pitch is a fallback.
-    await _tts.setPitch(gender == 'female' ? 1.15 : 0.85);
+    await _tts.setPitch(gender == 'female' ? 1.08 : 0.68);
   }
 
   Future<void> speakGreeting(String name) async {
     await _tts.stop();
     await _applyVoice(await voiceGender());
-    await _tts.setSpeechRate(0.48);
+    await _tts.setSpeechRate(await voiceGender() == 'male' ? 0.40 : 0.48);
     await _tts.setVolume(1.0);
     await _tts.speak('Hello, $name');
   }

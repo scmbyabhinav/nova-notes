@@ -482,14 +482,50 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<bool> _authenticatePrivateAccess() async {
+    final security = NovaSecurityService();
+    if (await security.canUseBiometrics() &&
+        await security.authenticateBiometric()) {
+      return true;
+    }
+    if (!await security.hasPin() || !mounted) return false;
+    final controller = TextEditingController();
+    final pin = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Enter Vault PIN'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          maxLength: 8,
+          decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: const Text('Unlock')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (pin == null) return false;
+    return security.verifyPin(pin);
+  }
+
   Future<void> _unlockPrivateNote() async {
     if (!_isLocked || _unlocking || !mounted) return;
     setState(() => _unlocking = true);
 
-    final security = NovaSecurityService();
-    if (!await security.canUseBiometrics() ||
-        !await security.authenticateBiometric()) {
-      if (mounted) Navigator.of(context).pop();
+    if (!await _authenticatePrivateAccess()) {
+      if (mounted) {
+        setState(() => _unlocking = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Authentication failed. Try biometrics or your Vault PIN.')),
+        );
+      }
       return;
     }
 
@@ -540,20 +576,29 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _lockNote() async {
+    if (_titleController.text.trim().isEmpty &&
+        _contentController.text.trim().isEmpty &&
+        _attachments.isEmpty && _checklistItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Add some content before locking this note.')),
+      );
+      return;
+    }
     final security = NovaSecurityService();
-    if (!await security.canUseBiometrics()) {
+    if (!await security.canUseBiometrics() && !await security.hasPin()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Set a Vault PIN in Settings > Security & Privacy, or enable device biometrics, before locking notes.')),
+      );
+      return;
+    }
+    if (!await _authenticatePrivateAccess()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Private notes require fingerprint or face unlock on this device.',
-            ),
-          ),
+          const SnackBar(content: Text('Authentication was not completed. Note was not locked.')),
         );
       }
       return;
     }
-    if (!await security.authenticateBiometric()) return;
 
     setState(() {
       _isLocked = true;
@@ -561,6 +606,26 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _hasChanges = true;
     });
     await _save();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Note locked and moved to your Vault.')),
+    );
+    Navigator.of(context).pop();
+  }
+
+  Future<void> _unlockNotePermanently() async {
+    if (!_isLocked || !_privateUnlocked || !mounted) return;
+    setState(() {
+      _isLocked = false;
+      _privateUnlocked = true;
+      _hasChanges = true;
+    });
+    await _save();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Note unlocked and moved back to your notes.')),
+    );
+    Navigator.of(context).pop();
   }
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
@@ -601,6 +666,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
@@ -617,6 +683,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
+            isLocked: _isLocked,
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
@@ -1292,6 +1359,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 case 'lock':
                   await _lockNote();
                   return;
+                case 'unlock_note':
+                  await _unlockNotePermanently();
+                  return;
                 case 'delete':
                   await _delete();
                   return;
@@ -1357,6 +1427,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 const PopupMenuItem(
                   value: 'lock',
                   child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text('Lock note')),
+                ),
+              if (_isLocked && _privateUnlocked)
+                const PopupMenuItem(
+                  value: 'unlock_note',
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text('Unlock and move to Notes')),
                 ),
               const PopupMenuItem(
                 value: 'delete',

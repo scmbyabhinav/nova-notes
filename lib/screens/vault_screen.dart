@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../core/services/nova_security_service.dart';
 import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
@@ -27,6 +28,10 @@ class _VaultScreenState extends State<VaultScreen> {
   }
 
   Future<void> _initialize() async {
+    if (!await _authenticateVault()) {
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
     final repository = await NoteRepositoryProvider.instance();
     if (!mounted) return;
     _repository = repository;
@@ -39,6 +44,52 @@ class _VaultScreenState extends State<VaultScreen> {
       });
     });
     await repository.refresh();
+  }
+
+  Future<bool> _authenticateVault() async {
+    final security = NovaSecurityService();
+    if (await security.canUseBiometrics() &&
+        await security.authenticateBiometric()) {
+      return true;
+    }
+    if (!await security.hasPin() || !mounted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vault access requires device biometrics or a PIN. Set a PIN in Settings > Security & Privacy.')),
+        );
+      }
+      return false;
+    }
+    final controller = TextEditingController();
+    final pin = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Unlock Vault'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          maxLength: 8,
+          decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: const Text('Unlock')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (pin == null) return false;
+    final ok = await security.verifyPin(pin);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Incorrect Vault PIN.')),
+      );
+    }
+    return ok;
   }
 
   Future<void> _openNote(Note note) async {
