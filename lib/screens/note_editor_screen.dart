@@ -605,7 +605,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       ),
     );
     if (pin == null) return;
-    if (!RegExp(r'^[0-9]{4,8}
+    if (!RegExp(r'^[0-9]{4,8}$').hasMatch(pin)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('PIN must contain 4–8 digits.')),
