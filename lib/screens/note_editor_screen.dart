@@ -691,33 +691,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     return pin;
   }
 
-  ).hasMatch(value)) {
-                return 'Enter 4–8 digits';
-              }
-              return null;
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(dialogContext).pop(controller.text);
-              }
-            },
-            child: const Text('Continue'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    return pin;
-  }
-
   Future<void> _lockNote() async {
     if (_titleController.text.trim().isEmpty &&
         _contentController.text.trim().isEmpty &&
