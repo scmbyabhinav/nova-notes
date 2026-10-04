@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   bool _hideDailyPrompt = false;
   bool _loading = true;
   String _sort = 'updated';
+  String _activeFilter = 'all';
   List<Note> _notes = const [];
   String? _selectedNoteId;
   StreamSubscription<List<Note>>? _notesSubscription;
@@ -433,7 +434,20 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final pinned = _notes
         .where((note) => note.isPinned && !note.isArchived)
         .toList();
-    final recent = _notes.where((note) => !note.isArchived).toList()
+    final recent = _notes.where((note) {
+      switch (_activeFilter) {
+        case 'pinned':
+          return note.isPinned && !note.isArchived;
+        case 'favorites':
+          return note.isFavorite && !note.isArchived;
+        case 'checklists':
+          return note.type == NoteType.checklist && !note.isArchived;
+        case 'archived':
+          return note.isArchived;
+        default:
+          return !note.isArchived;
+      }
+    }).toList()
       ..sort((a, b) {
         if (_sort == 'created') return b.createdAt.compareTo(a.createdAt);
         if (_sort == 'title') return a.title.toLowerCase().compareTo(b.title.toLowerCase());
@@ -763,13 +777,65 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 ),
               ),
             ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 48,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  children: [
+                    for (final filter in const [
+                      ('all', 'All', Icons.notes_rounded),
+                      ('pinned', 'Pinned', Icons.push_pin_outlined),
+                      ('favorites', 'Favorites', Icons.star_outline_rounded),
+                      ('checklists', 'Checklists', Icons.checklist_rounded),
+                      ('archived', 'Archived', Icons.archive_outlined),
+                    ])
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          avatar: Icon(
+                            filter.$3,
+                            size: 16,
+                            color: _activeFilter == filter.$1
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          label: Text(filter.$2),
+                          selected: _activeFilter == filter.$1,
+                          showCheckmark: false,
+                          onSelected: (_) => setState(() => _activeFilter = filter.$1),
+                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                          selectedColor: Theme.of(context).colorScheme.primary,
+                          labelStyle: TextStyle(
+                            color: _activeFilter == filter.$1
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.onSurface,
+                            fontWeight: _activeFilter == filter.$1
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                          side: BorderSide(
+                            color: _activeFilter == filter.$1
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
             if (_loading)
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(child: CircularProgressIndicator()),
               )
             else ...[
-              if (pinned.isNotEmpty) ...[
+              if (_activeFilter == 'all' && pinned.isNotEmpty) ...[
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                   sliver: SliverToBoxAdapter(
@@ -1545,6 +1611,15 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
+String _formatRelativeTime(DateTime date) {
+  final difference = DateTime.now().difference(date.toLocal());
+  if (difference.isNegative || difference.inMinutes < 1) return 'Just now';
+  if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+  if (difference.inHours < 24) return '${difference.inHours}h ago';
+  if (difference.inDays < 7) return '${difference.inDays}d ago';
+  return _formatDate(date);
+}
+
 String _formatDate(DateTime date) {
   final local = date.toLocal();
   final month = local.month.toString().padLeft(2, '0');
@@ -1567,41 +1642,119 @@ class _NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final title = note.title.trim().isEmpty ? 'Untitled note' : note.title;
-    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final title = note.isLocked
+        ? 'Private note'
+        : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
+    final contentPreview = note.isLocked
+        ? 'Locked content'
+        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final body = contentPreview.isNotEmpty
+        ? contentPreview
+        : (note.type == NoteType.checklist
+            ? note.checklistItems.take(2).map((item) => item.text).join(' · ')
+            : '');
+    final cardColor = note.color == null
+        ? theme.colorScheme.surface
+        : Color(note.color!);
 
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 1.5,
+      shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.10),
       clipBehavior: Clip.antiAlias,
-      color: note.color == null ? null : Color(note.color!),
+      color: cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.55),
+          width: 0.7,
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(compact ? 14 : 16),
+          padding: EdgeInsets.all(compact ? 14 : 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                maxLines: compact ? 1 : 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: compact ? 1 : 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                  if (note.isPinned) ...[
+                    const SizedBox(width: 4),
+                    Icon(Icons.push_pin_rounded,
+                        size: 15, color: theme.colorScheme.primary),
+                  ],
+                  if (note.isFavorite) ...[
+                    const SizedBox(width: 4),
+                    Icon(Icons.star_rounded,
+                        size: 16, color: theme.colorScheme.primary),
+                  ],
+                ],
               ),
               if (body.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 7),
                 Text(
                   body,
-                  maxLines: compact ? 2 : 4,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    height: 1.35,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
-              const SizedBox(height: 10),
-              Text(
-                _formatDate(note.updatedAt),
-                style: theme.textTheme.labelSmall,
+              const Spacer(),
+              const SizedBox(height: 9),
+              Row(
+                children: [
+                  Icon(
+                    Icons.schedule_rounded,
+                    size: 13,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      _formatRelativeTime(note.updatedAt),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  if (note.type == NoteType.checklist &&
+                      note.checklistItems.isNotEmpty) ...[
+                    const SizedBox(width: 6),
+                    Icon(Icons.check_circle_outline_rounded,
+                        size: 13, color: theme.colorScheme.primary),
+                    const SizedBox(width: 3),
+                    Text(
+                      '${note.completedChecklistItems}/${note.checklistItems.length}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                  if (note.attachments.isNotEmpty) ...[
+                    const SizedBox(width: 6),
+                    Icon(Icons.attach_file_rounded,
+                        size: 14, color: theme.colorScheme.onSurfaceVariant),
+                  ],
+                ],
               ),
             ],
           ),
@@ -1610,4 +1763,3 @@ class _NoteCard extends StatelessWidget {
     );
   }
 }
-
