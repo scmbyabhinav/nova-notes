@@ -113,6 +113,8 @@ jobs:
                   if updated != text:
                       path.write_text(updated)
           PY
+      - name: Generate localizations
+        run: flutter gen-l10n
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
       - name: Test
