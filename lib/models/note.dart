@@ -41,6 +41,7 @@ class Note {
     required this.createdAt,
     required this.updatedAt,
     this.folderId,
+    this.vaultFolderId,
     this.tags = const [],
     this.attachments = const [],
     this.checklistItems = const [],
@@ -61,6 +62,7 @@ class Note {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? folderId;
+  final String? vaultFolderId;
   final List<String> tags;
   final List<String> attachments;
   final List<ChecklistItem> checklistItems;
@@ -82,6 +84,7 @@ class Note {
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
         'folderId': folderId,
+        'vaultFolderId': vaultFolderId,
         'tags': tags,
         'attachments': attachments,
         'checklistItems': checklistItems.map((item) => item.toMap()).toList(),
@@ -106,6 +109,7 @@ class Note {
         createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
         updatedAt: DateTime.tryParse(map['updatedAt'] as String? ?? '') ?? DateTime.now(),
         folderId: map['folderId'] as String?,
+        vaultFolderId: map['vaultFolderId'] as String?,
         tags: List<String>.from(map['tags'] as List? ?? const []),
         attachments: List<String>.from(map['attachments'] as List? ?? const []),
         checklistItems: (map['checklistItems'] as List? ?? const [])
@@ -138,6 +142,8 @@ class Note {
     DateTime? updatedAt,
     String? folderId,
     bool clearFolder = false,
+    String? vaultFolderId,
+    bool clearVaultFolder = false,
     List<String>? tags,
     List<String>? attachments,
     List<ChecklistItem>? checklistItems,
@@ -161,6 +167,7 @@ class Note {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       folderId: clearFolder ? null : (folderId ?? this.folderId),
+      vaultFolderId: clearVaultFolder ? null : (vaultFolderId ?? this.vaultFolderId),
       tags: tags ?? this.tags,
       attachments: attachments ?? this.attachments,
       checklistItems: checklistItems ?? this.checklistItems,

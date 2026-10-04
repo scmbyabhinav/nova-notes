@@ -88,6 +88,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _sectionHeader(theme, l10n.securityAndPrivacy),
+          const Card(child: _VaultAutoLockSettingTile()),
           Card(
             child: ListTile(
               leading: const Icon(Icons.lock_outline_rounded),
@@ -333,6 +334,55 @@ class SettingsScreen extends StatelessWidget {
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 }
+class _VaultAutoLockSettingTile extends StatefulWidget {
+  const _VaultAutoLockSettingTile();
+
+  @override
+  State<_VaultAutoLockSettingTile> createState() => _VaultAutoLockSettingTileState();
+}
+
+class _VaultAutoLockSettingTileState extends State<_VaultAutoLockSettingTile> {
+  int _minutes = 5;
+  bool _loading = true;
+  static const _key = 'orah_vault_auto_lock_minutes';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() { _minutes = prefs.getInt(_key) ?? 5; _loading = false; });
+  }
+
+  Future<void> _setMinutes(int? value) async {
+    if (value == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_key, value);
+    if (mounted) setState(() => _minutes = value);
+  }
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    leading: const Icon(Icons.timer_outlined),
+    title: const Text('Vault auto-lock'),
+    subtitle: const Text('Require authentication after the app is in the background'),
+    trailing: _loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : DropdownButton<int>(
+      value: _minutes,
+      onChanged: _setMinutes,
+      items: const [
+        DropdownMenuItem(value: 1, child: Text('1 min')),
+        DropdownMenuItem(value: 5, child: Text('5 min')),
+        DropdownMenuItem(value: 10, child: Text('10 min')),
+        DropdownMenuItem(value: 0, child: Text('Never')),
+      ],
+    ),
+  );
+}
+
 class _VoiceGreetingSettingTile extends StatefulWidget {
   const _VoiceGreetingSettingTile();
 

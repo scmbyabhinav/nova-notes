@@ -39,6 +39,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialType = NoteType.text,
     this.initialTitle,
     this.initialContent,
+    this.initialVaultFolderId,
     this.speechService,
     this.requestMicrophonePermission,
     this.autoStartVoice = false,
@@ -51,6 +52,7 @@ class NoteEditorScreen extends StatefulWidget {
   final NoteType initialType;
   final String? initialTitle;
   final String? initialContent;
+  final String? initialVaultFolderId;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool autoStartVoice;
@@ -80,6 +82,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String? _mood;
   int? _noteColor;
   String? _folderId;
+  String? _vaultFolderId;
   List<String> _tags = const [];
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
@@ -134,6 +137,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _mood = existing?.mood;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
+    _vaultFolderId = existing?.vaultFolderId ?? widget.initialVaultFolderId;
     _tags = locked ? const [] : [...(existing?.tags ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
     _checklistItems = locked ? [] : [...(existing?.checklistItems ?? const [])];
@@ -661,6 +665,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             createdAt: _createdAt,
             updatedAt: DateTime.now(),
             folderId: _folderId,
+            vaultFolderId: _vaultFolderId,
             tags: _tags,
             attachments: _attachments,
             checklistItems: _checklistItems,
@@ -678,6 +683,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             type: _noteType,
             updatedAt: DateTime.now(),
             folderId: _folderId,
+            vaultFolderId: _vaultFolderId,
             tags: _tags,
             attachments: _attachments,
             checklistItems: _checklistItems,
