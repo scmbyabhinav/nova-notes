@@ -19,6 +19,7 @@ import 'about_nova_screen.dart';
 import 'orah_pro_screen.dart';
 import 'orah_features_screen.dart';
 import 'trash_screen.dart';
+import 'vault_screen.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
@@ -117,6 +118,16 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: Column(
               children: [
+                ListTile(
+                  leading: const Icon(Icons.lock_outline_rounded),
+                  title: const Text('Vault'),
+                  subtitle: const Text('PIN-protected locked notes'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const VaultScreen()),
+                  ),
+                ),
+                const Divider(height: 1),
                 ListTile(
                   leading: const OrahAssetIcon('folder'),
                   title: const Text('Backup & Export'),
