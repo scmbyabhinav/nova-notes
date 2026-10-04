@@ -530,6 +530,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
 
     try {
+      final security = NovaSecurityService();
       final ciphertext = _lockedCiphertext;
       Map<String, dynamic>? payload;
       if (ciphertext != null && ciphertext.startsWith('vault:v1:')) {
