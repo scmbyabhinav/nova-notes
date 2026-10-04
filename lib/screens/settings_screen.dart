@@ -20,6 +20,7 @@ import 'orah_pro_screen.dart';
 import 'orah_features_screen.dart';
 import 'trash_screen.dart';
 import 'vault_screen.dart';
+import 'privacy_pledge_screen.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
@@ -109,6 +110,22 @@ class SettingsScreen extends StatelessWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const SecuritySettingsScreen(),
+                ),
+              ),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: Icon(
+                Icons.privacy_tip_outlined,
+                color: theme.colorScheme.primary,
+              ),
+              title: const Text('Privacy Pledge'),
+              subtitle: const Text('Read our zero-cloud promise'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PrivacyPledgeScreen(),
                 ),
               ),
             ),
