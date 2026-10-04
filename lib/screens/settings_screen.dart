@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Personalized greeting'),
+          _sectionHeader(theme, 'Voice Preferences'),
           const Card(
             child: _VoiceGreetingSettingTile(),
           ),
@@ -420,12 +420,23 @@ class _VoiceGenderSettingTileState extends State<_VoiceGenderSettingTile> {
       subtitle: const Text('Choose the voice used for spoken greetings'),
       trailing: _loading
           ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-          : DropdownButton<String>(
-              value: _gender,
-              onChanged: _setGender,
-              items: const [
-                DropdownMenuItem(value: 'female', child: Text('Female')),
-                DropdownMenuItem(value: 'male', child: Text('Male')),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButton<String>(
+                  value: _gender,
+                  onChanged: _setGender,
+                  items: const [
+                    DropdownMenuItem(value: 'female', child: Text('Female')),
+                    DropdownMenuItem(value: 'male', child: Text('Male')),
+                  ],
+                ),
+                const SizedBox(width: 4),
+                IconButton(
+                  tooltip: 'Preview voice',
+                  onPressed: OrahUserProfileService.instance.previewVoice,
+                  icon: const Icon(Icons.play_circle_outline_rounded),
+                ),
               ],
             ),
     );

@@ -20,6 +20,7 @@ class _VaultScreenState extends State<VaultScreen> {
   StreamSubscription<List<Note>>? _subscription;
   List<Note> _lockedNotes = const [];
   bool _loading = true;
+  bool _authenticated = false;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _VaultScreenState extends State<VaultScreen> {
     }
     final repository = await NoteRepositoryProvider.instance();
     if (!mounted) return;
+    setState(() => _authenticated = true);
     _repository = repository;
     _subscription = repository.watchVaultNotes().listen((notes) {
       if (!mounted) return;
@@ -114,7 +116,7 @@ class _VaultScreenState extends State<VaultScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Vault / Locked Notes')),
-      body: _loading
+      body: !_authenticated || _loading
           ? const Center(child: CircularProgressIndicator())
           : _lockedNotes.isEmpty
               ? Center(

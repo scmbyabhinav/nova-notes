@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   void _applyNotes(List<Note> notes) {
     if (!mounted) return;
     setState(() {
-      _notes = notes.where((note) => !note.isTrashed).toList();
+      _notes = notes.where((note) => !note.isLocked && !note.isTrashed).toList();
       _loading = false;
       if (_selectedNoteId != null && !_notes.any((note) => note.id == _selectedNoteId)) {
         _selectedNoteId = null;

@@ -131,8 +131,9 @@ class LocalNoteRepository implements NoteRepository {
     }
 
     await _write(notes);
-    // Publish the persisted snapshot, not the pre-write working list. This
-    // guarantees every subscriber receives exactly what is now on disk.
+    // Pin, archive, favorite, and other note actions update a copied Note and
+    // route through saveNote. Publishing the persisted snapshot here keeps
+    // Home, pinned sections, and archived views in sync without an app restart.
     _publish(await _getAllNotes());
   }
 

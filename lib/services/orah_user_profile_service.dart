@@ -153,5 +153,14 @@ class OrahUserProfileService {
     await _tts.speak('Hello, $name');
   }
 
+  Future<void> previewVoice() async {
+    final gender = await voiceGender();
+    await _tts.stop();
+    await _applyVoice(gender);
+    await _tts.setSpeechRate(gender == 'male' ? 0.40 : 0.48);
+    await _tts.setVolume(1.0);
+    await _tts.speak('Hello, this is Orah Notes');
+  }
+
   Future<void> stopGreeting() => _tts.stop();
 }
