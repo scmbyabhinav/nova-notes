@@ -139,6 +139,7 @@ jobs:
         run: |
           rm -rf build android/.gradle ~/.gradle/caches ~/.gradle/daemon
           sudo rm -rf /usr/local/lib/android/sdk/ndk/* || true
+          sudo rm -rf /usr/local/lib/android/sdk/cmdline-tools/latest/cache/* || true
           sudo rm -rf /usr/local/lib/android/sdk/cmake/* || true
           df -h /
       - name: Configure production signing
