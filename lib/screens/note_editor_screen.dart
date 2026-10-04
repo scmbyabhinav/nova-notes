@@ -664,7 +664,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             maxLength: 8,
             decoration: const InputDecoration(labelText: '4–8 digit PIN'),
             validator: (value) {
-              if (value == null || !RegExp(r'^\d{4,8}.hasMatch(value)) {
+              if (value == null || !RegExp(r'^\d{4,8}$').hasMatch(value)) {
                 return 'Enter 4–8 digits';
               }
               return null;
