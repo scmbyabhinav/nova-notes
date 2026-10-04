@@ -40,6 +40,7 @@ class NoteEditorScreen extends StatefulWidget {
     this.initialTitle,
     this.initialContent,
     this.initialVaultFolderId,
+    this.initialIsLocked = false,
     this.speechService,
     this.requestMicrophonePermission,
     this.autoStartVoice = false,
@@ -53,6 +54,7 @@ class NoteEditorScreen extends StatefulWidget {
   final String? initialTitle;
   final String? initialContent;
   final String? initialVaultFolderId;
+  final bool initialIsLocked;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool autoStartVoice;
@@ -119,7 +121,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
 
-    final locked = existing?.isLocked ?? false;
+    final locked = existing?.isLocked ?? widget.initialIsLocked;
     _titleController = TextEditingController(
       text: locked ? '' : (existing?.title ?? widget.initialTitle ?? ''),
     );
@@ -656,19 +658,36 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       return;
     }
 
+    var storedTitle = title.isEmpty ? 'Untitled note' : title;
+    var storedContent = content;
+    var storedTags = _tags;
+    var storedChecklistItems = _checklistItems;
+    if (_isLocked) {
+      final security = NovaSecurityService();
+      storedContent = await security.encryptPrivatePayload(jsonEncode({
+        'title': storedTitle,
+        'content': content,
+        'tags': _tags,
+        'checklistItems': _checklistItems.map((item) => item.toMap()).toList(),
+      }));
+      storedTitle = '';
+      storedTags = const [];
+      storedChecklistItems = const [];
+    }
+
     final note = widget.note == null
         ? Note(
             id: _noteId,
-            title: title.isEmpty ? 'Untitled note' : title,
-            content: content,
+            title: storedTitle,
+            content: storedContent,
             type: _noteType,
             createdAt: _createdAt,
             updatedAt: DateTime.now(),
             folderId: _folderId,
             vaultFolderId: _vaultFolderId,
-            tags: _tags,
+            tags: storedTags,
             attachments: _attachments,
-            checklistItems: _checklistItems,
+            checklistItems: storedChecklistItems,
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,
@@ -678,15 +697,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             mood: _mood,
           )
         : widget.note!.copyWith(
-            title: title.isEmpty ? 'Untitled note' : title,
-            content: content,
+            title: storedTitle,
+            content: storedContent,
             type: _noteType,
             updatedAt: DateTime.now(),
             folderId: _folderId,
             vaultFolderId: _vaultFolderId,
-            tags: _tags,
+            tags: storedTags,
             attachments: _attachments,
-            checklistItems: _checklistItems,
+            checklistItems: storedChecklistItems,
             isPinned: _isPinned,
             isFavorite: _isFavorite,
             isArchived: _isArchived,

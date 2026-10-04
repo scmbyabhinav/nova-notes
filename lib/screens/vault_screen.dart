@@ -221,7 +221,6 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     final security = NovaSecurityService();
     await security.removePin();
     final firstController = TextEditingController();
-    final secondController = TextEditingController();
     final newPin = await showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -231,131 +230,15 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         actions: [FilledButton(onPressed: () => Navigator.pop(dialogContext, firstController.text), child: const Text('Continue'))],
       ),
     );
-    if (newPin == null || !RegExp(r'^\d{4,8}
-    final repository = _repository;
-    if (repository == null) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => NoteEditorScreen(repository: repository, note: note),
-      ),
-    );
-    await repository.refresh();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _subscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Vault / Locked Notes')),
-      body: !_authenticated || _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-                  child: Row(
-                    children: [
-                      Icon(Icons.verified_user_rounded, size: 18, color: theme.colorScheme.primary),
-                      const SizedBox(width: 8),
-                      Text('End-to-End Encrypted', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w700)),
-                      const Spacer(),
-                      IconButton(tooltip: 'Create private note', onPressed: () async {
-                        final repository = _repository;
-                        if (repository == null) return;
-                        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => NoteEditorScreen(repository: repository, initialVaultFolderId: _selectedFolderId)));
-                        await repository.refresh();
-                      }, icon: const Icon(Icons.add_rounded)),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(children: [
-                      ChoiceChip(label: const Text('All folders'), selected: _selectedFolderId == null, onSelected: (_) => setState(() => _selectedFolderId = null)),
-                      const SizedBox(width: 6),
-                      for (final folder in _folders) ...[
-                        ChoiceChip(label: Text(folder.name), selected: _selectedFolderId == folder.id, onSelected: (_) => setState(() => _selectedFolderId = folder.id)),
-                        const SizedBox(width: 6),
-                      ],
-                      ActionChip(avatar: const Icon(Icons.create_new_folder_outlined, size: 18), label: const Text('New folder'), onPressed: _createFolder),
-                    ]),
-                  ),
-                ),
-                Expanded(child: _lockedNotes.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(28),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.lock_outline_rounded, size: 56, color: theme.colorScheme.primary),
-                        const SizedBox(height: 14),
-                        Text('Your vault is empty', style: theme.textTheme.titleLarge),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Lock a note from its editor to keep it in your private vault.',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _lockedNotes.where((note) => _selectedFolderId == null || note.vaultFolderId == _selectedFolderId).length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final filteredNotes = _lockedNotes.where((item) => _selectedFolderId == null || item.vaultFolderId == _selectedFolderId).toList();
-                    final note = filteredNotes[index];
-                    final currentFolder = _folders.where((folder) => folder.id == note.vaultFolderId).firstOrNull;
-                    return Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.lock_rounded),
-                        title: Text(note.title.isEmpty ? 'Private note' : note.title),
-                        subtitle: Text('${currentFolder == null ? 'Unfiled' : currentFolder.name} · Updated ${_relativeTime(note.updatedAt)}'),
-                        trailing: PopupMenuButton<String?>(
-                          tooltip: 'Move to folder',
-                          onSelected: (folderId) => _assignFolder(note, folderId),
-                          itemBuilder: (_) => [
-                            const PopupMenuItem<String?>(value: null, child: Text('Unfiled')),
-                            for (final folder in _folders) PopupMenuItem<String?>(value: folder.id, child: Text(folder.name)),
-                          ],
-                        ),
-                        onTap: () => _openNote(note),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-    );
-  }
-
-  String _relativeTime(DateTime date) {
-    final difference = DateTime.now().difference(date);
-    if (difference.inMinutes < 1) return 'just now';
-    if (difference.inHours < 1) return difference.inMinutes.toString() + 'm ago';
-    if (difference.inDays < 1) return difference.inHours.toString() + 'h ago';
-    if (difference.inDays < 7) return difference.inDays.toString() + 'd ago';
-    return date.day.toString() + '/' + date.month.toString() + '/' + date.year.toString();
-  }
-}
-).hasMatch(newPin)) {
-      firstController.dispose();
-      secondController.dispose();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault was cleared. Set a new PIN in Security & Privacy.')));
+    firstController.dispose();
+    if (newPin == null || newPin.length < 4 || newPin.length > 8 || int.tryParse(newPin) == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault was cleared. Set a new PIN in Security & Privacy.')));
+        Navigator.of(context).pop();
+      }
       return;
     }
+    final secondController = TextEditingController();
     final confirmPin = await showDialog<String>(
       context: context,
       barrierDismissible: false,
@@ -365,16 +248,18 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         actions: [FilledButton(onPressed: () => Navigator.pop(dialogContext, secondController.text), child: const Text('Save PIN'))],
       ),
     );
-    firstController.dispose();
     secondController.dispose();
     if (confirmPin == newPin) {
       await security.setPin(newPin);
       await security.setAppLockEnabled(true);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared and new PIN saved.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared and new PIN saved.')));
+        Navigator.of(context).pop();
+      }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PINs did not match. Vault was cleared; set a PIN in Security & Privacy.')));
+      Navigator.of(context).pop();
     }
-    if (mounted) Navigator.of(context).pop();
   }
 
   Future<void> _openNote(Note note) async {
