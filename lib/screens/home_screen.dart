@@ -573,68 +573,108 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                 ),
                                 const SizedBox(height: 12),
                                 Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
+                                  spacing: 6,
+                                  runSpacing: 5,
                                   children: [
                                     ActionChip(
-                                      avatar: const Icon(Icons.note_alt_outlined, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.note_alt_outlined, size: 16),
                                       label: const Text('Notes'),
                                       onPressed: widget.onNotes,
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.folder_outlined, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.folder_outlined, size: 16),
                                       label: const Text('Folders'),
                                       onPressed: widget.onFolders,
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.star_outline_rounded, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.star_outline_rounded, size: 16),
                                       label: const Text('Favorites'),
                                       onPressed: widget.onFavorites,
                                     ),
                                     ActionChip(
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
                                       avatar: SvgPicture.asset(
                                         'assets/daily_reflection_icon.svg',
-                                        width: 20,
-                                        height: 20,
+                                        width: 17,
+                                        height: 17,
                                       ),
                                       label: const Text('Daily Reflection'),
                                       onPressed: _openReflection,
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.mic_none_rounded, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.mic_none_rounded, size: 16),
                                       label: const Text('Voice Capture'),
                                       onPressed: widget.onVoiceCapture,
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.checklist_rounded, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.checklist_rounded, size: 16),
                                       label: const Text('Checklists'),
                                       onPressed: widget.onChecklist,
                                     ),
                                     ActionChip(
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
                                       avatar: SvgPicture.asset(
                                         'assets/appearance_icon.svg',
-                                        width: 20,
-                                        height: 20,
+                                        width: 17,
+                                        height: 17,
                                       ),
                                       label: const Text('Appearance'),
                                       onPressed: widget.onSettings,
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.search_rounded, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.search_rounded, size: 16),
                                       label: const Text('Search'),
                                       onPressed: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => const SearchScreen()),
                                       ),
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.cloud_off_outlined, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.cloud_off_outlined, size: 16),
                                       label: const Text('Offline access'),
                                       onPressed: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
                                       ),
                                     ),
                                     ActionChip(
-                                      avatar: const Icon(Icons.ios_share_rounded, size: 18),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.ios_share_rounded, size: 16),
                                       label: const Text('Backup & Export'),
                                       onPressed: widget.onSettings,
                                     ),
@@ -649,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
               sliver: SliverToBoxAdapter(
                 child: SearchBar(
                   hintText: l10n.searchHint,
@@ -679,36 +719,36 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             ),
             if (!_hideDailyPrompt)
               SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
               sliver: SliverToBoxAdapter(
                 child: Builder(
                   builder: (context) {
                     final prompt = PromptService.instance.getPromptOfDay();
                     return Material(
                       color: theme.colorScheme.primaryContainer.withValues(alpha: 0.58),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(16),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(22),
                         onTap: () => _openPromptNote(prompt),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 16, 12, 16),
+                          padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                width: 42,
-                                height: 42,
+                                width: 34,
+                                height: 34,
                                 decoration: BoxDecoration(
                                   color: theme.colorScheme.primary.withValues(alpha: 0.10),
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
                                   Icons.auto_awesome_rounded,
                                   color: theme.colorScheme.primary,
-                                  size: 23,
+                                  size: 19,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -721,10 +761,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                         letterSpacing: 0.8,
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 4),
                                     Text(
                                       prompt.text,
-                                      maxLines: 3,
+                                      maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.lora(
                                         textStyle: theme.textTheme.titleMedium?.copyWith(
@@ -734,7 +774,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 5),
                                     Text(
                                       'Tap to begin a note',
                                       style: theme.textTheme.bodySmall?.copyWith(
@@ -786,7 +826,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   sliver: SliverList.builder(
                     itemCount: pinned.length,
                     itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.only(bottom: 8),
                       child: GestureDetector(
                         onLongPress: () => _showNoteMenu(pinned[index]),
                         child: _NoteCard(
@@ -800,7 +840,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 ),
               ],
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
                 sliver: SliverToBoxAdapter(
                   child: Row(
                     children: [
@@ -850,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                   sliver: _gridView
                       ? SliverGrid(
                           delegate: SliverChildBuilderDelegate(
@@ -866,9 +906,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 0.90,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            childAspectRatio: 1.02,
                           ),
                         )
                       : SliverList.builder(
@@ -1577,7 +1617,7 @@ class _NoteCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(compact ? 14 : 16),
+          padding: EdgeInsets.all(compact ? 11 : 13),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1598,7 +1638,7 @@ class _NoteCard extends StatelessWidget {
                   style: theme.textTheme.bodyMedium,
                 ),
               ],
-              const SizedBox(height: 10),
+              const SizedBox(height: 7),
               Text(
                 _formatDate(note.updatedAt),
                 style: theme.textTheme.labelSmall,
