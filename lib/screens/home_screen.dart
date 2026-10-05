@@ -7,12 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
-import '../core/widgets/nova_polish.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../core/navigation/orah_navigation.dart';
 
-import '../data/repositories/note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../services/prompt_service.dart';
@@ -195,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
     final now = DateTime.now();
     if (now.hour * 60 + now.minute < hour * 60 + minute) return;
-    final today = now.year.toString() + '-' + now.month.toString().padLeft(2, '0') + '-' + now.day.toString().padLeft(2, '0');
+    final today = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     if (prefs.getString('orah_daily_reflection_last_shown') == today) return;
     _openingScheduledReflection = true;
     await prefs.setString('orah_daily_reflection_last_shown', today);
@@ -637,6 +635,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                     ActionChip(
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
                                       label: const Text('Favorites'),
+                                      onPressed: widget.onFavorites,
+                                    ),
                                     ActionChip(
                                       visualDensity: VisualDensity.compact,
                                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -645,8 +645,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       avatar: const Icon(Icons.archive_outlined, size: 16),
                                       label: const Text('Archived Notes'),
                                       onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
-                                    ),
-                                      onPressed: widget.onFavorites,
                                     ),
                                     ActionChip(
                                       avatar: SvgPicture.asset(
@@ -921,7 +919,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                       if (recent.isNotEmpty)
                         Text(
-                          '${completed} done',
+                          '$completed done',
                           style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         ),
                       const SizedBox(width: 4),
@@ -1517,49 +1515,6 @@ class _DesktopChecklistPreview extends StatelessWidget {
           ),
         );
       }).toList(),
-    );
-  }
-}
-
-class _SmartBadge extends StatelessWidget {
-  const _SmartBadge({required this.icon, required this.label});
-  final IconData icon;
-  final String label;
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-      decoration: BoxDecoration(color: scheme.primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(999)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 13, color: scheme.primary), const SizedBox(width: 4), Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: scheme.primary))]),
-    );
-  }
-}
-
-class _NoteIcon extends StatelessWidget {
-  const _NoteIcon({required this.type});
-
-  final NoteType type;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
-    final Widget icon = switch (type) {
-      NoteType.checklist => OrahAssetIcon('checklist', color: color, size: 21),
-      NoteType.voice => OrahAssetIcon('microphone', color: color, size: 21),
-      NoteType.image => Icon(Icons.image_outlined, color: color, size: 21),
-      NoteType.drawing => Icon(Icons.draw_outlined, color: color, size: 21),
-      NoteType.text => OrahAssetIcon('notes', color: color, size: 21),
-    };
-
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: icon,
     );
   }
 }
