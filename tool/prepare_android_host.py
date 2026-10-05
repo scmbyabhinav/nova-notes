@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID = ROOT / "android"
@@ -426,6 +427,67 @@ for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.g
             text = text.replace("        release {", '        release {\n            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"', 1)
     gradle_path.write_text(text)
     print(f"Configured R8/resource shrinking in {gradle_path}")
+
+
+# Firebase Analytics configuration is supplied in the repository because the
+# Android host is generated from scratch in CI. The config contains client-side
+# identifiers, not a service-account credential.
+firebase_config = ROOT / "firebase" / "google-services.json"
+if not firebase_config.is_file():
+    raise SystemExit("Firebase config missing: firebase/google-services.json")
+shutil.copyfile(firebase_config, ANDROID / "app" / "google-services.json")
+
+# The Google Services Gradle plugin converts google-services.json into Android
+# resources consumed by Firebase SDKs. Both Gradle DSLs are supported because
+# Flutter may generate either file format depending on its template version.
+settings_candidates = [ANDROID / "settings.gradle.kts", ANDROID / "settings.gradle"]
+settings_gradle = next((path for path in settings_candidates if path.exists()), None)
+app_gradle_candidates = [ANDROID / "app" / "build.gradle.kts", ANDROID / "app" / "build.gradle"]
+app_gradle = next((path for path in app_gradle_candidates if path.exists()), None)
+if settings_gradle is None or app_gradle is None:
+    raise SystemExit("Generated Android Gradle settings/app file not found")
+
+settings_text = settings_gradle.read_text()
+if settings_gradle.suffix == ".kts":
+    if 'id("com.google.gms.google-services") version' not in settings_text:
+        if "plugins {" not in settings_text:
+            raise SystemExit("Gradle plugins block not found in settings file")
+        settings_text = settings_text.replace(
+            "plugins {",
+            'plugins {\n    id("com.google.gms.google-services") version "4.4.2" apply false',
+            1,
+        )
+else:
+    if 'id "com.google.gms.google-services" version' not in settings_text:
+        if "plugins {" not in settings_text:
+            raise SystemExit("Gradle plugins block not found in settings file")
+        settings_text = settings_text.replace(
+            "plugins {",
+            'plugins {\n    id "com.google.gms.google-services" version "4.4.2" apply false',
+            1,
+        )
+settings_gradle.write_text(settings_text)
+
+app_text = app_gradle.read_text()
+if app_gradle.suffix == ".kts":
+    if 'id("com.google.gms.google-services")' not in app_text:
+        if "plugins {" not in app_text:
+            raise SystemExit("Gradle plugins block not found in app file")
+        app_text = app_text.replace(
+            "plugins {",
+            'plugins {\n    id("com.google.gms.google-services")',
+            1,
+        )
+else:
+    if 'id "com.google.gms.google-services"' not in app_text:
+        if "plugins {" not in app_text:
+            raise SystemExit("Gradle plugins block not found in app file")
+        app_text = app_text.replace(
+            "plugins {",
+            'plugins {\n    id "com.google.gms.google-services"',
+            1,
+        )
+app_gradle.write_text(app_text)
 
 # Validate generated AndroidManifest.xml is well-formed before Gradle sees it.
 manifest = ANDROID / "app" / "src" / "main" / "AndroidManifest.xml"
