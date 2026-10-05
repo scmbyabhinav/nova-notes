@@ -436,4 +436,28 @@ if manifest.exists():
     except ET.ParseError as exc:
         raise SystemExit(f"Generated AndroidManifest.xml is invalid: {exc}")
 
+
+# Pin the generated Android host to Android 16 (API 36).
+for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.gradle.kts"):
+    if not gradle_path.exists():
+        continue
+    text = gradle_path.read_text()
+    if gradle_path.suffix == ".kts":
+        import re
+        text = re.sub(r"targetSdk\s*=\s*[^\n]+", "targetSdk = 36", text)
+        text = re.sub(r"compileSdk\s*=\s*[^\n]+", "compileSdk = 36", text)
+        if "targetSdk =" not in text:
+            text = text.replace("android {", "android {\n    targetSdk = 36", 1)
+        if "compileSdk =" not in text:
+            text = text.replace("android {", "android {\n    compileSdk = 36", 1)
+    else:
+        import re
+        text = re.sub(r"targetSdkVersion\s+[^\n]+", "targetSdkVersion 36", text)
+        text = re.sub(r"compileSdkVersion\s+[^\n]+", "compileSdkVersion 36", text)
+        if "targetSdkVersion 36" not in text:
+            text = text.replace("android {", "android {\n    targetSdkVersion 36", 1)
+        if "compileSdkVersion 36" not in text:
+            text = text.replace("android {", "android {\n    compileSdkVersion 36", 1)
+    gradle_path.write_text(text)
+
 print("ORAH Android host prepared: share target, shortcuts, quick widget.")
