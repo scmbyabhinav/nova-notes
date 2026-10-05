@@ -8,9 +8,11 @@ import 'services/nova_attachment_service.dart';
 import 'services/orah_share_intake_service.dart';
 import 'services/orah_android_intent_service.dart';
 import 'services/orah_entitlement_service.dart';
+import 'services/orah_analytics_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await OrahAnalyticsService.instance.initialize();
   FlutterCryptography.enable();
   tz.initializeTimeZones();
   await OrahReminderService.instance.initialize();
