@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_entitlement_service.dart';
 
@@ -14,6 +16,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(OrahAnalyticsService.instance.logProUpgradeViewed());
     service.addListener(_refresh);
     service.initialize();
   }
