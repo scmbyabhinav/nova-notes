@@ -166,7 +166,7 @@ jobs:
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
       - name: Build release APK
-        run: flutter build apk --release
+        run: flutter build apk --release --tree-shake-icons
       - name: Build release AAB
         run: flutter build appbundle --release --tree-shake-icons
       - name: Verify release artifacts
