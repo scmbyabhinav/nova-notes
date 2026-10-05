@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "736071590250",
+    "project_id": "orah-notes",
+    "storage_bucket": "orah-notes.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736071590250:android:96d15e3b4047f6843e0513",
+        "android_client_info": {
+          "package_name": "com.orah.orah_notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6-SVzfcdeiOHmYdrDd0haEJbTQ-0zEP0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
