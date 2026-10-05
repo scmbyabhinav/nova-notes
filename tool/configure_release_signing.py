@@ -35,6 +35,10 @@ if "    buildTypes {" not in text:
 if "        release {" not in text:
     raise SystemExit(f"Missing release build type in {gradle}")
 
+# Keep release builds small and optimized. Flutter generates the Android host
+# during CI, so these flags must be applied here rather than in a generated
+# Gradle file committed to the repository.
+
 properties_block = '''android {
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = java.util.Properties()
@@ -67,5 +71,16 @@ elif release_assignment not in text:
         "release signing assignment in the release build type."
     )
 
+# Flutter's generated release block defaults to an unminified build.
+# Enable R8 shrinking and resource shrinking for production artifacts.
+release_block = "        release {"
+if release_block not in text:
+    raise SystemExit("Release build type disappeared while configuring Gradle.")
+release_options = """        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+"""
+text = text.replace(release_block, release_options, 1)
+
 gradle.write_text(text, encoding="utf-8")
-print("Configured production release signing in android/app/build.gradle.kts.")
+print("Configured production release signing and release optimization in android/app/build.gradle.kts.")
