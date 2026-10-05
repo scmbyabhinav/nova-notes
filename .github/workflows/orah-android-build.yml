@@ -3,7 +3,7 @@ name: Orah Android Build
 
 on:
   push:
-    branches: [main, reconcile-main]
+    branches: [main, reconcile-main, 'feature/**', 'release/**']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -35,6 +35,8 @@ jobs:
         run: |
           flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
           python3 tool/prepare_android_host.py
+      - name: Verify Android target API 36+
+        run: python3 tool/verify_android_config.py --min-api 36
       - name: Prepare supplied Orah launcher icon
         run: |
           python3 -m pip install --disable-pip-version-check CairoSVG
@@ -169,13 +171,10 @@ jobs:
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
       - name: Build release APK
-        if: ${{ inputs.production_release == true }}
-        run: flutter build apk --release
+        run: flutter build apk --release --tree-shake-icons
       - name: Build release AAB
-        if: ${{ inputs.production_release == true }}
         run: flutter build appbundle --release --tree-shake-icons
       - name: Verify release artifacts
-        if: ${{ inputs.production_release == true }}
         shell: bash
         run: |
           set -euo pipefail
@@ -189,14 +188,12 @@ jobs:
             grep -q "jar verified" /tmp/orah-jarsigner.txt
           fi
       - name: Upload release APK
-        if: ${{ inputs.production_release == true }}
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-apk-${{ github.sha }}
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
       - name: Upload release AAB
-        if: ${{ inputs.production_release == true }}
         uses: actions/upload-artifact@v4
         with:
           name: orah-release-aab-${{ github.sha }}

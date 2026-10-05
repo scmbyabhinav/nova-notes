@@ -25,6 +25,7 @@ import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
 import '../services/orah_in_app_review_service.dart';
+import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
@@ -832,6 +833,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
     if (!_reviewCounted && widget.note == null) {
       _reviewCounted = true;
+      unawaited(OrahAnalyticsService.instance.logNoteCreated(noteType: _noteType.name));
       unawaited(checkAndRequestReview());
     }
     // Explicitly re-publish the persisted snapshot after the awaited write.

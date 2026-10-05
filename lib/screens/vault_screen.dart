@@ -114,55 +114,71 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     await repository.refresh();
   }
 
-  Future<bool> _authenticateVault() async {
-    final security = NovaSecurityService();
-    if (await security.canUseBiometrics() &&
-        await security.authenticateBiometric()) {
-      return true;
-    }
-    if (!await security.hasPin() || !mounted) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vault access requires device biometrics or a PIN. Set a PIN in Settings > Security & Privacy.')),
-        );
-      }
-      return false;
-    }
-    final controller = TextEditingController();
-    final pin = await showDialog<String>(
+  Future<String?> _promptVaultPin({required String title, required bool confirm}) async {
+    final first = TextEditingController();
+    final second = TextEditingController();
+    final result = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Unlock Vault'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          obscureText: true,
-          keyboardType: TextInputType.number,
-          maxLength: 8,
-          decoration: const InputDecoration(labelText: '4–8 digit PIN'),
-          onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: first, autofocus: true, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit Vault PIN')),
+            if (confirm) TextField(controller: second, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: 'Confirm PIN')),
+          ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop('forgot_pin'), child: const Text('Forgot PIN?')),
           TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: const Text('Unlock')),
+          FilledButton(
+            onPressed: () {
+              if (confirm && first.text != second.text) {
+                ScaffoldMessenger.of(dialogContext).showSnackBar(const SnackBar(content: Text('PINs do not match.')));
+                return;
+              }
+              Navigator.of(dialogContext).pop(first.text);
+            },
+            child: Text(confirm ? 'Create Vault' : 'Unlock'),
+          ),
         ],
       ),
     );
-    controller.dispose();
-    if (pin == 'forgot_pin') {
-      await _resetVaultPin();
-      return false;
+    first.dispose();
+    second.dispose();
+    if (result == null || !RegExp(r'^\\d{4,8}$').hasMatch(result)) {
+      if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN must contain 4–8 digits.')));
+      return null;
     }
+    return result;
+  }
+
+  Future<bool> _authenticateVault() async {
+    final security = NovaSecurityService();
+    final hasPin = await security.hasVaultPin();
+    final pin = await _promptVaultPin(title: hasPin ? 'Unlock Vault' : 'Create Vault PIN', confirm: !hasPin);
     if (pin == null) return false;
-    final ok = await security.verifyPin(pin);
+    if (!hasPin) {
+      await security.setVaultPin(pin);
+      return true;
+    }
+    final ok = await security.verifyVaultPin(pin);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incorrect Vault PIN.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect Vault PIN.')));
     }
     return ok;
+  }
+
+  Future<void> _changeVaultPin() async {
+    final current = await _promptVaultPin(title: 'Verify current Vault PIN', confirm: false);
+    if (current == null || !await NovaSecurityService().verifyVaultPin(current)) {
+      if (mounted && current != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect current Vault PIN.')));
+      return;
+    }
+    final next = await _promptVaultPin(title: 'Create new Vault PIN', confirm: true);
+    if (next == null) return;
+    await NovaSecurityService().setVaultPin(next);
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN changed.')));
   }
 
   Future<void> _createFolder() async {
@@ -316,52 +332,6 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     await repository.saveNote(note.copyWith(vaultFolderId: folderId, clearVaultFolder: folderId == null, updatedAt: DateTime.now()));
   }
 
-  Future<void> _resetVaultPin() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Reset Vault PIN?'),
-        content: const Text('Resetting your PIN permanently deletes all current Vault notes. This cannot be undone. The local private-note data must be cleared to maintain encryption integrity.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Delete Vault and reset')),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) return;
-    final repository = _repository ?? await NoteRepositoryProvider.instance();
-    for (final note in await repository.getVaultNotes()) {
-      await repository.deleteNote(note.id);
-    }
-    final security = NovaSecurityService();
-    await security.removePin();
-    final first = TextEditingController();
-    final newPin = await showDialog<String>(context: context, barrierDismissible: false, builder: (dialogContext) => AlertDialog(
-      title: const Text('Create a new Vault PIN'),
-      content: TextField(controller: first, autofocus: true, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: 'New 4–8 digit PIN')),
-      actions: [FilledButton(onPressed: () => Navigator.pop(dialogContext, first.text), child: const Text('Continue'))],
-    ));
-    first.dispose();
-    if (newPin == null || newPin.length < 4 || newPin.length > 8 || int.tryParse(newPin) == null) {
-      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared. Set a new PIN in Security & Privacy.'))); }
-      return;
-    }
-    final second = TextEditingController();
-    final confirm = await showDialog<String>(context: context, barrierDismissible: false, builder: (dialogContext) => AlertDialog(
-      title: const Text('Confirm new PIN'),
-      content: TextField(controller: second, autofocus: true, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: 'Confirm 4–8 digit PIN')),
-      actions: [FilledButton(onPressed: () => Navigator.pop(dialogContext, second.text), child: const Text('Save PIN'))],
-    ));
-    second.dispose();
-    if (confirm == newPin) {
-      await security.setPin(newPin);
-      await security.setAppLockEnabled(true);
-      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault cleared and new PIN saved.'))); }
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('PINs did not match. Vault cleared; set a PIN in Security & Privacy.')));
-    }
-  }
-
   Future<void> _createPrivateNote() async {
     final repository = _repository;
     if (repository == null) return;
@@ -396,7 +366,17 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Vault / Locked Notes')),
+      appBar: AppBar(
+        title: const Text('Vault / Locked Notes'),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) { if (value == 'change_pin') _changeVaultPin(); },
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'change_pin', child: Text('Change Vault PIN')),
+            ],
+          ),
+        ],
+      ),
       body: !_authenticated || _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(

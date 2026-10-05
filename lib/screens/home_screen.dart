@@ -18,6 +18,7 @@ import '../models/note.dart';
 import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
 import 'reflection_prompt_screen.dart';
+import 'archived_notes_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
 import 'vault_screen.dart';
@@ -53,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   PageRoute<dynamic>? _subscribedRoute;
   int _notesLoadGeneration = 0;
   Timer? _trashSnackBarTimer;
+  Timer? _reflectionCheckTimer;
+  bool _openingScheduledReflection = false;
 
   @override
   void initState() {
@@ -60,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
     _loadNotes();
+    _reflectionCheckTimer = Timer.periodic(const Duration(minutes: 1), (_) => _checkScheduledReflection());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
   }
 
 
@@ -182,12 +187,29 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     await _loadNotes();
   }
 
+  Future<void> _checkScheduledReflection() async {
+    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (!(prefs.getBool('orah_daily_reflection_enabled') ?? false)) return;
+    final hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
+    final minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
+    final now = DateTime.now();
+    if (now.hour * 60 + now.minute < hour * 60 + minute) return;
+    final today = now.year.toString() + '-' + now.month.toString().padLeft(2, '0') + '-' + now.day.toString().padLeft(2, '0');
+    if (prefs.getString('orah_daily_reflection_last_shown') == today) return;
+    _openingScheduledReflection = true;
+    await prefs.setString('orah_daily_reflection_last_shown', today);
+    try { await OrahReminderService.instance.scheduleDailyReflection(time: TimeOfDay(hour: hour, minute: minute)); } catch (_) {}
+    try { await _openReflection(); } finally { _openingScheduledReflection = false; }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
     _trashSnackBarTimer?.cancel();
+    _reflectionCheckTimer?.cancel();
     super.dispose();
   }
 
@@ -615,6 +637,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                     ActionChip(
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
                                       label: const Text('Favorites'),
+                                    ActionChip(
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                                      padding: const EdgeInsets.symmetric(horizontal: 7),
+                                      avatar: const Icon(Icons.archive_outlined, size: 16),
+                                      label: const Text('Archived Notes'),
+                                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
+                                    ),
                                       onPressed: widget.onFavorites,
                                     ),
                                     ActionChip(
