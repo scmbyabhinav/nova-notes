@@ -336,6 +336,34 @@ class LocalNoteRepository implements NoteRepository {
 
   Future<Map<String, dynamic>> _toMap(Note note) async {
     if (note.isLocked) {
+      // Preserve already-encrypted Vault payloads when metadata is updated.
+      if (note.title == 'Private note' && note.content.startsWith('vault:v1:')) {
+        try {
+          final plaintext = await _security.decryptPrivatePayload(note.content);
+          final decoded = jsonDecode(plaintext);
+          if (decoded is Map && decoded['version'] == 1 && decoded['title'] is String && decoded['content'] is String) {
+            return {
+              'id': note.id,
+              'title': 'Private note',
+              'content': note.content,
+              'type': note.type.name,
+              'createdAt': note.createdAt.toIso8601String(),
+              'updatedAt': note.updatedAt.toIso8601String(),
+              'folderId': note.folderId,
+              'tags': const <String>[],
+              'color': note.color,
+              'isPinned': note.isPinned,
+              'isFavorite': note.isFavorite,
+              'isArchived': note.isArchived,
+              'isLocked': true,
+              'isTrashed': note.isTrashed,
+              'dueAt': note.dueAt?.toIso8601String(),
+              'attachments': note.attachments,
+              'checklistItems': const <Map<String, dynamic>>[],
+            };
+          }
+        } catch (_) {}
+      }
       final payload = jsonEncode({
         'version': 1,
         'title': note.title,
