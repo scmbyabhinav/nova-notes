@@ -113,9 +113,9 @@ class NovaSecurityService {
   Future<bool> authenticateBiometric() async {
     try {
       return await _auth.authenticate(
-        localizedReason: 'Unlock ORAH private notes',
+        localizedReason: 'Authenticate to access or lock a private ORAH note',
         options: const AuthenticationOptions(
-          biometricOnly: true,
+          biometricOnly: false,
           stickyAuth: true,
           useErrorDialogs: true,
         ),
