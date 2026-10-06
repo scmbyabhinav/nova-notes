@@ -750,21 +750,24 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
-    // Run smart detection from the text listeners so dates/times are detected
-    // while the user types, before the autosave snapshot is created.
-    final text = _titleController.text + '\\n' + _contentController.text;
+    // Parse on every edit before autosave so detected date/time and amounts
+    // become part of the persisted note metadata.
+    final text = '${_titleController.text}\n${_contentController.text}';
     final detected = OrahSmartDetection.detectDateTime(text);
     if (detected != null && !detected.isBefore(DateTime.now())) {
       _dueAt = detected;
     }
 
-    // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
-    // focus stable and avoids inherited-widget churn during autosave.
-    _hasChanges = true;
-    _saveTimer?.cancel();
-    _saveTimer = Timer(const Duration(milliseconds: 600), _save);
-  }
+    final detectedAmounts = OrahSmartDetection.amounts(text);
+    final generatedAmountTags = detectedAmounts
+        .map((amount) => 'amount:$amount')
+        .toSet();
+    final preservedTags = _tags.where((tag) => !tag.startsWith('amount:')).toList();
+    _tags = [...preservedTags, ...generatedAmountTags];
 
+    _hasChanges = true;
+    _save();
+  }
   Future<void> _save() async {
     if (!_hasChanges && widget.note != null) return;
 
@@ -923,11 +926,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _scanTextFromImage() async {
-    await OrahEntitlementService.instance.initialize();
-    if (!OrahEntitlementService.instance.isPremium) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('OCR is available with ORAH Pro.')));
-      return;
-    }
+    // OCR is free and available to every Orah user.
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null || !mounted) return;
     try {
@@ -1375,7 +1374,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       return Scaffold(
         appBar: AppBar(title: const Text('Private note')),
         body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.lock_rounded, size: 56),
+          const Icon(Icons.security_rounded, size: 56),
           const SizedBox(height: 16),
           Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
