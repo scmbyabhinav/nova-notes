@@ -11,6 +11,7 @@ import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../models/vault_folder.dart';
 import 'note_editor_screen.dart';
+import 'security_settings_screen.dart';
 
 class VaultScreen extends StatefulWidget {
   const VaultScreen({super.key});
@@ -95,6 +96,18 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _initialize() async {
+    final security = NovaSecurityService();
+    if (!await security.hasVaultPin()) {
+      final created = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => const SecuritySettingsScreen(returnToVault: true),
+        ),
+      );
+      if (created != true || !await security.hasVaultPin()) {
+        if (mounted) Navigator.of(context).pop();
+        return;
+      }
+    }
     if (!await _authenticateVault()) {
       if (mounted) Navigator.of(context).pop();
       return;
@@ -146,7 +159,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     );
     first.dispose();
     second.dispose();
-    if (result == null || !RegExp(r'^\\d{4,8}$').hasMatch(result)) {
+    if (result == null || !RegExp(r'^\d{4,8}$').hasMatch(result)) {
       if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN must contain 4–8 digits.')));
       return null;
     }
@@ -387,7 +400,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                     children: [
                       Icon(Icons.verified_user_rounded, size: 18, color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
-                      Text('End-to-End Encrypted', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w700)),
+                      Text('Military-Grade Vault', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w700)),
                       const Spacer(),
                       IconButton(tooltip: 'Create private note', onPressed: _createPrivateNote, icon: const Icon(Icons.add_rounded)),
                     ],
