@@ -385,7 +385,7 @@ class _NovaShellState extends State<NovaShell> {
         index: _index,
         children: _pages,
       ),
-          floatingActionButton: desktop ? null : Row(
+          floatingActionButton: desktop || _index == 1 ? null : Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               FloatingActionButton.small(

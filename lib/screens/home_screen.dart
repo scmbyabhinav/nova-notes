@@ -551,25 +551,25 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const VaultScreen()),
                       ),
-                      icon: const Icon(Icons.lock_outline_rounded),
+                      icon: const Icon(Icons.security_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Calendar & history',
                       onPressed: widget.onCalendarHistory,
-                      icon: const Icon(Icons.calendar_month_rounded),
+                      icon: const Icon(Icons.calendar_month_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Statistics & insights',
                       onPressed: widget.onStatistics,
-                      icon: const Icon(Icons.bar_chart_rounded),
+                      icon: const Icon(Icons.bar_chart_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Daily Reflection',
                       onPressed: _openReflection,
                       icon: SvgPicture.asset(
                         'assets/daily_reflection_icon.svg',
-                        width: 26,
-                        height: 26,
+                        width: 24,
+                        height: 24,
                         semanticsLabel: 'Daily Reflection',
                       ),
                     ),
