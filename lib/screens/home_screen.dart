@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
-import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../core/navigation/orah_navigation.dart';
 
@@ -495,100 +494,72 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           );
         }
 
-        return SafeArea(
-          child: RefreshIndicator(
-        onRefresh: _loadNotes,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-              sliver: SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Tooltip(
-                      message: _showFeatures ? 'Hide Orah features' : 'Show Orah features',
-                      child: Material(
-                        elevation: 3,
-                        color: theme.colorScheme.primary,
-                        shape: const CircleBorder(),
-                        shadowColor: theme.colorScheme.primary.withValues(alpha: 0.24),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () => setState(() => _showFeatures = !_showFeatures),
-                          child: SizedBox(
-                            width: 48,
-                            height: 48,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: SvgPicture.asset(
-                                'assets/orah_header_icon.svg',
-                                fit: BoxFit.contain,
-                                semanticsLabel: 'Orah features',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const OrahWordmark(fontSize: 34),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Think it. Write it. Keep it.',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton.filledTonal(
-                      tooltip: 'Vault / Locked Notes',
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const VaultScreen()),
-                      ),
-                      icon: const Icon(Icons.lock_outline_rounded),
-                    ),
-                    IconButton.filledTonal(
-                      tooltip: 'Calendar & history',
-                      onPressed: widget.onCalendar ?? widget.onCalendarHistory,
-                      icon: const Icon(Icons.calendar_month_rounded),
-                    ),
-                    IconButton.filledTonal(
-                      tooltip: 'Statistics & insights',
-                      onPressed: widget.onStatistics,
-                      icon: const Icon(Icons.bar_chart_rounded),
-                    ),
-                    IconButton.filledTonal(
-                      tooltip: 'Daily Reflection',
-                      onPressed: _openReflection,
-                      icon: SvgPicture.asset(
-                        'assets/daily_reflection_icon.svg',
-                        width: 26,
-                        height: 26,
-                        semanticsLabel: 'Daily Reflection',
-                      ),
-                    ),
-                    if (_showFeatures)
-                      IconButton.filledTonal(
-                        tooltip: 'Appearance',
-                        onPressed: widget.onSettings,
-                        icon: SvgPicture.asset(
-                          'assets/appearance_icon.svg',
-                          width: 26,
-                          height: 26,
-                          semanticsLabel: 'Appearance settings',
-                        ),
-                      ),
-                  ],
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Orah'),
+            actions: [
+              IconButton(
+                tooltip: 'Calendar & history',
+                onPressed: widget.onCalendar ?? widget.onCalendarHistory,
+                icon: const Icon(Icons.calendar_month_rounded, size: 20),
+              ),
+              IconButton(
+                tooltip: 'Vault / Locked Notes',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const VaultScreen()),
+                ),
+                icon: const Icon(Icons.lock_outline_rounded, size: 20),
+              ),
+              IconButton(
+                tooltip: 'Statistics & insights',
+                onPressed: widget.onStatistics,
+                icon: const Icon(Icons.bar_chart_rounded, size: 20),
+              ),
+              IconButton(
+                tooltip: 'Daily Reflection',
+                onPressed: _openReflection,
+                icon: SvgPicture.asset(
+                  'assets/daily_reflection_icon.svg',
+                  width: 20,
+                  height: 20,
+                  semanticsLabel: 'Daily Reflection',
                 ),
               ),
-            ),
+              IconButton(
+                tooltip: _showFeatures ? 'Hide Orah features' : 'Show Orah features',
+                onPressed: () => setState(() => _showFeatures = !_showFeatures),
+                icon: SvgPicture.asset(
+                  'assets/orah_header_icon.svg',
+                  width: 20,
+                  height: 20,
+                  semanticsLabel: 'Orah features',
+                ),
+              ),
+              if (_showFeatures)
+                IconButton(
+                  tooltip: 'Appearance',
+                  onPressed: widget.onSettings,
+                  icon: SvgPicture.asset(
+                    'assets/appearance_icon.svg',
+                    width: 20,
+                    height: 20,
+                    semanticsLabel: 'Appearance settings',
+                  ),
+                ),
+            ],
+          ),
+          body: SafeArea(
+            child: RefreshIndicator(
+          onRefresh: _loadNotes,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                sliver: SliverToBoxAdapter(
+                  child: const SizedBox(height: 4),
+                ),
+              ),
             SliverToBoxAdapter(
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 220),
