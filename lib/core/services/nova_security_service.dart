@@ -50,6 +50,7 @@ class NovaSecurityService {
 
   Future<void> setVaultPin(String pin) async {
     if (!RegExp(r'^[0-9]{4,8}$').hasMatch(pin)) {
+      throw const FormatException('Vault PIN must contain 4 to 8 digits.');
     }
     final salt = _randomSalt();
     await _storage.write(key: _vaultPinSaltKey, value: salt);
