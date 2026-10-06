@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
+import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../core/navigation/orah_navigation.dart';
 
@@ -496,7 +497,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Orah'),
+            title: const OrahWordmark(fontSize: 24),
             actions: [
               IconButton(
                 tooltip: 'Calendar & history',
