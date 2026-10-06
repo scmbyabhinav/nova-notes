@@ -28,9 +28,18 @@ class OrahEntitlementService extends ChangeNotifier {
   Future<void>? _initializationFuture;
 
   // ⚠️⚠️⚠️ CRITICAL: TEMPORARY TESTING MODE ⚠️⚠️⚠️
-  // This unlocks all Pro features for QA testing.
-  // TODO: REVERT THIS TO ACTUAL BILLING CHECK BEFORE PLAY STORE RELEASE!
-  bool get isPremium => true;
+  // This unlocks all Pro features for QA testing when ORAH_QA_UNLOCK=true.
+  // TODO: REVERT THIS FLAG BEFORE PLAY STORE RELEASE!
+  static const _qaUnlock = bool.fromEnvironment(
+    'ORAH_QA_UNLOCK',
+    defaultValue: false,
+  );
+
+  bool get isPremium {
+    if (_qaUnlock) return true;
+    if (plan == OrahPlan.free) return false;
+    return expiresAt == null || expiresAt!.isAfter(DateTime.now());
+  }
 
   String get planLabel => switch (plan) {
     OrahPlan.monthly => 'Pro Monthly',
