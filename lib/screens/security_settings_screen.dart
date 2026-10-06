@@ -5,7 +5,9 @@ import '../core/widgets/orah_asset_icon.dart';
 import '../core/services/nova_security_service.dart';
 
 class SecuritySettingsScreen extends StatefulWidget {
-  const SecuritySettingsScreen({super.key});
+  const SecuritySettingsScreen({super.key, this.returnToVault = false});
+
+  final bool returnToVault;
 
   @override
   State<SecuritySettingsScreen> createState() => _SecuritySettingsScreenState();
@@ -15,6 +17,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
   final _security = NovaSecurityService();
 
   bool _hasPin = false;
+  bool _hasVaultPin = false;
   bool _appLock = false;
   bool _biometric = false;
   bool _biometricAvailable = false;
@@ -29,6 +32,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
   Future<void> _load() async {
     final values = await Future.wait([
       _security.hasPin(),
+      _security.hasVaultPin(),
       _security.isAppLockEnabled(),
       _security.isBiometricEnabled(),
       _security.canUseBiometrics(),
@@ -36,9 +40,10 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
     if (!mounted) return;
     setState(() {
       _hasPin = values[0] as bool;
-      _appLock = values[1] as bool;
-      _biometric = values[2] as bool;
-      _biometricAvailable = values[3] as bool;
+      _hasVaultPin = values[1] as bool;
+      _appLock = values[2] as bool;
+      _biometric = values[3] as bool;
+      _biometricAvailable = values[4] as bool;
       _loading = false;
     });
   }
@@ -63,6 +68,36 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
         _appLock = true;
       });
       _message('PIN created. App lock is on.');
+    } catch (e) {
+      _message(e.toString().replaceFirst('FormatException: ', ''));
+    }
+  }
+
+  Future<void> _setVaultPin() async {
+    if (_hasVaultPin) {
+      final current = await _pinDialog('Verify current Vault PIN');
+      if (current == null || !await _security.verifyVaultPin(current)) {
+        _message('Incorrect Vault PIN.');
+        return;
+      }
+    }
+    final first = await _pinDialog(_hasVaultPin ? 'Create new Vault PIN' : 'Create Vault PIN');
+    if (first == null) return;
+    final second = await _pinDialog('Confirm Vault PIN');
+    if (second == null) return;
+    if (first != second) {
+      _message('Vault PINs do not match.');
+      return;
+    }
+    try {
+      await _security.setVaultPin(first);
+      if (!mounted) return;
+      setState(() => _hasVaultPin = true);
+      _message('Vault PIN saved.');
+      if (widget.returnToVault) {
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+        if (mounted) Navigator.of(context).pop(true);
+      }
     } catch (e) {
       _message(e.toString().replaceFirst('FormatException: ', ''));
     }
@@ -217,6 +252,19 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
               onChanged: _toggleBiometric,
             ),
           const Divider(height: 28),
+          ListTile(
+            leading: const Icon(Icons.security_rounded),
+            title: Text(_hasVaultPin ? 'Change Vault PIN' : 'Create Vault PIN'),
+            subtitle: const Text('Military-Grade Vault • No recovery if the PIN is forgotten.'),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: _setVaultPin,
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: Text(
+              'Military-Grade Vault: your locked notes stay protected on this device. There is no recovery if the Vault PIN is forgotten.',
+            ),
+          ),
           const ListTile(
             leading: Icon(Icons.privacy_tip_outlined),
             title: Text('Local-first privacy'),
