@@ -488,7 +488,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                             }
                             return Card(
                               child: ListTile(
-                                leading: const Icon(Icons.security_rounded),
+                                leading: const Icon(Icons.ac_unit, color: Colors.blue),
                                 title: Text(note.title.isEmpty ? 'Private note' : note.title),
                                 subtitle: Text('${folder?.name ?? 'Unfiled'} · Updated ${_relativeTime(note.updatedAt)}'),
                                 trailing: PopupMenuButton<String>(

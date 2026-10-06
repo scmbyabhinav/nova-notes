@@ -496,14 +496,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         }
 
         return Scaffold(
-          backgroundColor: Colors.redAccent,
           appBar: AppBar(
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset('assets/orah_header_icon.svg', width: 22, height: 22, semanticsLabel: 'Orah'),
                 const SizedBox(width: 7),
-                const OrahWordmark(fontSize: 24),
+                const Text('ORAH [TEST]', style: TextStyle(color: Colors.green, fontWeight: FontWeight.w800, fontSize: 24)),
               ],
             ),
             actions: [
@@ -517,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const VaultScreen()),
                 ),
-                icon: const Icon(Icons.security_rounded, size: 20),
+                icon: const Icon(Icons.ac_unit, size: 20, color: Colors.blue),
               ),
               IconButton(
                 tooltip: 'Statistics & insights',
@@ -688,6 +687,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
               sliver: SliverToBoxAdapter(
                 child: SearchBar(
+                  backgroundColor: const WidgetStatePropertyAll<Color>(Colors.yellow),
                   hintText: l10n.searchHint,
                   leading: const OrahAssetIcon('search'),
                   onTap: () {

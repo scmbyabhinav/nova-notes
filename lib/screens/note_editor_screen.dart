@@ -753,6 +753,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // Parse on every edit before autosave so detected date/time and amounts
     // become part of the persisted note metadata.
     final text = '${_titleController.text}\n${_contentController.text}';
+    print(' DETECTION FIRED: $text');
     final detected = OrahSmartDetection.detectDateTime(text);
     if (detected != null && !detected.isBefore(DateTime.now())) {
       _dueAt = detected;
