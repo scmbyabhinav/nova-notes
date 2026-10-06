@@ -496,6 +496,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         }
 
         return Scaffold(
+          backgroundColor: Colors.redAccent,
           appBar: AppBar(
             title: Row(
               mainAxisSize: MainAxisSize.min,
