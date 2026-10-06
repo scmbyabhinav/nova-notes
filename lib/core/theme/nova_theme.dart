@@ -27,40 +27,41 @@ class NovaTheme {
       textTheme: baseText.copyWith(
         headlineLarge: GoogleFonts.playfairDisplay(
           textStyle: baseText.headlineLarge?.copyWith(
-            fontSize: 34,
+            fontSize: 27,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.7,
           ),
         ),
         headlineMedium: GoogleFonts.playfairDisplay(
           textStyle: baseText.headlineMedium?.copyWith(
-            fontSize: 30,
+            fontSize: 27,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.5,
           ),
         ),
         headlineSmall: GoogleFonts.playfairDisplay(
           textStyle: baseText.headlineSmall?.copyWith(
-            fontSize: 26,
+            fontSize: 23,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.4,
           ),
         ),
         titleLarge: GoogleFonts.playfairDisplay(
           textStyle: baseText.titleLarge?.copyWith(
-            fontSize: 19,
+            fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
         ),
         titleMedium: baseText.titleMedium?.copyWith(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: GoogleFonts.inter(textStyle: baseText.bodyLarge?.copyWith(fontSize: 15, height: 1.55)),
-        bodyMedium: GoogleFonts.inter(textStyle: baseText.bodyMedium?.copyWith(fontSize: 14, height: 1.45)),
-        bodySmall: GoogleFonts.inter(textStyle: baseText.bodySmall?.copyWith(fontSize: 12, height: 1.4)),
+        bodyLarge: GoogleFonts.inter(textStyle: baseText.bodyLarge?.copyWith(fontSize: 14, height: 1.5)),
+        bodyMedium: GoogleFonts.inter(textStyle: baseText.bodyMedium?.copyWith(fontSize: 13, height: 1.4)),
+        bodySmall: GoogleFonts.inter(textStyle: baseText.bodySmall?.copyWith(fontSize: 11.5, height: 1.35)),
         labelLarge: GoogleFonts.inter(textStyle: baseText.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
       ),
+      iconTheme: const IconThemeData(size: 20),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -79,7 +80,7 @@ class NovaTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -87,7 +88,7 @@ class NovaTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -110,7 +111,7 @@ class NovaTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 68,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -153,14 +154,15 @@ class NovaTheme {
           textStyle: baseText.titleLarge?.copyWith(fontSize: 19, fontWeight: FontWeight.w700),
         ),
         titleMedium: baseText.titleMedium?.copyWith(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: GoogleFonts.inter(textStyle: baseText.bodyLarge?.copyWith(fontSize: 15, height: 1.55)),
-        bodyMedium: GoogleFonts.inter(textStyle: baseText.bodyMedium?.copyWith(fontSize: 14, height: 1.45)),
-        bodySmall: GoogleFonts.inter(textStyle: baseText.bodySmall?.copyWith(fontSize: 12, height: 1.4)),
+        bodyLarge: GoogleFonts.inter(textStyle: baseText.bodyLarge?.copyWith(fontSize: 14, height: 1.5)),
+        bodyMedium: GoogleFonts.inter(textStyle: baseText.bodyMedium?.copyWith(fontSize: 13, height: 1.4)),
+        bodySmall: GoogleFonts.inter(textStyle: baseText.bodySmall?.copyWith(fontSize: 11.5, height: 1.35)),
         labelLarge: GoogleFonts.inter(textStyle: baseText.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
       ),
+      iconTheme: const IconThemeData(size: 20),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
         elevation: 0,
@@ -179,7 +181,7 @@ class NovaTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -187,7 +189,7 @@ class NovaTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -210,7 +212,7 @@ class NovaTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 68,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
