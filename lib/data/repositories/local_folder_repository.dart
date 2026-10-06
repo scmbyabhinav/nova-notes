@@ -76,6 +76,7 @@ class LocalFolderRepository implements FolderRepository {
             'createdAt': folder.createdAt.toIso8601String(),
             'iconCodePoint': folder.iconCodePoint,
             'color': folder.color,
+            'folderCoverImagePath': folder.folderCoverImagePath,
           },
         )
         .toList();
@@ -90,6 +91,7 @@ class LocalFolderRepository implements FolderRepository {
       createdAt: DateTime.parse(map['createdAt'] as String),
       iconCodePoint: map['iconCodePoint'] as int?,
       color: map['color'] as int?,
+      folderCoverImagePath: (map['folderCoverImagePath'] ?? map['imagePath']) as String?,
     );
   }
 }

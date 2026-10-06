@@ -5,6 +5,7 @@ class NoteFolder {
     required this.createdAt,
     this.iconCodePoint,
     this.color,
+    this.folderCoverImagePath,
   });
 
   final String id;
@@ -12,4 +13,5 @@ class NoteFolder {
   final DateTime createdAt;
   final int? iconCodePoint;
   final int? color;
+  final String? folderCoverImagePath;
 }

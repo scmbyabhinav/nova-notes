@@ -849,12 +849,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
                           selectedColor: Theme.of(context).colorScheme.primary,
                           labelStyle: TextStyle(
+                            fontSize: 12.5,
                             color: _activeFilter == filter.$1
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : Theme.of(context).colorScheme.onSurface,
-                            fontWeight: _activeFilter == filter.$1
-                                ? FontWeight.w700
-                                : FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                           ),
                           side: BorderSide(
                             color: _activeFilter == filter.$1

@@ -83,6 +83,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isArchived = false;
   DateTime? _dueAt;
   String? _mood;
+  String? _imagePath;
   int? _noteColor;
   String? _folderId;
   String? _vaultFolderId;
@@ -138,6 +139,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (locked) _lockedCiphertext = existing?.content;
     _dueAt = existing?.dueAt ?? widget.initialDueAt;
     _mood = existing?.mood;
+    _imagePath = existing?.imagePath;
     _noteColor = existing?.color;
     _folderId = existing?.folderId;
     _vaultFolderId = existing?.vaultFolderId ?? widget.initialVaultFolderId;
@@ -749,13 +751,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
-    // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
-    // focus stable and avoids inherited-widget churn during autosave.
     _hasChanges = true;
-    _saveTimer?.cancel();
-    _saveTimer = Timer(const Duration(milliseconds: 600), _save);
+    _save();
   }
-
   Future<void> _save() async {
     if (!_hasChanges && widget.note != null) return;
 
@@ -780,6 +778,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         'content': content,
         'tags': _tags,
         'checklistItems': _checklistItems.map((item) => item.toMap()).toList(),
+        'imagePath': _imagePath,
       }));
       storedTitle = '';
       storedTags = const [];
@@ -806,6 +805,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
+            imagePath: _imagePath,
+            imagePath: _imagePath,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -903,22 +904,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
-  Future<void> _setDetectedReminder(DateTime date) async {
-    final now = DateTime.now();
-    if (date.isBefore(now)) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Detected date is already in the past.')));
-      return;
-    }
-    setState(() { _dueAt = date; _hasChanges = true; });
-    await _save();
-  }
-
   Future<void> _scanTextFromImage() async {
-    await OrahEntitlementService.instance.initialize();
-    if (!OrahEntitlementService.instance.isPremium) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('OCR is available with ORAH Pro.')));
-      return;
-    }
+    // OCR is free and available to every Orah user.
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked == null || !mounted) return;
     try {
@@ -1111,6 +1098,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final path = await const NovaAttachmentService().importXFile(picked);
       setState(() {
         _attachments = [..._attachments, path];
+        _imagePath ??= path;
         _hasChanges = true;
       });
       await _save();
@@ -1366,7 +1354,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       return Scaffold(
         appBar: AppBar(title: const Text('Private note')),
         body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.lock_rounded, size: 56),
+          const Icon(Icons.security_rounded, size: 56),
           const SizedBox(height: 16),
           Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
@@ -1446,14 +1434,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
           ),
           IconButton(
+            tooltip: 'Add Image',
+            onPressed: () => _addImage(ImageSource.gallery),
+            icon: const Icon(Icons.image_outlined),
+          ),
+          IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
             icon: const OrahAssetIcon('pin'),
           ),
           PopupMenuButton<String>(
-            icon: const OrahAssetIcon('menu'),
+            icon: const Icon(Icons.document_scanner_outlined),
             onSelected: (value) async {
               switch (value) {
+                case 'add_image': await _addImage(ImageSource.gallery); return;
                 case 'ocr': await _scanTextFromImage(); return;
                 case 'template': await _showTemplates(); return;
                 case 'reminder': await _setDueDate(); return;
@@ -1540,8 +1534,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ),
                 ),
               ),
+              const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
               const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
-              const PopupMenuItem(value: 'smart', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Detect dates & amounts'))),
               const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
               PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
               if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
@@ -1686,6 +1680,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ],
                 ),
               ),
+            if (_imagePath != null && File(_imagePath!).existsSync())
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.file(
+                    File(_imagePath!),
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             if (_attachments.isNotEmpty)
               SizedBox(
                 height: 112,
@@ -1713,7 +1720,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.insert_drive_file_outlined, size: 30),
+                                    const Icon(Icons.insert_drive_file_outlined, size: 26),
                                     const SizedBox(height: 6),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -1968,7 +1975,7 @@ class _MoodSelector extends StatelessWidget {
                 Tooltip(
                   message: mood.$3,
                   child: ChoiceChip(
-                    label: Text(mood.$2, style: const TextStyle(fontSize: 20)),
+                    label: Text(mood.$2, style: const TextStyle(fontSize: 18)),
                     selected: selectedMood == mood.$1,
                     onSelected: (_) => onSelected(selectedMood == mood.$1 ? null : mood.$1),
                     visualDensity: VisualDensity.compact,
@@ -2022,7 +2029,7 @@ class _ChecklistEditor extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 36),
             child: Column(
               children: [
-                OrahAssetIcon('checklist', size: 52, color: Theme.of(context).colorScheme.primary),
+                OrahAssetIcon('checklist', size: 44, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 12),
                 const Text('Your checklist is empty'),
                 const SizedBox(height: 8),

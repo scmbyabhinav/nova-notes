@@ -53,6 +53,7 @@ class Note {
     this.isTrashed = false,
     this.dueAt,
     this.mood,
+    this.imagePath,
   });
 
   final String id;
@@ -75,6 +76,8 @@ class Note {
   final DateTime? dueAt;
   /// Optional mood selected by the user when creating or editing this note.
   final String? mood;
+  /// Primary image selected for this note, if any.
+  final String? imagePath;
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -96,6 +99,7 @@ class Note {
         'isTrashed': isTrashed,
         'dueAt': dueAt?.toIso8601String(),
         'mood': mood,
+        'imagePath': imagePath,
       };
 
   factory Note.fromMap(Map<String, dynamic> map) => Note(
@@ -123,6 +127,7 @@ class Note {
         isTrashed: map['isTrashed'] as bool? ?? false,
         dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
         mood: map['mood'] as String?,
+        imagePath: map['imagePath'] as String?,
       );
 
   int get completedChecklistItems =>
@@ -158,6 +163,8 @@ class Note {
     bool clearDueAt = false,
     String? mood,
     bool clearMood = false,
+    String? imagePath,
+    bool clearImagePath = false,
   }) {
     return Note(
       id: id,
@@ -179,6 +186,7 @@ class Note {
       isTrashed: isTrashed ?? this.isTrashed,
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
       mood: clearMood ? null : (mood ?? this.mood),
+      imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
     );
   }
 }

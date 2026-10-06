@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
+import '../services/nova_attachment_service.dart';
 import 'note_editor_screen.dart';
 
 class FoldersScreen extends StatefulWidget {
@@ -64,19 +68,29 @@ class _FoldersScreenState extends State<FoldersScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(title),
-        content: TextFormField(
-          initialValue: initialValue,
-          autofocus: true,
-          maxLength: 80,
-          textCapitalization: TextCapitalization.words,
-          textInputAction: TextInputAction.done,
-          decoration: const InputDecoration(
-            labelText: 'Folder name',
-            hintText: 'e.g. Work, Ideas, Personal',
+        content: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(dialogContext).bottom,
           ),
-          onChanged: (text) => value = text,
-          onFieldSubmitted: (text) =>
-              Navigator.of(dialogContext).pop(text.trim()),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                initialValue: initialValue,
+                autofocus: true,
+                maxLength: 80,
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.done,
+                decoration: const InputDecoration(
+                  labelText: 'Folder name',
+                  hintText: 'e.g. Work, Ideas, Personal',
+                ),
+                onChanged: (text) => value = text,
+                onFieldSubmitted: (text) =>
+                    Navigator.of(dialogContext).pop(text.trim()),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -101,12 +115,22 @@ class _FoldersScreenState extends State<FoldersScreen> {
     return trimmed;
   }
 
+  Future<String?> _pickFolderImage() async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 88,
+    );
+    if (picked == null) return null;
+    return const NovaAttachmentService().importXFile(picked);
+  }
+
   Future<void> _addFolder() async {
     final name = await _promptFolderName(
       title: 'New folder',
       actionLabel: 'Create',
     );
     if (name == null) return;
+    final imagePath = await _pickFolderImage();
 
     final repository = await FolderRepositoryProvider.instance();
     await repository.saveFolder(
@@ -114,6 +138,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
         name: name,
         createdAt: DateTime.now(),
+        folderCoverImagePath: imagePath,
       ),
     );
 
@@ -128,6 +153,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
       actionLabel: 'Save',
     );
     if (name == null || name == folder.name) return;
+    final imagePath = await _pickFolderImage();
 
     final repository = await FolderRepositoryProvider.instance();
     await repository.saveFolder(
@@ -137,6 +163,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         createdAt: folder.createdAt,
         iconCodePoint: folder.iconCodePoint,
         color: folder.color,
+        folderCoverImagePath: imagePath ?? folder.folderCoverImagePath,
       ),
     );
 
@@ -329,11 +356,18 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                 ),
                               )
                             : CircleAvatar(
-                                child: const OrahAssetIcon(
-                                  'folder',
-                                  size: 22,
-                                  color: Colors.white,
-                                ),
+                                backgroundImage: folder.folderCoverImagePath != null &&
+                                        File(folder.imagePath!).existsSync()
+                                    ? FileImage(File(folder.imagePath!))
+                                    : null,
+                                child: folder.imagePath == null ||
+                                        !File(folder.imagePath!).existsSync()
+                                    ? const OrahAssetIcon(
+                                        'folder',
+                                        size: 22,
+                                        color: Colors.white,
+                                      )
+                                    : null,
                               ),
                         title: Text(
                           folder.name,

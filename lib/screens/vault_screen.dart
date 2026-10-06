@@ -83,10 +83,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     final repository = _repository;
     if (!mounted || repository == null) return;
     setState(() => _authenticated = true);
-    _subscription = repository.watchNotes().listen((notes) {
+    _subscription = repository.watchVaultNotes().listen((notes) {
       if (!mounted) return;
       setState(() {
-        _lockedNotes = notes.where((note) => note.isLocked && !note.isTrashed).toList()
+        _lockedNotes = notes.where((note) => !note.isTrashed).toList()
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         _loading = false;
       });
@@ -103,10 +103,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     if (!mounted) return;
     setState(() => _authenticated = true);
     _repository = repository;
-    _subscription = repository.watchNotes().listen((notes) {
+    _subscription = repository.watchVaultNotes().listen((notes) {
       if (!mounted) return;
       setState(() {
-        _lockedNotes = notes.where((note) => note.isLocked && !note.isTrashed).toList()
+        _lockedNotes = notes.where((note) => !note.isTrashed).toList()
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         _loading = false;
       });
@@ -500,9 +500,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   String _relativeTime(DateTime date) {
     final difference = DateTime.now().difference(date);
     if (difference.inMinutes < 1) return 'just now';
-    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
-    if (difference.inDays < 1) return '${difference.inHours}h ago';
-    if (difference.inDays < 7) return '${difference.inDays}d ago';
-    return '${date.day}/${date.month}/${date.year}';
+    if (difference.inHours < 1) return difference.inMinutes.toString() + 'm ago';
+    if (difference.inDays < 1) return difference.inHours.toString() + 'h ago';
+    if (difference.inDays < 7) return difference.inDays.toString() + 'd ago';
+    return date.day.toString() + '/' + date.month.toString() + '/' + date.year.toString();
   }
 }
