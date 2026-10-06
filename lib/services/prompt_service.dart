@@ -153,6 +153,18 @@ class PromptService {
     ReflectionPrompt(text: "What do you hope your future self remembers about this season?", category: "Future Self"),
     ReflectionPrompt(text: "What small choice today could improve your life six months from now?", category: "Future Self"),
     ReflectionPrompt(text: "What would you like to have learned by this time next year?", category: "Future Self"),
+      ReflectionPrompt(text: "What is one ordinary convenience today that you are glad exists?", category: "Gratitude"),
+    ReflectionPrompt(text: "What changed when you gave your full attention to one simple task?", category: "Mindfulness"),
+    ReflectionPrompt(text: "What would you practice if progress could be private?", category: "Personal Growth"),
+    ReflectionPrompt(text: "What quality do you most appreciate in the people you trust?", category: "Relationships"),
+    ReflectionPrompt(text: "What would it look like to be on your own side today?", category: "Self-Compassion"),
+    ReflectionPrompt(text: "Which priority deserves your attention before anything else?", category: "Clarity"),
+    ReflectionPrompt(text: "What small experiment could teach you something useful this week?", category: "Possibility"),
+    ReflectionPrompt(text: "What did you learn from today that you want to carry forward?", category: "Daily Review"),
+    ReflectionPrompt(text: "What do you want your time to say about what matters to you?", category: "Purpose & Values"),
+    ReflectionPrompt(text: "What previous challenge proves you can adapt again?", category: "Resilience"),
+    ReflectionPrompt(text: "What could you make if you gave yourself thirty uninterrupted minutes?", category: "Creativity & Curiosity"),
+    ReflectionPrompt(text: "What would make tonight feel genuinely restorative?", category: "Rest & Renewal"),
   ];
 
   /// Returns a prompt that is stable for the whole local calendar day.
