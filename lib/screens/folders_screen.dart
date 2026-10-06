@@ -64,7 +64,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(title),
-        content: TextFormField(
+        content: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(dialogContext).bottom,
+          ),
+          child: TextFormField(
           initialValue: initialValue,
           autofocus: true,
           maxLength: 80,
@@ -77,6 +81,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
           onChanged: (text) => value = text,
           onFieldSubmitted: (text) =>
               Navigator.of(dialogContext).pop(text.trim()),
+          ),
         ),
         actions: [
           TextButton(
