@@ -1713,7 +1713,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.insert_drive_file_outlined, size: 30),
+                                    const Icon(Icons.insert_drive_file_outlined, size: 26),
                                     const SizedBox(height: 6),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -1968,7 +1968,7 @@ class _MoodSelector extends StatelessWidget {
                 Tooltip(
                   message: mood.$3,
                   child: ChoiceChip(
-                    label: Text(mood.$2, style: const TextStyle(fontSize: 20)),
+                    label: Text(mood.$2, style: const TextStyle(fontSize: 18)),
                     selected: selectedMood == mood.$1,
                     onSelected: (_) => onSelected(selectedMood == mood.$1 ? null : mood.$1),
                     visualDensity: VisualDensity.compact,
@@ -2022,7 +2022,7 @@ class _ChecklistEditor extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 36),
             child: Column(
               children: [
-                OrahAssetIcon('checklist', size: 52, color: Theme.of(context).colorScheme.primary),
+                OrahAssetIcon('checklist', size: 44, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 12),
                 const Text('Your checklist is empty'),
                 const SizedBox(height: 8),
