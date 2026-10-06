@@ -26,7 +26,9 @@ class OrahSmartDetection {
     final matches = _amount.allMatches(text);
     return matches
         .map((m) => m.group(0)!.trim())
-        .map((amount) => amount.replaceAll(RegExp(r'[,\\s]+
+        .map((amount) => amount.replaceAll(RegExp(r'[,\s]+$'), ''))
+        .toList();
+  }
 
   static List<DateTime> dates(String text, {DateTime? now}) {
     final base = now ?? DateTime.now();
