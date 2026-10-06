@@ -202,12 +202,13 @@ class _NovaShellState extends State<NovaShell> {
           onChecklist: () => _openEditor(NoteType.checklist),
           onSettings: () => setState(() => _index = 3),
           onNotes: () => setState(() => _index = 0),
-          onFolders: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FoldersScreen())),
+          onFolders: () => setState(() => _index = 1),
+          onCalendar: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CalendarScreen(onNotes: () => setState(() => _index = 0)))),
           onFavorites: () => setState(() => _index = 2),
           onStatistics: _openStatistics,
           onCalendarHistory: _openCalendarHistory,
         ),
-        CalendarScreen(onNotes: () => setState(() => _index = 0)),
+        const FoldersScreen(),
         const FavoritesScreen(),
         SettingsScreen(themeController: widget.themeController),
       ];
@@ -403,7 +404,7 @@ class _NovaShellState extends State<NovaShell> {
           bottomNavigationBar: desktop ? null : NavigationBar(
             selectedIndex: switch (_index) {
               0 => 0, // Notes / Home
-              1 => 1, // Calendar
+              1 => 1, // Folders
               2 => 3, // Favorites
               _ => 4, // Settings
             },
@@ -433,9 +434,9 @@ class _NovaShellState extends State<NovaShell> {
                 label: 'Notes',
               ),
               NavigationDestination(
-                icon: SvgPicture.asset('assets/calendar_icon.svg', width: 20, height: 20, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
-                selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 20, height: 20, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
-                label: 'Calendar',
+                icon: const Icon(Icons.folder_outlined, size: 20),
+                selectedIcon: const Icon(Icons.folder_rounded, size: 20),
+                label: 'Folders',
               ),
               NavigationDestination(
                 icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
