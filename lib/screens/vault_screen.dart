@@ -83,15 +83,19 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     final repository = _repository;
     if (!mounted || repository == null) return;
     setState(() => _authenticated = true);
-    _subscription = repository.watchVaultNotes().listen((notes) {
+    Future<void> loadVault() async {
+      final notes = await repository.getVaultNotes();
       if (!mounted) return;
       setState(() {
         _lockedNotes = notes.where((note) => !note.isTrashed).toList()
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         _loading = false;
       });
-    });
+    }
+    await loadVault();
+    _subscription = repository.watchNotes().listen((_) => loadVault());
     await repository.refresh();
+    await loadVault();
   }
 
   Future<void> _initialize() async {
@@ -103,15 +107,19 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     if (!mounted) return;
     setState(() => _authenticated = true);
     _repository = repository;
-    _subscription = repository.watchVaultNotes().listen((notes) {
+    Future<void> loadVault() async {
+      final notes = await repository.getVaultNotes();
       if (!mounted) return;
       setState(() {
         _lockedNotes = notes.where((note) => !note.isTrashed).toList()
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
         _loading = false;
       });
-    });
+    }
+    await loadVault();
+    _subscription = repository.watchNotes().listen((_) => loadVault());
     await repository.refresh();
+    await loadVault();
   }
 
   Future<String?> _promptVaultPin({required String title, required bool confirm}) async {

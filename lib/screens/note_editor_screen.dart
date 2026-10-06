@@ -806,7 +806,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
-            imagePath: _imagePath,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -825,6 +824,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             color: _noteColor,
             dueAt: _dueAt,
             mood: _mood,
+            imagePath: _imagePath,
           );
 
     await widget.repository.saveNote(note);

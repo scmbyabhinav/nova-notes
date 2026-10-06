@@ -357,11 +357,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
                               )
                             : CircleAvatar(
                                 backgroundImage: folder.folderCoverImagePath != null &&
-                                        File(folder.imagePath!).existsSync()
-                                    ? FileImage(File(folder.imagePath!))
+                                        File(folder.folderCoverImagePath!).existsSync()
+                                    ? FileImage(File(folder.folderCoverImagePath!))
                                     : null,
-                                child: folder.imagePath == null ||
-                                        !File(folder.imagePath!).existsSync()
+                                child: folder.folderCoverImagePath == null ||
+                                        !File(folder.folderCoverImagePath!).existsSync()
                                     ? const OrahAssetIcon(
                                         'folder',
                                         size: 22,
