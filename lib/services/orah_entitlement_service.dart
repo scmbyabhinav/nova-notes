@@ -27,10 +27,10 @@ class OrahEntitlementService extends ChangeNotifier {
   String? error;
   Future<void>? _initializationFuture;
 
-  bool get isPremium {
-    if (plan == OrahPlan.free) return false;
-    return expiresAt == null || expiresAt!.isAfter(DateTime.now());
-  }
+  // ⚠️⚠️⚠️ CRITICAL: TEMPORARY TESTING MODE ⚠️⚠️⚠️
+  // This unlocks all Pro features for QA testing.
+  // TODO: REVERT THIS TO ACTUAL BILLING CHECK BEFORE PLAY STORE RELEASE!
+  bool get isPremium => true;
 
   String get planLabel => switch (plan) {
     OrahPlan.monthly => 'Pro Monthly',
