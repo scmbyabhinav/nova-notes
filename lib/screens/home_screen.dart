@@ -556,7 +556,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                     ),
                     IconButton.filledTonal(
                       tooltip: 'Calendar & history',
-                      onPressed: widget.onCalendarHistory,
+                      onPressed: widget.onCalendar ?? widget.onCalendarHistory,
                       icon: const Icon(Icons.calendar_month_rounded),
                     ),
                     IconButton.filledTonal(
