@@ -22,7 +22,7 @@ import 'orah_features_screen.dart';
 import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onCalendar});
 
   final bool isActive;
   final Future<void> Function()? onNewNote;
@@ -34,6 +34,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback? onFavorites;
   final VoidCallback? onStatistics;
   final VoidCallback? onCalendarHistory;
+  final VoidCallback? onCalendar;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
