@@ -497,7 +497,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
         return Scaffold(
           appBar: AppBar(
-            title: const OrahWordmark(fontSize: 24),
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset('assets/orah_header_icon.svg', width: 22, height: 22, semanticsLabel: 'Orah'),
+                const SizedBox(width: 7),
+                const OrahWordmark(fontSize: 24),
+              ],
+            ),
             actions: [
               IconButton(
                 tooltip: 'Calendar & history',
@@ -509,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const VaultScreen()),
                 ),
-                icon: const Icon(Icons.lock_outline_rounded, size: 20),
+                icon: const Icon(Icons.security_rounded, size: 20),
               ),
               IconButton(
                 tooltip: 'Statistics & insights',
@@ -579,7 +586,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                               children: [
                                 Text(
                                   'Explore Orah',
-                                  style: theme.textTheme.titleMedium?.copyWith(
+                                  style: theme.textTheme.bodyMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -677,7 +684,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
               sliver: SliverToBoxAdapter(
                 child: SearchBar(
                   hintText: l10n.searchHint,
@@ -810,7 +817,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         child: FilterChip(
                           avatar: Icon(
                             filter.$3,
-                            size: 16,
+                            size: 24,
                             color: _activeFilter == filter.$1
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -822,6 +829,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
                           selectedColor: Theme.of(context).colorScheme.primary,
                           labelStyle: TextStyle(
+                            fontSize: 12,
                             color: _activeFilter == filter.$1
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : Theme.of(context).colorScheme.onSurface,
