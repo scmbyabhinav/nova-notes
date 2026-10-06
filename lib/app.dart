@@ -23,7 +23,6 @@ import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
 import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart' as registration;
-import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
   const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
@@ -89,8 +88,6 @@ class OrahEntryGate extends StatefulWidget {
 class _OrahEntryGateState extends State<OrahEntryGate> {
   OrahUserProfile? _profile;
   bool _loading = true;
-  bool _showWelcome = false;
-  String _welcomeUserName = 'Friend';
 
   @override
   void initState() {
@@ -104,13 +101,9 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     if (profile != null && prefs.getString('user_name') == null) {
       await prefs.setString('user_name', profile.fullName);
     }
-    final userName = prefs.getString('user_name') ?? 'Friend';
-    final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     if (!mounted) return;
     setState(() {
       _profile = profile;
-      _welcomeUserName = userName;
-      _showWelcome = profile != null && showWelcome;
       _loading = false;
     });
   }
@@ -132,14 +125,6 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     if (profile == null) {
       return registration.OrahRegistrationScreen(
         onRegistered: (value) => setState(() => _profile = value),
-      );
-    }
-    if (_showWelcome) {
-      return WelcomeSplashScreen(
-        userName: _welcomeUserName,
-        onComplete: () {
-          if (mounted) setState(() => _showWelcome = false);
-        },
       );
     }
     return NovaShell(
@@ -344,13 +329,13 @@ class _NovaShellState extends State<NovaShell> {
               ),
               const SizedBox(height: 12),
               ListTile(
-                leading: const CircleAvatar(child: OrahAssetIcon('compose', size: 24, color: Colors.white)),
+                leading: const CircleAvatar(child: OrahAssetIcon('compose', size: 20, color: Colors.white)),
                 title: const Text('Quick note'),
                 subtitle: const Text('Start typing immediately'),
                 onTap: () => Navigator.pop(sheetContext, 'text'),
               ),
               ListTile(
-                leading: const CircleAvatar(child: OrahAssetIcon('checklist', size: 24, color: Colors.white)),
+                leading: const CircleAvatar(child: OrahAssetIcon('checklist', size: 20, color: Colors.white)),
                 title: const Text('Quick checklist'),
                 subtitle: const Text('Capture tasks without setup'),
                 onTap: () => Navigator.pop(sheetContext, 'checklist'),
@@ -448,8 +433,8 @@ class _NovaShellState extends State<NovaShell> {
                 label: 'Notes',
               ),
               NavigationDestination(
-                icon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
-                selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
+                icon: SvgPicture.asset('assets/calendar_icon.svg', width: 20, height: 20, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
+                selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 20, height: 20, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
                 label: 'Calendar',
               ),
               NavigationDestination(
