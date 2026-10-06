@@ -24,6 +24,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/orah_smart_detection.dart';
 import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
@@ -749,6 +750,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
+    // Run smart detection from the text listeners so dates/times are detected
+    // while the user types, before the autosave snapshot is created.
+    final text = _titleController.text + '\\n' + _contentController.text;
+    final detected = OrahSmartDetection.detectDateTime(text);
+    if (detected != null && !detected.isBefore(DateTime.now())) {
+      _dueAt = detected;
+    }
+
     // Avoid rebuilding the editor on every keystroke. This keeps text/checklist
     // focus stable and avoids inherited-widget churn during autosave.
     _hasChanges = true;
