@@ -294,6 +294,11 @@ jobs:
             }
           }
           GRADLE
+      - name: Clean SDK caches
+        run: |
+          sudo rm -rf /usr/local/lib/android/sdk/ndk/* || true
+          rm -rf /home/runner/.android/cache || true
+
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Upload debug APK
