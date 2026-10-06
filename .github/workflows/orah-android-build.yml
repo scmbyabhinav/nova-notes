@@ -300,7 +300,7 @@ jobs:
           rm -rf /home/runner/.android/cache || true
 
       - name: Build debug APK
-        run: flutter build apk --debug
+        run: flutter build apk --debug --dart-define=ORAH_QA_UNLOCK=true
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
