@@ -498,6 +498,23 @@ if manifest.exists():
     except ET.ParseError as exc:
         raise SystemExit(f"Generated AndroidManifest.xml is invalid: {exc}")
 
+# Pin the generated Android host to a known-good NDK so CI never resolves an
+# ambiguous or corrupted side-loaded NDK package.
+for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.gradle.kts"):
+    if not gradle_path.exists():
+        continue
+    text = gradle_path.read_text()
+    if gradle_path.suffix == ".kts":
+        text = re.sub(r"ndkVersion\\s*=\\s*[^\\n]+", 'ndkVersion = "28.0.12674087"', text)
+        if "ndkVersion =" not in text:
+            text = text.replace("android {", 'android {\\n    ndkVersion = "28.0.12674087"', 1)
+    else:
+        text = re.sub(r"ndkVersion\\s+[^\\n]+", 'ndkVersion "28.0.12674087"', text)
+        if 'ndkVersion "28.0.12674087"' not in text:
+            text = text.replace("android {", 'android {\\n    ndkVersion "28.0.12674087"', 1)
+    gradle_path.write_text(text)
+    print(f"Configured NDK 28.0.12674087 in {gradle_path}")
+
 # Pin the generated Android host to Android 16 (API 36).
 for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.gradle.kts"):
     if not gradle_path.exists():
