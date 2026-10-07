@@ -497,7 +497,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         await security.authenticateBiometric()) {
       return true;
     }
-    if (!await security.hasPin() || !mounted) return false;
+    if (!await security.hasVaultPin() && !await security.hasPin() || !mounted) return false;
     final controller = TextEditingController();
     final pin = await showDialog<String>(
       context: context,
@@ -521,6 +521,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
     controller.dispose();
     if (pin == null) return false;
+    if (await security.hasVaultPin() && await security.verifyVaultPin(pin)) return true;
     return security.verifyPin(pin);
   }
 
@@ -587,7 +588,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<bool> _ensureSecurityForLock() async {
     final security = NovaSecurityService();
-    final hasPin = await security.hasPin();
+    final hasPin = await security.hasVaultPin() || await security.hasPin();
     final biometricEnabled = await security.isBiometricEnabled();
     final biometricAvailable = biometricEnabled && await security.canUseBiometrics();
     if (hasPin || biometricAvailable) return false;
@@ -633,6 +634,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
     try {
       await security.setPin(first);
+      await security.setVaultPin(first);
       await security.setAppLockEnabled(true);
       if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
