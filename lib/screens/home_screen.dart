@@ -456,24 +456,28 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    bool isDailyReflection(Note note) =>
+        note.tags.any((tag) => tag.toLowerCase() == 'reflection') ||
+        note.title.trim().toLowerCase() == 'daily reflection';
+
     final pinned = _notes
-        .where((note) => note.isPinned && !note.isArchived)
+        .where((note) => note.isPinned && !note.isArchived && !isDailyReflection(note))
         .toList();
     final recent = _notes.where((note) {
+      final reflection = isDailyReflection(note);
       switch (_activeFilter) {
         case 'pinned':
-          return note.isPinned && !note.isArchived;
+          return note.isPinned && !note.isArchived && !reflection;
         case 'favorites':
-          return note.isFavorite && !note.isArchived;
+          return note.isFavorite && !note.isArchived && !reflection;
         case 'checklists':
-          return note.type == NoteType.checklist && !note.isArchived;
+          return note.type == NoteType.checklist && !note.isArchived && !reflection;
         case 'archived':
-          return note.isArchived;
+          return note.isArchived && !reflection;
         case 'daily_reflection':
-          return note.tags.any((tag) => tag.toLowerCase() == 'reflection') ||
-              note.title.trim().toLowerCase() == 'daily reflection';
+          return reflection;
         default:
-          return !note.isArchived;
+          return !note.isArchived && !reflection;
       }
     }).toList()
       ..sort((a, b) {
