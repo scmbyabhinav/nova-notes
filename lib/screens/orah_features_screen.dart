@@ -81,4 +81,5 @@ class _Feature {
   final String? assetIcon;
   final String title;
   final String description;
+  final bool warning;
 }
