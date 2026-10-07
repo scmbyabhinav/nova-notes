@@ -14,6 +14,7 @@ import '../data/repositories/note_repository_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../core/theme/orah_theme_controller.dart';
+import '../core/services/nova_security_service.dart';
 import 'security_settings_screen.dart';
 import 'android_features_screen.dart';
 import 'about_nova_screen.dart';
