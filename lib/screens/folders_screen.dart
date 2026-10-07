@@ -71,10 +71,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
           title: Text(title),
-          content: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.viewInsetsOf(dialogContext).bottom,
-            ),
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -115,7 +112,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   ),
                 TextFormField(
                   initialValue: initialValue,
-                  autofocus: true,
+                  autofocus: false,
                   maxLength: 80,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.done,
