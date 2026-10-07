@@ -184,17 +184,84 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     final files = <XFile>[];
     try {
       for (final option in _options) {
-        if (option.premium && !await OrahPremiumGate.check(context, OrahFeature.advancedExport)) return;
+        if (option.premium &&
+            !await OrahPremiumGate.check(context, OrahFeature.advancedExport)) {
+          continue;
+        }
         final file = await const UniversalExportService().export(widget.note, option.format);
         files.add(XFile(file.path));
       }
       if (!mounted) return;
-      await Share.shareXFiles(files, subject: 'ORAH — ${widget.note.title} — Export bundle', text: 'Exported from ORAH in all currently supported formats');
+      if (files.isNotEmpty) {
+        await Share.shareXFiles(
+          files,
+          subject: 'ORAH — ' + widget.note.title + ' — Export bundle',
+          text: 'Exported from ORAH in all currently available formats',
+        );
+      }
+      if (mounted) await _showPlannedFormats();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Export All failed: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export All failed: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Widget _plannedSection(String category) {
+    final items = _planned.where((item) => item.category == category);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, top: 8, bottom: 2),
+          child: Text(category, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ),
+        for (final item in items)
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.lock_outline_rounded, size: 20),
+            title: Row(
+              children: [
+                Expanded(child: Text(item.label)),
+                const Text(
+                  'Coming Soon',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+            subtitle: Text(item.description),
+            enabled: false,
+          ),
+      ],
+    );
+  }
+
+  Future<void> _showPlannedFormats() async {
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          children: [
+            Text(
+              'Planned Export Formats',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 6),
+            const Text('These formats are planned for future Orah updates and are not exported yet.'),
+            const SizedBox(height: 12),
+            for (final category in _plannedCategories)
+              _plannedSection(category),
+          ],
+        ),
+      ),
+    );
   }
 }
 
