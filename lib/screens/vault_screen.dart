@@ -142,6 +142,14 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (confirm)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Text(
+                  '⚠️ No PIN recovery. If you forget this Vault PIN, the protected Vault cannot be recovered. You will need to reset the Vault and create a new one, permanently losing the old protected contents.',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
             TextField(controller: first, autofocus: true, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit Vault PIN')),
             if (confirm) TextField(controller: second, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: 'Confirm PIN')),
           ],
