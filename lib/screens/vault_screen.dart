@@ -146,7 +146,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
               const Padding(
                 padding: EdgeInsets.only(bottom: 12),
                 child: Text(
-                  '⚠️ No PIN recovery. If you forget this Vault PIN, the protected Vault cannot be recovered. You will need to reset the Vault and create a new one, permanently losing the old protected contents.',
+                  '⚠️ No PIN recovery. Forget it and the Vault cannot be recovered.',
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
