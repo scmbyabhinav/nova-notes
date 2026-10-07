@@ -450,7 +450,7 @@ class _NovaShellState extends State<NovaShell> {
               NavigationDestination(
                 icon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
                 selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
-                label: 'Calendar',
+                label: 'Folders',
               ),
               NavigationDestination(
                 icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
