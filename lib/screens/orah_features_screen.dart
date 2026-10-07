@@ -75,6 +75,7 @@ class _Feature {
     this.assetIcon,
     required this.title,
     required this.description,
+    this.warning = false,
   });
 
   final IconData? icon;
