@@ -172,18 +172,43 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
 
   Future<bool> _authenticateVault() async {
     final security = NovaSecurityService();
-    final hasPin = await security.hasVaultPin();
-    final pin = await _promptVaultPin(title: hasPin ? 'Unlock Vault' : 'Create Vault PIN', confirm: !hasPin);
+    final hasVaultPin = await security.hasVaultPin();
+    final hasLegacyPin = await security.hasPin();
+
+    final pin = await _promptVaultPin(
+      title: hasVaultPin || hasLegacyPin ? 'Unlock Vault' : 'Create Vault PIN',
+      confirm: !hasVaultPin && !hasLegacyPin,
+    );
     if (pin == null) return false;
-    if (!hasPin) {
+
+    if (hasVaultPin) {
+      final ok = await security.verifyVaultPin(pin);
+      if (!ok && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Incorrect Vault PIN.')),
+        );
+      }
+      return ok;
+    }
+
+    if (hasLegacyPin) {
+      // Older Orah versions used the general security PIN for locked notes.
+      // Accept it here once and migrate it to the dedicated Vault PIN store.
+      final ok = await security.verifyPin(pin);
+      if (!ok) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Incorrect Vault PIN.')),
+          );
+        }
+        return false;
+      }
       await security.setVaultPin(pin);
       return true;
     }
-    final ok = await security.verifyVaultPin(pin);
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect Vault PIN.')));
-    }
-    return ok;
+
+    await security.setVaultPin(pin);
+    return true;
   }
 
   Future<void> _changeVaultPin() async {
