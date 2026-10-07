@@ -321,6 +321,13 @@ class LocalNoteRepository implements NoteRepository {
     _publish(await getNotes());
   }
 
+  /// Permanently removes every protected Vault record. This is only used
+  /// by the explicit forgotten-PIN reset flow after the user acknowledges
+  /// that the old Vault cannot be recovered.
+  Future<void> resetVaultNotes() async {
+    await _preferences.remove(_vaultStorageKey);
+  }
+
   Future<void> deleteVaultNote(String id) async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
