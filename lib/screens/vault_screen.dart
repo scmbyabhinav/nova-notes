@@ -163,16 +163,45 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
 
   Future<bool> _authenticateVault() async {
     final security = NovaSecurityService();
-    final hasPin = await security.hasVaultPin();
-    final pin = await _promptVaultPin(title: hasPin ? 'Unlock Vault' : 'Create Vault PIN', confirm: !hasPin);
-    if (pin == null) return false;
-    if (!hasPin) {
+    final hasVaultPin = await security.hasVaultPin();
+    final hasLegacyPin = await security.hasPin();
+
+    if (!hasVaultPin && hasLegacyPin) {
+      final pin = await _promptVaultPin(
+        title: 'Unlock Vault',
+        confirm: false,
+      );
+      if (pin == null) return false;
+      final ok = await security.verifyPin(pin);
+      if (!ok) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Incorrect Vault PIN.')),
+          );
+        }
+        return false;
+      }
+      // Migrate the existing note-lock PIN to the dedicated Vault PIN store.
       await security.setVaultPin(pin);
       return true;
     }
+
+    final pin = await _promptVaultPin(
+      title: hasVaultPin ? 'Unlock Vault' : 'Create Vault PIN',
+      confirm: !hasVaultPin,
+    );
+    if (pin == null) return false;
+
+    if (!hasVaultPin) {
+      await security.setVaultPin(pin);
+      return true;
+    }
+
     final ok = await security.verifyVaultPin(pin);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect Vault PIN.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Incorrect Vault PIN.')),
+      );
     }
     return ok;
   }
