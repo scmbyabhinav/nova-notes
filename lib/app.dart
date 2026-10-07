@@ -418,7 +418,7 @@ class _NovaShellState extends State<NovaShell> {
           bottomNavigationBar: desktop ? null : NavigationBar(
             selectedIndex: switch (_index) {
               0 => 0, // Notes / Home
-              1 => 1, // Calendar
+              1 => 1, // Folders
               2 => 3, // Favorites
               _ => 4, // Settings
             },
