@@ -48,6 +48,15 @@ class NovaSecurityService {
   Future<bool> hasVaultPin() async =>
       (await _storage.read(key: _vaultPinHashKey)) != null;
 
+  /// Permanently resets the Vault security material. This is intentionally
+  /// separate from the normal app PIN: forgetting the Vault PIN provides no
+  /// recovery path, so a reset must also destroy the Vault encryption key.
+  Future<void> resetVault() async {
+    await _storage.delete(key: _vaultPinHashKey);
+    await _storage.delete(key: _vaultPinSaltKey);
+    await _vaultStorage.delete(key: _vaultKey);
+  }
+
   Future<void> setVaultPin(String pin) async {
     if (!RegExp(r'^[0-9]{4,8}$').hasMatch(pin)) {
       throw const FormatException('Vault PIN must contain 4 to 8 digits.');
