@@ -55,7 +55,6 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final selected = _options.firstWhere((item) => item.format == _selected);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -63,83 +62,78 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Export note', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+            Text(
+              'Export note',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            ),
             const SizedBox(height: 6),
-            const Text('Choose one format, then tap Export. Orah never exports every format unless you explicitly choose Export All.'),
-            const SizedBox(height: 16),
+            const Text('Choose exactly one format. The available formats are shown below.'),
+            const SizedBox(height: 12),
             if (_busy) const LinearProgressIndicator(),
-            const SizedBox(height: 8),
-            _selectedFormatCard(selected),
-            const SizedBox(height: 10),
-            SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: _busy ? null : _chooseFormat, icon: const Icon(Icons.swap_horiz_rounded), label: const Text('Choose format'))),
-            const SizedBox(height: 8),
-            SizedBox(width: double.infinity, child: FilledButton.icon(onPressed: _busy ? null : _exportSelected, icon: const Icon(Icons.ios_share_rounded), label: Text('Export ${selected.label}'))),
             const SizedBox(height: 4),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.email_outlined),
-              title: const Text('Send as email attachment'),
-              subtitle: const Text('Creates a PDF and opens the system share sheet'),
-              enabled: !_busy,
-              onTap: _sendAsEmailAttachment,
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4, top: 4, bottom: 4),
+                    child: Text('Documents', style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                  for (final option in _options.where((o) => o.category == 'Documents'))
+                    _formatTile(option),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4, top: 10, bottom: 4),
+                    child: Text('Data', style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                  for (final option in _options.where((o) => o.category == 'Data'))
+                    _formatTile(option),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.email_outlined),
+                    title: const Text('Send as email attachment'),
+                    subtitle: const Text('Creates a PDF and opens the system share sheet'),
+                    enabled: !_busy,
+                    onTap: _sendAsEmailAttachment,
+                  ),
+                  const Divider(),
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: _busy ? null : _exportAllSupported,
+                      icon: const Icon(Icons.all_inclusive_rounded, size: 19),
+                      label: const Text('Export All Supported Formats'),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            Center(child: TextButton.icon(onPressed: _busy ? null : _exportAllSupported, icon: const Icon(Icons.all_inclusive_rounded, size: 19), label: const Text('Export All Supported Formats'))),
           ],
         ),
       ),
     );
   }
 
-  Widget _selectedFormatCard(_ExportOption option) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        leading: Icon(option.icon),
-        title: Row(children: [Expanded(child: Text(option.label)), if (option.premium) const Icon(Icons.workspace_premium_rounded, size: 18)]),
-        subtitle: Text(option.description),
+  Widget _formatTile(_ExportOption option) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(option.icon),
+      title: Row(
+        children: [
+          Expanded(child: Text(option.label)),
+          if (option.premium)
+            const Icon(Icons.workspace_premium_rounded, size: 18),
+        ],
       ),
-    );
-  }
-
-  Future<void> _chooseFormat() async {
-    final selected = await showModalBottomSheet<NovaExportFormat>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(8, 0, 8, 12),
-              child: Text('Choose one export format', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-            ),
-            for (final category in const ['Documents', 'Data']) _category(context, category),
-          ],
-        ),
-      ),
-    );
-    if (selected != null && mounted) setState(() => _selected = selected);
-  }
-
-  Widget _category(BuildContext context, String category) {
-    final items = _options.where((item) => item.category == category).toList();
-    return ExpansionTile(
-      initiallyExpanded: true,
-      title: Text(category),
-      children: [
-        for (final option in items)
-          RadioListTile<NovaExportFormat>(
-            value: option.format,
-            groupValue: _selected,
-            secondary: Icon(option.icon),
-            title: Row(children: [Expanded(child: Text(option.label)), if (option.premium) const Icon(Icons.workspace_premium_rounded, size: 18)]),
-            subtitle: Text(option.description),
-            onChanged: (value) { if (value != null) Navigator.of(context).pop(value); },
-          ),
-      ],
+      subtitle: Text(option.description),
+      enabled: !_busy,
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () async {
+        if (option.premium &&
+            !await OrahPremiumGate.check(context, OrahFeature.advancedExport)) {
+          return;
+        }
+        setState(() => _selected = option.format);
+        await _exportSelected();
+      },
     );
   }
 
