@@ -49,7 +49,139 @@ class NovaSecurityService {
       (await _storage.read(key: _vaultPinHashKey)) != null;
 
   Future<void> setVaultPin(String pin) async {
-    if (!RegExp(r'^[0-9]{4,8}$').hasMatch(pin)) {
+    if (!RegExp(r'^\d{4,8}    final salt = _randomSalt();
+    await _storage.write(key: _vaultPinSaltKey, value: salt);
+    await _storage.write(key: _vaultPinHashKey, value: _hash(pin, salt));
+  }
+
+  Future<bool> verifyVaultPin(String pin) async {
+    final hash = await _storage.read(key: _vaultPinHashKey);
+    final salt = await _storage.read(key: _vaultPinSaltKey);
+    if (hash == null || salt == null) return false;
+    return _hash(pin, salt) == hash;
+  }
+
+  Future<void> setPin(String pin) async {
+    if (!RegExp(r'^\d{4,8}$').hasMatch(pin)) {
+      throw const FormatException('PIN must contain 4 to 8 digits.');
+    }
+    final salt = _randomSalt();
+    await _storage.write(key: _pinSaltKey, value: salt);
+    await _storage.write(key: _pinHashKey, value: _hash(pin, salt));
+  }
+
+  Future<bool> verifyPin(String pin) async {
+    final hash = await _storage.read(key: _pinHashKey);
+    final salt = await _storage.read(key: _pinSaltKey);
+    if (hash == null || salt == null) return false;
+    return _hash(pin, salt) == hash;
+  }
+
+  Future<void> removePin() async {
+    await _storage.delete(key: _pinHashKey);
+    await _storage.delete(key: _pinSaltKey);
+    await setAppLockEnabled(false);
+    await setBiometricEnabled(false);
+  }
+
+  Future<bool> isAppLockEnabled() async =>
+      (await _storage.read(key: _appLockKey)) == 'true';
+
+  Future<void> setAppLockEnabled(bool enabled) async {
+    await _storage.write(key: _appLockKey, value: enabled ? 'true' : 'false');
+  }
+
+  Future<bool> isBiometricEnabled() async =>
+      (await _storage.read(key: _biometricKey)) == 'true';
+
+  Future<void> setBiometricEnabled(bool enabled) async {
+    await _storage.write(key: _biometricKey, value: enabled ? 'true' : 'false');
+  }
+
+  Future<bool> canUseBiometrics() async {
+    try {
+      final supported = await _auth.isDeviceSupported();
+      final available = await _auth.getAvailableBiometrics();
+      return supported && available.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> authenticateBiometric() async {
+    try {
+      return await _auth.authenticate(
+        localizedReason: 'Authenticate to access or lock a private ORAH note',
+        options: const AuthenticationOptions(
+          biometricOnly: false,
+          stickyAuth: true,
+          useErrorDialogs: true,
+        ),
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<String> encryptPrivatePayload(String clearText) async {
+    final key = await _vaultSecretKey();
+    final box = await _vaultCipher.encryptString(clearText, secretKey: key);
+    return _vaultPrefix + base64UrlEncode(box.concatenation());
+  }
+
+  Future<String> decryptPrivatePayload(String encoded) async {
+    if (!encoded.startsWith(_vaultPrefix)) {
+      throw const FormatException(
+        'Private note is not encrypted with the ORAH vault format.',
+      );
+    }
+    final raw = base64Url.decode(encoded.substring(_vaultPrefix.length));
+    final box = SecretBox.fromConcatenation(
+      raw,
+      nonceLength: _vaultCipher.nonceLength,
+      macLength: _vaultCipher.macAlgorithm.macLength,
+    );
+    final key = await _vaultSecretKey();
+    return _vaultCipher.decryptString(box, secretKey: key);
+  }
+
+  Future<SecretKey> _vaultSecretKey() async {
+    final encoded = await _vaultStorage.read(key: _vaultKey);
+    if (encoded != null && encoded.isNotEmpty) {
+      final bytes = base64Url.decode(encoded);
+      if (bytes.length != 32) {
+        throw const FormatException('ORAH vault key has an invalid length.');
+      }
+      return SecretKeyData(Uint8List.fromList(bytes));
+    }
+
+    final key = await _vaultCipher.newSecretKey();
+    final bytes = await key.extractBytes();
+    if (bytes.length != 32) {
+      throw StateError(
+        'ORAH AES-256 key generation returned an invalid length.',
+      );
+    }
+    await _vaultStorage.write(
+      key: _vaultKey,
+      value: base64UrlEncode(bytes),
+    );
+    return SecretKeyData(Uint8List.fromList(bytes));
+  }
+
+  String _randomSalt() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    return base64UrlEncode(bytes);
+  }
+
+  String _hash(String pin, String salt) {
+    final bytes = utf8.encode('$salt:$pin');
+    return sha256.convert(bytes).toString();
+  }
+}
+).hasMatch(pin)) {
+      throw const FormatException('Vault PIN must contain 4 to 8 digits.');
     }
     final salt = _randomSalt();
     await _storage.write(key: _vaultPinSaltKey, value: salt);
