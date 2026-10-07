@@ -469,6 +469,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           return note.type == NoteType.checklist && !note.isArchived;
         case 'archived':
           return note.isArchived;
+        case 'daily_reflection':
+          return note.tags.any((tag) => tag.toLowerCase() == 'reflection') ||
+              note.title.trim().toLowerCase() == 'daily reflection';
         default:
           return !note.isArchived;
       }
@@ -831,6 +834,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
                       ('checklists', 'Checklists', Icons.checklist_rounded),
                       ('archived', 'Archived', Icons.archive_outlined),
+                      ('daily_reflection', 'Daily Ref', Icons.auto_awesome_rounded),
                     ])
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
