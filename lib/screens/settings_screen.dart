@@ -102,6 +102,15 @@ class SettingsScreen extends StatelessWidget {
           ),
           Card(
             child: ListTile(
+              leading: const Icon(Icons.warning_amber_rounded),
+              title: const Text('Forgot Vault PIN? Reset Vault'),
+              subtitle: const Text('No recovery is possible. Resetting permanently loses the old Vault.'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => _showVaultResetWarning(context),
+            ),
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.shield_outlined),
               title: Text(l10n.securityAndPrivacy),
               subtitle: const Text('PIN and biometric protection'),
@@ -247,6 +256,55 @@ class SettingsScreen extends StatelessWidget {
       ThemeMode.dark => 'Dark theme',
     };
     return '$mode • ' + Color(themeController.accent).value.toRadixString(16).toUpperCase();
+  }
+
+  Future<void> _showVaultResetWarning(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded),
+            SizedBox(width: 10),
+            Expanded(child: Text('Reset Vault?')),
+          ],
+        ),
+        content: const SingleChildScrollView(
+          child: Text(
+            'There is NO recovery for a forgotten Vault PIN. Orah cannot bypass, recover, or reset the existing Vault while preserving its protected contents.\\n\\nIf you continue, the current Vault records and Vault encryption key will be permanently destroyed. A new Vault PIN can then be created. Your normal Notes, Folders, and other app data will not be reset.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete Old Vault & Create New'),
+          ),
+        ],
+      ),
+    );
+    if (!context.mounted || confirmed != true) return;
+
+    try {
+      final repository = await NoteRepositoryProvider.instance();
+      await repository.resetVaultNotes();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('orah_vault_folders_v1');
+      await NovaSecurityService().resetVault();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Old Vault deleted. Open Vault to create a new PIN.')),
+      );
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Vault reset failed: $error')),
+      );
+    }
   }
 
   Future<void> _showAppearance(BuildContext context) async {
