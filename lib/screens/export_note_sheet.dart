@@ -18,11 +18,43 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   NovaExportFormat _selected = NovaExportFormat.pdf;
 
   static const _options = <_ExportOption>[
-    _ExportOption(NovaExportFormat.pdf, Icons.picture_as_pdf_outlined, 'PDF', 'Printable document', 'Documents', true),
+    _ExportOption(NovaExportFormat.pdf, Icons.picture_as_pdf_outlined, 'PDF (.pdf)', 'Printable document', 'Documents', true),
     _ExportOption(NovaExportFormat.word, Icons.description_outlined, 'Word (.docx)', 'Editable Microsoft Word document', 'Documents', false),
-    _ExportOption(NovaExportFormat.text, Icons.text_snippet_outlined, 'Text (.txt)', 'Simple universal text', 'Documents', false),
+    _ExportOption(NovaExportFormat.text, Icons.text_snippet_outlined, 'Plain Text (.txt)', 'Maximum compatibility', 'Documents', false),
     _ExportOption(NovaExportFormat.markdown, Icons.code_outlined, 'Markdown (.md)', 'Portable Markdown', 'Documents', false),
     _ExportOption(NovaExportFormat.excel, Icons.table_chart_outlined, 'Excel (.xlsx)', 'Spreadsheet; checklists become rows', 'Data', true),
+  ];
+
+  static const _planned = <_PlannedExport>[
+    _PlannedExport('Rich Text (.rtf)', 'Cross-platform rich text', 'Documents'),
+    _PlannedExport('OpenDocument (.odt)', 'LibreOffice / open standard', 'Documents'),
+    _PlannedExport('HTML (.html)', 'Web pages, email and blogs', 'Documents'),
+    _PlannedExport('EPUB (.epub)', 'Most ebook readers', 'Ebooks'),
+    _PlannedExport('MOBI (.mobi)', 'Older Kindle', 'Ebooks'),
+    _PlannedExport('AZW3 (.azw3)', 'Modern Kindle', 'Ebooks'),
+    _PlannedExport('FB2 (.fb2)', 'Popular ebook format', 'Ebooks'),
+    _PlannedExport('LaTeX (.tex)', 'Research papers and math-heavy documents', 'Academic'),
+    _PlannedExport('PDF from LaTeX (.pdf)', 'Final academic papers', 'Academic'),
+    _PlannedExport('BibTeX (.bib)', 'Reference management', 'Academic'),
+    _PlannedExport('CSV (.csv)', 'Tables and data analysis', 'Data'),
+    _PlannedExport('JSON (.json)', 'Developers, APIs and structured data', 'Data'),
+    _PlannedExport('XML (.xml)', 'Structured documents', 'Data'),
+    _PlannedExport('YAML (.yaml)', 'Configuration and readable data', 'Data'),
+    _PlannedExport('TSV (.tsv)', 'Tab-separated tables', 'Data'),
+    _PlannedExport('PowerPoint (.pptx)', 'Presentations', 'Presentation'),
+    _PlannedExport('MP3 (.mp3)', 'Text-to-speech audio', 'Speech / Audio'),
+    _PlannedExport('WAV (.wav)', 'Text-to-speech audio', 'Speech / Audio'),
+    _PlannedExport('SRT (.srt)', 'Video subtitles', 'Subtitles'),
+    _PlannedExport('VTT (.vtt)', 'Web/video subtitles', 'Subtitles'),
+    _PlannedExport('Email (.eml)', 'Email message format', 'Email'),
+    _PlannedExport('HTML Email', 'Ready-to-send HTML email', 'Email'),
+    _PlannedExport('Jupyter Notebook (.ipynb)', 'Code / literate documents', 'Code / Literate'),
+    _PlannedExport('ZIP (.zip)', 'Compressed export bundle', 'Archive'),
+    _PlannedExport('7Z (.7z)', 'Compressed export bundle', 'Archive'),
+    _PlannedExport('SQLite', 'Database export', 'Database'),
+    _PlannedExport('Rich Text Clipboard', 'Rich text clipboard format', 'Clipboard'),
+    _PlannedExport('HTML Clipboard', 'HTML clipboard format', 'Clipboard'),
+    _PlannedExport('Plain Text Clipboard', 'Plain text clipboard format', 'Clipboard'),
   ];
 
   Future<void> _exportSelected() async {
@@ -87,6 +119,16 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                   ),
                   for (final option in _options.where((o) => o.category == 'Data'))
                     _formatTile(option),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4, top: 14, bottom: 4),
+                    child: Text('Planned / Coming Soon', style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 4, bottom: 8),
+                    child: Text('These formats are planned for future Orah updates.', style: TextStyle(fontSize: 12)),
+                  ),
+                  for (final category in _plannedCategories)
+                    _plannedSection(category),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.email_outlined),
@@ -100,7 +142,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     child: TextButton.icon(
                       onPressed: _busy ? null : _exportAllSupported,
                       icon: const Icon(Icons.all_inclusive_rounded, size: 19),
-                      label: const Text('Export All Supported Formats'),
+                      label: const Text('Export All Available Formats'),
                     ),
                   ),
                 ],
@@ -165,3 +207,16 @@ class _ExportOption {
   final String category;
   final bool premium;
 }
+
+class _PlannedExport {
+  const _PlannedExport(this.label, this.description, this.category);
+  final String label;
+  final String description;
+  final String category;
+}
+
+const _plannedCategories = <String>[
+  'Documents', 'Ebooks', 'Academic', 'Data', 'Presentation',
+  'Speech / Audio', 'Subtitles', 'Email', 'Code / Literate',
+  'Archive', 'Database', 'Clipboard',
+];
