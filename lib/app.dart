@@ -217,7 +217,7 @@ class _NovaShellState extends State<NovaShell> {
           onChecklist: () => _openEditor(NoteType.checklist),
           onSettings: () => setState(() => _index = 3),
           onNotes: () => setState(() => _index = 0),
-          onFolders: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FoldersScreen())),
+          onFolders: () => setState(() => _index = 1),
           onFavorites: () => setState(() => _index = 2),
           onStatistics: _openStatistics,
           onCalendarHistory: _openCalendarHistory,
