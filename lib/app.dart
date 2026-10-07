@@ -448,8 +448,8 @@ class _NovaShellState extends State<NovaShell> {
                 label: 'Notes',
               ),
               NavigationDestination(
-                icon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSurfaceVariant, BlendMode.srcIn)),
-                selectedIcon: SvgPicture.asset('assets/calendar_icon.svg', width: 24, height: 24, colorFilter: ColorFilter.mode(theme.colorScheme.onSecondaryContainer, BlendMode.srcIn)),
+                icon: OrahAssetIcon('folder', color: theme.colorScheme.onSurfaceVariant),
+                selectedIcon: OrahAssetIcon('folder', color: theme.colorScheme.onSecondaryContainer),
                 label: 'Folders',
               ),
               NavigationDestination(
