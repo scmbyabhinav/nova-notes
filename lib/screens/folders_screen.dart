@@ -57,62 +57,108 @@ class _FoldersScreenState extends State<FoldersScreen> {
     });
   }
 
-  Future<String?> _promptFolderName({
+  Future<_FolderDraft?> _promptFolderDetails({
     required String title,
     String initialValue = '',
+    String? initialImagePath,
     required String actionLabel,
   }) async {
     var value = initialValue;
+    var imagePath = initialImagePath;
 
-    final result = await showDialog<String>(
+    final result = await showDialog<_FolderDraft>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(title),
-        content: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.viewInsetsOf(dialogContext).bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                initialValue: initialValue,
-                autofocus: true,
-                maxLength: 80,
-                textCapitalization: TextCapitalization.words,
-                textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(
-                  labelText: 'Folder name',
-                  hintText: 'e.g. Work, Ideas, Personal',
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(title),
+          content: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(dialogContext).bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    final pickedPath = await _pickFolderImage();
+                    if (pickedPath == null || !dialogContext.mounted) return;
+                    setDialogState(() => imagePath = pickedPath);
+                  },
+                  child: CircleAvatar(
+                    radius: 42,
+                    backgroundImage: imagePath != null &&
+                            File(imagePath!).existsSync()
+                        ? FileImage(File(imagePath!))
+                        : null,
+                    child: imagePath == null ||
+                            !File(imagePath!).existsSync()
+                        ? const Icon(Icons.add_photo_alternate_outlined, size: 30)
+                        : null,
+                  ),
                 ),
-                onChanged: (text) => value = text,
-                onFieldSubmitted: (text) =>
-                    Navigator.of(dialogContext).pop(text.trim()),
-              ),
-            ],
+                const SizedBox(height: 8),
+                TextButton.icon(
+                  onPressed: () async {
+                    final pickedPath = await _pickFolderImage();
+                    if (pickedPath == null || !dialogContext.mounted) return;
+                    setDialogState(() => imagePath = pickedPath);
+                  },
+                  icon: const Icon(Icons.image_outlined),
+                  label: Text(
+                    imagePath == null ? 'Add folder image' : 'Change image',
+                  ),
+                ),
+                if (imagePath != null)
+                  TextButton(
+                    onPressed: () => setDialogState(() => imagePath = null),
+                    child: const Text('Remove image'),
+                  ),
+                TextFormField(
+                  initialValue: initialValue,
+                  autofocus: true,
+                  maxLength: 80,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.done,
+                  decoration: const InputDecoration(
+                    labelText: 'Folder name',
+                    hintText: 'e.g. Work, Ideas, Personal',
+                  ),
+                  onChanged: (text) => value = text,
+                  onFieldSubmitted: (_) {
+                    final trimmed = value.trim();
+                    if (trimmed.isNotEmpty && trimmed.length <= 80) {
+                      Navigator.of(dialogContext).pop(
+                        _FolderDraft(trimmed, imagePath),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final trimmed = value.trim();
+                if (trimmed.isEmpty || trimmed.length > 80) return;
+                Navigator.of(dialogContext).pop(
+                  _FolderDraft(trimmed, imagePath),
+                );
+              },
+              child: Text(actionLabel),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(value.trim()),
-            child: Text(actionLabel),
-          ),
-        ],
       ),
     );
 
-    // Let the dialog route finish deactivating before rebuilding this screen.
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return null;
-
-    final trimmed = result?.trim();
-    if (trimmed == null || trimmed.isEmpty || trimmed.length > 80) return null;
-    return trimmed;
+    return result;
   }
 
   Future<String?> _pickFolderImage() async {
@@ -125,20 +171,19 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _addFolder() async {
-    final name = await _promptFolderName(
+    final draft = await _promptFolderDetails(
       title: 'New folder',
       actionLabel: 'Create',
     );
-    if (name == null) return;
-    final imagePath = await _pickFolderImage();
+    if (draft == null) return;
 
     final repository = await FolderRepositoryProvider.instance();
     await repository.saveFolder(
       NoteFolder(
         id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
-        name: name,
+        name: draft.name,
         createdAt: DateTime.now(),
-        folderCoverImagePath: imagePath,
+        folderCoverImagePath: draft.imagePath,
       ),
     );
 
@@ -147,23 +192,23 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _renameFolder(NoteFolder folder) async {
-    final name = await _promptFolderName(
-      title: 'Rename folder',
+    final draft = await _promptFolderDetails(
+      title: 'Edit folder',
       initialValue: folder.name,
+      initialImagePath: folder.folderCoverImagePath,
       actionLabel: 'Save',
     );
-    if (name == null || name == folder.name) return;
-    final imagePath = await _pickFolderImage();
+    if (draft == null) return;
 
     final repository = await FolderRepositoryProvider.instance();
     await repository.saveFolder(
       NoteFolder(
         id: folder.id,
-        name: name,
+        name: draft.name,
         createdAt: folder.createdAt,
         iconCodePoint: folder.iconCodePoint,
         color: folder.color,
-        folderCoverImagePath: imagePath ?? folder.folderCoverImagePath,
+        folderCoverImagePath: draft.imagePath,
       ),
     );
 
@@ -582,6 +627,13 @@ class _FolderNotesScreenState extends State<FolderNotesScreen> {
                 ),
     );
   }
+}
+
+class _FolderDraft {
+  const _FolderDraft(this.name, this.imagePath);
+
+  final String name;
+  final String? imagePath;
 }
 
 class _EmptyFolders extends StatelessWidget {
