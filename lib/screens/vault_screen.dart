@@ -154,7 +154,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     );
     first.dispose();
     second.dispose();
-    if (result == null || !RegExp(r'^\d{4,8}
+    if (result == null || !RegExp(r'^\d{4,8}$').hasMatch(result)) {
       if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN must contain 4–8 digits.')));
       return null;
     }
