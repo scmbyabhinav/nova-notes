@@ -222,7 +222,7 @@ class _NovaShellState extends State<NovaShell> {
           onStatistics: _openStatistics,
           onCalendarHistory: _openCalendarHistory,
         ),
-        FoldersScreen(onNotes: () => setState(() => _index = 0)),
+        const FoldersScreen(),
         const FavoritesScreen(),
         SettingsScreen(themeController: widget.themeController),
       ];
