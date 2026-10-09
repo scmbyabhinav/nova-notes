@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID = ROOT / "android"
@@ -21,7 +22,7 @@ settings_file = next((path for path in settings_candidates if path.is_file()), N
 if settings_file is not None:
     settings_text = settings_file.read_text(encoding="utf-8")
     settings_text = re.sub(
-        r'(id\\(["\\']com\\.android\\.application["\\']\\)\\s+version\\s+["\\'])9\\.[^"\\']+(["\\'])',
+        r'(id\\("com\\.android\\.application"\\)\\s+version\\s+")9\\.[^"]+(")',
         r'\\g<1>8.11.1\\2',
         settings_text,
     )
