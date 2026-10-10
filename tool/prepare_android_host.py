@@ -462,6 +462,23 @@ if settings_gradle is None or app_gradle is None:
     raise SystemExit("Generated Android Gradle settings/app file not found")
 
 settings_text = settings_gradle.read_text()
+
+# Pin AGP to a stable 8.x release. Flutter's generated template can move to
+# AGP 9.x, which is not compatible with all Flutter plugins and build scripts.
+import re
+if settings_gradle.suffix == ".kts":
+    agp_pattern = r'(id\("com\.android\.application"\)\s+version\s+")9\.[^"]+(")'
+    settings_text, agp_count = re.subn(agp_pattern, r'\g<1>8.11.1\2', settings_text, count=1)
+else:
+    agp_pattern = r'(id\s+"com\.android\.application"\s+version\s+")9\.[^"]+(")'
+    settings_text, agp_count = re.subn(agp_pattern, r'\g<1>8.11.1\2', settings_text, count=1)
+if agp_count != 1:
+    raise SystemExit(
+        "Could not safely pin com.android.application to AGP 8.11.1 in "
+        f"{settings_gradle.name}; inspect the generated plugins block."
+    )
+print("Pinned Android Gradle Plugin to 8.11.1")
+
 if settings_gradle.suffix == ".kts":
     if 'id("com.google.gms.google-services") version' not in settings_text:
         if "plugins {" not in settings_text:
