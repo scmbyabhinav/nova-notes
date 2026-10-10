@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import shutil
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID = ROOT / "android"
@@ -13,6 +14,19 @@ RES_LAYOUT = MAIN / "res" / "layout"
 KOTLIN.mkdir(parents=True, exist_ok=True)
 if not ANDROID.exists():
     raise SystemExit("Generated Android directory is missing.")
+
+# Flutter may generate AGP 9.x, which is incompatible with this project's current
+# Kotlin Gradle DSL setup. Pin AGP to 8.11.1, which supports compile/target API 36.
+settings_candidates = [ANDROID / "settings.gradle.kts", ANDROID / "settings.gradle"]
+settings_file = next((path for path in settings_candidates if path.is_file()), None)
+if settings_file is not None:
+    settings_text = settings_file.read_text(encoding="utf-8")
+    settings_text = re.sub(
+        r'(id\("com\.android\.application"\)\s+version\s+")9\.[^"]+(")',
+        r'\g<1>8.11.1\2',
+        settings_text,
+    )
+    settings_file.write_text(settings_text, encoding="utf-8")
 
 RES_XML.mkdir(parents=True, exist_ok=True)
 RES_LAYOUT.mkdir(parents=True, exist_ok=True)
