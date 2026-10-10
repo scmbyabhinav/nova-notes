@@ -77,16 +77,48 @@ if gradle.name.endswith(".kts"):
             fail("Could not find buildTypes { } block.")
         text = text.replace("    buildTypes {", config + "    buildTypes {", 1)
 
-    if assignment not in text:
-        # Only insert the signing assignment into the release buildType block.
-        start = text.find("        release {")
-        if start < 0:
-            fail("Could not find release { } build type block.")
-        insert_at = start + len("        release {")
-        text = text[:insert_at] + "\n" + assignment + text[insert_at:]
+    # Flutter's generated release build type can contain a later debug signing
+    # assignment. If we merely prepend the production assignment, that later
+    # assignment overrides it and the AAB is still signed with the debug key.
+    start = text.find("        release {")
+    if start < 0:
+        fail("Could not find release { } build type block.")
+    end = text.find("\n        }", start + len("        release {"))
+    if end < 0:
+        fail("Could not find the end of the release build type block.")
+
+    release_block = text[start:end]
+    release_lines = release_block.splitlines()
+    release_lines = [
+        line for line in release_lines
+        if not ("signingConfig =" in line and 'getByName("debug")' in line)
+    ]
+    assignment_indexes = [
+        index for index, line in enumerate(release_lines)
+        if line.strip() == assignment.strip()
+    ]
+    if not assignment_indexes:
+        release_lines.insert(1, assignment)
+    else:
+        # Keep exactly one production signing assignment.
+        first = assignment_indexes[0]
+        release_lines = [
+            line for index, line in enumerate(release_lines)
+            if line.strip() != assignment.strip() or index == first
+        ]
+
+    updated_release_block = "\n".join(release_lines)
+    text = text[:start] + updated_release_block + text[end:]
 
     if assignment not in text or "keystorePropertiesFile" not in text:
         fail("Could not verify release signing is wired to key.properties.")
+    final_release_start = text.find("        release {")
+    final_release_end = text.find("\n        }", final_release_start + len("        release {"))
+    final_release_block = text[final_release_start:final_release_end]
+    if 'signingConfig = signingConfigs.getByName("debug")' in final_release_block:
+        fail("Debug signing still overrides the production release signing config.")
+    if final_release_block.count(assignment) != 1:
+        fail("Expected exactly one production signing assignment in release build type.")
     gradle.write_text(text, encoding="utf-8")
     print("PASS: release signing configuration is present and wired to the upload keystore.")
 else:
