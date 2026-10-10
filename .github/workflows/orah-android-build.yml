@@ -183,7 +183,19 @@ jobs:
           unzip -t build/app/outputs/flutter-apk/app-release.apk >/dev/null
           unzip -t build/app/outputs/bundle/release/app-release.aab >/dev/null
           if [ "${{ inputs.production_release }}" = "true" ]; then
-            apksigner verify --verbose build/app/outputs/flutter-apk/app-release.apk
+            SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+            if [ -z "$SDK_ROOT" ]; then
+              echo "Android SDK root is not set (ANDROID_HOME/ANDROID_SDK_ROOT)." >&2
+              exit 1
+            fi
+            APKSIGNER="$(find "$SDK_ROOT/build-tools" -mindepth 2 -maxdepth 2 -type f -name apksigner -print 2>/dev/null | sort -V | tail -n 1)"
+            if [ -z "$APKSIGNER" ]; then
+              echo "apksigner not found under $SDK_ROOT/build-tools." >&2
+              find "$SDK_ROOT" -maxdepth 4 -type f -name apksigner -print 2>/dev/null || true
+              exit 1
+            fi
+            echo "Using Android APK signer: $APKSIGNER"
+            "$APKSIGNER" verify --verbose build/app/outputs/flutter-apk/app-release.apk
             jarsigner -verify -verbose -certs build/app/outputs/bundle/release/app-release.aab >/tmp/orah-jarsigner.txt
             grep -q "jar verified" /tmp/orah-jarsigner.txt
           fi
