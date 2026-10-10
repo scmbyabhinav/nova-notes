@@ -22,7 +22,7 @@ settings_file = next((path for path in settings_candidates if path.is_file()), N
 if settings_file is not None:
     settings_text = settings_file.read_text(encoding="utf-8")
     settings_text = re.sub(
-        r'(id\("com\.android\.application"\)\s+version\s+")9\.[^"]+(")',
+        r'(id\("com\.android\.application"\)\s+version\s+")[^"]+(")',
         r'\g<1>8.11.1\2',
         settings_text,
     )
@@ -467,10 +467,10 @@ settings_text = settings_gradle.read_text()
 # AGP 9.x, which is not compatible with all Flutter plugins and build scripts.
 import re
 if settings_gradle.suffix == ".kts":
-    agp_pattern = r'(id\("com\.android\.application"\)\s+version\s+")9\.[^"]+(")'
+    agp_pattern = r'(id\("com\.android\.application"\)\s+version\s+")[^"]+(")'
     settings_text, agp_count = re.subn(agp_pattern, r'\g<1>8.11.1\2', settings_text, count=1)
 else:
-    agp_pattern = r'(id\s+"com\.android\.application"\s+version\s+")9\.[^"]+(")'
+    agp_pattern = r'(id\s+"com\.android\.application"\s+version\s+")[^"]+(")'
     settings_text, agp_count = re.subn(agp_pattern, r'\g<1>8.11.1\2', settings_text, count=1)
 if agp_count != 1:
     raise SystemExit(
