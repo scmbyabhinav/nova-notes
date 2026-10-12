@@ -125,8 +125,8 @@ class NovaSecurityService {
       return await _auth.authenticate(
         localizedReason: 'Authenticate to access or lock a private ORAH note',
         options: const AuthenticationOptions(
-          biometricOnly: false,
-          stickyAuth: true,
+          biometricOnly: true,
+          stickyAuth: false,
           useErrorDialogs: true,
         ),
       );
