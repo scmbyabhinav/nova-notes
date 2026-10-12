@@ -24,6 +24,8 @@ import 'services/speech_to_text_service.dart';
 import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
+import 'screens/app_lock_screen.dart';
+import 'core/services/nova_security_service.dart';
 
 class OrahApp extends StatefulWidget {
   const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
@@ -162,7 +164,10 @@ class NovaShell extends StatefulWidget {
   State<NovaShell> createState() => _NovaShellState();
 }
 
-class _NovaShellState extends State<NovaShell> {
+class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
+  final NovaSecurityService _security = NovaSecurityService();
+  bool _appLocked = false;
+  bool _lockReady = false;
   int _index = 0;
   Timer? _quickCaptureLongPressTimer;
   bool _quickCaptureLongPressTriggered = false;
@@ -175,8 +180,43 @@ class _NovaShellState extends State<NovaShell> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initializeAppLock();
     _loadQuickCaptureHint();
     _greetUserAtStartup();
+  }
+
+  Future<void> _initializeAppLock() async {
+    final enabled = await _security.isAppLockEnabled();
+    final hasPin = await _security.hasPin();
+    if (!enabled || !hasPin) {
+      // Avoid leaving a stale enabled flag that would create an unusable lock.
+      if (enabled && !hasPin) await _security.setAppLockEnabled(false);
+    }
+    if (!mounted) return;
+    setState(() {
+      _appLocked = enabled && hasPin;
+      _lockReady = true;
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.paused) return;
+    _lockWhenBackgrounded();
+  }
+
+  Future<void> _lockWhenBackgrounded() async {
+    if (!await _security.isAppLockEnabled() || !await _security.hasPin()) return;
+    if (!mounted) return;
+    setState(() => _appLocked = true);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _quickCaptureLongPressTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _greetUserAtStartup() async {
@@ -376,6 +416,14 @@ class _NovaShellState extends State<NovaShell> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_lockReady) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_appLocked) {
+      return AppLockScreen(onUnlocked: () {
+        if (mounted) setState(() => _appLocked = false);
+      });
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         final theme = Theme.of(context);
