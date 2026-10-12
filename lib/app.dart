@@ -28,10 +28,11 @@ import 'screens/app_lock_screen.dart';
 import 'core/services/nova_security_service.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.securityService, this.skipRegistrationForTesting = false});
 
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
+  final NovaSecurityService? securityService;
   final bool skipRegistrationForTesting;
 
   @override
@@ -71,17 +72,18 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, securityService: widget.securityService, skipRegistrationForTesting: widget.skipRegistrationForTesting),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.securityService, this.skipRegistrationForTesting = false});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
+  final NovaSecurityService? securityService;
   final bool skipRegistrationForTesting;
 
   @override
@@ -124,6 +126,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         themeController: widget.themeController,
         speechService: widget.speechService,
         requestMicrophonePermission: widget.requestMicrophonePermission,
+        securityService: widget.securityService,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
@@ -147,17 +150,19 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     return NovaShell(
       themeController: widget.themeController,
       speechService: widget.speechService,
+      securityService: widget.securityService,
       profile: profile,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.securityService});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
+  final NovaSecurityService? securityService;
   final OrahUserProfile profile;
 
   @override
@@ -165,7 +170,7 @@ class NovaShell extends StatefulWidget {
 }
 
 class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
-  final NovaSecurityService _security = NovaSecurityService();
+  late final NovaSecurityService _security;
   bool _appLocked = false;
   bool _lockReady = false;
   int _index = 0;
@@ -180,6 +185,7 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _security = widget.securityService ?? NovaSecurityService();
     WidgetsBinding.instance.addObserver(this);
     _initializeAppLock();
     _loadQuickCaptureHint();
