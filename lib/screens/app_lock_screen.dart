@@ -18,6 +18,24 @@ class _AppLockScreenState extends State<AppLockScreen> {
 
   bool _busy = false;
   String? _error;
+  late final Future<bool> _biometricUnlockAvailable;
+
+  @override
+  void initState() {
+    super.initState();
+    _biometricUnlockAvailable = _checkBiometricUnlockAvailable();
+  }
+
+  Future<bool> _checkBiometricUnlockAvailable() async {
+    return await _security.isBiometricEnabled() &&
+        await _security.canUseBiometrics();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future<void> _unlockWithPin() async {
     if (_busy) return;
@@ -74,7 +92,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text('NOVA is locked',
+                  Text('ORAH is locked',
                       style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
@@ -105,7 +123,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
                   ),
                   const SizedBox(height: 10),
                   FutureBuilder<bool>(
-                    future: _security.canUseBiometrics(),
+                    future: _biometricUnlockAvailable,
                     builder: (context, snapshot) {
                       if (snapshot.data != true) return const SizedBox.shrink();
                       return OutlinedButton.icon(
