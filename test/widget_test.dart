@@ -39,7 +39,7 @@ void main() {
   });
 
   testWidgets('Orah launches', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
     await tester.pumpAndSettle();
 
     // The brand is rendered as a gradient OrahWordmark, not a plain Text('Orah').
@@ -48,8 +48,8 @@ void main() {
   });
 
   testWidgets('quick capture opens a note immediately', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
-    await tester.pump();
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
+    await tester.pumpAndSettle();
 
     final quickCaptureFab = find.byTooltip(
       'Quick capture. Long-press for checklist and quick options.',
@@ -67,8 +67,8 @@ void main() {
   });
 
   testWidgets('long-press quick capture opens checklist options', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
-    await tester.pump();
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
+    await tester.pumpAndSettle();
 
     final quickCaptureFab = find.byTooltip(
       'Quick capture. Long-press for checklist and quick options.',
@@ -97,8 +97,8 @@ void main() {
   });
 
   testWidgets('new note appears in home list immediately after editor closes', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
-    await tester.pump();
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
+    await tester.pumpAndSettle();
 
     final quickCaptureFab = find.byTooltip(
       'Quick capture. Long-press for checklist and quick options.',
@@ -226,7 +226,7 @@ class _FakeSpeechService implements VoiceSpeechService {
 
 
 class _FakeSecurityService extends NovaSecurityService {
-  const _FakeSecurityService();
+  _FakeSecurityService();
 
   @override
   Future<bool> isAppLockEnabled() async => false;
