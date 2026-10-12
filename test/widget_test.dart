@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/app.dart';
+import 'package:orah_notes/core/services/nova_security_service.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
@@ -39,8 +39,8 @@ void main() {
   });
 
   testWidgets('Orah launches', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
-    await tester.pump();
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
+    await tester.pumpAndSettle();
 
     // The brand is rendered as a gradient OrahWordmark, not a plain Text('Orah').
     expect(find.byType(OrahWordmark), findsOneWidget);
@@ -48,7 +48,7 @@ void main() {
   });
 
   testWidgets('quick capture opens a note immediately', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -67,7 +67,7 @@ void main() {
   });
 
   testWidgets('long-press quick capture opens checklist options', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -97,7 +97,7 @@ void main() {
   });
 
   testWidgets('new note appears in home list immediately after editor closes', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -122,8 +122,8 @@ void main() {
 
   testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
     final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
-    await tester.pump();
+    await tester.pumpWidget(OrahApp(speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, securityService: _FakeSecurityService(), skipRegistrationForTesting: true));
+    await tester.pumpAndSettle();
 
     final quickCaptureFab = find.byTooltip(
       'Quick capture. Long-press for checklist and quick options.',
@@ -222,4 +222,18 @@ class _FakeSpeechService implements VoiceSpeechService {
 
   @override
   void dispose() {}
+}
+
+
+class _FakeSecurityService extends NovaSecurityService {
+  const _FakeSecurityService();
+
+  @override
+  Future<bool> isAppLockEnabled() async => false;
+
+  @override
+  Future<bool> hasPin() async => false;
+
+  @override
+  Future<void> setAppLockEnabled(bool enabled) async {}
 }
