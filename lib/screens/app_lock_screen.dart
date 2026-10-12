@@ -58,10 +58,26 @@ class _AppLockScreenState extends State<AppLockScreen> {
 
   Future<void> _unlockWithBiometric() async {
     if (_busy) return;
-    setState(() => _busy = true);
-    final ok = await _security.authenticateBiometric();
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+
+    var ok = false;
+    try {
+      ok = await _security.authenticateBiometric();
+    } catch (_) {
+      ok = false;
+    }
+
     if (!mounted) return;
-    setState(() => _busy = false);
+    setState(() {
+      _busy = false;
+      if (!ok) {
+        _error = 'Biometric cancelled or unavailable. Enter your PIN to unlock.';
+      }
+    });
+
     if (ok) widget.onUnlocked();
   }
 
