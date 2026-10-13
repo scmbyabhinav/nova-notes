@@ -58,5 +58,12 @@
   "yesterday": "Dün",
   "emptyTimeline": "Gösterilecek not yok",
   "currentDay": "Seçili gün",
-  "total": "Toplam"
+  "total": "Toplam",
+  "appLocked": "ORAH kilitli",
+  "unlockToContinue": "Özel notlarınıza devam etmek için kilidi açın.",
+  "pin": "PIN",
+  "unlock": "Kilidi aç",
+  "useBiometrics": "Biyometrik doğrulamayı kullan",
+  "incorrectPin": "PIN yanlış",
+  "biometricFallbackError": "Biyometrik doğrulama iptal edildi veya kullanılamıyor. Kilidi açmak için PIN'inizi girin."
 }
