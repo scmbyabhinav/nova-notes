@@ -155,14 +155,14 @@
   "emptyFoldersDescription": "Create folders to keep related notes together.",
   "createFolder": "Create folder",
   "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
-  "welcomeToOrah": "Welcome to Orah",
-  "personalizeYourSpace": "Let’s personalize your space. Enter your name and email to get started.",
-  "fullName": "Full name",
-  "yourName": "Your name",
-  "emailAddress": "Email address",
+  "welcomeToOrah": "Orah में आपका स्वागत है",
+  "personalizeYourSpace": "आइए आपके स्थान को व्यक्तिगत बनाएं। शुरू करने के लिए अपना नाम और ईमेल दर्ज करें।",
+  "fullName": "पूरा नाम",
+  "yourName": "आपका नाम",
+  "emailAddress": "ईमेल पता",
   "emailExample": "you@example.com",
-  "enterFullName": "Enter your full name.",
-  "enterValidEmail": "Enter a valid email address.",
-  "registerAndContinue": "Register & continue",
-  "profileStoredOnDevice": "Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service."
+  "enterFullName": "अपना पूरा नाम दर्ज करें।",
+  "enterValidEmail": "मान्य ईमेल पता दर्ज करें।",
+  "registerAndContinue": "रजिस्टर करें और आगे बढ़ें",
+  "profileStoredOnDevice": "आपकी प्रोफ़ाइल इस डिवाइस पर सुरक्षित रूप से संग्रहीत है। सब्सक्राइबर सूची सिंक करने के लिए न्यूज़लेटर सेवा कॉन्फ़िगर होनी चाहिए।"
 }
