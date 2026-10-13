@@ -221,5 +221,6 @@
   "addContentBeforeLock": "Bu notu kilitlemeden önce içerik ekleyin.",
   "vaultAuthenticationNotCompleted": "Kimlik doğrulama tamamlanmadı. Not kilitlenmedi.",
   "noteLockedMovedToVault": "Not kilitlendi ve Vault'a taşındı.",
-  "noteUnlockedMovedToNotes": "Notun kilidi açıldı ve notlarınıza geri taşındı."
+  "noteUnlockedMovedToNotes": "Notun kilidi açıldı ve notlarınıza geri taşındı.",
+  "continueLabel": "Devam"
 }
