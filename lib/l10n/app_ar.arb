@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "لم تكتمل المصادقة. لم يتم قفل الملاحظة.",
   "noteLockedMovedToVault": "تم قفل الملاحظة ونقلها إلى الخزنة.",
   "noteUnlockedMovedToNotes": "تم إلغاء قفل الملاحظة وإعادتها إلى ملاحظاتك.",
-  "continueLabel": "متابعة"
+  "continueLabel": "متابعة",
+  "ocrNoReadableText": "لم يتم العثور على نص قابل للقراءة.",
+  "ocrTextExtracted": "تم استخراج النص من الصورة.",
+  "ocrCouldNotReadImage": "تعذرت قراءة النص من هذه الصورة.",
+  "chooseTemplate": "اختر قالبًا",
+  "replaceCurrentNote": "هل تريد استبدال الملاحظة الحالية؟",
+  "templateReplaceWarning": "سيستبدل هذا القالب العنوان والمحتوى الحاليين.",
+  "replace": "استبدال",
+  "insertLink": "إدراج رابط",
+  "insert": "إدراج",
+  "couldNotAddImage": "تعذرت إضافة الصورة: {error}",
+  "couldNotAddFiles": "تعذرت إضافة الملفات: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
