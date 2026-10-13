@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/note.dart';
 
 class CalendarHistoryScreen extends StatefulWidget {
@@ -55,6 +56,7 @@ class _CalendarHistoryScreenState extends State<CalendarHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final visibleNotes = _visibleNotes;
 
     return Scaffold(
@@ -62,7 +64,7 @@ class _CalendarHistoryScreenState extends State<CalendarHistoryScreen> {
           ? const Color(0xFFF8FAFC)
           : theme.colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Calendar & History'),
+        title: Text(l10n.calendarAndHistory),
       ),
       body: SafeArea(
         child: ListView(
@@ -90,14 +92,14 @@ class _CalendarHistoryScreenState extends State<CalendarHistoryScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Your writing rhythm',
+                              l10n.writingRhythm,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
                           Text(
-                            '${_activeNotes.length} notes',
+                            '${_activeNotes.length} ${l10n.notes.toLowerCase()}',
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: _emerald,
                               fontWeight: FontWeight.w700,
@@ -194,7 +196,7 @@ class _CalendarHistoryScreenState extends State<CalendarHistoryScreen> {
                         child: TextButton.icon(
                           onPressed: () => setState(() => _selectedDay = null),
                           icon: const Icon(Icons.clear_rounded, size: 18),
-                          label: const Text('Show all notes'),
+                          label: Text(l10n.showAllNotes),
                         ),
                       ),
                   ],
@@ -209,7 +211,7 @@ class _CalendarHistoryScreenState extends State<CalendarHistoryScreen> {
                   Expanded(
                     child: Text(
                       _selectedDay == null
-                          ? 'History timeline'
+                          ? l10n.historyTimeline
                           : DateFormat('EEEE, d MMMM').format(_selectedDay!),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
@@ -217,7 +219,7 @@ class _CalendarHistoryScreenState extends State<CalendarHistoryScreen> {
                     ),
                   ),
                   Text(
-                    '${visibleNotes.length} ${visibleNotes.length == 1 ? 'note' : 'notes'}',
+                    '${visibleNotes.length} ${l10n.notes.toLowerCase()}',
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -251,7 +253,7 @@ class _HistoryNoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final title = note.title.trim().isEmpty ? 'Untitled note' : note.title.trim();
+    final title = note.title.trim().isEmpty ? AppLocalizations.of(context)!.untitledNote : note.title.trim();
     final time = DateFormat('d MMM yyyy · h:mm a').format(note.createdAt.toLocal());
 
     return Card(
@@ -323,21 +325,21 @@ class _EmptyHistoryState extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              hasSelectedDay ? 'No notes on this day' : 'Your story starts with a note',
+              hasSelectedDay ? l10n.noNotesOnThisDay : l10n.storyStartsWithNote,
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
             Text(
               hasSelectedDay
-                  ? 'Pick a highlighted day to revisit a moment, or browse your full history.'
-                  : 'Days with saved notes will be highlighted on your calendar.',
+                  ? l10n.pickHighlightedDay
+                  : l10n.savedDaysHighlighted,
               style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             if (hasSelectedDay) ...[
               const SizedBox(height: 10),
-              TextButton(onPressed: onShowAll, child: const Text('Show all notes')),
+              TextButton(onPressed: onShowAll, child: Text(AppLocalizations.of(context)!.showAllNotes)),
             ],
           ],
         ),
