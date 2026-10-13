@@ -221,5 +221,6 @@
   "addContentBeforeLock": "Ajoutez du contenu avant de verrouiller cette note.",
   "vaultAuthenticationNotCompleted": "L’authentification n’a pas abouti. La note n’a pas été verrouillée.",
   "noteLockedMovedToVault": "Note verrouillée et déplacée dans votre coffre.",
-  "noteUnlockedMovedToNotes": "Note déverrouillée et replacée dans vos notes."
+  "noteUnlockedMovedToNotes": "Note déverrouillée et replacée dans vos notes.",
+  "continueLabel": "Continuer"
 }
