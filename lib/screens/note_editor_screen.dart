@@ -515,7 +515,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(AppLocalizations.of(dialogContext)!.cancel)),
           FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: Text(AppLocalizations.of(dialogContext)!.unlock)),
         ],
       ),
@@ -665,7 +665,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             keyboardType: TextInputType.number,
             obscureText: true,
             maxLength: 8,
-            decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(dialogContext)!.pinDigitsLabel),
             validator: (value) {
               if (value == null || !RegExp(r'^\d{4,8}$').hasMatch(value)) {
                 return AppLocalizations.of(context)!.enterPinDigits;
