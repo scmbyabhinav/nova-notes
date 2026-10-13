@@ -158,7 +158,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                 subtitle: Text(l10n.proEntitlementActive),
                 trailing: TextButton(
                   onPressed: service.restore,
-                  child: const Text('Restore'),
+                  child: Text(AppLocalizations.of(context)!.proRestore),
                 ),
               ),
             )
