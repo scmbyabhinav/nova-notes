@@ -608,7 +608,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(dialogContext)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -677,7 +677,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(dialogContext)!.cancel),
           ),
           FilledButton(
             onPressed: () {
