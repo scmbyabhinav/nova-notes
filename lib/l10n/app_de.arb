@@ -58,5 +58,12 @@
   "yesterday": "Gestern",
   "emptyTimeline": "Keine Notizen vorhanden",
   "currentDay": "Ausgewählter Tag",
-  "total": "Gesamt"
+  "total": "Gesamt",
+  "appLocked": "ORAH ist gesperrt",
+  "unlockToContinue": "Entsperre ORAH, um deine privaten Notizen aufzurufen.",
+  "pin": "PIN",
+  "unlock": "Entsperren",
+  "useBiometrics": "Biometrie verwenden",
+  "incorrectPin": "Falsche PIN",
+  "biometricFallbackError": "Biometrische Anmeldung abgebrochen oder nicht verfügbar. Gib zum Entsperren deine PIN ein."
 }
