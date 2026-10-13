@@ -58,5 +58,12 @@
   "yesterday": "कल",
   "emptyTimeline": "दिखाने के लिए कोई नोट नहीं",
   "currentDay": "चुना गया दिन",
-  "total": "कुल"
+  "total": "कुल",
+  "appLocked": "ORAH लॉक है",
+  "unlockToContinue": "अपने निजी नोट्स देखने के लिए अनलॉक करें।",
+  "pin": "पिन",
+  "unlock": "अनलॉक करें",
+  "useBiometrics": "बायोमेट्रिक्स का उपयोग करें",
+  "incorrectPin": "गलत पिन",
+  "biometricFallbackError": "बायोमेट्रिक प्रमाणीकरण रद्द हुआ या उपलब्ध नहीं है। अनलॉक करने के लिए अपना पिन डालें।"
 }
