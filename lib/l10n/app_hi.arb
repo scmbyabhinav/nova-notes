@@ -221,5 +221,6 @@
   "addContentBeforeLock": "नोट लॉक करने से पहले इसमें कुछ सामग्री जोड़ें।",
   "vaultAuthenticationNotCompleted": "पहचान की पुष्टि पूरी नहीं हुई। नोट लॉक नहीं किया गया।",
   "noteLockedMovedToVault": "नोट लॉक करके Vault में भेज दिया गया।",
-  "noteUnlockedMovedToNotes": "नोट अनलॉक करके वापस आपके नोट्स में भेज दिया गया।"
+  "noteUnlockedMovedToNotes": "नोट अनलॉक करके वापस आपके नोट्स में भेज दिया गया।",
+  "continueLabel": "जारी रखें"
 }
