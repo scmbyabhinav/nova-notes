@@ -58,5 +58,12 @@
   "yesterday": "Ontem",
   "emptyTimeline": "Nenhuma nota para mostrar",
   "currentDay": "Dia selecionado",
-  "total": "Total"
+  "total": "Total",
+  "appLocked": "O ORAH está bloqueado",
+  "unlockToContinue": "Desbloqueie para acessar suas notas privadas.",
+  "pin": "PIN",
+  "unlock": "Desbloquear",
+  "useBiometrics": "Usar biometria",
+  "incorrectPin": "PIN incorreto",
+  "biometricFallbackError": "A autenticação biométrica foi cancelada ou não está disponível. Digite seu PIN para desbloquear."
 }
