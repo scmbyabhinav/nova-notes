@@ -58,5 +58,12 @@
   "yesterday": "昨天",
   "emptyTimeline": "没有可显示的笔记",
   "currentDay": "所选日期",
-  "total": "总计"
+  "total": "总计",
+  "appLocked": "ORAH 已锁定",
+  "unlockToContinue": "解锁后即可继续查看您的私人笔记。",
+  "pin": "PIN 码",
+  "unlock": "解锁",
+  "useBiometrics": "使用生物识别",
+  "incorrectPin": "PIN 码错误",
+  "biometricFallbackError": "生物识别已取消或不可用。请输入 PIN 码解锁。"
 }
