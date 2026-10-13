@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "पहचान की पुष्टि पूरी नहीं हुई। नोट लॉक नहीं किया गया।",
   "noteLockedMovedToVault": "नोट लॉक करके Vault में भेज दिया गया।",
   "noteUnlockedMovedToNotes": "नोट अनलॉक करके वापस आपके नोट्स में भेज दिया गया।",
-  "continueLabel": "जारी रखें"
+  "continueLabel": "जारी रखें",
+  "ocrNoReadableText": "पढ़ने योग्य टेक्स्ट नहीं मिला।",
+  "ocrTextExtracted": "तस्वीर से टेक्स्ट निकाल लिया गया।",
+  "ocrCouldNotReadImage": "इस तस्वीर से टेक्स्ट नहीं पढ़ा जा सका।",
+  "chooseTemplate": "टेम्पलेट चुनें",
+  "replaceCurrentNote": "मौजूदा नोट बदलें?",
+  "templateReplaceWarning": "यह टेम्पलेट मौजूदा शीर्षक और सामग्री को बदल देगा।",
+  "replace": "बदलें",
+  "insertLink": "लिंक जोड़ें",
+  "insert": "जोड़ें",
+  "couldNotAddImage": "तस्वीर नहीं जोड़ी जा सकी: {error}",
+  "couldNotAddFiles": "फ़ाइलें नहीं जोड़ी जा सकीं: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
