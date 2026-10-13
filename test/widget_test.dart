@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/app.dart';
+import 'package:orah_notes/l10n/app_localizations.dart';
 import 'package:orah_notes/core/services/nova_security_service.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
@@ -16,6 +17,8 @@ void main() {
   });
   testWidgets('registration form requires name and email fields', (tester) async {
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: registration.OrahRegistrationScreen(onRegistered: (_) {}),
     ));
 
@@ -27,6 +30,8 @@ void main() {
 
   testWidgets('registration rejects malformed email addresses', (tester) async {
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: registration.OrahRegistrationScreen(onRegistered: (_) {}),
     ));
 
