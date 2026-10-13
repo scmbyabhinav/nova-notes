@@ -164,8 +164,7 @@
   "enterFullName": "Enter your full name.",
   "enterValidEmail": "Enter a valid email address.",
   "registerAndContinue": "Register & continue",
-  "profileStoredOnDevice": "Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service."
-,
+  "profileStoredOnDevice": "Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service.",
   "proRestore": "Restore",
   "proHeroEyebrow": "YOUR NOTES, WITH MORE POWER",
   "proHeroHeadline": "Make every note\\nwork harder.",
@@ -193,5 +192,48 @@
   "proBestValueBadge": "BEST VALUE",
   "proLoadingPrice": "Loading price…",
   "proUnavailable": "Currently unavailable",
-  "proChooseButton": "Choose"
+  "proChooseButton": "Choose",
+  "microphoneAccessNeeded": "Microphone access needed",
+  "microphoneAccessPermanentDenied": "ORAH Notes needs microphone access to transcribe your voice. You can enable this in Settings.",
+  "microphoneAccessRequest": "ORAH Notes needs microphone access to transcribe your voice. Please allow access, or enable it in Settings.",
+  "notNow": "Not now",
+  "openSettings": "Open Settings",
+  "voiceInputUnavailableWithMessage": "Voice input unavailable: {message}",
+  "@voiceInputUnavailableWithMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceInputUnavailable": "Voice input is unavailable on this device.",
+  "couldNotStartVoiceCapture": "Could not start voice capture: {error}",
+  "@couldNotStartVoiceCapture": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceTextSaved": "Voice text saved to note.",
+  "recordingStoppedPartialSaved": "Recording stopped. Partial text saved.",
+  "addTask": "Add task",
+  "taskHint": "What needs to be done?",
+  "add": "Add",
+  "editTask": "Edit task",
+  "enterVaultPin": "Enter Vault PIN",
+  "pinDigitsLabel": "4–8 digit PIN",
+  "vaultAuthenticationFailed": "Authentication failed. Try biometrics or your Vault PIN.",
+  "secureYourVault": "Secure Your Vault",
+  "vaultSetupDescription": "To lock this note, you need to set up a PIN or biometric authentication first. This ensures only you can access it.",
+  "setUpSecurity": "Set Up Security",
+  "createVaultPin": "Create Vault PIN",
+  "confirmVaultPin": "Confirm Vault PIN",
+  "vaultPinsDoNotMatch": "PINs do not match. Your note was not locked.",
+  "vaultPinCreated": "Vault PIN created. Securing your note now…",
+  "enterPinDigits": "Enter 4–8 digits",
+  "addContentBeforeLock": "Add some content before locking this note.",
+  "vaultAuthenticationNotCompleted": "Authentication was not completed. Note was not locked.",
+  "noteLockedMovedToVault": "Note locked and moved to your Vault.",
+  "noteUnlockedMovedToNotes": "Note unlocked and moved back to your notes."
 }
