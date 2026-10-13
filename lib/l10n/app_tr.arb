@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "Kimlik doğrulama tamamlanmadı. Not kilitlenmedi.",
   "noteLockedMovedToVault": "Not kilitlendi ve Vault'a taşındı.",
   "noteUnlockedMovedToNotes": "Notun kilidi açıldı ve notlarınıza geri taşındı.",
-  "continueLabel": "Devam"
+  "continueLabel": "Devam",
+  "ocrNoReadableText": "Okunabilir metin bulunamadı.",
+  "ocrTextExtracted": "Görselden metin çıkarıldı.",
+  "ocrCouldNotReadImage": "Bu görseldeki metin okunamadı.",
+  "chooseTemplate": "Şablon seç",
+  "replaceCurrentNote": "Mevcut not değiştirilsin mi?",
+  "templateReplaceWarning": "Bu şablon mevcut başlığı ve içeriği değiştirir.",
+  "replace": "Değiştir",
+  "insertLink": "Bağlantı ekle",
+  "insert": "Ekle",
+  "couldNotAddImage": "Görsel eklenemedi: {error}",
+  "couldNotAddFiles": "Dosyalar eklenemedi: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
