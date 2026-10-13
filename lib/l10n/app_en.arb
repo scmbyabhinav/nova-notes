@@ -154,5 +154,15 @@
   "noFoldersYet": "No folders yet",
   "emptyFoldersDescription": "Create folders to keep related notes together.",
   "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here."
+  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "welcomeToOrah": "Welcome to Orah",
+  "personalizeYourSpace": "Let’s personalize your space. Enter your name and email to get started.",
+  "fullName": "Full name",
+  "yourName": "Your name",
+  "emailAddress": "Email address",
+  "emailExample": "you@example.com",
+  "enterFullName": "Enter your full name.",
+  "enterValidEmail": "Enter a valid email address.",
+  "registerAndContinue": "Register & continue",
+  "profileStoredOnDevice": "Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service."
 }
