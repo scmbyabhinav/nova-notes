@@ -154,5 +154,15 @@
   "noFoldersYet": "No folders yet",
   "emptyFoldersDescription": "Create folders to keep related notes together.",
   "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here."
+  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "welcomeToOrah": "Selamat datang di Orah",
+  "personalizeYourSpace": "Personalisasi ruang Anda. Masukkan nama dan email untuk memulai.",
+  "fullName": "Nama lengkap",
+  "yourName": "Nama Anda",
+  "emailAddress": "Alamat email",
+  "emailExample": "anda@contoh.com",
+  "enterFullName": "Masukkan nama lengkap Anda.",
+  "enterValidEmail": "Masukkan alamat email yang valid.",
+  "registerAndContinue": "Daftar & lanjutkan",
+  "profileStoredOnDevice": "Profil Anda disimpan dengan aman di perangkat ini. Sinkronisasi daftar pelanggan memerlukan layanan buletin yang dikonfigurasi."
 }
