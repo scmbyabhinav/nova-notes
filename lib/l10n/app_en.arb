@@ -236,5 +236,30 @@
   "vaultAuthenticationNotCompleted": "Authentication was not completed. Note was not locked.",
   "noteLockedMovedToVault": "Note locked and moved to your Vault.",
   "noteUnlockedMovedToNotes": "Note unlocked and moved back to your notes.",
-  "continueLabel": "Continue"
+  "continueLabel": "Continue",
+  "ocrNoReadableText": "No readable text found.",
+  "ocrTextExtracted": "Text extracted from image.",
+  "ocrCouldNotReadImage": "Could not read text from that image.",
+  "chooseTemplate": "Choose a template",
+  "replaceCurrentNote": "Replace current note?",
+  "templateReplaceWarning": "This template will replace the current title and content.",
+  "replace": "Replace",
+  "insertLink": "Insert link",
+  "insert": "Insert",
+  "couldNotAddImage": "Could not add image: {error}",
+  "couldNotAddFiles": "Could not add files: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
