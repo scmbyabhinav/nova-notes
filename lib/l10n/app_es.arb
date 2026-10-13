@@ -221,5 +221,6 @@
   "addContentBeforeLock": "Añade contenido antes de bloquear esta nota.",
   "vaultAuthenticationNotCompleted": "No se completó la autenticación. La nota no se ha bloqueado.",
   "noteLockedMovedToVault": "Nota bloqueada y movida a la bóveda.",
-  "noteUnlockedMovedToNotes": "Nota desbloqueada y devuelta a tus notas."
+  "noteUnlockedMovedToNotes": "Nota desbloqueada y devuelta a tus notas.",
+  "continueLabel": "Continuar"
 }
