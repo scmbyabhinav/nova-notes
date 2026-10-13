@@ -70,7 +70,9 @@ class _FoldersScreenState extends State<FoldersScreen> {
     final result = await showDialog<_FolderDraft>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
+        builder: (dialogContext, setDialogState) {
+          final l10n = AppLocalizations.of(dialogContext)!;
+          return AlertDialog(
           title: Text(title),
           content: SingleChildScrollView(
             child: Column(
@@ -117,7 +119,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   maxLength: 80,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: l10n.folderName,
                     hintText: l10n.folderNameHint,
                   ),
@@ -150,7 +152,8 @@ class _FoldersScreenState extends State<FoldersScreen> {
               child: Text(actionLabel),
             ),
           ],
-        ),
+        );
+        },
       ),
     );
 
@@ -169,6 +172,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _addFolder() async {
+    final l10n = AppLocalizations.of(context)!;
     final draft = await _promptFolderDetails(
       title: l10n.newFolder,
       actionLabel: l10n.create,
@@ -190,6 +194,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _renameFolder(NoteFolder folder) async {
+    final l10n = AppLocalizations.of(context)!;
     final draft = await _promptFolderDetails(
       title: l10n.editFolder,
       initialValue: folder.name,
@@ -215,6 +220,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _deleteFolder(NoteFolder folder) async {
+    final l10n = AppLocalizations.of(context)!;
     final count = _counts[folder.id] ?? 0;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -228,7 +234,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -245,6 +251,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _deleteSelectedFolders() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedFolderIds.isEmpty) return;
 
     final selectedCount = _selectedFolderIds.length;
@@ -262,7 +269,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         content: Text(
           noteCount == 0
               ? l10n.selectedFoldersEmpty
-              : '$noteCount note(s) will be kept and moved back to All Notes.',
+              : l10n.notesMovedFromFolder(noteCount),
         ),
         actions: [
           TextButton(
@@ -438,13 +445,13 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                     _deleteFolder(folder);
                                   }
                                 },
-                                itemBuilder: (_) => const [
+                                itemBuilder: (menuContext) => [
                                   PopupMenuItem(
                                     value: 'open',
                                     child: ListTile(
                                       dense: true,
                                       leading: Icon(Icons.folder_open_outlined),
-                                      title: Text(l10n.open),
+                                      title: Text(AppLocalizations.of(menuContext)!.open),
                                     ),
                                   ),
                                   PopupMenuItem(
@@ -453,7 +460,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                       dense: true,
                                       leading:
                                           Icon(Icons.drive_file_rename_outline),
-                                      title: Text(l10n.rename),
+                                      title: Text(AppLocalizations.of(menuContext)!.rename),
                                     ),
                                   ),
                                   PopupMenuItem(
@@ -461,7 +468,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                     child: ListTile(
                                       dense: true,
                                       leading: Icon(Icons.delete_outline),
-                                      title: Text(l10n.delete),
+                                      title: Text(AppLocalizations.of(menuContext)!.delete),
                                     ),
                                   ),
                                 ],
@@ -562,7 +569,7 @@ class _FolderNotesScreenState extends State<FolderNotesScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _notes.isEmpty
-              ? const Center(
+              ? Center(
                   child: Padding(
                     padding: EdgeInsets.all(28),
                     child: Text(
@@ -610,14 +617,14 @@ class _FolderNotesScreenState extends State<FolderNotesScreen> {
                             _moveToTrash(note);
                           }
                         },
-                        itemBuilder: (_) => const [
+                        itemBuilder: (menuContext) => [
                           PopupMenuItem(
                             value: 'remove',
-                            child: Text(AppLocalizations.of(context)!.removeFromFolder),
+                            child: Text(AppLocalizations.of(menuContext)!.removeFromFolder),
                           ),
                           PopupMenuItem(
                             value: 'trash',
-                            child: Text(AppLocalizations.of(context)!.moveToTrash),
+                            child: Text(AppLocalizations.of(menuContext)!.moveToTrash),
                           ),
                         ],
                       ),
@@ -662,7 +669,7 @@ class _EmptyFolders extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               AppLocalizations.of(context)!.emptyFoldersDescription,
               textAlign: TextAlign.center,
             ),
