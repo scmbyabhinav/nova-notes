@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "Autentikasi belum selesai. Catatan tidak dikunci.",
   "noteLockedMovedToVault": "Catatan dikunci dan dipindahkan ke Vault.",
   "noteUnlockedMovedToNotes": "Catatan dibuka dan dikembalikan ke daftar catatan Anda.",
-  "continueLabel": "Lanjutkan"
+  "continueLabel": "Lanjutkan",
+  "ocrNoReadableText": "Teks yang dapat dibaca tidak ditemukan.",
+  "ocrTextExtracted": "Teks berhasil diekstrak dari gambar.",
+  "ocrCouldNotReadImage": "Tidak dapat membaca teks dari gambar tersebut.",
+  "chooseTemplate": "Pilih template",
+  "replaceCurrentNote": "Ganti catatan saat ini?",
+  "templateReplaceWarning": "Template ini akan mengganti judul dan isi saat ini.",
+  "replace": "Ganti",
+  "insertLink": "Sisipkan tautan",
+  "insert": "Sisipkan",
+  "couldNotAddImage": "Tidak dapat menambahkan gambar: {error}",
+  "couldNotAddFiles": "Tidak dapat menambahkan file: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
