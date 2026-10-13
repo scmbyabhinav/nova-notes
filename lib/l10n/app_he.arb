@@ -154,5 +154,15 @@
   "noFoldersYet": "No folders yet",
   "emptyFoldersDescription": "Create folders to keep related notes together.",
   "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here."
+  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "welcomeToOrah": "ברוכים הבאים ל-Orah",
+  "personalizeYourSpace": "התאימו אישית את המרחב שלכם. הזינו שם וכתובת אימייל כדי להתחיל.",
+  "fullName": "שם מלא",
+  "yourName": "השם שלך",
+  "emailAddress": "כתובת אימייל",
+  "emailExample": "you@example.com",
+  "enterFullName": "יש להזין שם מלא.",
+  "enterValidEmail": "יש להזין כתובת אימייל תקינה.",
+  "registerAndContinue": "הרשמה והמשך",
+  "profileStoredOnDevice": "הפרופיל נשמר באופן מאובטח במכשיר זה. סנכרון רשימת המנויים דורש שירות ניוזלטר מוגדר."
 }
