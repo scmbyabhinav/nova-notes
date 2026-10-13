@@ -198,7 +198,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                 children: [
                   Icon(Icons.card_giftcard_rounded, color: colors.primary),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       l10n.proOfferInstruction,
                     ),
@@ -309,6 +309,7 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
