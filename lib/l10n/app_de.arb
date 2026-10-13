@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "Authentifizierung nicht abgeschlossen. Die Notiz wurde nicht gesperrt.",
   "noteLockedMovedToVault": "Notiz gesperrt und in den Vault verschoben.",
   "noteUnlockedMovedToNotes": "Notiz entsperrt und zurück zu deinen Notizen verschoben.",
-  "continueLabel": "Weiter"
+  "continueLabel": "Weiter",
+  "ocrNoReadableText": "Kein lesbarer Text gefunden.",
+  "ocrTextExtracted": "Text aus dem Bild extrahiert.",
+  "ocrCouldNotReadImage": "Text aus diesem Bild konnte nicht gelesen werden.",
+  "chooseTemplate": "Vorlage auswählen",
+  "replaceCurrentNote": "Aktuelle Notiz ersetzen?",
+  "templateReplaceWarning": "Diese Vorlage ersetzt den aktuellen Titel und Inhalt.",
+  "replace": "Ersetzen",
+  "insertLink": "Link einfügen",
+  "insert": "Einfügen",
+  "couldNotAddImage": "Bild konnte nicht hinzugefügt werden: {error}",
+  "couldNotAddFiles": "Dateien konnten nicht hinzugefügt werden: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
