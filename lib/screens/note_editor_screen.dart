@@ -191,16 +191,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         icon: const Icon(Icons.mic_off_rounded, size: 36),
-        title: const Text('Microphone access needed'),
+        title: Text(AppLocalizations.of(dialogContext)!.microphoneAccessNeeded),
         content: Text(
           permanentlyDenied
-              ? 'Orah Notes needs microphone access to transcribe your voice. You can enable this in Settings.'
-              : 'Orah Notes needs microphone access to transcribe your voice. Please allow access, or enable it in Settings.',
+              ? AppLocalizations.of(dialogContext)!.microphoneAccessPermanentDenied
+              : AppLocalizations.of(dialogContext)!.microphoneAccessRequest,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Not now'),
+            child: Text(AppLocalizations.of(dialogContext)!.notNow),
           ),
           FilledButton.icon(
             onPressed: () async {
@@ -208,7 +208,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               await openAppSettings();
             },
             icon: const Icon(Icons.settings_outlined),
-            label: const Text('Open Settings'),
+            label: Text(AppLocalizations.of(dialogContext)!.openSettings),
           ),
         ],
       ),
@@ -265,7 +265,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               _voiceProcessing = false;
             });
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Voice input unavailable: $message')),
+              SnackBar(content: Text(AppLocalizations.of(context)!.voiceInputUnavailableWithMessage(message))),
             );
           }
         },
@@ -275,7 +275,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         setState(() => _speechInitializing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Voice input is unavailable on this device.'),
+            content: Text(AppLocalizations.of(context)!.voiceInputUnavailable),
           ),
         );
         return;
@@ -339,7 +339,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _isListening = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not start voice capture: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotStartVoiceCapture(error))),
       );
     }
   }
@@ -367,7 +367,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Voice text saved to note.'),
+          content: Text(AppLocalizations.of(context)!.voiceTextSaved),
           duration: Duration(seconds: 2),
         ),
       );
@@ -426,7 +426,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Recording stopped. Partial text saved.'),
+          content: Text(AppLocalizations.of(context)!.recordingStoppedPartialSaved),
           duration: Duration(seconds: 3),
         ),
       );
@@ -447,9 +447,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _addChecklistItem() async {
     final controller = TextEditingController();
     final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Add task'),
-      content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done, decoration: const InputDecoration(hintText: 'What needs to be done?')),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Add'))],
+      title: Text(AppLocalizations.of(context)!.addTask),
+      content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done, decoration: InputDecoration(hintText: AppLocalizations.of(context)!.taskHint)),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.add))],
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
@@ -460,8 +460,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _editChecklistItem(int index) async {
     final controller = TextEditingController(text: _checklistItems[index].text);
     final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Edit task'), content: TextField(controller: controller, autofocus: true),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Save'))],
+      title: Text(AppLocalizations.of(context)!.editTask), content: TextField(controller: controller, autofocus: true),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.save))],
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
@@ -503,19 +503,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Enter Vault PIN'),
+        title: Text(AppLocalizations.of(dialogContext)!.enterVaultPin),
         content: TextField(
           controller: controller,
           autofocus: true,
           obscureText: true,
           keyboardType: TextInputType.number,
           maxLength: 8,
-          decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+          decoration: InputDecoration(labelText: AppLocalizations.of(dialogContext)!.pinDigitsLabel),
           onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: const Text('Unlock')),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: Text(AppLocalizations.of(dialogContext)!.unlock)),
         ],
       ),
     );
@@ -533,7 +533,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (mounted) {
         setState(() => _unlocking = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Authentication failed. Try biometrics or your Vault PIN.')),
+          const SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationFailed)),
         );
       }
       return;
@@ -602,10 +602,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           size: 42,
           color: Theme.of(dialogContext).colorScheme.primary,
         ),
-        title: const Text('Secure Your Vault'),
+        title: Text(AppLocalizations.of(dialogContext)!.secureYourVault),
         content: const Text(
-          'To lock this note, you need to set up a PIN or Biometric authentication first. '
-          'This ensures only you can access it.',
+          AppLocalizations.of(dialogContext)!.vaultSetupDescription
+          '',
         ),
         actions: [
           TextButton(
@@ -614,20 +614,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Set Up Security'),
+            child: Text(AppLocalizations.of(dialogContext)!.setUpSecurity),
           ),
         ],
       ),
     );
     if (shouldSetup != true || !mounted) return false;
 
-    final first = await _requestLockSetupPin('Create Vault PIN');
+    final first = await _requestLockSetupPin(AppLocalizations.of(context)!.createVaultPin);
     if (first == null || !mounted) return false;
-    final second = await _requestLockSetupPin('Confirm Vault PIN');
+    final second = await _requestLockSetupPin(AppLocalizations.of(context)!.confirmVaultPin);
     if (second == null || !mounted) return false;
     if (first != second) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PINs do not match. Your note was not locked.')),
+        const SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinsDoNotMatch)),
       );
       return false;
     }
@@ -638,7 +638,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       await security.setAppLockEnabled(true);
       if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vault PIN created. Securing your note now…')),
+        const SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinCreated)),
       );
       // Creating and confirming this PIN is the setup action authorizing this lock.
       return true;
@@ -670,7 +670,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             decoration: const InputDecoration(labelText: '4–8 digit PIN'),
             validator: (value) {
               if (value == null || !RegExp(r'^\d{4,8}$').hasMatch(value)) {
-                return 'Enter 4–8 digits';
+                return AppLocalizations.of(context)!.enterPinDigits;
               }
               return null;
             },
@@ -701,7 +701,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _contentController.text.trim().isEmpty &&
         _attachments.isEmpty && _checklistItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add some content before locking this note.')),
+        const SnackBar(content: Text(AppLocalizations.of(context)!.addContentBeforeLock)),
       );
       return;
     }
@@ -716,7 +716,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (!setupCompleted && !await _authenticatePrivateAccess()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Authentication was not completed. Note was not locked.')),
+          const SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationNotCompleted)),
         );
       }
       return;
@@ -730,7 +730,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Note locked and moved to your Vault.')),
+      const SnackBar(content: Text(AppLocalizations.of(context)!.noteLockedMovedToVault)),
     );
     Navigator.of(context).pop();
   }
@@ -745,7 +745,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Note unlocked and moved back to your notes.')),
+      const SnackBar(content: Text(AppLocalizations.of(context)!.noteUnlockedMovedToNotes)),
     );
     Navigator.of(context).pop();
   }
