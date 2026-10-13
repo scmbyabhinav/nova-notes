@@ -221,5 +221,6 @@
   "addContentBeforeLock": "Füge Inhalt hinzu, bevor du diese Notiz sperrst.",
   "vaultAuthenticationNotCompleted": "Authentifizierung nicht abgeschlossen. Die Notiz wurde nicht gesperrt.",
   "noteLockedMovedToVault": "Notiz gesperrt und in den Vault verschoben.",
-  "noteUnlockedMovedToNotes": "Notiz entsperrt und zurück zu deinen Notizen verschoben."
+  "noteUnlockedMovedToNotes": "Notiz entsperrt und zurück zu deinen Notizen verschoben.",
+  "continueLabel": "Weiter"
 }
