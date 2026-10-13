@@ -911,7 +911,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final text = await OrahOcrService.instance.extractText(File(picked.path));
       if (!mounted) return;
       if (text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No readable text found.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.ocrNoReadableText)));
         return;
       }
       final current = _contentController.text.trim();
@@ -920,9 +920,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         text: combined,
         selection: TextSelection.collapsed(offset: combined.length),
       );
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Text extracted from image.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.ocrTextExtracted)));
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not read text from that image.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.ocrCouldNotReadImage)));
     }
   }
 
@@ -986,18 +986,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _showTemplates() async {
     final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
-    final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
+    final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [ListTile(title: Text(AppLocalizations.of(context)!.chooseTemplate)), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
     if (choice == null || !mounted) return;
     final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
     if (hasContent) {
       final replace = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Replace current note?'),
-          content: const Text('This template will replace the current title and content.'),
+          title: Text(AppLocalizations.of(dialogContext)!.replaceCurrentNote),
+          content: Text(AppLocalizations.of(dialogContext)!.templateReplaceWarning),
           actions: [
             TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Replace')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(dialogContext)!.replace)),
           ],
         ),
       );
@@ -1055,7 +1055,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _insertLink() async {
-    final url = await _textDialog('Insert link', 'https://example.com');
+    final url = await _textDialog(AppLocalizations.of(context)!.insertLink, 'https://example.com');
     if (url == null || url.isEmpty) return;
     final value = _contentController.value;
     final selected = value.selection.textInside(value.text);
@@ -1080,7 +1080,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Insert')),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.insert)),
         ],
       ),
     );
@@ -1104,7 +1104,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not add image: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddImage(e.toString()))),
         );
       }
     }
@@ -1130,7 +1130,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not add files: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddFiles(e.toString()))),
         );
       }
     }
