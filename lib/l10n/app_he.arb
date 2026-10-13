@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "האימות לא הושלם. ההערה לא ננעלה.",
   "noteLockedMovedToVault": "ההערה ננעלה והועברה לכספת.",
   "noteUnlockedMovedToNotes": "ההערה שוחררה והוחזרה לרשימת ההערות.",
-  "continueLabel": "המשך"
+  "continueLabel": "המשך",
+  "ocrNoReadableText": "לא נמצא טקסט קריא.",
+  "ocrTextExtracted": "הטקסט חולץ מהתמונה.",
+  "ocrCouldNotReadImage": "לא ניתן לקרוא טקסט מהתמונה הזו.",
+  "chooseTemplate": "בחירת תבנית",
+  "replaceCurrentNote": "להחליף את ההערה הנוכחית?",
+  "templateReplaceWarning": "התבנית הזו תחליף את הכותרת והתוכן הנוכחיים.",
+  "replace": "החלפה",
+  "insertLink": "הוספת קישור",
+  "insert": "הוספה",
+  "couldNotAddImage": "לא ניתן להוסיף תמונה: {error}",
+  "couldNotAddFiles": "לא ניתן להוסיף קבצים: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
