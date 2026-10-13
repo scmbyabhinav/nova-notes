@@ -58,5 +58,12 @@
   "yesterday": "אתמול",
   "emptyTimeline": "אין פתקים להצגה",
   "currentDay": "היום שנבחר",
-  "total": "סה״כ"
+  "total": "סה״כ",
+  "appLocked": "ORAH נעול",
+  "unlockToContinue": "בטלו את הנעילה כדי להמשיך להערות הפרטיות שלכם.",
+  "pin": "קוד PIN",
+  "unlock": "ביטול נעילה",
+  "useBiometrics": "שימוש בזיהוי ביומטרי",
+  "incorrectPin": "קוד PIN שגוי",
+  "biometricFallbackError": "הזיהוי הביומטרי בוטל או אינו זמין. הזינו את קוד ה-PIN כדי לבטל את הנעילה."
 }
