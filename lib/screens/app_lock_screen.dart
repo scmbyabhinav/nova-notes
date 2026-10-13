@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/services/nova_security_service.dart';
+import '../l10n/app_localizations.dart';
 
 class AppLockScreen extends StatefulWidget {
   const AppLockScreen({super.key, required this.onUnlocked});
@@ -51,7 +52,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
     if (ok) {
       widget.onUnlocked();
     } else {
-      setState(() => _error = 'Incorrect PIN');
+      setState(() => _error = AppLocalizations.of(context)!.incorrectPin);
       _controller.clear();
     }
   }
@@ -74,7 +75,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
     setState(() {
       _busy = false;
       if (!ok) {
-        _error = 'Biometric cancelled or unavailable. Enter your PIN to unlock.';
+        _error = AppLocalizations.of(context)!.biometricFallbackError;
       }
     });
 
@@ -84,6 +85,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -108,11 +110,11 @@ class _AppLockScreenState extends State<AppLockScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text('ORAH is locked',
+                  Text(l10n.appLocked,
                       style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
-                    'Unlock to continue to your private notes.',
+                    l10n.unlockToContinue,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium,
                   ),
@@ -124,7 +126,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
                     maxLength: 8,
                     onSubmitted: (_) => _unlockWithPin(),
                     decoration: InputDecoration(
-                      labelText: 'PIN',
+                      labelText: l10n.pin,
                       errorText: _error,
                       prefixIcon: const Icon(Icons.password),
                     ),
@@ -134,7 +136,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
                     width: double.infinity,
                     child: FilledButton(
                       onPressed: _busy ? null : _unlockWithPin,
-                      child: const Text('Unlock'),
+                      child: Text(l10n.unlock),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -145,7 +147,7 @@ class _AppLockScreenState extends State<AppLockScreen> {
                       return OutlinedButton.icon(
                         onPressed: _busy ? null : _unlockWithBiometric,
                         icon: const Icon(Icons.fingerprint),
-                        label: const Text('Use biometrics'),
+                        label: Text(l10n.useBiometrics),
                       );
                     },
                   ),

@@ -58,5 +58,12 @@
   "yesterday": "Yesterday",
   "emptyTimeline": "No notes to show",
   "currentDay": "Selected day",
-  "total": "Total"
+  "total": "Total",
+  "appLocked": "ORAH is locked",
+  "unlockToContinue": "Unlock to continue to your private notes.",
+  "pin": "PIN",
+  "unlock": "Unlock",
+  "useBiometrics": "Use biometrics",
+  "incorrectPin": "Incorrect PIN",
+  "biometricFallbackError": "Biometric cancelled or unavailable. Enter your PIN to unlock."
 }

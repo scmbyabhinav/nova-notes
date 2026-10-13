@@ -58,5 +58,12 @@
   "yesterday": "Kemarin",
   "emptyTimeline": "Tidak ada catatan untuk ditampilkan",
   "currentDay": "Hari yang dipilih",
-  "total": "Total"
+  "total": "Total",
+  "appLocked": "ORAH terkunci",
+  "unlockToContinue": "Buka kunci untuk melanjutkan ke catatan pribadi Anda.",
+  "pin": "PIN",
+  "unlock": "Buka kunci",
+  "useBiometrics": "Gunakan biometrik",
+  "incorrectPin": "PIN salah",
+  "biometricFallbackError": "Autentikasi biometrik dibatalkan atau tidak tersedia. Masukkan PIN untuk membuka kunci."
 }

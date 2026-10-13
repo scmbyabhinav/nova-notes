@@ -58,5 +58,12 @@
   "yesterday": "어제",
   "emptyTimeline": "표시할 노트가 없습니다",
   "currentDay": "선택한 날짜",
-  "total": "합계"
+  "total": "합계",
+  "appLocked": "ORAH가 잠겨 있습니다",
+  "unlockToContinue": "잠금을 해제하고 비공개 노트를 확인하세요.",
+  "pin": "PIN",
+  "unlock": "잠금 해제",
+  "useBiometrics": "생체 인증 사용",
+  "incorrectPin": "PIN이 올바르지 않습니다",
+  "biometricFallbackError": "생체 인증이 취소되었거나 사용할 수 없습니다. 잠금을 해제하려면 PIN을 입력하세요."
 }
