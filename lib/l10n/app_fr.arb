@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "L’authentification n’a pas abouti. La note n’a pas été verrouillée.",
   "noteLockedMovedToVault": "Note verrouillée et déplacée dans votre coffre.",
   "noteUnlockedMovedToNotes": "Note déverrouillée et replacée dans vos notes.",
-  "continueLabel": "Continuer"
+  "continueLabel": "Continuer",
+  "ocrNoReadableText": "Aucun texte lisible trouvé.",
+  "ocrTextExtracted": "Texte extrait de l’image.",
+  "ocrCouldNotReadImage": "Impossible de lire le texte de cette image.",
+  "chooseTemplate": "Choisir un modèle",
+  "replaceCurrentNote": "Remplacer la note actuelle ?",
+  "templateReplaceWarning": "Ce modèle remplacera le titre et le contenu actuels.",
+  "replace": "Remplacer",
+  "insertLink": "Insérer un lien",
+  "insert": "Insérer",
+  "couldNotAddImage": "Impossible d’ajouter l’image : {error}",
+  "couldNotAddFiles": "Impossible d’ajouter les fichiers : {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
