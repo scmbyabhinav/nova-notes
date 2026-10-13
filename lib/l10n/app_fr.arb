@@ -247,5 +247,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "renameAttachmentTitle": "Renommer la pièce jointe",
+  "preview": "Aperçu",
+  "share": "Partager",
+  "details": "Détails",
+  "removeFromNote": "Retirer de la note",
+  "chooseFromGallery": "Choisir dans la galerie",
+  "takePhoto": "Prendre une photo",
+  "attachFiles": "Joindre des fichiers",
+  "close": "Fermer"
 }

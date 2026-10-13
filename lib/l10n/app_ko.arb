@@ -247,5 +247,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "renameAttachmentTitle": "첨부 파일 이름 변경",
+  "preview": "미리보기",
+  "share": "공유",
+  "details": "세부정보",
+  "removeFromNote": "노트에서 제거",
+  "chooseFromGallery": "갤러리에서 선택",
+  "takePhoto": "사진 촬영",
+  "attachFiles": "파일 첨부",
+  "close": "닫기"
 }

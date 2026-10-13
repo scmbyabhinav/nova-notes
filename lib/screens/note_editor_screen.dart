@@ -1194,7 +1194,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final name = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Rename attachment'),
+        title: Text(AppLocalizations.of(context)!.renameAttachmentTitle),
         content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
@@ -1227,7 +1227,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       builder: (_) => AlertDialog(
         title: Text(p.basename(path)),
         content: Text('Size: ' + _formatBytes(bytes) + '\nModified: ' + stat.modified.toLocal().toString()),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close))],
       ),
     );
   }
@@ -1267,11 +1267,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       builder: (sheetContext) => SafeArea(
         child: Wrap(
           children: [
-            ListTile(leading: const Icon(Icons.visibility_outlined), title: const Text('Preview'), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
-            ListTile(leading: const OrahAssetIcon('share'), title: const Text('Share'), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
-            ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: const Text('Rename'), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
-            ListTile(leading: const Icon(Icons.info_outline), title: const Text('Details'), onTap: () { Navigator.pop(sheetContext); _showAttachmentDetails(path); }),
-            ListTile(leading: const OrahAssetIcon('trash'), title: const Text('Remove from note'), onTap: () { Navigator.pop(sheetContext); _removeAttachment(path); }),
+            ListTile(leading: const Icon(Icons.visibility_outlined), title: Text(AppLocalizations.of(sheetContext)!.preview), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
+            ListTile(leading: const OrahAssetIcon('share'), title: Text(AppLocalizations.of(sheetContext)!.share), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
+            ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: Text(AppLocalizations.of(sheetContext)!.rename), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
+            ListTile(leading: const Icon(Icons.info_outline), title: Text(AppLocalizations.of(sheetContext)!.details), onTap: () { Navigator.pop(sheetContext); _showAttachmentDetails(path); }),
+            ListTile(leading: const OrahAssetIcon('trash'), title: Text(AppLocalizations.of(sheetContext)!.removeFromNote), onTap: () { Navigator.pop(sheetContext); _removeAttachment(path); }),
           ],
         ),
       ),
@@ -1288,7 +1288,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
+              title: Text(AppLocalizations.of(sheetContext)!.chooseFromGallery),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _addImage(ImageSource.gallery);
@@ -1296,7 +1296,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
+              title: Text(AppLocalizations.of(sheetContext)!.takePhoto),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _addImage(ImageSource.camera);
@@ -1304,7 +1304,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.attach_file_rounded),
-              title: const Text('Attach files'),
+              title: Text(AppLocalizations.of(sheetContext)!.attachFiles),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _addFiles();

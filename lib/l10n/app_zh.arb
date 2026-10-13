@@ -247,5 +247,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "renameAttachmentTitle": "重命名附件",
+  "preview": "预览",
+  "share": "分享",
+  "details": "详情",
+  "removeFromNote": "从笔记中移除",
+  "chooseFromGallery": "从图库选择",
+  "takePhoto": "拍照",
+  "attachFiles": "添加文件",
+  "close": "关闭"
 }

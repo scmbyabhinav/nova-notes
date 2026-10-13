@@ -247,5 +247,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "renameAttachmentTitle": "إعادة تسمية المرفق",
+  "preview": "معاينة",
+  "share": "مشاركة",
+  "details": "التفاصيل",
+  "removeFromNote": "إزالة من الملاحظة",
+  "chooseFromGallery": "اختيار من المعرض",
+  "takePhoto": "التقاط صورة",
+  "attachFiles": "إرفاق ملفات",
+  "close": "إغلاق"
 }

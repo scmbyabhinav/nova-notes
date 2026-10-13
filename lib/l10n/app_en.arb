@@ -261,5 +261,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "renameAttachmentTitle": "Rename attachment",
+  "preview": "Preview",
+  "share": "Share",
+  "details": "Details",
+  "removeFromNote": "Remove from note",
+  "chooseFromGallery": "Choose from gallery",
+  "takePhoto": "Take a photo",
+  "attachFiles": "Attach files",
+  "close": "Close"
 }
