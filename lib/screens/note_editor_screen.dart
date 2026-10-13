@@ -28,7 +28,6 @@ import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
-import '../services/orah_entitlement_service.dart';
 import '../core/services/nova_security_service.dart';
 import '../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
@@ -275,7 +274,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (!available) {
         setState(() => _speechInitializing = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(AppLocalizations.of(context)!.voiceInputUnavailable),
           ),
         );
@@ -340,7 +339,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _isListening = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotStartVoiceCapture(error))),
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotStartVoiceCapture(error.toString()))),
       );
     }
   }
@@ -367,9 +366,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.voiceTextSaved),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -426,9 +425,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(AppLocalizations.of(context)!.recordingStoppedPartialSaved),
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
