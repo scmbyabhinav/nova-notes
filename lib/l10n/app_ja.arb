@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "認証が完了しませんでした。ノートはロックされませんでした。",
   "noteLockedMovedToVault": "ノートをロックして Vault に移動しました。",
   "noteUnlockedMovedToNotes": "ノートのロックを解除し、ノート一覧に戻しました。",
-  "continueLabel": "続行"
+  "continueLabel": "続行",
+  "ocrNoReadableText": "読み取れるテキストが見つかりません。",
+  "ocrTextExtracted": "画像からテキストを抽出しました。",
+  "ocrCouldNotReadImage": "この画像からテキストを読み取れませんでした。",
+  "chooseTemplate": "テンプレートを選択",
+  "replaceCurrentNote": "現在のノートを置き換えますか？",
+  "templateReplaceWarning": "このテンプレートは現在のタイトルと内容を置き換えます。",
+  "replace": "置き換える",
+  "insertLink": "リンクを挿入",
+  "insert": "挿入",
+  "couldNotAddImage": "画像を追加できませんでした：{error}",
+  "couldNotAddFiles": "ファイルを追加できませんでした：{error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
