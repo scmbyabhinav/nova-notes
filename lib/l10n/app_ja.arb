@@ -58,5 +58,12 @@
   "yesterday": "昨日",
   "emptyTimeline": "表示するノートはありません",
   "currentDay": "選択した日",
-  "total": "合計"
+  "total": "合計",
+  "appLocked": "ORAHはロックされています",
+  "unlockToContinue": "ロックを解除してプライベートなノートを開いてください。",
+  "pin": "PIN",
+  "unlock": "ロック解除",
+  "useBiometrics": "生体認証を使用",
+  "incorrectPin": "PINが正しくありません",
+  "biometricFallbackError": "生体認証がキャンセルされたか、利用できません。ロックを解除するにはPINを入力してください。"
 }
