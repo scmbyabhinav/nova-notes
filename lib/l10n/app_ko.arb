@@ -221,5 +221,6 @@
   "addContentBeforeLock": "노트를 잠그기 전에 내용을 추가하세요.",
   "vaultAuthenticationNotCompleted": "인증이 완료되지 않았습니다. 노트가 잠기지 않았습니다.",
   "noteLockedMovedToVault": "노트를 잠그고 Vault로 이동했습니다.",
-  "noteUnlockedMovedToNotes": "노트 잠금을 해제하고 노트 목록으로 이동했습니다."
+  "noteUnlockedMovedToNotes": "노트 잠금을 해제하고 노트 목록으로 이동했습니다.",
+  "continueLabel": "계속"
 }
