@@ -235,5 +235,6 @@
   "addContentBeforeLock": "Add some content before locking this note.",
   "vaultAuthenticationNotCompleted": "Authentication was not completed. Note was not locked.",
   "noteLockedMovedToVault": "Note locked and moved to your Vault.",
-  "noteUnlockedMovedToNotes": "Note unlocked and moved back to your notes."
+  "noteUnlockedMovedToNotes": "Note unlocked and moved back to your notes.",
+  "continueLabel": "Continue"
 }
