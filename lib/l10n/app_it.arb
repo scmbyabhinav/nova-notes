@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "Autenticazione non completata. La nota non è stata bloccata.",
   "noteLockedMovedToVault": "Nota bloccata e spostata nel Vault.",
   "noteUnlockedMovedToNotes": "Nota sbloccata e riportata tra i tuoi appunti.",
-  "continueLabel": "Continua"
+  "continueLabel": "Continua",
+  "ocrNoReadableText": "Nessun testo leggibile trovato.",
+  "ocrTextExtracted": "Testo estratto dall’immagine.",
+  "ocrCouldNotReadImage": "Impossibile leggere il testo da questa immagine.",
+  "chooseTemplate": "Scegli un modello",
+  "replaceCurrentNote": "Sostituire la nota attuale?",
+  "templateReplaceWarning": "Questo modello sostituirà il titolo e il contenuto attuali.",
+  "replace": "Sostituisci",
+  "insertLink": "Inserisci link",
+  "insert": "Inserisci",
+  "couldNotAddImage": "Impossibile aggiungere l’immagine: {error}",
+  "couldNotAddFiles": "Impossibile aggiungere i file: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
