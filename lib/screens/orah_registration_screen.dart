@@ -99,7 +99,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.name],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: l10n.fullName,
                         hintText: l10n.yourName,
                         prefixIcon: Icon(Icons.person_outline_rounded),
@@ -113,7 +113,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.email],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: l10n.emailAddress,
                         hintText: l10n.emailExample,
                         prefixIcon: Icon(Icons.email_outlined),
