@@ -154,5 +154,15 @@
   "noFoldersYet": "No folders yet",
   "emptyFoldersDescription": "Create folders to keep related notes together.",
   "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here."
+  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "welcomeToOrah": "欢迎使用 Orah",
+  "personalizeYourSpace": "个性化设置您的空间。请输入姓名和电子邮件以开始使用。",
+  "fullName": "姓名",
+  "yourName": "您的姓名",
+  "emailAddress": "电子邮件地址",
+  "emailExample": "you@example.com",
+  "enterFullName": "请输入您的姓名。",
+  "enterValidEmail": "请输入有效的电子邮件地址。",
+  "registerAndContinue": "注册并继续",
+  "profileStoredOnDevice": "您的个人资料安全地存储在此设备上。同步订阅者列表需要配置 newsletter 服务。"
 }
