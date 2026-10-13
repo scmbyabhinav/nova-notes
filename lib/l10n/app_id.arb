@@ -221,5 +221,6 @@
   "addContentBeforeLock": "Tambahkan konten sebelum mengunci catatan ini.",
   "vaultAuthenticationNotCompleted": "Autentikasi belum selesai. Catatan tidak dikunci.",
   "noteLockedMovedToVault": "Catatan dikunci dan dipindahkan ke Vault.",
-  "noteUnlockedMovedToNotes": "Catatan dibuka dan dikembalikan ke daftar catatan Anda."
+  "noteUnlockedMovedToNotes": "Catatan dibuka dan dikembalikan ke daftar catatan Anda.",
+  "continueLabel": "Lanjutkan"
 }
