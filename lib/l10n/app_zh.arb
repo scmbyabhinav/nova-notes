@@ -221,5 +221,6 @@
   "addContentBeforeLock": "请先添加内容，再锁定此笔记。",
   "vaultAuthenticationNotCompleted": "身份验证未完成，笔记未锁定。",
   "noteLockedMovedToVault": "笔记已锁定并移至 Vault。",
-  "noteUnlockedMovedToNotes": "笔记已解锁并移回笔记列表。"
+  "noteUnlockedMovedToNotes": "笔记已解锁并移回笔记列表。",
+  "continueLabel": "继续"
 }
