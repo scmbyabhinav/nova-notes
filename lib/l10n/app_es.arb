@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "No se completó la autenticación. La nota no se ha bloqueado.",
   "noteLockedMovedToVault": "Nota bloqueada y movida a la bóveda.",
   "noteUnlockedMovedToNotes": "Nota desbloqueada y devuelta a tus notas.",
-  "continueLabel": "Continuar"
+  "continueLabel": "Continuar",
+  "ocrNoReadableText": "No se encontró texto legible.",
+  "ocrTextExtracted": "Texto extraído de la imagen.",
+  "ocrCouldNotReadImage": "No se pudo leer el texto de esa imagen.",
+  "chooseTemplate": "Elegir una plantilla",
+  "replaceCurrentNote": "¿Reemplazar la nota actual?",
+  "templateReplaceWarning": "Esta plantilla reemplazará el título y el contenido actuales.",
+  "replace": "Reemplazar",
+  "insertLink": "Insertar enlace",
+  "insert": "Insertar",
+  "couldNotAddImage": "No se pudo añadir la imagen: {error}",
+  "couldNotAddFiles": "No se pudieron añadir los archivos: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
