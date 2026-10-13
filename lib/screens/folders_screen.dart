@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/note_repository_provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
 import '../services/nova_attachment_service.dart';
@@ -102,13 +103,13 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   },
                   icon: const Icon(Icons.image_outlined),
                   label: Text(
-                    imagePath == null ? 'Add folder image' : 'Change image',
+                    imagePath == null ? l10n.addFolderImage : l10n.changeImage,
                   ),
                 ),
                 if (imagePath != null)
                   TextButton(
                     onPressed: () => setDialogState(() => imagePath = null),
-                    child: const Text('Remove image'),
+                    child: Text(l10n.removeImage),
                   ),
                 TextFormField(
                   initialValue: initialValue,
@@ -117,8 +118,8 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.done,
                   decoration: const InputDecoration(
-                    labelText: 'Folder name',
-                    hintText: 'e.g. Work, Ideas, Personal',
+                    labelText: l10n.folderName,
+                    hintText: l10n.folderNameHint,
                   ),
                   onChanged: (text) => value = text,
                   onFieldSubmitted: (_) {
@@ -136,7 +137,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -169,8 +170,8 @@ class _FoldersScreenState extends State<FoldersScreen> {
 
   Future<void> _addFolder() async {
     final draft = await _promptFolderDetails(
-      title: 'New folder',
-      actionLabel: 'Create',
+      title: l10n.newFolder,
+      actionLabel: l10n.create,
     );
     if (draft == null) return;
 
@@ -190,10 +191,10 @@ class _FoldersScreenState extends State<FoldersScreen> {
 
   Future<void> _renameFolder(NoteFolder folder) async {
     final draft = await _promptFolderDetails(
-      title: 'Edit folder',
+      title: l10n.editFolder,
       initialValue: folder.name,
       initialImagePath: folder.folderCoverImagePath,
-      actionLabel: 'Save',
+      actionLabel: l10n.save,
     );
     if (draft == null) return;
 
@@ -218,11 +219,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Delete ${folder.name}?'),
+        title: Text(l10n.deleteFolderTitle(folder.name)),
         content: Text(
           count == 0
-              ? 'The folder is empty.'
-              : '$count note(s) will be kept and moved back to All Notes.',
+              ? l10n.folderEmpty
+              : l10n.notesMovedFromFolder(count),
         ),
         actions: [
           TextButton(
@@ -231,7 +232,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -256,11 +257,11 @@ class _FoldersScreenState extends State<FoldersScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(
-          'Delete $selectedCount folder${selectedCount == 1 ? '' : 's'}?',
+          l10n.selectedFoldersDeleteTitle(selectedCount),
         ),
         content: Text(
           noteCount == 0
-              ? 'The selected folders are empty.'
+              ? l10n.selectedFoldersEmpty
               : '$noteCount note(s) will be kept and moved back to All Notes.',
         ),
         actions: [
@@ -270,7 +271,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete selected'),
+            child: Text(l10n.deleteSelected),
           ),
         ],
       ),
@@ -332,12 +333,13 @@ class _FoldersScreenState extends State<FoldersScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         leading: _selectionMode
             ? IconButton(
-                tooltip: 'Cancel selection',
+                tooltip: l10n.cancelSelection,
                 onPressed: () =>
                     setState(() => _selectedFolderIds.clear()),
                 icon: const Icon(Icons.close_rounded),
@@ -345,19 +347,19 @@ class _FoldersScreenState extends State<FoldersScreen> {
             : null,
         title: Text(
           _selectionMode
-              ? '${_selectedFolderIds.length} selected'
-              : 'Folders',
+              ? l10n.selectedCount(_selectedFolderIds.length)
+              : l10n.folders,
         ),
         actions: [
           if (_selectionMode)
             IconButton(
-              tooltip: 'Delete selected folders',
+              tooltip: l10n.deleteSelectedFolders,
               onPressed: _deleteSelectedFolders,
               icon: const Icon(Icons.delete_outline_rounded),
             )
           else
             IconButton(
-              tooltip: 'New folder',
+              tooltip: l10n.newFolder,
               onPressed: _addFolder,
               icon: const Icon(Icons.create_new_folder_outlined),
             ),
@@ -368,7 +370,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
           : FloatingActionButton.extended(
               onPressed: _addFolder,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('New folder'),
+              label: Text(l10n.newFolder),
             ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -416,7 +418,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         subtitle: Text(
-                          '$count note${count == 1 ? '' : 's'}',
+                          l10n.folderNoteCount(count),
                         ),
                         onTap: () => _openFolder(folder),
                         onLongPress: () => _toggleSelection(folder),
@@ -426,7 +428,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                 onChanged: (_) => _toggleSelection(folder),
                               )
                             : PopupMenuButton<String>(
-                                tooltip: 'Folder options',
+                                tooltip: l10n.folderOptions,
                                 onSelected: (action) {
                                   if (action == 'open') {
                                     _openFolder(folder);
@@ -442,7 +444,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                     child: ListTile(
                                       dense: true,
                                       leading: Icon(Icons.folder_open_outlined),
-                                      title: Text('Open'),
+                                      title: Text(l10n.open),
                                     ),
                                   ),
                                   PopupMenuItem(
@@ -451,7 +453,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                       dense: true,
                                       leading:
                                           Icon(Icons.drive_file_rename_outline),
-                                      title: Text('Rename'),
+                                      title: Text(l10n.rename),
                                     ),
                                   ),
                                   PopupMenuItem(
@@ -459,7 +461,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
                                     child: ListTile(
                                       dense: true,
                                       leading: Icon(Icons.delete_outline),
-                                      title: Text('Delete'),
+                                      title: Text(l10n.delete),
                                     ),
                                   ),
                                 ],
@@ -564,7 +566,7 @@ class _FolderNotesScreenState extends State<FolderNotesScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(28),
                     child: Text(
-                      'No notes in this folder yet.\nOpen a note and choose Organize to add it here.',
+                      AppLocalizations.of(context)!.noNotesInFolder,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -587,7 +589,7 @@ class _FolderNotesScreenState extends State<FolderNotesScreen> {
                       ),
                       title: Text(
                         note.title.trim().isEmpty
-                            ? 'Untitled note'
+                            ? AppLocalizations.of(context)!.untitledNote
                             : note.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -611,11 +613,11 @@ class _FolderNotesScreenState extends State<FolderNotesScreen> {
                         itemBuilder: (_) => const [
                           PopupMenuItem(
                             value: 'remove',
-                            child: Text('Remove from folder'),
+                            child: Text(AppLocalizations.of(context)!.removeFromFolder),
                           ),
                           PopupMenuItem(
                             value: 'trash',
-                            child: Text('Move to Trash'),
+                            child: Text(AppLocalizations.of(context)!.moveToTrash),
                           ),
                         ],
                       ),
@@ -654,21 +656,21 @@ class _EmptyFolders extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'No folders yet',
+              AppLocalizations.of(context)!.noFoldersYet,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Create folders to keep related notes together.',
+              AppLocalizations.of(context)!.emptyFoldersDescription,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: onCreate,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Create folder'),
+              label: Text(AppLocalizations.of(context)!.createFolder),
             ),
           ],
         ),
