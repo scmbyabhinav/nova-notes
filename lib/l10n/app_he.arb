@@ -221,5 +221,6 @@
   "addContentBeforeLock": "הוסיפו תוכן לפני נעילת ההערה.",
   "vaultAuthenticationNotCompleted": "האימות לא הושלם. ההערה לא ננעלה.",
   "noteLockedMovedToVault": "ההערה ננעלה והועברה לכספת.",
-  "noteUnlockedMovedToNotes": "ההערה שוחררה והוחזרה לרשימת ההערות."
+  "noteUnlockedMovedToNotes": "ההערה שוחררה והוחזרה לרשימת ההערות.",
+  "continueLabel": "המשך"
 }
