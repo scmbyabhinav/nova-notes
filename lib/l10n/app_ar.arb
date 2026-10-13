@@ -58,5 +58,12 @@
   "yesterday": "أمس",
   "emptyTimeline": "لا توجد ملاحظات لعرضها",
   "currentDay": "اليوم المحدد",
-  "total": "الإجمالي"
+  "total": "الإجمالي",
+  "appLocked": "أوراه مقفل",
+  "unlockToContinue": "افتح القفل للمتابعة إلى ملاحظاتك الخاصة.",
+  "pin": "رمز PIN",
+  "unlock": "فتح القفل",
+  "useBiometrics": "استخدام القياسات الحيوية",
+  "incorrectPin": "رمز PIN غير صحيح",
+  "biometricFallbackError": "تم إلغاء التحقق الحيوي أو أنه غير متاح. أدخل رمز PIN لفتح القفل."
 }
