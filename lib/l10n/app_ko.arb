@@ -89,5 +89,70 @@
   "historyTimeline": "기록 타임라인",
   "storyStartsWithNote": "노트 하나로 이야기가 시작됩니다",
   "pickHighlightedDay": "표시된 날짜를 선택해 그날의 기록이나 전체 기록을 살펴보세요.",
-  "savedDaysHighlighted": "노트가 저장된 날짜는 달력에 강조 표시됩니다."
+  "savedDaysHighlighted": "노트가 저장된 날짜는 달력에 강조 표시됩니다.",
+  "addFolderImage": "Add folder image",
+  "changeImage": "Change image",
+  "removeImage": "Remove image",
+  "folderName": "Folder name",
+  "folderNameHint": "e.g. Work, Ideas, Personal",
+  "cancel": "Cancel",
+  "create": "Create",
+  "newFolder": "New folder",
+  "editFolder": "Edit folder",
+  "save": "Save",
+  "deleteFolderTitle": "Delete {folderName}?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "The folder is empty.",
+  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "Delete",
+  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "The selected folders are empty.",
+  "deleteSelected": "Delete selected",
+  "cancelSelection": "Cancel selection",
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "Delete selected folders",
+  "folderOptions": "Folder options",
+  "open": "Open",
+  "rename": "Rename",
+  "folderNoteCount": "{count} notes",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "Remove from folder",
+  "moveToTrash": "Move to Trash",
+  "noFoldersYet": "No folders yet",
+  "emptyFoldersDescription": "Create folders to keep related notes together.",
+  "createFolder": "Create folder",
+  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here."
 }
