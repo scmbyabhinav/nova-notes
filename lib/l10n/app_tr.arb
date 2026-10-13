@@ -154,5 +154,15 @@
   "noFoldersYet": "No folders yet",
   "emptyFoldersDescription": "Create folders to keep related notes together.",
   "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here."
+  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "welcomeToOrah": "Orah'a hoş geldiniz",
+  "personalizeYourSpace": "Alanınızı kişiselleştirin. Başlamak için adınızı ve e-posta adresinizi girin.",
+  "fullName": "Ad soyad",
+  "yourName": "Adınız",
+  "emailAddress": "E-posta adresi",
+  "emailExample": "siz@ornek.com",
+  "enterFullName": "Lütfen adınızı ve soyadınızı girin.",
+  "enterValidEmail": "Geçerli bir e-posta adresi girin.",
+  "registerAndContinue": "Kaydol ve devam et",
+  "profileStoredOnDevice": "Profiliniz bu cihazda güvenle saklanır. Abone listesi eşitlemesi için yapılandırılmış bir bülten hizmeti gerekir."
 }
