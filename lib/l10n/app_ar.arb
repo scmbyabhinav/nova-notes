@@ -221,5 +221,6 @@
   "addContentBeforeLock": "أضف محتوى قبل قفل هذه الملاحظة.",
   "vaultAuthenticationNotCompleted": "لم تكتمل المصادقة. لم يتم قفل الملاحظة.",
   "noteLockedMovedToVault": "تم قفل الملاحظة ونقلها إلى الخزنة.",
-  "noteUnlockedMovedToNotes": "تم إلغاء قفل الملاحظة وإعادتها إلى ملاحظاتك."
+  "noteUnlockedMovedToNotes": "تم إلغاء قفل الملاحظة وإعادتها إلى ملاحظاتك.",
+  "continueLabel": "متابعة"
 }
