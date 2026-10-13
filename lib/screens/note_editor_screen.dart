@@ -30,6 +30,7 @@ import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
 import '../core/services/nova_security_service.dart';
+import '../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
@@ -461,7 +462,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final controller = TextEditingController(text: _checklistItems[index].text);
     final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
       title: Text(AppLocalizations.of(context)!.editTask), content: TextField(controller: controller, autofocus: true),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.save))],
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.save))],
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
@@ -533,7 +534,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (mounted) {
         setState(() => _unlocking = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationFailed)),
+          SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationFailed)),
         );
       }
       return;
@@ -603,10 +604,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           color: Theme.of(dialogContext).colorScheme.primary,
         ),
         title: Text(AppLocalizations.of(dialogContext)!.secureYourVault),
-        content: const Text(
-          AppLocalizations.of(dialogContext)!.vaultSetupDescription
-          '',
-        ),
+        content: Text(AppLocalizations.of(dialogContext)!.vaultSetupDescription),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -627,7 +625,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (second == null || !mounted) return false;
     if (first != second) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinsDoNotMatch)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinsDoNotMatch)),
       );
       return false;
     }
@@ -638,7 +636,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       await security.setAppLockEnabled(true);
       if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinCreated)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinCreated)),
       );
       // Creating and confirming this PIN is the setup action authorizing this lock.
       return true;
@@ -687,7 +685,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 Navigator.of(dialogContext).pop(controller.text);
               }
             },
-            child: const Text('Continue'),
+            child: Text(AppLocalizations.of(dialogContext)!.continueLabel),
           ),
         ],
       ),
@@ -701,7 +699,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _contentController.text.trim().isEmpty &&
         _attachments.isEmpty && _checklistItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppLocalizations.of(context)!.addContentBeforeLock)),
+        SnackBar(content: Text(AppLocalizations.of(context)!.addContentBeforeLock)),
       );
       return;
     }
@@ -716,7 +714,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (!setupCompleted && !await _authenticatePrivateAccess()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationNotCompleted)),
+          SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationNotCompleted)),
         );
       }
       return;
@@ -730,7 +728,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(AppLocalizations.of(context)!.noteLockedMovedToVault)),
+      SnackBar(content: Text(AppLocalizations.of(context)!.noteLockedMovedToVault)),
     );
     Navigator.of(context).pop();
   }
@@ -745,7 +743,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(AppLocalizations.of(context)!.noteUnlockedMovedToNotes)),
+      SnackBar(content: Text(AppLocalizations.of(context)!.noteUnlockedMovedToNotes)),
     );
     Navigator.of(context).pop();
   }
