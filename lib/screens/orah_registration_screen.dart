@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/widgets/orah_logo.dart';
+import '../l10n/app_localizations.dart';
 import '../services/orah_user_profile_service.dart';
 
 class OrahRegistrationScreen extends StatefulWidget {
@@ -51,6 +52,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -84,10 +86,10 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Text('Welcome to Orah', textAlign: TextAlign.center, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800)),
+                    Text(l10n.welcomeToOrah, textAlign: TextAlign.center, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 8),
                     Text(
-                      'Let’s personalize your space. Enter your name and email to get started.',
+                      l10n.personalizeYourSpace,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
@@ -98,12 +100,12 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.name],
                       decoration: const InputDecoration(
-                        labelText: 'Full name',
-                        hintText: 'Your name',
+                        labelText: l10n.fullName,
+                        hintText: l10n.yourName,
                         prefixIcon: Icon(Icons.person_outline_rounded),
                         border: OutlineInputBorder(),
                       ),
-                      validator: (value) => value == null || value.trim().isEmpty ? 'Enter your full name.' : null,
+                      validator: (value) => value == null || value.trim().isEmpty ? l10n.enterFullName : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -112,8 +114,8 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.email],
                       decoration: const InputDecoration(
-                        labelText: 'Email address',
-                        hintText: 'you@example.com',
+                        labelText: l10n.emailAddress,
+                        hintText: l10n.emailExample,
                         prefixIcon: Icon(Icons.email_outlined),
                         border: OutlineInputBorder(),
                       ),
@@ -121,7 +123,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                         final email = value?.trim() ?? '';
                         return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)
                             ? null
-                            : 'Enter a valid email address.';
+                            : l10n.enterValidEmail;
                       },
                       onFieldSubmitted: (_) => _register(),
                     ),
@@ -136,12 +138,12 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         child: _saving
                             ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Text('Register & continue'),
+                            : Text(l10n.registerAndContinue),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Your profile is stored securely on this device. Subscriber-list syncing requires a configured newsletter service.',
+                      l10n.profileStoredOnDevice,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
