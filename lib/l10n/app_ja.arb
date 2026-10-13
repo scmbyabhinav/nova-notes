@@ -221,5 +221,6 @@
   "addContentBeforeLock": "ノートをロックする前に内容を追加してください。",
   "vaultAuthenticationNotCompleted": "認証が完了しませんでした。ノートはロックされませんでした。",
   "noteLockedMovedToVault": "ノートをロックして Vault に移動しました。",
-  "noteUnlockedMovedToNotes": "ノートのロックを解除し、ノート一覧に戻しました。"
+  "noteUnlockedMovedToNotes": "ノートのロックを解除し、ノート一覧に戻しました。",
+  "continueLabel": "続行"
 }
