@@ -222,5 +222,30 @@
   "vaultAuthenticationNotCompleted": "身份验证未完成，笔记未锁定。",
   "noteLockedMovedToVault": "笔记已锁定并移至 Vault。",
   "noteUnlockedMovedToNotes": "笔记已解锁并移回笔记列表。",
-  "continueLabel": "继续"
+  "continueLabel": "继续",
+  "ocrNoReadableText": "未找到可识别的文字。",
+  "ocrTextExtracted": "已从图片中提取文字。",
+  "ocrCouldNotReadImage": "无法读取该图片中的文字。",
+  "chooseTemplate": "选择模板",
+  "replaceCurrentNote": "要替换当前笔记吗？",
+  "templateReplaceWarning": "此模板将替换当前标题和内容。",
+  "replace": "替换",
+  "insertLink": "插入链接",
+  "insert": "插入",
+  "couldNotAddImage": "无法添加图片：{error}",
+  "couldNotAddFiles": "无法添加文件：{error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
