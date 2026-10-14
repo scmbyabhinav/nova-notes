@@ -157,8 +157,14 @@ void main() {
     expect(prefs.getBool('orah_voice_hint_shown'), isTrue);
   });
 
-  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: OrahTemplatesScreen()));
+  testWidgets('templates list starter templates and opens selected content', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const OrahTemplatesScreen(),
+    ));
     await tester.pumpAndSettle();
 
     for (final title in [
@@ -183,7 +189,8 @@ void main() {
     await tester.pumpAndSettle();
 
     final contentField = find.byWidgetPredicate(
-      (widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...',
+      (widget) => widget is TextField &&
+          widget.decoration?.hintText == 'Start writing...',
     );
     expect(contentField, findsOneWidget);
     final content = tester.widget<TextField>(contentField).controller?.text ?? '';
