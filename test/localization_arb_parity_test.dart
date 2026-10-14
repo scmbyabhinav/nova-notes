@@ -27,14 +27,14 @@ const _localeNeutralKeys = <String, Set<String>>{
   'ko': {'emailExample', 'pin'},
   'zh': {'emailExample'},
   // PIN is a standard technical abbreviation; these short labels are approved.
-  'de': {'pin', 'details', 'moodNeutral'},
-  'es': {'pin', 'total', 'moodNeutral'},
+  'de': {'pin', 'details', 'moodNeutral', 'linkLabel'},
+  'es': {'pin', 'total', 'moodNeutral', 'templateAgenda'},
   'id': {'pin', 'template', 'total'},
   'it': {'pin'},
   'pt': {'pin', 'total'},
   'tr': {'pin'},
   // These French interface labels are accepted as conventional wording.
-  'fr': {'total', 'notes'},
+  'fr': {'total', 'notes', 'templateImportant', 'templateDates'},
 };
 
 void main() {
