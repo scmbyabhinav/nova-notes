@@ -92,7 +92,7 @@
   "savedDaysHighlighted": "노트가 저장된 날짜는 달력에 강조 표시됩니다.",
   "addFolderImage": "폴더 이미지 추가",
   "changeImage": "이미지 변경",
-  "removeImage": "Remove image",
+  "removeImage": "이미지 삭제",
   "folderName": "Folder name",
   "folderNameHint": "e.g. Work, Ideas, Personal",
   "cancel": "Cancel",
