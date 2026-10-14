@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "Dışa aktar",
+  "removeFavorite": "Favorilerden kaldır",
+  "addToFavorites": "Favorilere ekle",
+  "addImage": "Görsel ekle",
+  "template": "Şablon",
+  "setReminder": "Hatırlatıcı ayarla",
+  "reminderAt": "Hatırlatıcı: {date}",
+  "clearReminder": "Hatırlatıcıyı temizle",
+  "noteColor": "Not rengi",
+  "unarchive": "Arşivden çıkar",
+  "archive": "Arşivle",
+  "back": "Geri",
+  "remove": "Kaldır",
+  "retry": "Yeniden dene",
+  "titleHint": "Başlık",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

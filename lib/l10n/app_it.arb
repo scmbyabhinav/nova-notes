@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "Esporta",
+  "removeFavorite": "Rimuovi dai preferiti",
+  "addToFavorites": "Aggiungi ai preferiti",
+  "addImage": "Aggiungi immagine",
+  "template": "Modello",
+  "setReminder": "Imposta promemoria",
+  "reminderAt": "Promemoria: {date}",
+  "clearReminder": "Cancella promemoria",
+  "noteColor": "Colore della nota",
+  "unarchive": "Rimuovi dall’archivio",
+  "archive": "Archivia",
+  "back": "Indietro",
+  "remove": "Rimuovi",
+  "retry": "Riprova",
+  "titleHint": "Titolo",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

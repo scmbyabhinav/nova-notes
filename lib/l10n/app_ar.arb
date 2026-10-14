@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "تصدير",
+  "removeFavorite": "إزالة من المفضلة",
+  "addToFavorites": "إضافة إلى المفضلة",
+  "addImage": "إضافة صورة",
+  "template": "قالب",
+  "setReminder": "تعيين تذكير",
+  "reminderAt": "تذكير: {date}",
+  "clearReminder": "مسح التذكير",
+  "noteColor": "لون الملاحظة",
+  "unarchive": "إلغاء الأرشفة",
+  "archive": "أرشفة",
+  "back": "رجوع",
+  "remove": "إزالة",
+  "retry": "إعادة المحاولة",
+  "titleHint": "العنوان",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "निर्यात करें",
+  "removeFavorite": "पसंदीदा से हटाएँ",
+  "addToFavorites": "पसंदीदा में जोड़ें",
+  "addImage": "तस्वीर जोड़ें",
+  "template": "टेम्पलेट",
+  "setReminder": "रिमाइंडर सेट करें",
+  "reminderAt": "रिमाइंडर: {date}",
+  "clearReminder": "रिमाइंडर हटाएँ",
+  "noteColor": "नोट का रंग",
+  "unarchive": "आर्काइव से निकालें",
+  "archive": "आर्काइव करें",
+  "back": "वापस",
+  "remove": "हटाएँ",
+  "retry": "फिर कोशिश करें",
+  "titleHint": "शीर्षक",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

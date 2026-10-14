@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "エクスポート",
+  "removeFavorite": "お気に入りから削除",
+  "addToFavorites": "お気に入りに追加",
+  "addImage": "画像を追加",
+  "template": "テンプレート",
+  "setReminder": "リマインダーを設定",
+  "reminderAt": "リマインダー：{date}",
+  "clearReminder": "リマインダーを解除",
+  "noteColor": "ノートの色",
+  "unarchive": "アーカイブ解除",
+  "archive": "アーカイブ",
+  "back": "戻る",
+  "remove": "削除",
+  "retry": "再試行",
+  "titleHint": "タイトル",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

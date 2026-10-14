@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "ייצוא",
+  "removeFavorite": "הסרה מהמועדפים",
+  "addToFavorites": "הוספה למועדפים",
+  "addImage": "הוספת תמונה",
+  "template": "תבנית",
+  "setReminder": "הגדרת תזכורת",
+  "reminderAt": "תזכורת: {date}",
+  "clearReminder": "ניקוי תזכורת",
+  "noteColor": "צבע ההערה",
+  "unarchive": "ביטול העברה לארכיון",
+  "archive": "העברה לארכיון",
+  "back": "חזרה",
+  "remove": "הסרה",
+  "retry": "ניסיון חוזר",
+  "titleHint": "כותרת",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

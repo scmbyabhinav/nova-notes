@@ -1507,7 +1507,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'share_card',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -1515,12 +1515,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   title: Text(AppLocalizations.of(context)!.exportAsCard),
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'export',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: OrahAssetIcon('share'),
-                  title: Text('Export'),
+                  title: Text(AppLocalizations.of(context)!.exportLabel),
                 ),
               ),
               PopupMenuItem(
@@ -1529,18 +1529,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   contentPadding: EdgeInsets.zero,
                   leading: const OrahAssetIcon('star'),
                   title: Text(
-                    _isFavorite ? 'Remove favorite' : 'Add to favorites',
+                    _isFavorite ? AppLocalizations.of(context)!.removeFavorite : AppLocalizations.of(context)!.addToFavorites,
                   ),
                 ),
               ),
-              const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
-              const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text(AppLocalizations.of(context)!.scanTextFromImage))),
-              const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
-              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
-              if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
-              const PopupMenuItem(
+              PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.image_outlined), title: Text(AppLocalizations.of(context)!.addImage))),
+              PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.document_scanner_outlined), title: Text(AppLocalizations.of(context)!.scanTextFromImage))),
+              PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.auto_awesome_outlined), title: Text(AppLocalizations.of(context)!.template))),
+              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? AppLocalizations.of(context)!.setReminder : AppLocalizations.of(context)!.reminderAt(DateFormat('d MMM, h:mm a').format(_dueAt!))))),
+              if (_dueAt != null) PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_off_outlined), title: Text(AppLocalizations.of(context)!.clearReminder))),
+              PopupMenuItem(
                 value: 'color',
-                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
+                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text(AppLocalizations.of(context)!.noteColor)),
               ),
               const PopupMenuItem(
                 value: 'organize',
@@ -1559,7 +1559,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         ? Icons.unarchive_outlined
                         : Icons.archive_outlined,
                   ),
-                  title: Text(_isArchived ? 'Unarchive' : 'Archive'),
+                  title: Text(_isArchived ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive),
                 ),
               ),
               if (!_isLocked)
@@ -1572,12 +1572,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   value: 'unlock_note',
                   child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text(AppLocalizations.of(context)!.unlockAndMoveToNotes)),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: OrahAssetIcon('trash'),
-                  title: Text('Delete'),
+                  title: Text(AppLocalizations.of(context)!.delete),
                 ),
               ),
             ],
@@ -1645,7 +1645,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             TextButton.icon(
                               onPressed: _retryVoiceInput,
                               icon: const Icon(Icons.refresh_rounded, size: 18),
-                              label: const Text('Retry'),
+                              label: Text(AppLocalizations.of(context)!.retry),
                             ),
                             FilledButton.icon(
                               onPressed: _stopAndSaveVoiceInput,
@@ -1808,7 +1808,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
                               ),
-                          decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          decoration: InputDecoration(hintText: AppLocalizations.of(context)!.titleHint, filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           maxLines: 2,
                         ),
                         const SizedBox(height: 8),

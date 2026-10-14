@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "导出",
+  "removeFavorite": "从收藏中移除",
+  "addToFavorites": "添加到收藏",
+  "addImage": "添加图片",
+  "template": "模板",
+  "setReminder": "设置提醒",
+  "reminderAt": "提醒：{date}",
+  "clearReminder": "清除提醒",
+  "noteColor": "笔记颜色",
+  "unarchive": "取消归档",
+  "archive": "归档",
+  "back": "返回",
+  "remove": "移除",
+  "retry": "重试",
+  "titleHint": "标题",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

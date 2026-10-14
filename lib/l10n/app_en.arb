@@ -278,5 +278,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "Export",
+  "removeFavorite": "Remove favorite",
+  "addToFavorites": "Add to favorites",
+  "addImage": "Add image",
+  "template": "Template",
+  "setReminder": "Set reminder",
+  "reminderAt": "Reminder: {date}",
+  "clearReminder": "Clear reminder",
+  "noteColor": "Note color",
+  "unarchive": "Unarchive",
+  "archive": "Archive",
+  "back": "Back",
+  "remove": "Remove",
+  "retry": "Retry",
+  "titleHint": "Title",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

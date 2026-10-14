@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "Ekspor",
+  "removeFavorite": "Hapus dari favorit",
+  "addToFavorites": "Tambahkan ke favorit",
+  "addImage": "Tambah gambar",
+  "template": "Template",
+  "setReminder": "Atur pengingat",
+  "reminderAt": "Pengingat: {date}",
+  "clearReminder": "Hapus pengingat",
+  "noteColor": "Warna catatan",
+  "unarchive": "Batalkan arsip",
+  "archive": "Arsipkan",
+  "back": "Kembali",
+  "remove": "Hapus",
+  "retry": "Coba lagi",
+  "titleHint": "Judul",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

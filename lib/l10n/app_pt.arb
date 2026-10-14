@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "Exportar",
+  "removeFavorite": "Remover dos favoritos",
+  "addToFavorites": "Adicionar aos favoritos",
+  "addImage": "Adicionar imagem",
+  "template": "Modelo",
+  "setReminder": "Definir lembrete",
+  "reminderAt": "Lembrete: {date}",
+  "clearReminder": "Limpar lembrete",
+  "noteColor": "Cor da nota",
+  "unarchive": "Desarquivar",
+  "archive": "Arquivar",
+  "back": "Voltar",
+  "remove": "Remover",
+  "retry": "Tentar novamente",
+  "titleHint": "Título",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

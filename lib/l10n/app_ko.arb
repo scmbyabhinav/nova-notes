@@ -264,5 +264,27 @@
         "type": "String"
       }
     }
+  },
+  "exportLabel": "내보내기",
+  "removeFavorite": "즐겨찾기에서 제거",
+  "addToFavorites": "즐겨찾기에 추가",
+  "addImage": "이미지 추가",
+  "template": "템플릿",
+  "setReminder": "알림 설정",
+  "reminderAt": "알림: {date}",
+  "clearReminder": "알림 지우기",
+  "noteColor": "노트 색상",
+  "unarchive": "보관 취소",
+  "archive": "보관",
+  "back": "뒤로",
+  "remove": "제거",
+  "retry": "다시 시도",
+  "titleHint": "제목",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }
