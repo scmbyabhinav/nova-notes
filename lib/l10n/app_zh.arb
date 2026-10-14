@@ -93,14 +93,14 @@
   "addFolderImage": "添加文件夹图片",
   "changeImage": "更改图片",
   "removeImage": "删除图片",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "文件夹名称",
+  "folderNameHint": "例如：工作、灵感、个人",
+  "cancel": "取消",
+  "create": "创建",
+  "newFolder": "新建文件夹",
+  "editFolder": "编辑文件夹",
+  "save": "保存",
+  "deleteFolderTitle": "删除“{folderName}”？",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "文件夹为空。",
+  "notesMovedFromFolder": "{count} 条笔记将保留并移回“所有笔记”。",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "删除",
+  "selectedFoldersDeleteTitle": "删除 {count} 个文件夹？",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "所选文件夹为空。",
+  "deleteSelected": "删除所选项",
+  "cancelSelection": "取消选择",
+  "selectedCount": "已选择 {count} 项",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "删除所选文件夹",
+  "folderOptions": "文件夹选项",
+  "open": "打开",
+  "rename": "重命名",
+  "folderNoteCount": "{count} 条笔记",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "从文件夹中移除",
+  "moveToTrash": "移至回收站",
+  "noFoldersYet": "暂无文件夹",
+  "emptyFoldersDescription": "创建文件夹，将相关笔记归类在一起。",
+  "createFolder": "创建文件夹",
+  "noNotesInFolder": "此文件夹中还没有笔记。\n打开一条笔记并选择“整理”即可将其添加到这里。",
   "welcomeToOrah": "欢迎使用 Orah",
   "personalizeYourSpace": "个性化设置您的空间。请输入姓名和电子邮件以开始使用。",
   "fullName": "姓名",
