@@ -93,14 +93,14 @@
   "addFolderImage": "Tambahkan gambar folder",
   "changeImage": "Ubah gambar",
   "removeImage": "Hapus gambar",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
+  "folderName": "Nama folder",
+  "folderNameHint": "mis. Kerja, Ide, Pribadi",
+  "cancel": "Batal",
+  "create": "Buat",
+  "newFolder": "Folder baru",
   "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "save": "Simpan",
+  "deleteFolderTitle": "Hapus {folderName}?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "Folder kosong.",
+  "notesMovedFromFolder": "{count} catatan akan tetap disimpan dan dipindahkan kembali ke Semua Catatan.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "Hapus",
+  "selectedFoldersDeleteTitle": "Hapus {count} folder?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "Folder yang dipilih kosong.",
+  "deleteSelected": "Hapus pilihan",
+  "cancelSelection": "Batalkan pilihan",
+  "selectedCount": "{count} dipilih",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "Hapus folder yang dipilih",
+  "folderOptions": "Opsi folder",
+  "open": "Buka",
+  "rename": "Ganti nama",
+  "folderNoteCount": "{count} catatan",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "Hapus dari folder",
+  "moveToTrash": "Pindahkan ke Sampah",
+  "noFoldersYet": "Belum ada folder",
+  "emptyFoldersDescription": "Buat folder untuk mengelompokkan catatan yang berkaitan.",
+  "createFolder": "Buat folder",
+  "noNotesInFolder": "Belum ada catatan di folder ini.\nBuka catatan dan pilih Atur untuk menambahkannya di sini.",
   "welcomeToOrah": "Selamat datang di Orah",
   "personalizeYourSpace": "Personalisasi ruang Anda. Masukkan nama dan email untuk memulai.",
   "fullName": "Nama lengkap",
