@@ -93,14 +93,14 @@
   "addFolderImage": "הוספת תמונה לתיקייה",
   "changeImage": "שינוי תמונה",
   "removeImage": "הסרת תמונה",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "שם התיקייה",
+  "folderNameHint": "למשל: עבודה, רעיונות, אישי",
+  "cancel": "ביטול",
+  "create": "יצירה",
+  "newFolder": "תיקייה חדשה",
+  "editFolder": "עריכת תיקייה",
+  "save": "שמירה",
+  "deleteFolderTitle": "למחוק את {folderName}?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "התיקייה ריקה.",
+  "notesMovedFromFolder": "{count} פתק(ים) יישמרו ויועברו בחזרה אל כל הפתקים.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "מחיקה",
+  "selectedFoldersDeleteTitle": "למחוק {count} תיקייה(ות)?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "התיקיות שנבחרו ריקות.",
+  "deleteSelected": "מחיקת הבחירה",
+  "cancelSelection": "ביטול הבחירה",
+  "selectedCount": "נבחרו {count}",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "מחיקת התיקיות שנבחרו",
+  "folderOptions": "אפשרויות תיקייה",
+  "open": "פתיחה",
+  "rename": "שינוי שם",
+  "folderNoteCount": "{count} פתקים",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "הסרה מהתיקייה",
+  "moveToTrash": "העברה לאשפה",
+  "noFoldersYet": "עדיין אין תיקיות",
+  "emptyFoldersDescription": "יוצרים תיקיות כדי לשמור יחד פתקים קשורים.",
+  "createFolder": "יצירת תיקייה",
+  "noNotesInFolder": "אין עדיין פתקים בתיקייה הזו.\nפתחו פתק ובחרו ארגון כדי להוסיף אותו לכאן.",
   "welcomeToOrah": "ברוכים הבאים ל-Orah",
   "personalizeYourSpace": "התאימו אישית את המרחב שלכם. הזינו שם וכתובת אימייל כדי להתחיל.",
   "fullName": "שם מלא",
