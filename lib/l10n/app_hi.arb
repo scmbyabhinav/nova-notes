@@ -93,14 +93,14 @@
   "addFolderImage": "फ़ोल्डर की तस्वीर जोड़ें",
   "changeImage": "तस्वीर बदलें",
   "removeImage": "तस्वीर हटाएँ",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "फ़ोल्डर का नाम",
+  "folderNameHint": "जैसे, काम, विचार, व्यक्तिगत",
+  "cancel": "रद्द करें",
+  "create": "बनाएँ",
+  "newFolder": "नया फ़ोल्डर",
+  "editFolder": "फ़ोल्डर संपादित करें",
+  "save": "सहेजें",
+  "deleteFolderTitle": "{folderName} मिटाएँ?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "फ़ोल्डर खाली है।",
+  "notesMovedFromFolder": "{count} नोट सुरक्षित रहेंगे और वापस सभी नोट्स में ले जाए जाएँगे।",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "मिटाएँ",
+  "selectedFoldersDeleteTitle": "{count} फ़ोल्डर मिटाएँ?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "चुने गए फ़ोल्डर खाली हैं।",
+  "deleteSelected": "चयन मिटाएँ",
+  "cancelSelection": "चयन रद्द करें",
+  "selectedCount": "{count} चुने गए",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "चुने गए फ़ोल्डर मिटाएँ",
+  "folderOptions": "फ़ोल्डर विकल्प",
+  "open": "खोलें",
+  "rename": "नाम बदलें",
+  "folderNoteCount": "{count} नोट",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "फ़ोल्डर से हटाएँ",
+  "moveToTrash": "ट्रैश में भेजें",
+  "noFoldersYet": "अभी कोई फ़ोल्डर नहीं",
+  "emptyFoldersDescription": "संबंधित नोट्स को साथ रखने के लिए फ़ोल्डर बनाएँ।",
+  "createFolder": "फ़ोल्डर बनाएँ",
+  "noNotesInFolder": "इस फ़ोल्डर में अभी कोई नोट नहीं है।\nनोट खोलें और उसे यहाँ जोड़ने के लिए व्यवस्थित करें चुनें।",
   "welcomeToOrah": "Orah में आपका स्वागत है",
   "personalizeYourSpace": "आइए आपके स्थान को व्यक्तिगत बनाएं। शुरू करने के लिए अपना नाम और ईमेल दर्ज करें।",
   "fullName": "पूरा नाम",
