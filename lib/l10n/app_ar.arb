@@ -93,14 +93,14 @@
   "addFolderImage": "إضافة صورة للمجلد",
   "changeImage": "تغيير الصورة",
   "removeImage": "إزالة الصورة",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "اسم المجلد",
+  "folderNameHint": "مثلاً: العمل، الأفكار، الشخصي",
+  "cancel": "إلغاء",
+  "create": "إنشاء",
+  "newFolder": "مجلد جديد",
+  "editFolder": "تعديل المجلد",
+  "save": "حفظ",
+  "deleteFolderTitle": "حذف {folderName}؟",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "المجلد فارغ.",
+  "notesMovedFromFolder": "سيتم الاحتفاظ بـ {count} من الملاحظات ونقلها مرة أخرى إلى كل الملاحظات.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "حذف",
+  "selectedFoldersDeleteTitle": "حذف {count} من المجلدات؟",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "المجلدات المحددة فارغة.",
+  "deleteSelected": "حذف المحدد",
+  "cancelSelection": "إلغاء التحديد",
+  "selectedCount": "تم تحديد {count}",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "حذف المجلدات المحددة",
+  "folderOptions": "خيارات المجلد",
+  "open": "فتح",
+  "rename": "إعادة تسمية",
+  "folderNoteCount": "{count} من الملاحظات",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "إزالة من المجلد",
+  "moveToTrash": "نقل إلى سلة المهملات",
+  "noFoldersYet": "لا توجد مجلدات بعد",
+  "emptyFoldersDescription": "أنشئ مجلدات لتنظيم الملاحظات المرتبطة ببعضها.",
+  "createFolder": "إنشاء مجلد",
+  "noNotesInFolder": "لا توجد ملاحظات في هذا المجلد بعد.\nافتح ملاحظة واختر «تنظيم» لإضافتها هنا.",
   "welcomeToOrah": "مرحبًا بك في Orah",
   "personalizeYourSpace": "خصص مساحتك. أدخل اسمك وبريدك الإلكتروني للبدء.",
   "fullName": "الاسم الكامل",
