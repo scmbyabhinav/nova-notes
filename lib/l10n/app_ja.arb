@@ -92,7 +92,7 @@
   "savedDaysHighlighted": "ノートが保存された日はカレンダーで強調表示されます。",
   "addFolderImage": "フォルダー画像を追加",
   "changeImage": "画像を変更",
-  "removeImage": "Remove image",
+  "removeImage": "画像を削除",
   "folderName": "Folder name",
   "folderNameHint": "e.g. Work, Ideas, Personal",
   "cancel": "Cancel",
