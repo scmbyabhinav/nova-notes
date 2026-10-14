@@ -93,14 +93,14 @@
   "addFolderImage": "フォルダー画像を追加",
   "changeImage": "画像を変更",
   "removeImage": "画像を削除",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "フォルダー名",
+  "folderNameHint": "例：仕事、アイデア、個人",
+  "cancel": "キャンセル",
+  "create": "作成",
+  "newFolder": "新しいフォルダー",
+  "editFolder": "フォルダーを編集",
+  "save": "保存",
+  "deleteFolderTitle": "「{folderName}」を削除しますか？",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "フォルダーは空です。",
+  "notesMovedFromFolder": "{count} 件のノートは保持され、「すべてのノート」に戻されます。",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "削除",
+  "selectedFoldersDeleteTitle": "{count} 個のフォルダーを削除しますか？",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "選択したフォルダーは空です。",
+  "deleteSelected": "選択項目を削除",
+  "cancelSelection": "選択を解除",
+  "selectedCount": "{count} 件を選択中",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "選択したフォルダーを削除",
+  "folderOptions": "フォルダーのオプション",
+  "open": "開く",
+  "rename": "名前を変更",
+  "folderNoteCount": "{count} 件のノート",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "フォルダーから削除",
+  "moveToTrash": "ゴミ箱に移動",
+  "noFoldersYet": "フォルダーはまだありません",
+  "emptyFoldersDescription": "関連するノートをまとめるにはフォルダーを作成します。",
+  "createFolder": "フォルダーを作成",
+  "noNotesInFolder": "このフォルダーにはまだノートがありません。\nノートを開き、「整理」を選んでここに追加してください。",
   "welcomeToOrah": "Orahへようこそ",
   "personalizeYourSpace": "名前とメールアドレスを入力して、スペースをカスタマイズしましょう。",
   "fullName": "氏名",
