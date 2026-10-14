@@ -104,6 +104,14 @@ class OrahUserProfileService {
       'fr' => 'fr-FR',
       'de' => 'de-DE',
       'he' => 'he-IL',
+      'ar' => 'ar-SA',
+      'id' => 'id-ID',
+      'it' => 'it-IT',
+      'ja' => 'ja-JP',
+      'ko' => 'ko-KR',
+      'pt' => 'pt-BR',
+      'tr' => 'tr-TR',
+      'zh' => 'zh-CN',
       _ => 'en-US',
     };
     await _tts.setLanguage(languageTag);
