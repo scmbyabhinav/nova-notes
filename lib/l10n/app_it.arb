@@ -93,14 +93,14 @@
   "addFolderImage": "Aggiungi immagine alla cartella",
   "changeImage": "Cambia immagine",
   "removeImage": "Rimuovi immagine",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "Nome cartella",
+  "folderNameHint": "es. Lavoro, Idee, Personale",
+  "cancel": "Annulla",
+  "create": "Crea",
+  "newFolder": "Nuova cartella",
+  "editFolder": "Modifica cartella",
+  "save": "Salva",
+  "deleteFolderTitle": "Eliminare “{folderName}”?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "La cartella è vuota.",
+  "notesMovedFromFolder": "{count} nota/e verrà/verranno conservata/e e spostata/e di nuovo in Tutte le note.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "Elimina",
+  "selectedFoldersDeleteTitle": "Eliminare {count} cartella/e?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "Le cartelle selezionate sono vuote.",
+  "deleteSelected": "Elimina selezione",
+  "cancelSelection": "Annulla selezione",
+  "selectedCount": "{count} selezionati",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "Elimina cartelle selezionate",
+  "folderOptions": "Opzioni cartella",
+  "open": "Apri",
+  "rename": "Rinomina",
+  "folderNoteCount": "{count} note",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "Rimuovi dalla cartella",
+  "moveToTrash": "Sposta nel cestino",
+  "noFoldersYet": "Ancora nessuna cartella",
+  "emptyFoldersDescription": "Crea cartelle per tenere insieme le note correlate.",
+  "createFolder": "Crea cartella",
+  "noNotesInFolder": "Non ci sono ancora note in questa cartella.\nApri una nota e scegli Organizza per aggiungerla qui.",
   "welcomeToOrah": "Benvenuto in Orah",
   "personalizeYourSpace": "Personalizza il tuo spazio. Inserisci nome ed email per iniziare.",
   "fullName": "Nome completo",
