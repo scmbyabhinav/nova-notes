@@ -92,7 +92,7 @@
   "savedDaysHighlighted": "保存了笔记的日期会在日历中突出显示.",
   "addFolderImage": "添加文件夹图片",
   "changeImage": "更改图片",
-  "removeImage": "Remove image",
+  "removeImage": "删除图片",
   "folderName": "Folder name",
   "folderNameHint": "e.g. Work, Ideas, Personal",
   "cancel": "Cancel",
