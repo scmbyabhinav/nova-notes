@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "こんにちは、{name}",
+  "welcomeBack": "おかえりなさい",
+  "friend": "友だち",
+  "voiceGreeting": "こんにちは、{name}",
+  "voicePreviewGreeting": "こんにちは、Orah Notesです",
+  "speakMyNameAtStartup": "起動時に名前を読み上げる",
+  "voiceGreetingEnabledDescription": "アプリを開くと、選択した言語でOrahが挨拶します。",
+  "voiceGreetingDisabledDescription": "起動時の挨拶はオフになります。",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

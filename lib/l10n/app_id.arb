@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "Halo, {name}",
+  "welcomeBack": "SELAMAT DATANG KEMBALI",
+  "friend": "Teman",
+  "voiceGreeting": "Halo, {name}",
+  "voicePreviewGreeting": "Halo, ini Orah Notes",
+  "speakMyNameAtStartup": "Ucapkan nama saya saat memulai",
+  "voiceGreetingEnabledDescription": "Orah akan menyapa dalam bahasa yang dipilih saat dibuka.",
+  "voiceGreetingDisabledDescription": "Sapaan akan tetap senyap.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

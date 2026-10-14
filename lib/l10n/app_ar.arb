@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "مرحبًا، {name}",
+  "welcomeBack": "مرحبًا بعودتك",
+  "friend": "صديق",
+  "voiceGreeting": "مرحبًا، {name}",
+  "voicePreviewGreeting": "مرحبًا، هذه Orah Notes",
+  "speakMyNameAtStartup": "انطق اسمي عند بدء التشغيل",
+  "voiceGreetingEnabledDescription": "سترحب بك Orah باللغة المحددة عند فتح التطبيق.",
+  "voiceGreetingDisabledDescription": "سيظل الترحيب صامتًا.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

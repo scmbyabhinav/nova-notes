@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "안녕하세요, {name}",
+  "welcomeBack": "다시 오신 것을 환영합니다",
+  "friend": "친구",
+  "voiceGreeting": "안녕하세요, {name}",
+  "voicePreviewGreeting": "안녕하세요, Orah Notes입니다",
+  "speakMyNameAtStartup": "시작할 때 내 이름 말하기",
+  "voiceGreetingEnabledDescription": "앱을 열면 선택한 언어로 Orah가 인사합니다.",
+  "voiceGreetingDisabledDescription": "인사 음성이 꺼집니다.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

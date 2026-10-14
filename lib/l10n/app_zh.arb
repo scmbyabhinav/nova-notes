@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "你好，{name}",
+  "welcomeBack": "欢迎回来",
+  "friend": "朋友",
+  "voiceGreeting": "你好，{name}",
+  "voicePreviewGreeting": "你好，这里是 Orah Notes",
+  "speakMyNameAtStartup": "启动时读出我的名字",
+  "voiceGreetingEnabledDescription": "打开应用时，Orah 会使用你选择的语言问候你。",
+  "voiceGreetingDisabledDescription": "启动问候将保持静音。",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "Merhaba, {name}",
+  "welcomeBack": "TEKRAR HOŞ GELDİN",
+  "friend": "Arkadaş",
+  "voiceGreeting": "Merhaba, {name}",
+  "voicePreviewGreeting": "Merhaba, bu Orah Notes",
+  "speakMyNameAtStartup": "Başlangıçta adımı söyle",
+  "voiceGreetingEnabledDescription": "Orah açıldığında seçtiğin dilde seni karşılar.",
+  "voiceGreetingDisabledDescription": "Karşılama sessiz kalır.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }
