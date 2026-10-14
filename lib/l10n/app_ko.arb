@@ -93,14 +93,14 @@
   "addFolderImage": "폴더 이미지 추가",
   "changeImage": "이미지 변경",
   "removeImage": "이미지 삭제",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "폴더 이름",
+  "folderNameHint": "예: 업무, 아이디어, 개인",
+  "cancel": "취소",
+  "create": "만들기",
+  "newFolder": "새 폴더",
+  "editFolder": "폴더 수정",
+  "save": "저장",
+  "deleteFolderTitle": "{folderName}을(를) 삭제할까요?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "폴더가 비어 있습니다.",
+  "notesMovedFromFolder": "노트 {count}개는 유지되며 모든 노트로 다시 이동됩니다.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "삭제",
+  "selectedFoldersDeleteTitle": "폴더 {count}개를 삭제할까요?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "선택한 폴더가 비어 있습니다.",
+  "deleteSelected": "선택 항목 삭제",
+  "cancelSelection": "선택 취소",
+  "selectedCount": "{count}개 선택됨",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "선택한 폴더 삭제",
+  "folderOptions": "폴더 옵션",
+  "open": "열기",
+  "rename": "이름 변경",
+  "folderNoteCount": "노트 {count}개",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "폴더에서 제거",
+  "moveToTrash": "휴지통으로 이동",
+  "noFoldersYet": "아직 폴더가 없습니다",
+  "emptyFoldersDescription": "관련 노트를 함께 정리할 폴더를 만드세요.",
+  "createFolder": "폴더 만들기",
+  "noNotesInFolder": "이 폴더에는 아직 노트가 없습니다.\n노트를 열고 정리를 선택해 여기에 추가하세요.",
   "welcomeToOrah": "Orah에 오신 것을 환영합니다",
   "personalizeYourSpace": "이름과 이메일을 입력해 나만의 공간을 설정하세요.",
   "fullName": "이름",
