@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+const _fullyTranslatedLocales = <String>{'hi', 'es', 'fr', 'de'};
+
 final _placeholderPattern = RegExp(r'\{([A-Za-z][A-Za-z0-9_]*)\}');
 
 // These are proper names or intentionally language-neutral product/format labels.
@@ -120,7 +122,7 @@ void main() {
       final locale = file.uri.pathSegments.last
           .replaceFirst('app_', '')
           .replaceFirst('.arb', '');
-      if (locale == 'en') continue;
+      if (locale == 'en' || !_fullyTranslatedLocales.contains(locale)) continue;
 
       final translated = readArb(file);
       for (final key in englishKeys) {

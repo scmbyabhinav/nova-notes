@@ -766,7 +766,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       return;
     }
 
-    var storedTitle = title.isEmpty ? 'Untitled note' : title;
+    var storedTitle = title.isEmpty ? AppLocalizations.of(context)!.untitledNote : title;
     var storedContent = content;
     var storedTags = _tags;
     var storedChecklistItems = _checklistItems;
@@ -985,7 +985,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _clearDueDate() async { setState(() { _dueAt = null; _hasChanges = true; }); await _save(); }
 
   Future<void> _showTemplates() async {
-    final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
+    final l10n = AppLocalizations.of(context)!;
+    final templates = <String, List<String>>{
+      l10n.templateMeetingNotes: [l10n.templateAgenda, l10n.templateDecisions, l10n.templateActionItems],
+      l10n.templateDailyPlan: [l10n.templateTopPriority, l10n.templateImportant, l10n.templateIfTimeAllows],
+      l10n.templateShoppingList: [l10n.templateMilk, l10n.templateVegetables, l10n.templateHousehold],
+      l10n.templateTravelPlan: [l10n.templateDates, l10n.templateBookings, l10n.templatePlacesToVisit],
+    };
     final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [ListTile(title: Text(AppLocalizations.of(context)!.chooseTemplate)), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
     if (choice == null || !mounted) return;
     final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
@@ -996,7 +1002,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           title: Text(AppLocalizations.of(dialogContext)!.replaceCurrentNote),
           content: Text(AppLocalizations.of(dialogContext)!.templateReplaceWarning),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
             FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(dialogContext)!.replace)),
           ],
         ),
@@ -1079,7 +1085,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           keyboardType: TextInputType.url,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
           FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.insert)),
         ],
       ),
@@ -1157,7 +1163,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
       final bytes = await _noteCardScreenshotController.capture(pixelRatio: 2);
       if (bytes == null || bytes.isEmpty) {
-        throw StateError('The note card could not be captured.');
+        throw StateError(AppLocalizations.of(context)!.noteCardCaptureError);
       }
 
       if (mounted) setState(() => _isCapturingNoteCard = false);
@@ -1170,8 +1176,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             name: 'orah-note-card.png',
           ),
         ],
-        subject: 'Orah note card',
-        text: 'Shared from Orah',
+        subject: AppLocalizations.of(context)!.orahNoteCard,
+        text: AppLocalizations.of(context)!.sharedFromOrah,
       );
     } catch (e) {
       if (mounted) {
@@ -1197,8 +1203,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         title: Text(AppLocalizations.of(context)!.renameAttachmentTitle),
         content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Rename')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.rename)),
         ],
       ),
     );
@@ -1359,7 +1365,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           const SizedBox(height: 8),
           Text(AppLocalizations.of(context)!.unlockPrivateNoteHint, textAlign: TextAlign.center),
           const SizedBox(height: 20),
-          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? 'Unlocking…' : 'Unlock note')),
+          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? AppLocalizations.of(context)!.unlocking : AppLocalizations.of(context)!.unlockNote)),
         ]))),
       );
     }
@@ -1380,7 +1386,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             )
           : Tooltip(
         key: _voiceHintKey,
-        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
+        message: _isListening ? AppLocalizations.of(context)!.stopAndSaveVoiceInput : AppLocalizations.of(context)!.tapMicToSpeak,
         triggerMode: TooltipTriggerMode.manual,
         child: FloatingActionButton.extended(
           onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
@@ -1399,7 +1405,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           label: Text(
             _isListening
                 ? _formatVoiceDuration()
-                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
+                : (_speechInitializing || _voiceProcessing ? AppLocalizations.of(context)!.preparing : AppLocalizations.of(context)!.voiceNote),
           ),
         ),
       ),
@@ -1413,8 +1419,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           duration: const Duration(milliseconds: 150),
           child: Text(
             _saving
-                ? 'Saving…'
-                : (_hasChanges ? 'Unsaved changes' : 'Saved'),
+                ? AppLocalizations.of(context)!.saving
+                : (_hasChanges ? AppLocalizations.of(context)!.unsavedChanges : AppLocalizations.of(context)!.saved),
             key: ValueKey('$_saving-$_hasChanges'),
             style: theme.textTheme.labelLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -1423,12 +1429,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
+            tooltip: _isZenMode ? AppLocalizations.of(context)!.exitZenMode : AppLocalizations.of(context)!.zenMode,
             onPressed: () => setState(() => _isZenMode = !_isZenMode),
             icon: const Icon(Icons.center_focus_strong),
           ),
           IconButton(
-            tooltip: _previewMode ? 'Edit' : 'Preview',
+            tooltip: _previewMode ? AppLocalizations.of(context)!.edit : AppLocalizations.of(context)!.preview,
             onPressed: () => setState(() => _previewMode = !_previewMode),
             icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
           ),
@@ -1438,7 +1444,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             icon: const Icon(Icons.image_outlined),
           ),
           IconButton(
-            tooltip: _isPinned ? 'Unpin' : 'Pin',
+            tooltip: _isPinned ? AppLocalizations.of(context)!.unpinNote : AppLocalizations.of(context)!.pinNote,
             onPressed: () => _setFlag(pinned: !_isPinned),
             icon: const OrahAssetIcon('pin'),
           ),
@@ -1467,7 +1473,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     builder: (_) => ExportNoteSheet(
                       note: Note(
                         id: _noteId,
-                        title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
+                        title: _titleController.text.trim().isEmpty ? AppLocalizations.of(context)!.untitledNote : _titleController.text.trim(),
                         content: _contentController.text,
                         type: _noteType,
                         attachments: _attachments,
@@ -1619,8 +1625,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           Expanded(
                             child: Text(
                               _isListening
-                                  ? 'Recording • ${_formatVoiceDuration()}'
-                                  : (_voiceProcessing ? 'Saving voice text…' : 'Preparing microphone…'),
+                                  ? AppLocalizations.of(context)!.recordingVoiceInput(_formatVoiceDuration())
+                                  : (_voiceProcessing ? AppLocalizations.of(context)!.savingVoiceText : AppLocalizations.of(context)!.preparingMicrophone),
                               style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -1640,7 +1646,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             TextButton.icon(
                               onPressed: _cancelVoiceInput,
                               icon: const Icon(Icons.close_rounded, size: 18),
-                              label: const Text('Cancel'),
+                              label: Text(AppLocalizations.of(context)!.cancel),
                             ),
                             TextButton.icon(
                               onPressed: _retryVoiceInput,
@@ -1855,49 +1861,49 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     children: [
                       _ToolButton(
                         icon: Icons.format_bold_rounded,
-                        label: 'Bold',
+                        label: AppLocalizations.of(context)!.bold,
                         onPressed: () => _wrapSelection('**', '**'),
                       ),
                       _ToolButton(
                         icon: Icons.format_italic_rounded,
-                        label: 'Italic',
+                        label: AppLocalizations.of(context)!.italic,
                         onPressed: () => _wrapSelection('*', '*'),
                       ),
                       _ToolButton(
                         icon: Icons.strikethrough_s_rounded,
-                        label: 'Strikethrough',
+                        label: AppLocalizations.of(context)!.strikethrough,
                         onPressed: () => _wrapSelection('~~', '~~'),
                       ),
                       _ToolButton(
                         icon: Icons.title_rounded,
-                        label: 'Heading',
+                        label: AppLocalizations.of(context)!.heading,
                         onPressed: () => _insertPrefix('## '),
                       ),
                       _ToolButton(
                         icon: Icons.format_list_bulleted_rounded,
-                        label: 'Bullets',
+                        label: AppLocalizations.of(context)!.bullets,
                         onPressed: () => _insertPrefix('- '),
                       ),
                       _ToolButton(
                         icon: Icons.format_list_numbered_rounded,
-                        label: 'Numbered list',
+                        label: AppLocalizations.of(context)!.numberedList,
                         onPressed: () => _insertPrefix('1. '),
                       ),
                       _ToolButton(
                         icon: Icons.format_quote_rounded,
-                        label: 'Quote',
+                        label: AppLocalizations.of(context)!.quote,
                         onPressed: () => _insertPrefix('> '),
                       ),
                       _ToolButton(
                         icon: Icons.link_rounded,
-                        label: 'Link',
+                        label: AppLocalizations.of(context)!.linkLabel,
                         onPressed: _insertLink,
                       ),
                       _ToolButton(
                         assetIcon: _noteType == NoteType.checklist ? 'notes' : 'checklist',
                         label: _noteType == NoteType.checklist
-                            ? 'Text note'
-                            : 'Checklist',
+                            ? AppLocalizations.of(context)!.textNote
+                            : AppLocalizations.of(context)!.checklistType,
                         onPressed: () {
                           setState(() {
                             _noteType = _noteType == NoteType.checklist
@@ -1910,18 +1916,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                       _ToolButton(
                         assetIcon: 'tag',
-                        label: 'Folder & tags',
+                        label: AppLocalizations.of(context)!.folderAndTags,
                         onPressed: _organize,
                       ),
                       _ToolButton(
                         icon: Icons.attach_file_rounded,
-                        label: 'Add image or file',
+                        label: AppLocalizations.of(context)!.addImageOrFile,
                         onPressed: _showAttachmentMenu,
                       ),
                       _ToolButton(
                         icon: _isListening ? Icons.stop_circle_outlined : null,
                         assetIcon: _isListening ? null : 'microphone',
-                        label: _isListening ? 'Stop voice input' : 'Voice input',
+                        label: _isListening ? AppLocalizations.of(context)!.stopVoiceInput : AppLocalizations.of(context)!.voiceInput,
                         onPressed: _toggleVoiceInput,
                       ),
                     ],
@@ -1946,17 +1952,18 @@ class _MoodSelector extends StatelessWidget {
   final String? selectedMood;
   final ValueChanged<String?> onSelected;
 
-  static const moods = <(String, String, String)>[
-    ('happy', '😊', 'Happy'),
-    ('neutral', '😐', 'Neutral'),
-    ('sad', '😢', 'Sad'),
-    ('angry', '😡', 'Angry'),
-    ('thoughtful', '🤔', 'Thoughtful'),
+  static const moods = <(String, String)>[
+    ('happy', '😊'),
+    ('neutral', '😐'),
+    ('sad', '😢'),
+    ('angry', '😡'),
+    ('thoughtful', '🤔'),
   ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -1972,7 +1979,13 @@ class _MoodSelector extends StatelessWidget {
             children: [
               for (final mood in moods)
                 Tooltip(
-                  message: mood.$3,
+                  message: switch (mood.$1) {
+                    'happy' => l10n.moodHappy,
+                    'neutral' => l10n.moodNeutral,
+                    'sad' => l10n.moodSad,
+                    'angry' => l10n.moodAngry,
+                    _ => l10n.moodThoughtful,
+                  },
                   child: ChoiceChip(
                     label: Text(mood.$2, style: const TextStyle(fontSize: 18)),
                     selected: selectedMood == mood.$1,
@@ -2067,7 +2080,7 @@ class _ChecklistEditor extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onAdd,
               icon: const OrahAssetIcon('plus'),
-              label: const Text('Add task'),
+              label: Text(AppLocalizations.of(context)!.addTask),
             ),
           ),
       ],

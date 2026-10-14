@@ -331,5 +331,60 @@
         "type": "String"
       }
     }
+  },
+  "unlocking": "अनलॉक हो रहा है…",
+  "unlockNote": "नोट अनलॉक करें",
+  "zenMode": "ज़ेन मोड",
+  "edit": "संपादित करें",
+  "pinNote": "पिन करें",
+  "unpinNote": "अनपिन करें",
+  "bold": "बोल्ड",
+  "italic": "इटैलिक",
+  "strikethrough": "स्ट्राइकथ्रू",
+  "heading": "शीर्षक",
+  "bullets": "बुलेट सूची",
+  "numberedList": "क्रमांकित सूची",
+  "quote": "उद्धरण",
+  "linkLabel": "लिंक",
+  "addImageOrFile": "छवि या फ़ाइल जोड़ें",
+  "stopVoiceInput": "वॉइस इनपुट रोकें",
+  "voiceInput": "वॉइस इनपुट",
+  "stopAndSaveVoiceInput": "वॉइस इनपुट रोकें और सहेजें",
+  "tapMicToSpeak": "नोट बोलने के लिए माइक पर टैप करें",
+  "voiceNote": "वॉइस नोट",
+  "preparing": "तैयारी हो रही है…",
+  "saving": "सहेजा जा रहा है…",
+  "unsavedChanges": "बिना सहेजे बदलाव",
+  "saved": "सहेजा गया",
+  "recordingVoiceInput": "रिकॉर्डिंग • {duration}",
+  "savingVoiceText": "वॉइस टेक्स्ट सहेजा जा रहा है…",
+  "preparingMicrophone": "माइक्रोफ़ोन तैयार हो रहा है…",
+  "textNote": "टेक्स्ट नोट",
+  "checklistType": "चेकलिस्ट",
+  "templateMeetingNotes": "मीटिंग नोट्स",
+  "templateAgenda": "एजेंडा",
+  "templateDecisions": "निर्णय",
+  "templateActionItems": "कार्रवाई के काम",
+  "templateDailyPlan": "दैनिक योजना",
+  "templateTopPriority": "सबसे ज़रूरी",
+  "templateImportant": "महत्वपूर्ण",
+  "templateIfTimeAllows": "समय मिला तो",
+  "templateShoppingList": "खरीदारी की सूची",
+  "templateMilk": "दूध",
+  "templateVegetables": "सब्ज़ियाँ",
+  "templateHousehold": "घर का सामान",
+  "templateTravelPlan": "यात्रा योजना",
+  "templateDates": "तारीखें",
+  "templateBookings": "बुकिंग",
+  "templatePlacesToVisit": "घूमने की जगहें",
+  "orahNoteCard": "ORAH नोट कार्ड",
+  "sharedFromOrah": "ORAH से साझा किया गया",
+  "noteCardCaptureError": "नोट कार्ड कैप्चर नहीं हो सका।",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
   }
 }

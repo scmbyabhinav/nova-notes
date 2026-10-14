@@ -69,7 +69,7 @@ class _OrahAppState extends State<OrahApp> {
       darkTheme: dark,
       themeMode: _theme.mode,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: const [Locale('en'), Locale('hi'), Locale('es'), Locale('fr'), Locale('de')],
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
       home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, securityService: widget.securityService, skipRegistrationForTesting: widget.skipRegistrationForTesting),

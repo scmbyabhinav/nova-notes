@@ -331,5 +331,60 @@
         "type": "String"
       }
     }
+  },
+  "unlocking": "Desbloqueando…",
+  "unlockNote": "Desbloquear nota",
+  "zenMode": "Modo Zen",
+  "edit": "Editar",
+  "pinNote": "Fijar",
+  "unpinNote": "Desanclar",
+  "bold": "Negrita",
+  "italic": "Cursiva",
+  "strikethrough": "Tachado",
+  "heading": "Encabezado",
+  "bullets": "Viñetas",
+  "numberedList": "Lista numerada",
+  "quote": "Cita",
+  "linkLabel": "Enlace",
+  "addImageOrFile": "Añadir imagen o archivo",
+  "stopVoiceInput": "Detener entrada de voz",
+  "voiceInput": "Entrada de voz",
+  "stopAndSaveVoiceInput": "Detener y guardar la entrada de voz",
+  "tapMicToSpeak": "Toca el micrófono para dictar tu nota",
+  "voiceNote": "Nota de voz",
+  "preparing": "Preparando…",
+  "saving": "Guardando…",
+  "unsavedChanges": "Cambios sin guardar",
+  "saved": "Guardado",
+  "recordingVoiceInput": "Grabando • {duration}",
+  "savingVoiceText": "Guardando texto de voz…",
+  "preparingMicrophone": "Preparando el micrófono…",
+  "textNote": "Nota de texto",
+  "checklistType": "Lista de tareas",
+  "templateMeetingNotes": "Notas de reunión",
+  "templateAgenda": "Agenda",
+  "templateDecisions": "Decisiones",
+  "templateActionItems": "Acciones pendientes",
+  "templateDailyPlan": "Plan diario",
+  "templateTopPriority": "Prioridad principal",
+  "templateImportant": "Importante",
+  "templateIfTimeAllows": "Si hay tiempo",
+  "templateShoppingList": "Lista de compras",
+  "templateMilk": "Leche",
+  "templateVegetables": "Verduras",
+  "templateHousehold": "Hogar",
+  "templateTravelPlan": "Plan de viaje",
+  "templateDates": "Fechas",
+  "templateBookings": "Reservas",
+  "templatePlacesToVisit": "Lugares que visitar",
+  "orahNoteCard": "Tarjeta de nota de ORAH",
+  "sharedFromOrah": "Compartido desde ORAH",
+  "noteCardCaptureError": "No se pudo capturar la tarjeta de nota.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
   }
 }

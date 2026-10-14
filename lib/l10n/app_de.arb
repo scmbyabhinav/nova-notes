@@ -331,5 +331,60 @@
         "type": "String"
       }
     }
+  },
+  "unlocking": "Wird entsperrt…",
+  "unlockNote": "Notiz entsperren",
+  "zenMode": "Zen-Modus",
+  "edit": "Bearbeiten",
+  "pinNote": "Anheften",
+  "unpinNote": "Loslösen",
+  "bold": "Fett",
+  "italic": "Kursiv",
+  "strikethrough": "Durchgestrichen",
+  "heading": "Überschrift",
+  "bullets": "Aufzählung",
+  "numberedList": "Nummerierte Liste",
+  "quote": "Zitat",
+  "linkLabel": "Link",
+  "addImageOrFile": "Bild oder Datei hinzufügen",
+  "stopVoiceInput": "Spracheingabe stoppen",
+  "voiceInput": "Spracheingabe",
+  "stopAndSaveVoiceInput": "Spracheingabe stoppen und speichern",
+  "tapMicToSpeak": "Tippe auf das Mikrofon, um deine Notiz zu sprechen",
+  "voiceNote": "Sprachnotiz",
+  "preparing": "Wird vorbereitet…",
+  "saving": "Wird gespeichert…",
+  "unsavedChanges": "Ungespeicherte Änderungen",
+  "saved": "Gespeichert",
+  "recordingVoiceInput": "Aufnahme • {duration}",
+  "savingVoiceText": "Sprachtext wird gespeichert…",
+  "preparingMicrophone": "Mikrofon wird vorbereitet…",
+  "textNote": "Textnotiz",
+  "checklistType": "Checkliste",
+  "templateMeetingNotes": "Besprechungsnotizen",
+  "templateAgenda": "Tagesordnung",
+  "templateDecisions": "Entscheidungen",
+  "templateActionItems": "Aufgaben",
+  "templateDailyPlan": "Tagesplan",
+  "templateTopPriority": "Höchste Priorität",
+  "templateImportant": "Wichtig",
+  "templateIfTimeAllows": "Wenn Zeit ist",
+  "templateShoppingList": "Einkaufsliste",
+  "templateMilk": "Milch",
+  "templateVegetables": "Gemüse",
+  "templateHousehold": "Haushalt",
+  "templateTravelPlan": "Reiseplan",
+  "templateDates": "Termine",
+  "templateBookings": "Buchungen",
+  "templatePlacesToVisit": "Reiseziele",
+  "orahNoteCard": "ORAH-Notizkarte",
+  "sharedFromOrah": "Von ORAH geteilt",
+  "noteCardCaptureError": "Die Notizkarte konnte nicht aufgenommen werden.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
   }
 }

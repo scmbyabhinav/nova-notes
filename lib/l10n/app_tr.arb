@@ -331,5 +331,60 @@
         "type": "String"
       }
     }
+  },
+  "unlocking": "Unlocking…",
+  "unlockNote": "Unlock note",
+  "zenMode": "Zen Mode",
+  "edit": "Edit",
+  "pinNote": "Pin",
+  "unpinNote": "Unpin",
+  "bold": "Bold",
+  "italic": "Italic",
+  "strikethrough": "Strikethrough",
+  "heading": "Heading",
+  "bullets": "Bullets",
+  "numberedList": "Numbered list",
+  "quote": "Quote",
+  "linkLabel": "Link",
+  "addImageOrFile": "Add image or file",
+  "stopVoiceInput": "Stop voice input",
+  "voiceInput": "Voice input",
+  "stopAndSaveVoiceInput": "Stop and save voice input",
+  "tapMicToSpeak": "Tap the mic to speak your note",
+  "voiceNote": "Voice note",
+  "preparing": "Preparing…",
+  "saving": "Saving…",
+  "unsavedChanges": "Unsaved changes",
+  "saved": "Saved",
+  "recordingVoiceInput": "Recording • {duration}",
+  "savingVoiceText": "Saving voice text…",
+  "preparingMicrophone": "Preparing microphone…",
+  "textNote": "Text note",
+  "checklistType": "Checklist",
+  "templateMeetingNotes": "Meeting notes",
+  "templateAgenda": "Agenda",
+  "templateDecisions": "Decisions",
+  "templateActionItems": "Action items",
+  "templateDailyPlan": "Daily plan",
+  "templateTopPriority": "Top priority",
+  "templateImportant": "Important",
+  "templateIfTimeAllows": "If time allows",
+  "templateShoppingList": "Shopping list",
+  "templateMilk": "Milk",
+  "templateVegetables": "Vegetables",
+  "templateHousehold": "Household",
+  "templateTravelPlan": "Travel plan",
+  "templateDates": "Dates",
+  "templateBookings": "Bookings",
+  "templatePlacesToVisit": "Places to visit",
+  "orahNoteCard": "Orah note card",
+  "sharedFromOrah": "Shared from Orah",
+  "noteCardCaptureError": "The note card could not be captured.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
   }
 }

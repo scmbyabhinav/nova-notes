@@ -331,5 +331,60 @@
         "type": "String"
       }
     }
+  },
+  "unlocking": "Déverrouillage…",
+  "unlockNote": "Déverrouiller la note",
+  "zenMode": "Mode Zen",
+  "edit": "Modifier",
+  "pinNote": "Épingler",
+  "unpinNote": "Désépingler",
+  "bold": "Gras",
+  "italic": "Italique",
+  "strikethrough": "Barré",
+  "heading": "Titre",
+  "bullets": "Puces",
+  "numberedList": "Liste numérotée",
+  "quote": "Citation",
+  "linkLabel": "Lien",
+  "addImageOrFile": "Ajouter une image ou un fichier",
+  "stopVoiceInput": "Arrêter la saisie vocale",
+  "voiceInput": "Saisie vocale",
+  "stopAndSaveVoiceInput": "Arrêter et enregistrer la saisie vocale",
+  "tapMicToSpeak": "Touchez le micro pour dicter votre note",
+  "voiceNote": "Note vocale",
+  "preparing": "Préparation…",
+  "saving": "Enregistrement…",
+  "unsavedChanges": "Modifications non enregistrées",
+  "saved": "Enregistré",
+  "recordingVoiceInput": "Enregistrement • {duration}",
+  "savingVoiceText": "Enregistrement du texte vocal…",
+  "preparingMicrophone": "Préparation du micro…",
+  "textNote": "Note textuelle",
+  "checklistType": "Liste de tâches",
+  "templateMeetingNotes": "Notes de réunion",
+  "templateAgenda": "Ordre du jour",
+  "templateDecisions": "Décisions",
+  "templateActionItems": "Actions à effectuer",
+  "templateDailyPlan": "Plan quotidien",
+  "templateTopPriority": "Priorité principale",
+  "templateImportant": "Important",
+  "templateIfTimeAllows": "Si le temps le permet",
+  "templateShoppingList": "Liste de courses",
+  "templateMilk": "Lait",
+  "templateVegetables": "Légumes",
+  "templateHousehold": "Maison",
+  "templateTravelPlan": "Plan de voyage",
+  "templateDates": "Dates",
+  "templateBookings": "Réservations",
+  "templatePlacesToVisit": "Lieux à visiter",
+  "orahNoteCard": "Carte de note ORAH",
+  "sharedFromOrah": "Partagé depuis ORAH",
+  "noteCardCaptureError": "Impossible de capturer la carte de note.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
   }
 }
