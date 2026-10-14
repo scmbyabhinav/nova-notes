@@ -1542,7 +1542,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 value: 'color',
                 child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text(AppLocalizations.of(context)!.noteColor)),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'organize',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -1563,12 +1563,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 ),
               ),
               if (!_isLocked)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'lock',
                   child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text(AppLocalizations.of(context)!.lockNote)),
                 ),
               if (_isLocked && _privateUnlocked)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'unlock_note',
                   child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text(AppLocalizations.of(context)!.unlockAndMoveToNotes)),
                 ),

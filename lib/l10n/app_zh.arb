@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "无法分享笔记卡片：{error}",
+  "couldNotRenameAttachment": "无法重命名附件：{error}",
+  "attachmentDetailsFormat": "大小：{size}\n修改时间：{modified}",
+  "authenticationFailedNoteNotDeleted": "身份验证失败。笔记未被删除。",
+  "privateNote": "私人笔记",
+  "thisNoteIsPrivate": "此笔记为私密内容",
+  "unlockPrivateNoteHint": "使用生物识别或 PIN 解锁后查看。",
+  "exitZenMode": "退出禅模式",
+  "exportAsCard": "导出为卡片",
+  "scanTextFromImage": "扫描图片中的文字",
+  "folderAndTags": "文件夹和标签",
+  "lockNote": "锁定笔记",
+  "unlockAndMoveToNotes": "解锁并移至笔记",
+  "stopAndSave": "停止并保存",
+  "startWritingHint": "开始书写...",
+  "howAreYouFeeling": "你现在感觉如何？",
+  "checklistEmpty": "清单为空",
+  "addFirstTask": "添加第一个任务",
+  "moveUp": "上移",
+  "moveDown": "下移",
+  "deleteTask": "删除任务",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "नोट कार्ड साझा नहीं हो सका: {error}",
+  "couldNotRenameAttachment": "अटैचमेंट का नाम नहीं बदला जा सका: {error}",
+  "attachmentDetailsFormat": "आकार: {size}\nसंशोधित: {modified}",
+  "authenticationFailedNoteNotDeleted": "प्रमाणीकरण विफल हुआ। नोट हटाया नहीं गया।",
+  "privateNote": "निजी नोट",
+  "thisNoteIsPrivate": "यह नोट निजी है",
+  "unlockPrivateNoteHint": "देखने के लिए बायोमेट्रिक या PIN से अनलॉक करें।",
+  "exitZenMode": "ज़ेन मोड से बाहर निकलें",
+  "exportAsCard": "कार्ड के रूप में निर्यात करें",
+  "scanTextFromImage": "तस्वीर से टेक्स्ट स्कैन करें",
+  "folderAndTags": "फ़ोल्डर और टैग",
+  "lockNote": "नोट लॉक करें",
+  "unlockAndMoveToNotes": "अनलॉक करके नोट्स में ले जाएँ",
+  "stopAndSave": "रोकें और सहेजें",
+  "startWritingHint": "लिखना शुरू करें...",
+  "howAreYouFeeling": "आप कैसा महसूस कर रहे हैं?",
+  "checklistEmpty": "आपकी चेकलिस्ट खाली है",
+  "addFirstTask": "पहला कार्य जोड़ें",
+  "moveUp": "ऊपर ले जाएँ",
+  "moveDown": "नीचे ले जाएँ",
+  "deleteTask": "कार्य हटाएँ",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

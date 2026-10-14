@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "לא ניתן לשתף את כרטיס ההערה: {error}",
+  "couldNotRenameAttachment": "לא ניתן לשנות את שם הקובץ המצורף: {error}",
+  "attachmentDetailsFormat": "גודל: {size}\nשונה: {modified}",
+  "authenticationFailedNoteNotDeleted": "האימות נכשל. ההערה לא נמחקה.",
+  "privateNote": "הערה פרטית",
+  "thisNoteIsPrivate": "ההערה הזו פרטית",
+  "unlockPrivateNoteHint": "יש לפתוח באמצעות זיהוי ביומטרי או קוד PIN כדי לצפות בה.",
+  "exitZenMode": "יציאה ממצב זן",
+  "exportAsCard": "ייצוא ככרטיס",
+  "scanTextFromImage": "סריקת טקסט מתמונה",
+  "folderAndTags": "תיקיות ותגיות",
+  "lockNote": "נעילת הערה",
+  "unlockAndMoveToNotes": "ביטול נעילה והעברה להערות",
+  "stopAndSave": "עצירה ושמירה",
+  "startWritingHint": "התחילו לכתוב...",
+  "howAreYouFeeling": "איך ההרגשה שלך?",
+  "checklistEmpty": "רשימת המשימות ריקה",
+  "addFirstTask": "הוספת משימה ראשונה",
+  "moveUp": "הזזה למעלה",
+  "moveDown": "הזזה למטה",
+  "deleteTask": "מחיקת משימה",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

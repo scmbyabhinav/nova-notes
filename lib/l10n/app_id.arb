@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "Kartu catatan tidak dapat dibagikan: {error}",
+  "couldNotRenameAttachment": "Lampiran tidak dapat diganti namanya: {error}",
+  "attachmentDetailsFormat": "Ukuran: {size}\nDiubah: {modified}",
+  "authenticationFailedNoteNotDeleted": "Autentikasi gagal. Catatan tidak dihapus.",
+  "privateNote": "Catatan pribadi",
+  "thisNoteIsPrivate": "Catatan ini bersifat pribadi",
+  "unlockPrivateNoteHint": "Buka dengan biometrik atau PIN untuk melihatnya.",
+  "exitZenMode": "Keluar dari Mode Zen",
+  "exportAsCard": "Ekspor sebagai kartu",
+  "scanTextFromImage": "Pindai teks dari gambar",
+  "folderAndTags": "Folder & tag",
+  "lockNote": "Kunci catatan",
+  "unlockAndMoveToNotes": "Buka kunci dan pindahkan ke Catatan",
+  "stopAndSave": "Hentikan & Simpan",
+  "startWritingHint": "Mulai menulis...",
+  "howAreYouFeeling": "Bagaimana perasaan Anda?",
+  "checklistEmpty": "Daftar periksa Anda kosong",
+  "addFirstTask": "Tambah tugas pertama",
+  "moveUp": "Pindahkan ke atas",
+  "moveDown": "Pindahkan ke bawah",
+  "deleteTask": "Hapus tugas",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "노트 카드를 공유할 수 없음: {error}",
+  "couldNotRenameAttachment": "첨부 파일 이름을 변경할 수 없음: {error}",
+  "attachmentDetailsFormat": "크기: {size}\n수정됨: {modified}",
+  "authenticationFailedNoteNotDeleted": "인증 실패. 노트는 삭제되지 않았습니다.",
+  "privateNote": "비공개 노트",
+  "thisNoteIsPrivate": "이 노트는 비공개입니다",
+  "unlockPrivateNoteHint": "생체 인증 또는 PIN으로 잠금을 해제해 확인하세요.",
+  "exitZenMode": "젠 모드 종료",
+  "exportAsCard": "카드로 내보내기",
+  "scanTextFromImage": "이미지에서 텍스트 스캔",
+  "folderAndTags": "폴더 및 태그",
+  "lockNote": "노트 잠금",
+  "unlockAndMoveToNotes": "잠금 해제 후 노트로 이동",
+  "stopAndSave": "중지 및 저장",
+  "startWritingHint": "작성 시작...",
+  "howAreYouFeeling": "기분이 어떠세요?",
+  "checklistEmpty": "체크리스트가 비어 있습니다",
+  "addFirstTask": "첫 작업 추가",
+  "moveUp": "위로 이동",
+  "moveDown": "아래로 이동",
+  "deleteTask": "작업 삭제",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "تعذرت مشاركة بطاقة الملاحظة: {error}",
+  "couldNotRenameAttachment": "تعذرت إعادة تسمية المرفق: {error}",
+  "attachmentDetailsFormat": "الحجم: {size}\nالتعديل: {modified}",
+  "authenticationFailedNoteNotDeleted": "فشل التحقق من الهوية. لم تُحذف الملاحظة.",
+  "privateNote": "ملاحظة خاصة",
+  "thisNoteIsPrivate": "هذه الملاحظة خاصة",
+  "unlockPrivateNoteHint": "افتحها باستخدام القياسات الحيوية أو رقم PIN لعرضها.",
+  "exitZenMode": "الخروج من الوضع الهادئ",
+  "exportAsCard": "تصدير كبطاقة",
+  "scanTextFromImage": "استخراج النص من صورة",
+  "folderAndTags": "المجلدات والعلامات",
+  "lockNote": "قفل الملاحظة",
+  "unlockAndMoveToNotes": "إلغاء القفل والنقل إلى الملاحظات",
+  "stopAndSave": "إيقاف وحفظ",
+  "startWritingHint": "ابدأ الكتابة...",
+  "howAreYouFeeling": "كيف تشعر؟",
+  "checklistEmpty": "قائمة المهام فارغة",
+  "addFirstTask": "إضافة المهمة الأولى",
+  "moveUp": "تحريك لأعلى",
+  "moveDown": "تحريك لأسفل",
+  "deleteTask": "حذف المهمة",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

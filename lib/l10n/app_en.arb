@@ -300,5 +300,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "Could not share note card: {error}",
+  "couldNotRenameAttachment": "Could not rename attachment: {error}",
+  "attachmentDetailsFormat": "Size: {size}\nModified: {modified}",
+  "authenticationFailedNoteNotDeleted": "Authentication failed. Note was not deleted.",
+  "privateNote": "Private note",
+  "thisNoteIsPrivate": "This note is private",
+  "unlockPrivateNoteHint": "Unlock with your biometric or PIN to view it.",
+  "exitZenMode": "Exit Zen Mode",
+  "exportAsCard": "Export as Card",
+  "scanTextFromImage": "Scan text from image",
+  "folderAndTags": "Folder & tags",
+  "lockNote": "Lock note",
+  "unlockAndMoveToNotes": "Unlock and move to Notes",
+  "stopAndSave": "Stop & Save",
+  "startWritingHint": "Start writing...",
+  "howAreYouFeeling": "How are you feeling?",
+  "checklistEmpty": "Your checklist is empty",
+  "addFirstTask": "Add first task",
+  "moveUp": "Move up",
+  "moveDown": "Move down",
+  "deleteTask": "Delete task",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

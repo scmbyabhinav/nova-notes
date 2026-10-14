@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "Not kartı paylaşılamadı: {error}",
+  "couldNotRenameAttachment": "Ekin adı değiştirilemedi: {error}",
+  "attachmentDetailsFormat": "Boyut: {size}\nDeğiştirilme: {modified}",
+  "authenticationFailedNoteNotDeleted": "Kimlik doğrulama başarısız. Not silinmedi.",
+  "privateNote": "Özel not",
+  "thisNoteIsPrivate": "Bu not özeldir",
+  "unlockPrivateNoteHint": "Görüntülemek için biyometri veya PIN ile kilidi açın.",
+  "exitZenMode": "Zen Modundan çık",
+  "exportAsCard": "Kart olarak dışa aktar",
+  "scanTextFromImage": "Görselden metin tara",
+  "folderAndTags": "Klasörler ve etiketler",
+  "lockNote": "Notu kilitle",
+  "unlockAndMoveToNotes": "Kilidi aç ve Notlar'a taşı",
+  "stopAndSave": "Durdur ve kaydet",
+  "startWritingHint": "Yazmaya başlayın...",
+  "howAreYouFeeling": "Nasıl hissediyorsunuz?",
+  "checklistEmpty": "Kontrol listeniz boş",
+  "addFirstTask": "İlk görevi ekle",
+  "moveUp": "Yukarı taşı",
+  "moveDown": "Aşağı taşı",
+  "deleteTask": "Görevi sil",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

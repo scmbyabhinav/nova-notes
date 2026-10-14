@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "Notizkarte konnte nicht geteilt werden: {error}",
+  "couldNotRenameAttachment": "Anhang konnte nicht umbenannt werden: {error}",
+  "attachmentDetailsFormat": "Größe: {size}\nGeändert: {modified}",
+  "authenticationFailedNoteNotDeleted": "Authentifizierung fehlgeschlagen. Die Notiz wurde nicht gelöscht.",
+  "privateNote": "Private Notiz",
+  "thisNoteIsPrivate": "Diese Notiz ist privat",
+  "unlockPrivateNoteHint": "Entsperre sie mit Biometrie oder PIN, um sie anzusehen.",
+  "exitZenMode": "Zen-Modus beenden",
+  "exportAsCard": "Als Karte exportieren",
+  "scanTextFromImage": "Text aus Bild scannen",
+  "folderAndTags": "Ordner und Tags",
+  "lockNote": "Notiz sperren",
+  "unlockAndMoveToNotes": "Entsperren und zu Notizen verschieben",
+  "stopAndSave": "Stopp und speichern",
+  "startWritingHint": "Schreiben beginnen...",
+  "howAreYouFeeling": "Wie fühlst du dich?",
+  "checklistEmpty": "Deine Checkliste ist leer",
+  "addFirstTask": "Erste Aufgabe hinzufügen",
+  "moveUp": "Nach oben",
+  "moveDown": "Nach unten",
+  "deleteTask": "Aufgabe löschen",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }

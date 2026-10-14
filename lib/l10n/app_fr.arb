@@ -286,5 +286,50 @@
         "type": "String"
       }
     }
+  },
+  "couldNotShareNoteCard": "Impossible de partager la carte de note : {error}",
+  "couldNotRenameAttachment": "Impossible de renommer la pièce jointe : {error}",
+  "attachmentDetailsFormat": "Taille : {size}\nModifié : {modified}",
+  "authenticationFailedNoteNotDeleted": "Échec de l’authentification. La note n’a pas été supprimée.",
+  "privateNote": "Note privée",
+  "thisNoteIsPrivate": "Cette note est privée",
+  "unlockPrivateNoteHint": "Déverrouillez-la avec la biométrie ou votre code PIN pour l’afficher.",
+  "exitZenMode": "Quitter le mode Zen",
+  "exportAsCard": "Exporter en carte",
+  "scanTextFromImage": "Extraire le texte d’une image",
+  "folderAndTags": "Dossiers et tags",
+  "lockNote": "Verrouiller la note",
+  "unlockAndMoveToNotes": "Déverrouiller et déplacer vers Notes",
+  "stopAndSave": "Arrêter et enregistrer",
+  "startWritingHint": "Commencez à écrire...",
+  "howAreYouFeeling": "Comment vous sentez-vous ?",
+  "checklistEmpty": "Votre liste est vide",
+  "addFirstTask": "Ajouter la première tâche",
+  "moveUp": "Déplacer vers le haut",
+  "moveDown": "Déplacer vers le bas",
+  "deleteTask": "Supprimer la tâche",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
   }
 }
