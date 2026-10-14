@@ -256,5 +256,13 @@
   "chooseFromGallery": "Aus Galerie auswählen",
   "takePhoto": "Foto aufnehmen",
   "attachFiles": "Dateien anhängen",
-  "close": "Schließen"
+  "close": "Schließen",
+  "couldNotUnlockPrivateNote": "Private Notiz konnte nicht entsperrt werden: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

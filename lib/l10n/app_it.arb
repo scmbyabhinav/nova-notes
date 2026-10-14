@@ -256,5 +256,13 @@
   "chooseFromGallery": "Scegli dalla galleria",
   "takePhoto": "Scatta una foto",
   "attachFiles": "Allega file",
-  "close": "Chiudi"
+  "close": "Chiudi",
+  "couldNotUnlockPrivateNote": "Impossibile sbloccare la nota privata: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

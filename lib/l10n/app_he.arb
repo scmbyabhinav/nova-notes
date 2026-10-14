@@ -256,5 +256,13 @@
   "chooseFromGallery": "בחירה מהגלריה",
   "takePhoto": "צילום תמונה",
   "attachFiles": "צירוף קבצים",
-  "close": "סגירה"
+  "close": "סגירה",
+  "couldNotUnlockPrivateNote": "לא ניתן לפתוח את ההערה הפרטית: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

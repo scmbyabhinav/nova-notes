@@ -256,5 +256,13 @@
   "chooseFromGallery": "Galeriden seç",
   "takePhoto": "Fotoğraf çek",
   "attachFiles": "Dosya ekle",
-  "close": "Kapat"
+  "close": "Kapat",
+  "couldNotUnlockPrivateNote": "Özel notun kilidi açılamadı: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

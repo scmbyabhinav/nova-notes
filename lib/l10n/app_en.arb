@@ -270,5 +270,13 @@
   "chooseFromGallery": "Choose from gallery",
   "takePhoto": "Take a photo",
   "attachFiles": "Attach files",
-  "close": "Close"
+  "close": "Close",
+  "couldNotUnlockPrivateNote": "Could not unlock private note: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

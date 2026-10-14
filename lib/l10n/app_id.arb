@@ -256,5 +256,13 @@
   "chooseFromGallery": "Pilih dari galeri",
   "takePhoto": "Ambil foto",
   "attachFiles": "Lampirkan file",
-  "close": "Tutup"
+  "close": "Tutup",
+  "couldNotUnlockPrivateNote": "Catatan pribadi tidak dapat dibuka: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

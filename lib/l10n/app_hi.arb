@@ -256,5 +256,13 @@
   "chooseFromGallery": "गैलरी से चुनें",
   "takePhoto": "फ़ोटो लें",
   "attachFiles": "फ़ाइलें अटैच करें",
-  "close": "बंद करें"
+  "close": "बंद करें",
+  "couldNotUnlockPrivateNote": "निजी नोट अनलॉक नहीं हो सका: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

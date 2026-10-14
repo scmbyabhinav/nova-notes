@@ -256,5 +256,13 @@
   "chooseFromGallery": "从图库选择",
   "takePhoto": "拍照",
   "attachFiles": "添加文件",
-  "close": "关闭"
+  "close": "关闭",
+  "couldNotUnlockPrivateNote": "无法解锁私人笔记：{error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -256,5 +256,13 @@
   "chooseFromGallery": "اختيار من المعرض",
   "takePhoto": "التقاط صورة",
   "attachFiles": "إرفاق ملفات",
-  "close": "إغلاق"
+  "close": "إغلاق",
+  "couldNotUnlockPrivateNote": "تعذر فتح الملاحظة الخاصة: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

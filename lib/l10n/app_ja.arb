@@ -256,5 +256,13 @@
   "chooseFromGallery": "ギャラリーから選択",
   "takePhoto": "写真を撮る",
   "attachFiles": "ファイルを添付",
-  "close": "閉じる"
+  "close": "閉じる",
+  "couldNotUnlockPrivateNote": "プライベートノートを解除できませんでした：{error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

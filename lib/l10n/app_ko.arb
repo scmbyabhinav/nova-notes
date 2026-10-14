@@ -256,5 +256,13 @@
   "chooseFromGallery": "갤러리에서 선택",
   "takePhoto": "사진 촬영",
   "attachFiles": "파일 첨부",
-  "close": "닫기"
+  "close": "닫기",
+  "couldNotUnlockPrivateNote": "비공개 노트를 잠금 해제할 수 없음: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
