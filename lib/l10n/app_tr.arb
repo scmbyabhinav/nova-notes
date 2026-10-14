@@ -93,14 +93,14 @@
   "addFolderImage": "Klasör resmi ekle",
   "changeImage": "Resmi değiştir",
   "removeImage": "Resmi kaldır",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "Klasör adı",
+  "folderNameHint": "ör. İş, Fikirler, Kişisel",
+  "cancel": "İptal",
+  "create": "Oluştur",
+  "newFolder": "Yeni klasör",
+  "editFolder": "Klasörü düzenle",
+  "save": "Kaydet",
+  "deleteFolderTitle": "{folderName} silinsin mi?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "Klasör boş.",
+  "notesMovedFromFolder": "{count} not saklanacak ve Tüm Notlar'a geri taşınacak.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "Sil",
+  "selectedFoldersDeleteTitle": "{count} klasör silinsin mi?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "Seçilen klasörler boş.",
+  "deleteSelected": "Seçilenleri sil",
+  "cancelSelection": "Seçimi iptal et",
+  "selectedCount": "{count} seçildi",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "Seçilen klasörleri sil",
+  "folderOptions": "Klasör seçenekleri",
+  "open": "Aç",
+  "rename": "Yeniden adlandır",
+  "folderNoteCount": "{count} not",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "Klasörden kaldır",
+  "moveToTrash": "Çöp kutusuna taşı",
+  "noFoldersYet": "Henüz klasör yok",
+  "emptyFoldersDescription": "İlgili notları bir arada tutmak için klasörler oluşturun.",
+  "createFolder": "Klasör oluştur",
+  "noNotesInFolder": "Bu klasörde henüz not yok.\nBir not açın ve buraya eklemek için Düzenle'yi seçin.",
   "welcomeToOrah": "Orah'a hoş geldiniz",
   "personalizeYourSpace": "Alanınızı kişiselleştirin. Başlamak için adınızı ve e-posta adresinizi girin.",
   "fullName": "Ad soyad",
