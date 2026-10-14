@@ -93,14 +93,14 @@
   "addFolderImage": "Adicionar imagem à pasta",
   "changeImage": "Alterar imagem",
   "removeImage": "Remover imagem",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "Nome da pasta",
+  "folderNameHint": "ex.: Trabalho, Ideias, Pessoal",
+  "cancel": "Cancelar",
+  "create": "Criar",
+  "newFolder": "Nova pasta",
+  "editFolder": "Editar pasta",
+  "save": "Salvar",
+  "deleteFolderTitle": "Excluir “{folderName}”?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "A pasta está vazia.",
+  "notesMovedFromFolder": "{count} nota(s) serão mantidas e movidas de volta para Todas as notas.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "Excluir",
+  "selectedFoldersDeleteTitle": "Excluir {count} pasta(s)?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "As pastas selecionadas estão vazias.",
+  "deleteSelected": "Excluir selecionadas",
+  "cancelSelection": "Cancelar seleção",
+  "selectedCount": "{count} selecionado(s)",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "Excluir pastas selecionadas",
+  "folderOptions": "Opções da pasta",
+  "open": "Abrir",
+  "rename": "Renomear",
+  "folderNoteCount": "{count} notas",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "Remover da pasta",
+  "moveToTrash": "Mover para a lixeira",
+  "noFoldersYet": "Ainda não há pastas",
+  "emptyFoldersDescription": "Crie pastas para manter notas relacionadas juntas.",
+  "createFolder": "Criar pasta",
+  "noNotesInFolder": "Ainda não há notas nesta pasta.\nAbra uma nota e escolha Organizar para adicioná-la aqui.",
   "welcomeToOrah": "Boas-vindas ao Orah",
   "personalizeYourSpace": "Personalize seu espaço. Informe seu nome e e-mail para começar.",
   "fullName": "Nome completo",
