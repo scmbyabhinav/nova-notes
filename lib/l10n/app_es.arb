@@ -20,7 +20,7 @@
   "notes": "Notas",
   "moods": "Estados de ánimo",
   "moodHappy": "Feliz",
-  "moodNeutral": "Neutral",
+  "moodNeutral": "Neutro",
   "moodSad": "Triste",
   "moodAngry": "Enojado",
   "moodThoughtful": "Reflexivo",
@@ -93,14 +93,14 @@
   "addFolderImage": "Añadir imagen de carpeta",
   "changeImage": "Cambiar imagen",
   "removeImage": "Eliminar imagen",
-  "folderName": "Folder name",
-  "folderNameHint": "e.g. Work, Ideas, Personal",
-  "cancel": "Cancel",
-  "create": "Create",
-  "newFolder": "New folder",
-  "editFolder": "Edit folder",
-  "save": "Save",
-  "deleteFolderTitle": "Delete {folderName}?",
+  "folderName": "Nombre de la carpeta",
+  "folderNameHint": "p. ej., Trabajo, Ideas, Personal",
+  "cancel": "Cancelar",
+  "create": "Crear",
+  "newFolder": "Nueva carpeta",
+  "editFolder": "Editar carpeta",
+  "save": "Guardar",
+  "deleteFolderTitle": "¿Eliminar «{folderName}»?",
   "@deleteFolderTitle": {
     "placeholders": {
       "folderName": {
@@ -108,8 +108,8 @@
       }
     }
   },
-  "folderEmpty": "The folder is empty.",
-  "notesMovedFromFolder": "{count} note(s) will be kept and moved back to All Notes.",
+  "folderEmpty": "La carpeta está vacía.",
+  "notesMovedFromFolder": "Se conservarán {count} nota(s) y se moverán de nuevo a Todas las notas.",
   "@notesMovedFromFolder": {
     "placeholders": {
       "count": {
@@ -117,8 +117,8 @@
       }
     }
   },
-  "delete": "Delete",
-  "selectedFoldersDeleteTitle": "Delete {count} folder(s)?",
+  "delete": "Eliminar",
+  "selectedFoldersDeleteTitle": "¿Eliminar {count} carpeta(s)?",
   "@selectedFoldersDeleteTitle": {
     "placeholders": {
       "count": {
@@ -126,10 +126,10 @@
       }
     }
   },
-  "selectedFoldersEmpty": "The selected folders are empty.",
-  "deleteSelected": "Delete selected",
-  "cancelSelection": "Cancel selection",
-  "selectedCount": "{count} selected",
+  "selectedFoldersEmpty": "Las carpetas seleccionadas están vacías.",
+  "deleteSelected": "Eliminar selección",
+  "cancelSelection": "Cancelar selección",
+  "selectedCount": "{count} seleccionados",
   "@selectedCount": {
     "placeholders": {
       "count": {
@@ -137,11 +137,11 @@
       }
     }
   },
-  "deleteSelectedFolders": "Delete selected folders",
-  "folderOptions": "Folder options",
-  "open": "Open",
-  "rename": "Rename",
-  "folderNoteCount": "{count} notes",
+  "deleteSelectedFolders": "Eliminar carpetas seleccionadas",
+  "folderOptions": "Opciones de carpeta",
+  "open": "Abrir",
+  "rename": "Cambiar nombre",
+  "folderNoteCount": "{count} notas",
   "@folderNoteCount": {
     "placeholders": {
       "count": {
@@ -149,12 +149,12 @@
       }
     }
   },
-  "removeFromFolder": "Remove from folder",
-  "moveToTrash": "Move to Trash",
-  "noFoldersYet": "No folders yet",
-  "emptyFoldersDescription": "Create folders to keep related notes together.",
-  "createFolder": "Create folder",
-  "noNotesInFolder": "No notes in this folder yet.\nOpen a note and choose Organize to add it here.",
+  "removeFromFolder": "Quitar de la carpeta",
+  "moveToTrash": "Mover a la papelera",
+  "noFoldersYet": "Todavía no hay carpetas",
+  "emptyFoldersDescription": "Crea carpetas para mantener juntas las notas relacionadas.",
+  "createFolder": "Crear carpeta",
+  "noNotesInFolder": "Todavía no hay notas en esta carpeta.\nAbre una nota y elige Organizar para añadirla aquí.",
   "welcomeToOrah": "Te damos la bienvenida a Orah",
   "personalizeYourSpace": "Personalicemos tu espacio. Introduce tu nombre y correo electrónico para comenzar.",
   "fullName": "Nombre completo",
