@@ -1833,7 +1833,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                       : null,
                                   height: 1.55,
                                 ),
-                            decoration: const InputDecoration(hintText: AppLocalizations.of(context)!.startWritingHint, filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                            decoration: InputDecoration(hintText: AppLocalizations.of(context)!.startWritingHint, filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           ),
                       ],
                     ),
