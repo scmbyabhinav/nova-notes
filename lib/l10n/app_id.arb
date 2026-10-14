@@ -98,7 +98,7 @@
   "cancel": "Batal",
   "create": "Buat",
   "newFolder": "Folder baru",
-  "editFolder": "Edit folder",
+  "editFolder": "Ubah folder",
   "save": "Simpan",
   "deleteFolderTitle": "Hapus {folderName}?",
   "@deleteFolderTitle": {

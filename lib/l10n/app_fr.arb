@@ -141,7 +141,7 @@
   "folderOptions": "Options du dossier",
   "open": "Ouvrir",
   "rename": "Renommer",
-  "folderNoteCount": "{count} notes",
+  "folderNoteCount": "{count, plural, =0{Aucune note} =1{1 note} other{{count} notes}}",
   "@folderNoteCount": {
     "placeholders": {
       "count": {

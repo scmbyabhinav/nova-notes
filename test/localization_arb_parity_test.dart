@@ -26,7 +26,7 @@ const _localeNeutralKeys = <String, Set<String>>{
   'zh': {'emailExample'},
   // PIN is a standard technical abbreviation; these short labels are approved.
   'de': {'pin', 'details', 'moodNeutral'},
-  'es': {'pin', 'moodNeutral'},
+  'es': {'pin', 'total', 'moodNeutral'},
   'id': {'pin', 'template', 'total'},
   'it': {'pin'},
   'pt': {'pin', 'total'},
