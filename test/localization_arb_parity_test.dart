@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-const _fullyTranslatedLocales = <String>{'hi', 'es', 'fr', 'de'};
+const _fullyTranslatedLocales = <String>{'hi', 'es', 'fr', 'de', 'he'};
 
 final _placeholderPattern = RegExp(r'\{([A-Za-z][A-Za-z0-9_]*)\}');
 

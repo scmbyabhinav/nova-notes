@@ -97,18 +97,26 @@ class OrahUserProfileService {
     await prefs.setBool(_voiceGreetingKey, enabled);
   }
 
-  Future<void> _applyVoice() async {
-    await _tts.setLanguage('en-US');
+  Future<void> _applyVoice(String languageCode) async {
+    final languageTag = switch (languageCode) {
+      'hi' => 'hi-IN',
+      'es' => 'es-ES',
+      'fr' => 'fr-FR',
+      'de' => 'de-DE',
+      'he' => 'he-IL',
+      _ => 'en-US',
+    };
+    await _tts.setLanguage(languageTag);
     final rawVoices = await _tts.getVoices;
     if (rawVoices is List) {
       final voices = rawVoices.whereType<Map>().map(
         (voice) => Map<String, dynamic>.from(voice),
       ).toList();
-      final englishVoices = voices.where((voice) {
+      final languageVoices = voices.where((voice) {
         final locale = (voice['locale'] ?? voice['language'] ?? '').toString().toLowerCase();
-        return locale.isEmpty || locale.startsWith('en');
+        return locale.startsWith(languageCode.toLowerCase());
       }).toList();
-      final candidates = englishVoices.isEmpty ? voices : englishVoices;
+      final candidates = languageVoices.isEmpty ? voices : languageVoices;
       final femaleVoices = candidates.where((voice) {
         final metadata = [voice['gender'], voice['name'], voice['identifier']]
             .whereType<Object>().join(' ').toLowerCase();
@@ -124,20 +132,27 @@ class OrahUserProfileService {
     await _tts.setPitch(1.08);
   }
 
-  Future<void> speakGreeting(String name) async {
+  Future<void> speakGreeting(
+    String name, {
+    String languageCode = 'en',
+    String? greeting,
+  }) async {
     await _tts.stop();
-    await _applyVoice();
+    await _applyVoice(languageCode);
     await _tts.setSpeechRate(0.48);
     await _tts.setVolume(1.0);
-    await _tts.speak('Hello, $name');
+    await _tts.speak(greeting ?? 'Hello, $name');
   }
 
-  Future<void> previewVoice() async {
+  Future<void> previewVoice({
+    String languageCode = 'en',
+    String greeting = 'Hello, this is Orah Notes',
+  }) async {
     await _tts.stop();
-    await _applyVoice();
+    await _applyVoice(languageCode);
     await _tts.setSpeechRate(0.48);
     await _tts.setVolume(1.0);
-    await _tts.speak('Hello, this is Orah Notes');
+    await _tts.speak(greeting);
   }
 
   Future<void> stopGreeting() => _tts.stop();

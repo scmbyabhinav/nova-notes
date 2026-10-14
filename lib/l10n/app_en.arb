@@ -400,5 +400,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "Hello, {name}",
+  "welcomeBack": "WELCOME BACK",
+  "friend": "Friend",
+  "voiceGreeting": "Hello, {name}",
+  "voicePreviewGreeting": "Hello, this is Orah Notes",
+  "speakMyNameAtStartup": "Speak my name at startup",
+  "voiceGreetingEnabledDescription": "Orah will greet you in your selected language when it opens.",
+  "voiceGreetingDisabledDescription": "The greeting stays silent.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

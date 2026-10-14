@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "Hola, {name}",
+  "welcomeBack": "TE DAMOS LA BIENVENIDA",
+  "friend": "Amigo/a",
+  "voiceGreeting": "Hola, {name}",
+  "voicePreviewGreeting": "Hola, esto es Orah Notes",
+  "speakMyNameAtStartup": "Decir mi nombre al iniciar",
+  "voiceGreetingEnabledDescription": "Orah te saludará en el idioma seleccionado al abrirse.",
+  "voiceGreetingDisabledDescription": "El saludo permanecerá en silencio.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

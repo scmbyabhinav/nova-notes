@@ -69,7 +69,7 @@ class _OrahAppState extends State<OrahApp> {
       darkTheme: dark,
       themeMode: _theme.mode,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: const [Locale('en'), Locale('hi'), Locale('es'), Locale('fr'), Locale('de')],
+      supportedLocales: const [Locale('en'), Locale('hi'), Locale('es'), Locale('fr'), Locale('de'), Locale('he')],
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
       home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, securityService: widget.securityService, skipRegistrationForTesting: widget.skipRegistrationForTesting),
@@ -229,7 +229,11 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
     final voiceEnabled = await OrahUserProfileService.instance.voiceGreetingEnabled();
     if (!mounted || !voiceEnabled) return;
     OrahUserProfileService.instance
-        .speakGreeting(widget.profile.fullName)
+        .speakGreeting(
+          widget.profile.fullName,
+          languageCode: Localizations.localeOf(context).languageCode,
+          greeting: AppLocalizations.of(context)!.voiceGreeting(widget.profile.fullName),
+        )
         .catchError((_) {});
   }
 

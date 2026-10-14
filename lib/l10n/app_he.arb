@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "שלום, {name}",
+  "welcomeBack": "ברוך שובך",
+  "friend": "חבר/ה",
+  "voiceGreeting": "שלום, {name}",
+  "voicePreviewGreeting": "שלום, כאן Orah Notes",
+  "speakMyNameAtStartup": "להשמיע את שמי בעת ההפעלה",
+  "voiceGreetingEnabledDescription": "Orah יברך אותך בשפה שבחרת בעת פתיחת האפליקציה.",
+  "voiceGreetingDisabledDescription": "הברכה תישאר מושתקת.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

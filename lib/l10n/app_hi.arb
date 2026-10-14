@@ -386,5 +386,27 @@
         "type": "String"
       }
     }
+  },
+  "helloUser": "नमस्ते, {name}",
+  "welcomeBack": "वापसी पर स्वागत है",
+  "friend": "दोस्त",
+  "voiceGreeting": "नमस्ते, {name}",
+  "voicePreviewGreeting": "नमस्ते, यह Orah Notes है",
+  "speakMyNameAtStartup": "शुरू होने पर मेरा नाम बोलें",
+  "voiceGreetingEnabledDescription": "Orah खुलने पर आपकी चुनी हुई भाषा में आपका स्वागत करेगा।",
+  "voiceGreetingDisabledDescription": "अभिवादन मौन रहेगा।",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

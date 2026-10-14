@@ -497,10 +497,10 @@ class _VoiceGreetingSettingTileState extends State<_VoiceGreetingSettingTile> {
         final enabled = snapshot.data ?? true;
         return SwitchListTile(
           secondary: const Icon(Icons.record_voice_over_rounded),
-          title: const Text('Speak my name at startup'),
+          title: Text(AppLocalizations.of(context)!.speakMyNameAtStartup),
           subtitle: Text(enabled
-              ? 'Orah will say “Hello, your name” when it opens.'
-              : 'The greeting stays silent.'),
+              ? AppLocalizations.of(context)!.voiceGreetingEnabledDescription
+              : AppLocalizations.of(context)!.voiceGreetingDisabledDescription),
           value: enabled,
           onChanged: snapshot.connectionState == ConnectionState.waiting ? null : _setEnabled,
         );
