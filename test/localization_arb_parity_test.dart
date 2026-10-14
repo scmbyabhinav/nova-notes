@@ -15,6 +15,26 @@ const _languageNeutralKeys = <String>{
   'android',
 };
 
+// Locale-specific exceptions for conventional examples and technical labels.
+const _localeNeutralKeys = <String, Set<String>>{
+  // Email example address format is shared in these locales.
+  'ar': {'emailExample'},
+  'he': {'emailExample'},
+  'hi': {'emailExample'},
+  'ja': {'emailExample', 'pin'},
+  'ko': {'emailExample', 'pin'},
+  'zh': {'emailExample'},
+  // PIN is a standard technical abbreviation; these short labels are approved.
+  'de': {'pin', 'details', 'moodNeutral'},
+  'es': {'pin', 'moodNeutral'},
+  'id': {'pin', 'template', 'total'},
+  'it': {'pin'},
+  'pt': {'pin', 'total'},
+  'tr': {'pin'},
+  // These French interface labels are accepted as conventional wording.
+  'fr': {'total', 'notes'},
+};
+
 void main() {
   final directory = Directory('lib/l10n');
 
@@ -107,7 +127,9 @@ void main() {
         final source = english[key];
         final target = translated[key];
         if (source is! String || target is! String) continue;
-        if (key.startsWith('@') || _languageNeutralKeys.contains(key)) continue;
+        if (key.startsWith('@') ||
+            _languageNeutralKeys.contains(key) ||
+            (_localeNeutralKeys[locale]?.contains(key) ?? false)) continue;
 
         // Exact equality for an entire message is a strong signal of an
         // accidental English fallback. Proper names and short technical
