@@ -104,8 +104,8 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.warning_amber_rounded),
-              title: const Text('Forgot Vault PIN? Reset Vault'),
-              subtitle: const Text('No recovery is possible. Resetting permanently loses the old Vault.'),
+              title: Text(AppLocalizations.of(context)!.vaultResetTitle),
+              subtitle: Text(AppLocalizations.of(context)!.vaultResetDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showVaultResetWarning(context),
             ),
@@ -114,7 +114,7 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.shield_outlined),
               title: Text(l10n.securityAndPrivacy),
-              subtitle: const Text('PIN and biometric protection'),
+              subtitle: Text(AppLocalizations.of(context)!.pinBiometric),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -145,7 +145,7 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.android_outlined),
               title: Text(l10n.androidFeatures),
-              subtitle: const Text('Widgets, shortcuts and sharing'),
+              subtitle: Text(AppLocalizations.of(context)!.androidFeaturesDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -169,16 +169,16 @@ class SettingsScreen extends StatelessWidget {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.archive_outlined),
-                  title: const Text('Archived Notes'),
-                  subtitle: const Text('Open or restore notes you have archived'),
+                  title: Text(AppLocalizations.of(context)!.archivedNotesTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.archivedNotesDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const OrahAssetIcon('trash'),
-                  title: const Text('Trash'),
-                  subtitle: const Text('Restore or permanently delete notes'),
+                  title: Text(AppLocalizations.of(context)!.trashTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.trashDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const TrashScreen()),
@@ -194,8 +194,8 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.auto_awesome_outlined),
-                  title: const Text('Orah Features'),
-                  subtitle: const Text('Explore what Orah can do'),
+                  title: Text(AppLocalizations.of(context)!.orahFeaturesTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.orahFeaturesDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
@@ -204,8 +204,8 @@ class SettingsScreen extends StatelessWidget {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
-                  title: const Text('About Orah'),
-                  subtitle: const Text('Product information and privacy approach'),
+                  title: Text(AppLocalizations.of(context)!.aboutOrahTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.aboutOrahDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const AboutNovaScreen()),
@@ -268,7 +268,7 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Icon(Icons.warning_amber_rounded),
             SizedBox(width: 10),
-            Expanded(child: Text('Reset Vault?')),
+            Expanded(child: Text(AppLocalizations.of(context)!.resetVaultQuestion)),
           ],
         ),
         content: const SingleChildScrollView(
@@ -279,11 +279,11 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancelLabel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete Old Vault & Create New'),
+            child: Text(AppLocalizations.of(context)!.deleteVaultConfirm),
           ),
         ],
       ),
@@ -314,9 +314,9 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (sheet) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const ListTile(title: Text('Theme')),
+          ListTile(title: Text(AppLocalizations.of(context)!.themeLabel)),
           for (final value in ThemeMode.values)
-            RadioListTile<ThemeMode>(value: value, groupValue: themeController.mode, title: Text(switch (value) { ThemeMode.system => 'System', ThemeMode.light => 'Light', ThemeMode.dark => 'Dark' }), onChanged: (v) => Navigator.pop(sheet, v)),
+            RadioListTile<ThemeMode>(value: value, groupValue: themeController.mode, title: Text(switch (value) { ThemeMode.system => AppLocalizations.of(context)!.themeSystem, ThemeMode.light => AppLocalizations.of(context)!.themeLight, ThemeMode.dark => AppLocalizations.of(context)!.themeDark }), onChanged: (v) => Navigator.pop(sheet, v)),
         ]),
       ),
     );
