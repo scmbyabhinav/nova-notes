@@ -108,7 +108,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Notes',
+                      tooltip: AppLocalizations.of(context)!.navNotes,
                       onPressed: widget.onNotes,
                       icon: const Icon(Icons.note_alt_outlined),
                     ),

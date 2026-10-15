@@ -274,7 +274,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancelLabel),
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(dialogContext).pop(true),
