@@ -440,5 +440,10 @@
   "recentlyUpdated": "Recently updated",
   "recentlyCreated": "Recently created",
   "titleAZ": "Title A–Z",
-  "noNotesYet": "No notes yet"
+  "noNotesYet": "No notes yet",
+  "vaultLocked": "Vault / Locked Notes",
+  "vaultLockedDesc": "Open your private, encrypted notes",
+  "privacyPledge": "Privacy Pledge",
+  "privacyPledgeDesc": "Read our zero-cloud promise",
+  "backupExportDesc": "Local backup and portable data"
 }

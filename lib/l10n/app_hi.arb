@@ -426,5 +426,10 @@
   "recentlyUpdated": "हाल ही में अपडेट",
   "recentlyCreated": "हाल ही में बनाया गया",
   "titleAZ": "शीर्षक A–Z",
-  "noNotesYet": "अभी कोई नोट नहीं"
+  "noNotesYet": "अभी कोई नोट नहीं",
+  "vaultLocked": "वॉल्ट / लॉक किए गए नोट्स",
+  "vaultLockedDesc": "अपने निजी, एन्क्रिप्ट किए गए नोट खोलें",
+  "privacyPledge": "गोपनीयता प्रतिज्ञा",
+  "privacyPledgeDesc": "हमारी क्लाउड-मुक्त प्रतिज्ञा पढ़ें",
+  "backupExportDesc": "स्थानीय बैकअप और पोर्टेबल डेटा"
 }

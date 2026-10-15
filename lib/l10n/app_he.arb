@@ -426,5 +426,10 @@
   "recentlyUpdated": "עודכנו לאחרונה",
   "recentlyCreated": "נוצרו לאחרונה",
   "titleAZ": "כותרת א׳–ת׳",
-  "noNotesYet": "אין פתקים עדיין"
+  "noNotesYet": "אין פתקים עדיין",
+  "vaultLocked": "כספת / פתקים נעולים",
+  "vaultLockedDesc": "פתח פתקים פרטיים ומוצפנים",
+  "privacyPledge": "הבטחת הפרטיות",
+  "privacyPledgeDesc": "קרא על ההבטחה שלנו ללא ענן",
+  "backupExportDesc": "גיבוי מקומי ונתונים ניידים"
 }

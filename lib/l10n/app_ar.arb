@@ -426,5 +426,10 @@
   "recentlyUpdated": "تم التحديث مؤخرًا",
   "recentlyCreated": "تم إنشاؤها مؤخرًا",
   "titleAZ": "العنوان أ–ي",
-  "noNotesYet": "لا توجد ملاحظات بعد"
+  "noNotesYet": "لا توجد ملاحظات بعد",
+  "vaultLocked": "الخزنة / الملاحظات المقفلة",
+  "vaultLockedDesc": "افتح ملاحظاتك الخاصة والمشفرة",
+  "privacyPledge": "تعهد الخصوصية",
+  "privacyPledgeDesc": "اقرأ وعدنا بعدم استخدام السحابة",
+  "backupExportDesc": "نسخ احتياطي محلي وبيانات قابلة للنقل"
 }

@@ -426,5 +426,10 @@
   "recentlyUpdated": "Kürzlich aktualisiert",
   "recentlyCreated": "Kürzlich erstellt",
   "titleAZ": "Titel A–Z",
-  "noNotesYet": "Noch keine Notizen"
+  "noNotesYet": "Noch keine Notizen",
+  "vaultLocked": "Tresor / Gesperrte Notizen",
+  "vaultLockedDesc": "Öffne deine privaten, verschlüsselten Notizen",
+  "privacyPledge": "Datenschutzversprechen",
+  "privacyPledgeDesc": "Lies unser Versprechen: keine Cloud",
+  "backupExportDesc": "Lokale Sicherung und portable Daten"
 }
