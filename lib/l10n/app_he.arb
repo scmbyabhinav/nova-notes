@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "הוצא מהארכיון",
+  "archiveNote": "העבר לארכיון",
+  "duplicateNote": "שכפל פתק",
+  "navNotes": "פתקים",
+  "navFolders": "תיקיות",
+  "navFavorites": "מועדפים",
+  "navArchivedNotes": "פתקים בארכיון",
+  "navDailyReflection": "הרהור יומי",
+  "navVoiceCapture": "הקלטה קולית",
+  "navChecklists": "רשימות תיוג",
+  "navAppearance": "מראה",
+  "navSearch": "חיפוש",
+  "offlineAccess": "גישה לא מקוונת",
+  "backupExport": "גיבוי וייצוא",
+  "recentlyUpdated": "עודכנו לאחרונה",
+  "recentlyCreated": "נוצרו לאחרונה",
+  "titleAZ": "כותרת א׳–ת׳",
+  "noNotesYet": "אין פתקים עדיין"
 }

@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "Quitar de archivados",
+  "archiveNote": "Archivar",
+  "duplicateNote": "Duplicar nota",
+  "navNotes": "Notas",
+  "navFolders": "Carpetas",
+  "navFavorites": "Favoritos",
+  "navArchivedNotes": "Notas archivadas",
+  "navDailyReflection": "Reflexión diaria",
+  "navVoiceCapture": "Captura de voz",
+  "navChecklists": "Listas de verificación",
+  "navAppearance": "Apariencia",
+  "navSearch": "Buscar",
+  "offlineAccess": "Acceso sin conexión",
+  "backupExport": "Copia de seguridad y exportación",
+  "recentlyUpdated": "Actualizadas recientemente",
+  "recentlyCreated": "Creadas recientemente",
+  "titleAZ": "Título A–Z",
+  "noNotesYet": "Aún no hay notas"
 }

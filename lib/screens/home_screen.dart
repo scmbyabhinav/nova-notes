@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           children: [
             ListTile(
               leading: const OrahAssetIcon('pin'),
-              title: Text(note.isPinned ? 'Unpin note' : 'Pin note'),
+              title: Text(note.isPinned ? l10n.unpinNote : l10n.pinNote),
               onTap: () => Navigator.pop(context, 'pin'),
             ),
             ListTile(
@@ -275,22 +275,22 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             ),
             ListTile(
               leading: const Icon(Icons.archive_outlined),
-              title: Text(note.isArchived ? 'Unarchive' : 'Archive'),
+              title: Text(note.isArchived ? l10n.unarchiveNote : l10n.archiveNote),
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
               leading: const Icon(Icons.copy_outlined),
-              title: const Text('Duplicate note'),
+              title: Text(l10n.duplicateNote),
               onTap: () => Navigator.pop(context, 'duplicate'),
             ),
             ListTile(
               leading: const Icon(Icons.palette_outlined),
-              title: const Text('Note color'),
+              title: Text(l10n.noteColor),
               onTap: () => Navigator.pop(context, 'color'),
             ),
             ListTile(
               leading: const OrahAssetIcon('trash'),
-              title: const Text('Move to Trash'),
+              title: Text(l10n.moveToTrash),
               onTap: () => Navigator.pop(context, 'delete'),
             ),
           ],
@@ -384,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         late final ScaffoldFeatureController<SnackBar, SnackBarClosedReason> trashSnackBar;
         trashSnackBar = messenger.showSnackBar(
           SnackBar(
-            content: const Text('Moved to trash'),
+            content: Text(l10n.movedToTrash),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
@@ -631,17 +631,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   children: [
                                     ActionChip(
                                       avatar: const Icon(Icons.note_alt_outlined, size: 18),
-                                      label: const Text('Notes'),
+                                      label: Text(l10n.navNotes),
                                       onPressed: widget.onNotes,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.folder_outlined, size: 18),
-                                      label: const Text('Folders'),
+                                      label: Text(l10n.navFolders),
                                       onPressed: widget.onFolders,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
-                                      label: const Text('Favorites'),
+                                      label: Text(l10n.navFavorites),
                                       onPressed: widget.onFavorites,
                                     ),
                                     ActionChip(
@@ -650,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
                                       padding: const EdgeInsets.symmetric(horizontal: 7),
                                       avatar: const Icon(Icons.archive_outlined, size: 16),
-                                      label: const Text('Archived Notes'),
+                                      label: Text(l10n.navArchivedNotes),
                                       onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
                                     ),
                                     ActionChip(
@@ -659,17 +659,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                         width: 20,
                                         height: 20,
                                       ),
-                                      label: const Text('Daily Reflection'),
+                                      label: Text(l10n.navDailyReflection),
                                       onPressed: _openReflection,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.mic_none_rounded, size: 18),
-                                      label: const Text('Voice Capture'),
+                                      label: Text(l10n.navVoiceCapture),
                                       onPressed: widget.onVoiceCapture,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.checklist_rounded, size: 18),
-                                      label: const Text('Checklists'),
+                                      label: Text(l10n.navChecklists),
                                       onPressed: widget.onChecklist,
                                     ),
                                     ActionChip(
@@ -678,26 +678,26 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                         width: 20,
                                         height: 20,
                                       ),
-                                      label: const Text('Appearance'),
+                                      label: Text(l10n.navAppearance),
                                       onPressed: widget.onSettings,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.search_rounded, size: 18),
-                                      label: const Text('Search'),
+                                      label: Text(l10n.navSearch),
                                       onPressed: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => const SearchScreen()),
                                       ),
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.cloud_off_outlined, size: 18),
-                                      label: const Text('Offline access'),
+                                      label: Text(l10n.offlineAccess),
                                       onPressed: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
                                       ),
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.ios_share_rounded, size: 18),
-                                      label: const Text('Backup & Export'),
+                                      label: Text(l10n.backupExport),
                                       onPressed: widget.onSettings,
                                     ),
                                   ],
@@ -935,9 +935,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         initialValue: _sort,
                         onSelected: (value) async { setState(() => _sort = value); await _savePreferences(); },
                         itemBuilder: (_) => const [
-                          PopupMenuItem(value: 'updated', child: Text('Recently updated')),
-                          PopupMenuItem(value: 'created', child: Text('Recently created')),
-                          PopupMenuItem(value: 'title', child: Text('Title A–Z')),
+                          PopupMenuItem(value: 'updated', child: Text(l10n.recentlyUpdated)),
+                          PopupMenuItem(value: 'created', child: Text(l10n.recentlyCreated)),
+                          PopupMenuItem(value: 'title', child: Text(l10n.titleAZ)),
                         ],
                         icon: const Icon(Icons.sort_rounded),
                       ),

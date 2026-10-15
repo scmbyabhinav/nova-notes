@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "Keluarkan dari arsip",
+  "archiveNote": "Arsipkan",
+  "duplicateNote": "Duplikatkan catatan",
+  "navNotes": "Catatan",
+  "navFolders": "Folder",
+  "navFavorites": "Favorit",
+  "navArchivedNotes": "Catatan yang diarsipkan",
+  "navDailyReflection": "Refleksi harian",
+  "navVoiceCapture": "Rekam suara",
+  "navChecklists": "Daftar periksa",
+  "navAppearance": "Tampilan",
+  "navSearch": "Cari",
+  "offlineAccess": "Akses offline",
+  "backupExport": "Cadangkan & Ekspor",
+  "recentlyUpdated": "Baru diperbarui",
+  "recentlyCreated": "Baru dibuat",
+  "titleAZ": "Judul A–Z",
+  "noNotesYet": "Belum ada catatan"
 }

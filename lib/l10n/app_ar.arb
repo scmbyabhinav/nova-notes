@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "إلغاء الأرشفة",
+  "archiveNote": "أرشفة",
+  "duplicateNote": "تكرار الملاحظة",
+  "navNotes": "الملاحظات",
+  "navFolders": "المجلدات",
+  "navFavorites": "المفضلة",
+  "navArchivedNotes": "الملاحظات المؤرشفة",
+  "navDailyReflection": "تأمل يومي",
+  "navVoiceCapture": "الإدخال الصوتي",
+  "navChecklists": "قوائم التحقق",
+  "navAppearance": "المظهر",
+  "navSearch": "بحث",
+  "offlineAccess": "الوصول دون اتصال",
+  "backupExport": "النسخ الاحتياطي والتصدير",
+  "recentlyUpdated": "تم التحديث مؤخرًا",
+  "recentlyCreated": "تم إنشاؤها مؤخرًا",
+  "titleAZ": "العنوان أ–ي",
+  "noNotesYet": "لا توجد ملاحظات بعد"
 }

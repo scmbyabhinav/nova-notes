@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "Arşivden çıkar",
+  "archiveNote": "Arşivle",
+  "duplicateNote": "Notu çoğalt",
+  "navNotes": "Notlar",
+  "navFolders": "Klasörler",
+  "navFavorites": "Favoriler",
+  "navArchivedNotes": "Arşivlenmiş notlar",
+  "navDailyReflection": "Günlük düşünce",
+  "navVoiceCapture": "Sesle yakalama",
+  "navChecklists": "Kontrol listeleri",
+  "navAppearance": "Görünüm",
+  "navSearch": "Ara",
+  "offlineAccess": "Çevrimdışı erişim",
+  "backupExport": "Yedekleme ve dışa aktarma",
+  "recentlyUpdated": "Son güncellenen",
+  "recentlyCreated": "Son oluşturulan",
+  "titleAZ": "Başlık A–Z",
+  "noNotesYet": "Henüz not yok"
 }

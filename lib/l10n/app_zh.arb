@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "取消归档",
+  "archiveNote": "归档",
+  "duplicateNote": "复制笔记",
+  "navNotes": "笔记",
+  "navFolders": "文件夹",
+  "navFavorites": "收藏夹",
+  "navArchivedNotes": "已归档笔记",
+  "navDailyReflection": "每日反思",
+  "navVoiceCapture": "语音录入",
+  "navChecklists": "清单",
+  "navAppearance": "外观",
+  "navSearch": "搜索",
+  "offlineAccess": "离线访问",
+  "backupExport": "备份与导出",
+  "recentlyUpdated": "最近更新",
+  "recentlyCreated": "最近创建",
+  "titleAZ": "标题 A–Z",
+  "noNotesYet": "还没有笔记"
 }

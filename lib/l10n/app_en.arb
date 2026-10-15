@@ -422,5 +422,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "Unarchive",
+  "archiveNote": "Archive",
+  "duplicateNote": "Duplicate note",
+  "navNotes": "Notes",
+  "navFolders": "Folders",
+  "navFavorites": "Favorites",
+  "navArchivedNotes": "Archived Notes",
+  "navDailyReflection": "Daily Reflection",
+  "navVoiceCapture": "Voice Capture",
+  "navChecklists": "Checklists",
+  "navAppearance": "Appearance",
+  "navSearch": "Search",
+  "offlineAccess": "Offline access",
+  "backupExport": "Backup & Export",
+  "recentlyUpdated": "Recently updated",
+  "recentlyCreated": "Recently created",
+  "titleAZ": "Title A–Z",
+  "noNotesYet": "No notes yet"
 }

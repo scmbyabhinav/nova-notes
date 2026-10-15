@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "Aus Archiv holen",
+  "archiveNote": "Archivieren",
+  "duplicateNote": "Notiz duplizieren",
+  "navNotes": "Notizen",
+  "navFolders": "Ordner",
+  "navFavorites": "Favoriten",
+  "navArchivedNotes": "Archivierte Notizen",
+  "navDailyReflection": "Tägliche Reflexion",
+  "navVoiceCapture": "Spracheingabe",
+  "navChecklists": "Checklisten",
+  "navAppearance": "Darstellung",
+  "navSearch": "Suchen",
+  "offlineAccess": "Offline-Zugriff",
+  "backupExport": "Sicherung und Export",
+  "recentlyUpdated": "Kürzlich aktualisiert",
+  "recentlyCreated": "Kürzlich erstellt",
+  "titleAZ": "Titel A–Z",
+  "noNotesYet": "Noch keine Notizen"
 }

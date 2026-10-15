@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "보관 취소",
+  "archiveNote": "보관",
+  "duplicateNote": "메모 복제",
+  "navNotes": "메모",
+  "navFolders": "폴더",
+  "navFavorites": "즐겨찾기",
+  "navArchivedNotes": "보관된 메모",
+  "navDailyReflection": "일일 성찰",
+  "navVoiceCapture": "음성 입력",
+  "navChecklists": "체크리스트",
+  "navAppearance": "화면 모양",
+  "navSearch": "검색",
+  "offlineAccess": "오프라인 액세스",
+  "backupExport": "백업 및 내보내기",
+  "recentlyUpdated": "최근 업데이트",
+  "recentlyCreated": "최근 생성",
+  "titleAZ": "제목 A–Z",
+  "noNotesYet": "아직 메모가 없습니다"
 }

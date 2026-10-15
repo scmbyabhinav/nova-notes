@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "आर्काइव से निकालें",
+  "archiveNote": "आर्काइव करें",
+  "duplicateNote": "नोट की प्रतिलिपि बनाएँ",
+  "navNotes": "नोट्स",
+  "navFolders": "फ़ोल्डर",
+  "navFavorites": "पसंदीदा",
+  "navArchivedNotes": "संग्रहीत नोट्स",
+  "navDailyReflection": "दैनिक चिंतन",
+  "navVoiceCapture": "आवाज़ से लिखें",
+  "navChecklists": "चेकलिस्ट",
+  "navAppearance": "दिखावट",
+  "navSearch": "खोजें",
+  "offlineAccess": "ऑफ़लाइन उपयोग",
+  "backupExport": "बैकअप और निर्यात",
+  "recentlyUpdated": "हाल ही में अपडेट",
+  "recentlyCreated": "हाल ही में बनाया गया",
+  "titleAZ": "शीर्षक A–Z",
+  "noNotesYet": "अभी कोई नोट नहीं"
 }

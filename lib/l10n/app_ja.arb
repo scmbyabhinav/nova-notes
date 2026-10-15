@@ -408,5 +408,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "unarchiveNote": "アーカイブ解除",
+  "archiveNote": "アーカイブ",
+  "duplicateNote": "ノートを複製",
+  "navNotes": "ノート",
+  "navFolders": "フォルダ",
+  "navFavorites": "お気に入り",
+  "navArchivedNotes": "アーカイブ済みノート",
+  "navDailyReflection": "毎日の振り返り",
+  "navVoiceCapture": "音声入力",
+  "navChecklists": "チェックリスト",
+  "navAppearance": "外観",
+  "navSearch": "検索",
+  "offlineAccess": "オフラインアクセス",
+  "backupExport": "バックアップとエクスポート",
+  "recentlyUpdated": "最近更新",
+  "recentlyCreated": "最近作成",
+  "titleAZ": "タイトル A–Z",
+  "noNotesYet": "まだノートがありません"
 }
