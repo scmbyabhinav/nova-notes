@@ -93,8 +93,8 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.lock_outline_rounded),
-              title: const Text('Vault / Locked Notes'),
-              subtitle: const Text('Open your private, encrypted notes'),
+              title: Text(l10n.vaultLocked),
+              subtitle: Text(l10n.vaultLockedDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const VaultScreen()),
@@ -129,8 +129,8 @@ class SettingsScreen extends StatelessWidget {
                 Icons.privacy_tip_outlined,
                 color: theme.colorScheme.primary,
               ),
-              title: const Text('Privacy Pledge'),
-              subtitle: const Text('Read our zero-cloud promise'),
+              title: Text(l10n.privacyPledge),
+              subtitle: Text(l10n.privacyPledgeDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -162,7 +162,7 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const OrahAssetIcon('folder'),
                   title: const Text('Backup & Export'),
-                  subtitle: const Text('Local backup and portable data'),
+                  subtitle: Text(l10n.backupExportDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showBackup(context),
                 ),
