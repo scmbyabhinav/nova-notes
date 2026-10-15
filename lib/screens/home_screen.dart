@@ -55,6 +55,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Timer? _reflectionCheckTimer;
   bool _openingScheduledReflection = false;
 
+  // Resolve localized strings for callbacks and helpers outside build().
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
@@ -832,7 +835,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   children: [
-                    for (final filter in const [
+                    for (final filter in [
                       ('all', 'All', Icons.notes_rounded),
                       ('pinned', 'Pinned', Icons.push_pin_outlined),
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
@@ -934,7 +937,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         tooltip: 'Sort notes',
                         initialValue: _sort,
                         onSelected: (value) async { setState(() => _sort = value); await _savePreferences(); },
-                        itemBuilder: (_) => const [
+                        itemBuilder: (_) => [
                           PopupMenuItem(value: 'updated', child: Text(l10n.recentlyUpdated)),
                           PopupMenuItem(value: 'created', child: Text(l10n.recentlyCreated)),
                           PopupMenuItem(value: 'title', child: Text(l10n.titleAZ)),
