@@ -571,13 +571,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       icon: const Icon(Icons.bar_chart_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Daily Reflection',
+                      tooltip: l10n.navDailyReflection,
                       onPressed: _openReflection,
                       icon: SvgPicture.asset(
                         'assets/daily_reflection_icon.svg',
                         width: 24,
                         height: 24,
-                        semanticsLabel: 'Daily Reflection',
+                        semanticsLabel: l10n.navDailyReflection,
                       ),
                     ),
                     if (_showFeatures)
@@ -1185,7 +1185,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     if (loading)
                       const Expanded(child: Center(child: CircularProgressIndicator()))
                     else if (active.isEmpty)
-                      const Expanded(child: Center(child: Text('No notes yet')))
+                      Expanded(child: Center(child: Text(AppLocalizations.of(context)!.noNotesYet)))
                     else
                       Expanded(
                         child: ListView.builder(
@@ -1598,7 +1598,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'No notes yet.',
+              AppLocalizations.of(context)!.noNotesYet,
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 22,
