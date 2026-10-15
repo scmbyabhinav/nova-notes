@@ -426,5 +426,10 @@
   "recentlyUpdated": "Atualizadas recentemente",
   "recentlyCreated": "Criadas recentemente",
   "titleAZ": "Título A–Z",
-  "noNotesYet": "Ainda não há notas"
+  "noNotesYet": "Ainda não há notas",
+  "vaultLocked": "Cofre / Notas bloqueadas",
+  "vaultLockedDesc": "Abra suas notas privadas e criptografadas",
+  "privacyPledge": "Compromisso de privacidade",
+  "privacyPledgeDesc": "Leia nosso compromisso sem nuvem",
+  "backupExportDesc": "Backup local e dados portáteis"
 }

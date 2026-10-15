@@ -426,5 +426,10 @@
   "recentlyUpdated": "Son güncellenen",
   "recentlyCreated": "Son oluşturulan",
   "titleAZ": "Başlık A–Z",
-  "noNotesYet": "Henüz not yok"
+  "noNotesYet": "Henüz not yok",
+  "vaultLocked": "Kasa / Kilitli notlar",
+  "vaultLockedDesc": "Özel, şifrelenmiş notlarınızı açın",
+  "privacyPledge": "Gizlilik taahhüdü",
+  "privacyPledgeDesc": "Bulut kullanmama sözümüzü okuyun",
+  "backupExportDesc": "Yerel yedekleme ve taşınabilir veriler"
 }

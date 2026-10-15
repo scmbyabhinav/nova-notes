@@ -426,5 +426,10 @@
   "recentlyUpdated": "Baru diperbarui",
   "recentlyCreated": "Baru dibuat",
   "titleAZ": "Judul A–Z",
-  "noNotesYet": "Belum ada catatan"
+  "noNotesYet": "Belum ada catatan",
+  "vaultLocked": "Brankas / Catatan Terkunci",
+  "vaultLockedDesc": "Buka catatan pribadi terenkripsi Anda",
+  "privacyPledge": "Janji Privasi",
+  "privacyPledgeDesc": "Baca janji kami tanpa cloud",
+  "backupExportDesc": "Cadangan lokal dan data portabel"
 }

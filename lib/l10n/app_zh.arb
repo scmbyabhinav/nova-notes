@@ -426,5 +426,10 @@
   "recentlyUpdated": "最近更新",
   "recentlyCreated": "最近创建",
   "titleAZ": "标题 A–Z",
-  "noNotesYet": "还没有笔记"
+  "noNotesYet": "还没有笔记",
+  "vaultLocked": "保险库 / 锁定笔记",
+  "vaultLockedDesc": "打开您的私人加密笔记",
+  "privacyPledge": "隐私承诺",
+  "privacyPledgeDesc": "阅读我们的零云端承诺",
+  "backupExportDesc": "本地备份和可移植数据"
 }

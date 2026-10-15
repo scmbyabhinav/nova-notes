@@ -426,5 +426,10 @@
   "recentlyUpdated": "최근 업데이트",
   "recentlyCreated": "최근 생성",
   "titleAZ": "제목 A–Z",
-  "noNotesYet": "아직 메모가 없습니다"
+  "noNotesYet": "아직 메모가 없습니다",
+  "vaultLocked": "보관함 / 잠긴 메모",
+  "vaultLockedDesc": "비공개 암호화 메모 열기",
+  "privacyPledge": "개인정보 보호 약속",
+  "privacyPledgeDesc": "클라우드를 사용하지 않는다는 약속 읽기",
+  "backupExportDesc": "로컬 백업 및 이동 가능한 데이터"
 }

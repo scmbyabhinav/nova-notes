@@ -426,5 +426,10 @@
   "recentlyUpdated": "最近更新",
   "recentlyCreated": "最近作成",
   "titleAZ": "タイトル A–Z",
-  "noNotesYet": "まだノートがありません"
+  "noNotesYet": "まだノートがありません",
+  "vaultLocked": "保管庫 / ロックされたノート",
+  "vaultLockedDesc": "プライベートな暗号化ノートを開く",
+  "privacyPledge": "プライバシーへの約束",
+  "privacyPledgeDesc": "クラウドを使わない方針を読む",
+  "backupExportDesc": "ローカルバックアップと持ち運べるデータ"
 }
