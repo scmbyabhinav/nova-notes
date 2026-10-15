@@ -340,17 +340,17 @@ class SettingsScreen extends StatelessWidget {
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const ListTile(
-            title: Text('Portable Backup'),
-            subtitle: Text('Notes, folders and attached files in one .nova package.'),
+            title: Text(AppLocalizations.of(context)!.portableBackup),
+            subtitle: Text(AppLocalizations.of(context)!.portableBackupDesc),
           ),
           ListTile(
             leading: const OrahAssetIcon('share'),
-            title: const Text('Create backup'),
+            title: Text(AppLocalizations.of(context)!.createBackup),
             onTap: () => Navigator.pop(context, 'create'),
           ),
           ListTile(
             leading: const Icon(Icons.restore_rounded),
-            title: const Text('Restore backup'),
+            title: Text(AppLocalizations.of(context)!.restoreBackup),
             onTap: () => Navigator.pop(context, 'restore'),
           ),
         ]),
@@ -400,8 +400,8 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(title: const Text('Storage maintenance'), subtitle: Text('${attachmentFiles.length} attachments • ${_formatBytes(bytes)}')),
-          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: const Text('Clean orphan attachments'), subtitle: Text('$orphanCount unused files found'), onTap: () => Navigator.pop(context, 'clean')),
+          ListTile(title: Text(AppLocalizations.of(context)!.storageMaintenance), subtitle: Text('${attachmentFiles.length} attachments • ${_formatBytes(bytes)}')),
+          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(AppLocalizations.of(context)!.cleanOrphanAttachments), subtitle: Text('$orphanCount unused files found'), onTap: () => Navigator.pop(context, 'clean')),
         ]),
       ),
     );
@@ -451,8 +451,8 @@ class _VaultAutoLockSettingTileState extends State<_VaultAutoLockSettingTile> {
   @override
   Widget build(BuildContext context) => ListTile(
     leading: const Icon(Icons.timer_outlined),
-    title: const Text('Vault auto-lock'),
-    subtitle: const Text('Require authentication after the app is in the background'),
+    title: Text(AppLocalizations.of(context)!.vaultAutoLock),
+    subtitle: Text(AppLocalizations.of(context)!.vaultAutoLockDesc),
     trailing: _loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : DropdownButton<int>(
       value: _minutes,
       onChanged: _setMinutes,
@@ -460,7 +460,7 @@ class _VaultAutoLockSettingTileState extends State<_VaultAutoLockSettingTile> {
         DropdownMenuItem(value: 1, child: Text('1 min')),
         DropdownMenuItem(value: 5, child: Text('5 min')),
         DropdownMenuItem(value: 10, child: Text('10 min')),
-        DropdownMenuItem(value: 0, child: Text('Never')),
+        DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context)!.neverLabel)),
       ],
     ),
   );
@@ -652,7 +652,7 @@ class _DailyReflectionScheduleSettingTileState
       children: [
         SwitchListTile(
           secondary: const Icon(Icons.notifications_active_outlined),
-          title: const Text('Daily Reflection reminder'),
+          title: Text(AppLocalizations.of(context)!.dailyReflectionReminder),
           subtitle: Text(_loading
               ? 'Loading schedule…'
               : _enabled
@@ -664,7 +664,7 @@ class _DailyReflectionScheduleSettingTileState
         const Divider(height: 1),
         ListTile(
           leading: const Icon(Icons.schedule_rounded),
-          title: const Text('Reminder time'),
+          title: Text(AppLocalizations.of(context)!.reminderTime),
           subtitle: Text(_formattedTime),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: _loading ? null : _pickTime,
