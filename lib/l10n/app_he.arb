@@ -450,5 +450,14 @@
   "themeLabel": "ערכת נושא",
   "themeSystem": "מערכת",
   "themeLight": "בהיר",
-  "themeDark": "כהה"
+  "themeDark": "כהה",
+  "portableBackup": "גיבוי נייד",
+  "createBackup": "צור גיבוי",
+  "restoreBackup": "שחזר גיבוי",
+  "storageMaintenance": "תחזוקת אחסון",
+  "cleanOrphanAttachments": "נקה קבצים מצורפים יתומים",
+  "vaultAutoLock": "נעילה אוטומטית של הכספת",
+  "neverLabel": "לעולם לא",
+  "dailyReflectionReminder": "תזכורת להרהור יומי",
+  "reminderTime": "שעת התזכורת"
 }

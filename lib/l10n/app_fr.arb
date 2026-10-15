@@ -450,5 +450,14 @@
   "themeLabel": "Thème",
   "themeSystem": "Système",
   "themeLight": "Clair",
-  "themeDark": "Sombre"
+  "themeDark": "Sombre",
+  "portableBackup": "Sauvegarde portable",
+  "createBackup": "Créer une sauvegarde",
+  "restoreBackup": "Restaurer la sauvegarde",
+  "storageMaintenance": "Maintenance du stockage",
+  "cleanOrphanAttachments": "Nettoyer les pièces jointes orphelines",
+  "vaultAutoLock": "Verrouillage automatique du coffre",
+  "neverLabel": "Jamais",
+  "dailyReflectionReminder": "Rappel de réflexion quotidienne",
+  "reminderTime": "Heure du rappel"
 }

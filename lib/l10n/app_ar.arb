@@ -450,5 +450,14 @@
   "themeLabel": "السمة",
   "themeSystem": "النظام",
   "themeLight": "فاتح",
-  "themeDark": "داكن"
+  "themeDark": "داكن",
+  "portableBackup": "نسخة احتياطية محمولة",
+  "createBackup": "إنشاء نسخة احتياطية",
+  "restoreBackup": "استعادة نسخة احتياطية",
+  "storageMaintenance": "صيانة التخزين",
+  "cleanOrphanAttachments": "تنظيف المرفقات اليتيمة",
+  "vaultAutoLock": "القفل التلقائي للخزنة",
+  "neverLabel": "أبدًا",
+  "dailyReflectionReminder": "تذكير بالتأمل اليومي",
+  "reminderTime": "وقت التذكير"
 }

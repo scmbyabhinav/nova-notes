@@ -450,5 +450,14 @@
   "themeLabel": "थीम",
   "themeSystem": "सिस्टम",
   "themeLight": "हल्का",
-  "themeDark": "गहरा"
+  "themeDark": "गहरा",
+  "portableBackup": "पोर्टेबल बैकअप",
+  "createBackup": "बैकअप बनाएँ",
+  "restoreBackup": "बैकअप पुनर्स्थापित करें",
+  "storageMaintenance": "स्टोरेज रखरखाव",
+  "cleanOrphanAttachments": "अनाथ अटैचमेंट साफ़ करें",
+  "vaultAutoLock": "वॉल्ट ऑटो-लॉक",
+  "neverLabel": "कभी नहीं",
+  "dailyReflectionReminder": "दैनिक चिंतन रिमाइंडर",
+  "reminderTime": "रिमाइंडर समय"
 }

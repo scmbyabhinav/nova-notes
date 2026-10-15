@@ -450,5 +450,14 @@
   "themeLabel": "Design",
   "themeSystem": "System",
   "themeLight": "Hell",
-  "themeDark": "Dunkel"
+  "themeDark": "Dunkel",
+  "portableBackup": "Portables Backup",
+  "createBackup": "Backup erstellen",
+  "restoreBackup": "Backup wiederherstellen",
+  "storageMaintenance": "Speicherwartung",
+  "cleanOrphanAttachments": "Verwaiste Anhänge bereinigen",
+  "vaultAutoLock": "Tresor automatisch sperren",
+  "neverLabel": "Nie",
+  "dailyReflectionReminder": "Erinnerung an tägliche Reflexion",
+  "reminderTime": "Erinnerungszeit"
 }
