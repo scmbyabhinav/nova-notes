@@ -450,5 +450,14 @@
   "themeLabel": "主题",
   "themeSystem": "系统",
   "themeLight": "浅色",
-  "themeDark": "深色"
+  "themeDark": "深色",
+  "portableBackup": "Taşınabilir yedekleme",
+  "createBackup": "Yedek oluştur",
+  "restoreBackup": "Yedeği geri yükle",
+  "storageMaintenance": "Depolama bakımı",
+  "cleanOrphanAttachments": "Sahipsiz ekleri temizle",
+  "vaultAutoLock": "Kasayı otomatik kilitle",
+  "neverLabel": "Asla",
+  "dailyReflectionReminder": "Günlük düşünce hatırlatıcısı",
+  "reminderTime": "Hatırlatma saati"
 }

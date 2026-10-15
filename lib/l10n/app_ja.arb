@@ -450,5 +450,14 @@
   "themeLabel": "テーマ",
   "themeSystem": "システム",
   "themeLight": "ライト",
-  "themeDark": "ダーク"
+  "themeDark": "ダーク",
+  "portableBackup": "Backup portatile",
+  "createBackup": "Crea backup",
+  "restoreBackup": "Ripristina backup",
+  "storageMaintenance": "Manutenzione archiviazione",
+  "cleanOrphanAttachments": "Pulisci allegati orfani",
+  "vaultAutoLock": "Blocco automatico cassaforte",
+  "neverLabel": "Mai",
+  "dailyReflectionReminder": "Promemoria riflessione quotidiana",
+  "reminderTime": "Ora promemoria"
 }

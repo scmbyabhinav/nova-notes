@@ -450,5 +450,14 @@
   "themeLabel": "Tema",
   "themeSystem": "Sistem",
   "themeLight": "Açık",
-  "themeDark": "Koyu"
+  "themeDark": "Koyu",
+  "portableBackup": "Backup portátil",
+  "createBackup": "Criar backup",
+  "restoreBackup": "Restaurar backup",
+  "storageMaintenance": "Manutenção do armazenamento",
+  "cleanOrphanAttachments": "Limpar anexos órfãos",
+  "vaultAutoLock": "Bloqueio automático do cofre",
+  "neverLabel": "Nunca",
+  "dailyReflectionReminder": "Lembrete de reflexão diária",
+  "reminderTime": "Horário do lembrete"
 }

@@ -450,5 +450,14 @@
   "themeLabel": "Tema",
   "themeSystem": "Sistema",
   "themeLight": "Claro",
-  "themeDark": "Escuro"
+  "themeDark": "Escuro",
+  "portableBackup": "휴대용 백업",
+  "createBackup": "백업 만들기",
+  "restoreBackup": "백업 복원",
+  "storageMaintenance": "저장소 관리",
+  "cleanOrphanAttachments": "고아 첨부 파일 정리",
+  "vaultAutoLock": "보관함 자동 잠금",
+  "neverLabel": "안 함",
+  "dailyReflectionReminder": "일일 성찰 알림",
+  "reminderTime": "알림 시간"
 }

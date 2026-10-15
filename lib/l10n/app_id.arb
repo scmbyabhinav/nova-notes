@@ -450,5 +450,14 @@
   "themeLabel": "Tema",
   "themeSystem": "Sistem",
   "themeLight": "Terang",
-  "themeDark": "Gelap"
+  "themeDark": "Gelap",
+  "portableBackup": "Portable Backup",
+  "createBackup": "Create backup",
+  "restoreBackup": "Restore backup",
+  "storageMaintenance": "Storage maintenance",
+  "cleanOrphanAttachments": "Clean orphan attachments",
+  "vaultAutoLock": "Vault auto-lock",
+  "neverLabel": "Never",
+  "dailyReflectionReminder": "Daily Reflection reminder",
+  "reminderTime": "Reminder time"
 }

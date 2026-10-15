@@ -450,5 +450,14 @@
   "themeLabel": "테마",
   "themeSystem": "시스템",
   "themeLight": "라이트",
-  "themeDark": "다크"
+  "themeDark": "다크",
+  "portableBackup": "ポータブルバックアップ",
+  "createBackup": "バックアップを作成",
+  "restoreBackup": "バックアップを復元",
+  "storageMaintenance": "ストレージのメンテナンス",
+  "cleanOrphanAttachments": "孤立した添付ファイルを削除",
+  "vaultAutoLock": "保管庫の自動ロック",
+  "neverLabel": "しない",
+  "dailyReflectionReminder": "毎日の振り返りリマインダー",
+  "reminderTime": "リマインダー時刻"
 }

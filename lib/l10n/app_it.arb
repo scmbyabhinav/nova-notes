@@ -450,5 +450,14 @@
   "themeLabel": "Tema",
   "themeSystem": "Sistema",
   "themeLight": "Chiaro",
-  "themeDark": "Scuro"
+  "themeDark": "Scuro",
+  "portableBackup": "Cadangan Portabel",
+  "createBackup": "Buat cadangan",
+  "restoreBackup": "Pulihkan cadangan",
+  "storageMaintenance": "Pemeliharaan penyimpanan",
+  "cleanOrphanAttachments": "Bersihkan lampiran yatim",
+  "vaultAutoLock": "Kunci otomatis brankas",
+  "neverLabel": "Tidak pernah",
+  "dailyReflectionReminder": "Pengingat refleksi harian",
+  "reminderTime": "Waktu pengingat"
 }
