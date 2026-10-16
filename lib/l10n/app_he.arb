@@ -507,5 +507,7 @@
   "typeDrawing": "ציור",
   "applyFilters": "החל מסננים",
   "filtersTooltip": "מסננים",
-  "openOrahPro": "פתח את ORAH Pro"
+  "openOrahPro": "פתח את ORAH Pro",
+  "searchScreenTitle": "חיפוש",
+  "searchFiltersTitle": "מסנני חיפוש"
 }

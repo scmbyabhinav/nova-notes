@@ -507,5 +507,7 @@
   "typeDrawing": "Çizim",
   "applyFilters": "Filtreleri uygula",
   "filtersTooltip": "Filtreler",
-  "openOrahPro": "ORAH Pro'yu aç"
+  "openOrahPro": "ORAH Pro'yu aç",
+  "searchScreenTitle": "Ara",
+  "searchFiltersTitle": "Arama filtreleri"
 }

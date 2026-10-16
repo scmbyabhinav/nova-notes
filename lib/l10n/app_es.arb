@@ -507,5 +507,7 @@
   "typeDrawing": "Dibujo",
   "applyFilters": "Aplicar filtros",
   "filtersTooltip": "Filtros",
-  "openOrahPro": "Abrir ORAH Pro"
+  "openOrahPro": "Abrir ORAH Pro",
+  "searchScreenTitle": "Buscar",
+  "searchFiltersTitle": "Filtros de búsqueda"
 }

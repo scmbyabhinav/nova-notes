@@ -521,5 +521,7 @@
   "typeDrawing": "Drawing",
   "applyFilters": "Apply filters",
   "filtersTooltip": "Filters",
-  "openOrahPro": "Open ORAH Pro"
+  "openOrahPro": "Open ORAH Pro",
+  "searchScreenTitle": "Search",
+  "searchFiltersTitle": "Search filters"
 }

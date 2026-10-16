@@ -507,5 +507,7 @@
   "typeDrawing": "그림",
   "applyFilters": "필터 적용",
   "filtersTooltip": "필터",
-  "openOrahPro": "ORAH Pro 열기"
+  "openOrahPro": "ORAH Pro 열기",
+  "searchScreenTitle": "검색",
+  "searchFiltersTitle": "검색 필터"
 }

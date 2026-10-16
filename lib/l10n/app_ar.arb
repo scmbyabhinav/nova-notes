@@ -507,5 +507,7 @@
   "typeDrawing": "رسم",
   "applyFilters": "تطبيق عوامل التصفية",
   "filtersTooltip": "عوامل التصفية",
-  "openOrahPro": "افتح ORAH Pro"
+  "openOrahPro": "افتح ORAH Pro",
+  "searchScreenTitle": "بحث",
+  "searchFiltersTitle": "عوامل تصفية البحث"
 }

@@ -244,7 +244,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Row(
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.filtersTooltip,
+                      AppLocalizations.of(context)!.searchFiltersTitle,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
@@ -378,9 +378,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Search',
-          style: TextStyle(fontWeight: FontWeight.w800),
+        title: Text(
+          AppLocalizations.of(context)!.searchScreenTitle,
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         actions: [
           IconButton(

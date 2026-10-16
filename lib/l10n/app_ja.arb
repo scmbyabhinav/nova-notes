@@ -507,5 +507,7 @@
   "typeDrawing": "描画",
   "applyFilters": "フィルターを適用",
   "filtersTooltip": "フィルター",
-  "openOrahPro": "ORAH Proを開く"
+  "openOrahPro": "ORAH Proを開く",
+  "searchScreenTitle": "検索",
+  "searchFiltersTitle": "検索フィルター"
 }

@@ -507,5 +507,7 @@
   "typeDrawing": "Gambar",
   "applyFilters": "Terapkan filter",
   "filtersTooltip": "Filter",
-  "openOrahPro": "Buka ORAH Pro"
+  "openOrahPro": "Buka ORAH Pro",
+  "searchScreenTitle": "Cari",
+  "searchFiltersTitle": "Filter pencarian"
 }

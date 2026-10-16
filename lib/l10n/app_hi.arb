@@ -507,5 +507,7 @@
   "typeDrawing": "ड्रॉइंग",
   "applyFilters": "फ़िल्टर लागू करें",
   "filtersTooltip": "फ़िल्टर",
-  "openOrahPro": "ORAH Pro खोलें"
+  "openOrahPro": "ORAH Pro खोलें",
+  "searchScreenTitle": "खोजें",
+  "searchFiltersTitle": "खोज फ़िल्टर"
 }

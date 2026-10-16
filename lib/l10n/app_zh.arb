@@ -507,5 +507,7 @@
   "typeDrawing": "绘图",
   "applyFilters": "应用筛选",
   "filtersTooltip": "筛选",
-  "openOrahPro": "打开 ORAH Pro"
+  "openOrahPro": "打开 ORAH Pro",
+  "searchScreenTitle": "搜索",
+  "searchFiltersTitle": "搜索筛选"
 }
