@@ -836,7 +836,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   children: [
                     for (final filter in [
-                      ('all', l10n.showAllNotes, Icons.notes_rounded),
+                      ('all', l10n.navNotes, Icons.notes_rounded),
                       ('pinned', l10n.pinnedOnly, Icons.push_pin_outlined),
                       ('favorites', l10n.favorites, Icons.star_outline_rounded),
                       ('checklists', l10n.checklistType, Icons.checklistType),
@@ -1095,7 +1095,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     _SidebarLabel(label: l10n.notes),
                     _SidebarItem(
                       assetIcon: 'notes',
-                      label: l10n.showAllNotes,
+                      label: l10n.navNotes,
                       count: active.length,
                       selected: true,
                       onTap: () {},
@@ -1171,7 +1171,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            l10n.showAllNotes,
+                            l10n.navNotes,
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -1214,7 +1214,7 @@ class _DesktopNotesLayout extends StatelessWidget {
               child: selected == null
                   ? Center(
                       child: Text(
-                        l10n.searchLabel,
+                        'Select a note',
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -1473,7 +1473,7 @@ class _DesktopNotePreview extends StatelessWidget {
                   _DesktopChecklistPreview(note: note)
                 else
                   SelectableText(
-                    body.isEmpty ? l10n.checklistEmpty : body,
+                    body.isEmpty ? 'This note is empty.' : body,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 16,
                       height: 1.7,
@@ -1564,7 +1564,7 @@ class _NoteText extends StatelessWidget {
           ),
         ] else
           Text(
-            note.content.isEmpty ? l10n.lockedContent : note.content,
+            note.content.isEmpty ? 'No content' : note.content,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 14, height: 1.35, color: const Color(0xFF5B5B66)),
@@ -1628,7 +1628,7 @@ class _EmptyState extends StatelessWidget {
 
 String _formatRelativeTime(DateTime date) {
   final difference = DateTime.now().difference(date.toLocal());
-  if (difference.isNegative || difference.inMinutes < 1) return l10n.recentlyUpdated;
+  if (difference.isNegative || difference.inMinutes < 1) return 'Just now';
   if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
   if (difference.inHours < 24) return '${difference.inHours}h ago';
   if (difference.inDays < 7) return '${difference.inDays}d ago';
