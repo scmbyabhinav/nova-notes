@@ -161,7 +161,7 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const OrahAssetIcon('folder'),
-                  title: const Text('Backup & Export'),
+                  title: Text(AppLocalizations.of(context)!.backupExportTitle),
                   subtitle: Text(l10n.backupExportDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showBackup(context),
@@ -298,12 +298,12 @@ class SettingsScreen extends StatelessWidget {
       await NovaSecurityService().resetVault();
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Old Vault deleted. Open Vault to create a new PIN.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultResetSuccess)),
       );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vault reset failed: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultResetFailed(error.toString()))),
       );
     }
   }
@@ -373,14 +373,14 @@ class SettingsScreen extends StatelessWidget {
         final count = await service.restoreBackup(File(path));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Restored $count notes successfully.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.backupRestoredCount(count))),
           );
         }
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup error: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.backupError(e.toString()))),
         );
       }
     }
@@ -401,13 +401,13 @@ class SettingsScreen extends StatelessWidget {
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           ListTile(title: Text(AppLocalizations.of(context)!.storageMaintenance), subtitle: Text('${attachmentFiles.length} attachments • ${_formatBytes(bytes)}')),
-          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(AppLocalizations.of(context)!.cleanOrphanAttachments), subtitle: Text('$orphanCount unused files found'), onTap: () => Navigator.pop(context, 'clean')),
+          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(AppLocalizations.of(context)!.cleanOrphanAttachments), subtitle: Text(AppLocalizations.of(context)!.unusedFilesFound(orphanCount)), onTap: () => Navigator.pop(context, 'clean')),
         ]),
       ),
     );
     if (!context.mounted || action != 'clean') return;
     final removed = await service.removeOrphans(referenced);
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removed $removed orphan attachment${removed == 1 ? '' : 's'}.')));
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removedOrphanAttachments(removed))));
   }
 
   String _formatBytes(int bytes) {
@@ -548,8 +548,8 @@ class _DailyInspirationSettingTileState
   Widget build(BuildContext context) {
     return SwitchListTile(
       secondary: const Icon(Icons.auto_awesome_outlined),
-      title: const Text('Show Daily Inspiration on Home Screen'),
-      subtitle: const Text('Display a daily reflection prompt above your notes.'),
+      title: Text(AppLocalizations.of(context)!.showDailyInspiration),
+      subtitle: Text(AppLocalizations.of(context)!.showDailyInspirationDesc),
       value: _showDailyInspiration,
       onChanged: _loading ? null : _setVisible,
     );
@@ -612,7 +612,7 @@ class _DailyReflectionScheduleSettingTileState
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not update Daily Reflection reminder: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.reminderUpdateFailed(error.toString()))),
       );
     }
   }
@@ -634,7 +634,7 @@ class _DailyReflectionScheduleSettingTileState
       } catch (error) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not schedule Daily Reflection: $error')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.reminderScheduleFailed(error.toString()))),
           );
         }
       }
