@@ -264,9 +264,9 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded),
+            const Icon(Icons.warning_amber_rounded),
             SizedBox(width: 10),
             Expanded(child: Text(AppLocalizations.of(context)!.resetVaultQuestion)),
           ],
@@ -339,7 +339,7 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const ListTile(
+          ListTile(
             title: Text(AppLocalizations.of(context)!.portableBackup),
             subtitle: Text(AppLocalizations.of(context)!.portableBackupDesc),
           ),
@@ -456,10 +456,10 @@ class _VaultAutoLockSettingTileState extends State<_VaultAutoLockSettingTile> {
     trailing: _loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : DropdownButton<int>(
       value: _minutes,
       onChanged: _setMinutes,
-      items: const [
-        DropdownMenuItem(value: 1, child: Text('1 min')),
-        DropdownMenuItem(value: 5, child: Text('5 min')),
-        DropdownMenuItem(value: 10, child: Text('10 min')),
+      items: [
+        DropdownMenuItem(value: 1, child: const Text('1 min')),
+        const DropdownMenuItem(value: 5, child: Text('5 min')),
+        const DropdownMenuItem(value: 10, child: Text('10 min')),
         DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context)!.neverLabel)),
       ],
     ),
