@@ -478,5 +478,16 @@
   "appearanceTooltip": "Görünüm",
   "appearanceSemantics": "Görünüm ayarları",
   "searchFiltersTooltip": "Arama filtreleri",
-  "hideDailyInspiration": "Günlük ilhamı gizle"
+  "hideDailyInspiration": "Günlük ilhamı gizle",
+  "sortNotesTooltip": "Notları sırala",
+  "listView": "Liste görünümü",
+  "gridView": "Izgara görünümü",
+  "searchLabel": "Ara",
+  "newNoteLabel": "Yeni not",
+  "microphoneTooltip": "Mikrofon",
+  "unpinTooltip": "Sabitlemeyi kaldır",
+  "pinTooltip": "Sabitle",
+  "favoriteTooltip": "Favori",
+  "editNoteLabel": "Notu düzenle",
+  "lockedContent": "Kilitli içerik"
 }

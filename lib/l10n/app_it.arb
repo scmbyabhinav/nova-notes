@@ -478,5 +478,16 @@
   "appearanceTooltip": "Tampilan",
   "appearanceSemantics": "Pengaturan tampilan",
   "searchFiltersTooltip": "Filter pencarian",
-  "hideDailyInspiration": "Sembunyikan inspirasi harian"
+  "hideDailyInspiration": "Sembunyikan inspirasi harian",
+  "sortNotesTooltip": "Urutkan catatan",
+  "listView": "Tampilan daftar",
+  "gridView": "Tampilan kisi",
+  "searchLabel": "Cari",
+  "newNoteLabel": "Catatan baru",
+  "microphoneTooltip": "Mikrofon",
+  "unpinTooltip": "Lepas sematan",
+  "pinTooltip": "Sematkan",
+  "favoriteTooltip": "Favorit",
+  "editNoteLabel": "Edit catatan",
+  "lockedContent": "Konten terkunci"
 }

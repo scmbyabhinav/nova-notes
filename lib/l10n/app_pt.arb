@@ -478,5 +478,16 @@
   "appearanceTooltip": "화면 모양",
   "appearanceSemantics": "화면 모양 설정",
   "searchFiltersTooltip": "검색 필터",
-  "hideDailyInspiration": "매일의 영감 숨기기"
+  "hideDailyInspiration": "매일의 영감 숨기기",
+  "sortNotesTooltip": "메모 정렬",
+  "listView": "목록 보기",
+  "gridView": "그리드 보기",
+  "searchLabel": "검색",
+  "newNoteLabel": "새 메모",
+  "microphoneTooltip": "마이크",
+  "unpinTooltip": "고정 해제",
+  "pinTooltip": "고정",
+  "favoriteTooltip": "즐겨찾기",
+  "editNoteLabel": "메모 편집",
+  "lockedContent": "잠긴 콘텐츠"
 }

@@ -478,5 +478,16 @@
   "appearanceTooltip": "外観",
   "appearanceSemantics": "外観設定",
   "searchFiltersTooltip": "検索フィルター",
-  "hideDailyInspiration": "毎日のインスピレーションを非表示"
+  "hideDailyInspiration": "毎日のインスピレーションを非表示",
+  "sortNotesTooltip": "ノートを並べ替え",
+  "listView": "リスト表示",
+  "gridView": "グリッド表示",
+  "searchLabel": "検索",
+  "newNoteLabel": "新しいノート",
+  "microphoneTooltip": "マイク",
+  "unpinTooltip": "固定を解除",
+  "pinTooltip": "固定",
+  "favoriteTooltip": "お気に入り",
+  "editNoteLabel": "ノートを編集",
+  "lockedContent": "ロックされたコンテンツ"
 }
