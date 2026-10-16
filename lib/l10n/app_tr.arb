@@ -459,5 +459,16 @@
   "vaultAutoLock": "Bloqueio automático do cofre",
   "neverLabel": "Nunca",
   "dailyReflectionReminder": "Lembrete de reflexão diária",
-  "reminderTime": "Horário do lembrete"
+  "reminderTime": "Horário do lembrete",
+  "backupExportTitle": "Backup e exportação",
+  "vaultResetSuccess": "O cofre antigo foi excluído. Abra o cofre para criar um novo PIN.",
+  "vaultResetFailed": "Falha ao redefinir o cofre: {error}",
+  "backupRestoredCount": "{count} notas restauradas com sucesso.",
+  "backupError": "Erro no backup: {error}",
+  "unusedFilesFound": "{count} arquivos não utilizados encontrados",
+  "removedOrphanAttachments": "{count} anexos órfãos removidos.",
+  "showDailyInspiration": "Mostrar inspiração diária na tela inicial",
+  "showDailyInspirationDesc": "Exibir uma reflexão diária acima das notas.",
+  "reminderUpdateFailed": "Não foi possível atualizar o lembrete de reflexão diária: {error}",
+  "reminderScheduleFailed": "Não foi possível agendar a reflexão diária: {error}"
 }

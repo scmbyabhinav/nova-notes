@@ -459,5 +459,16 @@
   "vaultAutoLock": "Vault auto-lock",
   "neverLabel": "Never",
   "dailyReflectionReminder": "Daily Reflection reminder",
-  "reminderTime": "Reminder time"
+  "reminderTime": "Reminder time",
+  "backupExportTitle": "Backup & Export",
+  "vaultResetSuccess": "Old Vault deleted. Open Vault to create a new PIN.",
+  "vaultResetFailed": "Vault reset failed: {error}",
+  "backupRestoredCount": "Restored {count} notes successfully.",
+  "backupError": "Backup error: {error}",
+  "unusedFilesFound": "{count} unused files found",
+  "removedOrphanAttachments": "Removed {count} orphan attachments.",
+  "showDailyInspiration": "Show Daily Inspiration on Home Screen",
+  "showDailyInspirationDesc": "Display a daily reflection prompt above your notes.",
+  "reminderUpdateFailed": "Could not update Daily Reflection reminder: {error}",
+  "reminderScheduleFailed": "Could not schedule Daily Reflection: {error}"
 }

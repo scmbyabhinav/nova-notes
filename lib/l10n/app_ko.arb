@@ -459,5 +459,16 @@
   "vaultAutoLock": "保管庫の自動ロック",
   "neverLabel": "しない",
   "dailyReflectionReminder": "毎日の振り返りリマインダー",
-  "reminderTime": "リマインダー時刻"
+  "reminderTime": "リマインダー時刻",
+  "backupExportTitle": "バックアップとエクスポート",
+  "vaultResetSuccess": "古い保管庫を削除しました。保管庫を開いて新しいPINを作成してください。",
+  "vaultResetFailed": "保管庫のリセットに失敗しました：{error}",
+  "backupRestoredCount": "{count} 件のノートを復元しました。",
+  "backupError": "バックアップエラー：{error}",
+  "unusedFilesFound": "未使用のファイルが {count} 個見つかりました",
+  "removedOrphanAttachments": "孤立した添付ファイルを {count} 個削除しました。",
+  "showDailyInspiration": "ホーム画面に毎日のインスピレーションを表示",
+  "showDailyInspirationDesc": "ノートの上に毎日の振り返りを表示。",
+  "reminderUpdateFailed": "毎日の振り返りリマインダーを更新できませんでした：{error}",
+  "reminderScheduleFailed": "毎日の振り返りをスケジュールできませんでした：{error}"
 }

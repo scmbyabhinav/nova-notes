@@ -459,5 +459,16 @@
   "vaultAutoLock": "Blocco automatico cassaforte",
   "neverLabel": "Mai",
   "dailyReflectionReminder": "Promemoria riflessione quotidiana",
-  "reminderTime": "Ora promemoria"
+  "reminderTime": "Ora promemoria",
+  "backupExportTitle": "Backup ed esportazione",
+  "vaultResetSuccess": "La vecchia cassaforte è stata eliminata. Aprila per creare un nuovo PIN.",
+  "vaultResetFailed": "Ripristino della cassaforte non riuscito: {error}",
+  "backupRestoredCount": "Ripristinate correttamente {count} note.",
+  "backupError": "Errore di backup: {error}",
+  "unusedFilesFound": "Trovati {count} file inutilizzati",
+  "removedOrphanAttachments": "Rimossi {count} allegati orfani.",
+  "showDailyInspiration": "Mostra l’ispirazione quotidiana nella schermata Home",
+  "showDailyInspirationDesc": "Mostra uno spunto di riflessione sopra le note.",
+  "reminderUpdateFailed": "Impossibile aggiornare il promemoria della riflessione quotidiana: {error}",
+  "reminderScheduleFailed": "Impossibile programmare la riflessione quotidiana: {error}"
 }

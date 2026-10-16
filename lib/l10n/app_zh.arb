@@ -459,5 +459,16 @@
   "vaultAutoLock": "Kasayı otomatik kilitle",
   "neverLabel": "Asla",
   "dailyReflectionReminder": "Günlük düşünce hatırlatıcısı",
-  "reminderTime": "Hatırlatma saati"
+  "reminderTime": "Hatırlatma saati",
+  "backupExportTitle": "Yedekleme ve dışa aktarma",
+  "vaultResetSuccess": "Eski kasa silindi. Yeni PIN oluşturmak için kasayı açın.",
+  "vaultResetFailed": "Kasa sıfırlanamadı: {error}",
+  "backupRestoredCount": "{count} not başarıyla geri yüklendi.",
+  "backupError": "Yedekleme hatası: {error}",
+  "unusedFilesFound": "{count} kullanılmayan dosya bulundu",
+  "removedOrphanAttachments": "{count} sahipsiz ek kaldırıldı.",
+  "showDailyInspiration": "Ana ekranda günlük ilhamı göster",
+  "showDailyInspirationDesc": "Notlarınızın üzerinde günlük düşünce önerisi gösterin.",
+  "reminderUpdateFailed": "Günlük düşünce hatırlatıcısı güncellenemedi: {error}",
+  "reminderScheduleFailed": "Günlük düşünce planlanamadı: {error}"
 }

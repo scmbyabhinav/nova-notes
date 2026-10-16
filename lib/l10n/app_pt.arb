@@ -459,5 +459,16 @@
   "vaultAutoLock": "보관함 자동 잠금",
   "neverLabel": "안 함",
   "dailyReflectionReminder": "일일 성찰 알림",
-  "reminderTime": "알림 시간"
+  "reminderTime": "알림 시간",
+  "backupExportTitle": "백업 및 내보내기",
+  "vaultResetSuccess": "이전 보관함을 삭제했습니다. 보관함을 열어 새 PIN을 만드세요.",
+  "vaultResetFailed": "보관함 재설정 실패: {error}",
+  "backupRestoredCount": "메모 {count}개를 복원했습니다.",
+  "backupError": "백업 오류: {error}",
+  "unusedFilesFound": "사용하지 않는 파일 {count}개 발견",
+  "removedOrphanAttachments": "고아 첨부 파일 {count}개를 제거했습니다.",
+  "showDailyInspiration": "홈 화면에 매일의 영감 표시",
+  "showDailyInspirationDesc": "메모 위에 일일 성찰 프롬프트 표시.",
+  "reminderUpdateFailed": "일일 성찰 알림을 업데이트할 수 없습니다: {error}",
+  "reminderScheduleFailed": "일일 성찰을 예약할 수 없습니다: {error}"
 }

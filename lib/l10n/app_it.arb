@@ -459,5 +459,16 @@
   "vaultAutoLock": "Kunci otomatis brankas",
   "neverLabel": "Tidak pernah",
   "dailyReflectionReminder": "Pengingat refleksi harian",
-  "reminderTime": "Waktu pengingat"
+  "reminderTime": "Waktu pengingat",
+  "backupExportTitle": "Cadangkan & Ekspor",
+  "vaultResetSuccess": "Brankas lama dihapus. Buka brankas untuk membuat PIN baru.",
+  "vaultResetFailed": "Gagal mengatur ulang brankas: {error}",
+  "backupRestoredCount": "Berhasil memulihkan {count} catatan.",
+  "backupError": "Kesalahan cadangan: {error}",
+  "unusedFilesFound": "Ditemukan {count} file yang tidak digunakan",
+  "removedOrphanAttachments": "Menghapus {count} lampiran yatim.",
+  "showDailyInspiration": "Tampilkan inspirasi harian di layar utama",
+  "showDailyInspirationDesc": "Tampilkan prompt refleksi harian di atas catatan.",
+  "reminderUpdateFailed": "Tidak dapat memperbarui pengingat refleksi harian: {error}",
+  "reminderScheduleFailed": "Tidak dapat menjadwalkan refleksi harian: {error}"
 }
