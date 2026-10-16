@@ -1078,7 +1078,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: SearchBar(
-                        hintText: l10n.searchLabel,
+                        hintText: AppLocalizations.of(context)!.searchLabel,
                         leading: const OrahAssetIcon('search', size: 19),
                         elevation: const WidgetStatePropertyAll(0),
                         backgroundColor: WidgetStatePropertyAll(
@@ -1126,7 +1126,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 child: FilledButton.icon(
                                   onPressed: onNewNote,
                                   icon: OrahAssetIcon('new-note', size: 18, color: theme.colorScheme.onPrimary),
-                                  label: Text(l10n.newNoteLabel),
+                                  label: Text(AppLocalizations.of(context)!.newNoteLabel),
                                   style: FilledButton.styleFrom(
                                     minimumSize: const Size.fromHeight(44),
                                     shape: RoundedRectangleBorder(
@@ -1142,7 +1142,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 width: 48,
                                 height: 44,
                                 child: IconButton.filledTonal(
-                                  tooltip: l10n.microphoneTooltip,
+                                  tooltip: AppLocalizations.of(context)!.microphoneTooltip,
                                   onPressed: onVoiceCapture,
                                   icon: OrahAssetIcon('microphone', color: theme.colorScheme.onSecondaryContainer),
                                 ),
@@ -1442,12 +1442,12 @@ class _DesktopNotePreview extends StatelessWidget {
               ),
               const Spacer(),
               IconButton(
-                tooltip: note.isPinned ? l10n.unpinTooltip : l10n.pinTooltip,
+                tooltip: note.isPinned ? AppLocalizations.of(context)!.unpinTooltip : AppLocalizations.of(context)!.pinTooltip,
                 onPressed: () {},
                 icon: const OrahAssetIcon('pin'),
               ),
               IconButton(
-                tooltip: l10n.favoriteTooltip,
+                tooltip: AppLocalizations.of(context)!.favoriteTooltip,
                 onPressed: () {},
                 icon: const OrahAssetIcon('star'),
               ),
@@ -1490,7 +1490,7 @@ class _DesktopNotePreview extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onEdit,
               icon: const Icon(Icons.edit_outlined),
-              label: Text(l10n.editNoteLabel),
+              label: Text(AppLocalizations.of(context)!.editNoteLabel),
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -1551,7 +1551,7 @@ class _NoteText extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (note.isLocked) ...[
-          Text(l10n.lockedContent, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(AppLocalizations.of(context)!.lockedContent, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ] else if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
           Text(
             '${note.completedChecklistItems}/${note.checklistItems.length} completed',
