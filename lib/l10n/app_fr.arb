@@ -523,7 +523,7 @@
   "daysAgoSuffix": "jours auparavant",
   "hideOrahFeatures": "Masquer les fonctions Orah",
   "showOrahFeatures": "Afficher les fonctions Orah",
-  "activeNotesCount": "{count} notes",
+  "activeNotesCount": "Vous avez {count} notes actives",
   "completedLabel": "terminées",
   "@activeNotesCount": {
     "description": "Count of active notes shown in the desktop Home sidebar.",
