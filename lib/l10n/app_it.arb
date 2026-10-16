@@ -489,5 +489,7 @@
   "pinTooltip": "Sematkan",
   "favoriteTooltip": "Favorit",
   "editNoteLabel": "Edit catatan",
-  "lockedContent": "Konten terkunci"
+  "lockedContent": "Konten terkunci",
+  "portableBackupDesc": "Catatan, folder, dan file lampiran dalam satu paket .nova.",
+  "vaultAutoLockDesc": "Minta autentikasi saat aplikasi berada di latar belakang"
 }

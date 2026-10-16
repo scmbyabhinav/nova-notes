@@ -489,5 +489,7 @@
   "pinTooltip": "Pin",
   "favoriteTooltip": "Favorite",
   "editNoteLabel": "Edit note",
-  "lockedContent": "Locked content"
+  "lockedContent": "Locked content",
+  "portableBackupDesc": "Notes, folders and attached files in one .nova package.",
+  "vaultAutoLockDesc": "Require authentication after the app is in the background"
 }

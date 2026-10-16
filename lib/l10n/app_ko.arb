@@ -489,5 +489,7 @@
   "pinTooltip": "固定",
   "favoriteTooltip": "お気に入り",
   "editNoteLabel": "ノートを編集",
-  "lockedContent": "ロックされたコンテンツ"
+  "lockedContent": "ロックされたコンテンツ",
+  "portableBackupDesc": "ノート、フォルダ、添付ファイルを1つの.novaパッケージに。",
+  "vaultAutoLockDesc": "アプリがバックグラウンドに移動した後に認証を要求"
 }

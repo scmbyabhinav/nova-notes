@@ -489,5 +489,7 @@
   "pinTooltip": "Sabitle",
   "favoriteTooltip": "Favori",
   "editNoteLabel": "Notu düzenle",
-  "lockedContent": "Kilitli içerik"
+  "lockedContent": "Kilitli içerik",
+  "portableBackupDesc": "Notlar, klasörler ve ekler tek bir .nova paketinde.",
+  "vaultAutoLockDesc": "Uygulama arka plana geçtiğinde kimlik doğrulaması iste"
 }
