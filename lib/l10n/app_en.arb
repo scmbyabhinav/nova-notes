@@ -492,5 +492,16 @@
   "appearanceTooltip": "Appearance",
   "appearanceSemantics": "Appearance settings",
   "searchFiltersTooltip": "Search filters",
-  "hideDailyInspiration": "Hide daily inspiration"
+  "hideDailyInspiration": "Hide daily inspiration",
+  "sortNotesTooltip": "Sort notes",
+  "listView": "List view",
+  "gridView": "Grid view",
+  "searchLabel": "Search",
+  "newNoteLabel": "New Note",
+  "microphoneTooltip": "Microphone",
+  "unpinTooltip": "Unpin",
+  "pinTooltip": "Pin",
+  "favoriteTooltip": "Favorite",
+  "editNoteLabel": "Edit note",
+  "lockedContent": "Locked content"
 }

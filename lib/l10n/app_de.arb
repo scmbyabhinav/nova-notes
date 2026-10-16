@@ -478,5 +478,16 @@
   "appearanceTooltip": "Darstellung",
   "appearanceSemantics": "Darstellungseinstellungen",
   "searchFiltersTooltip": "Suchfilter",
-  "hideDailyInspiration": "Tägliche Inspiration ausblenden"
+  "hideDailyInspiration": "Tägliche Inspiration ausblenden",
+  "sortNotesTooltip": "Notizen sortieren",
+  "listView": "Listenansicht",
+  "gridView": "Rasteransicht",
+  "searchLabel": "Suchen",
+  "newNoteLabel": "Neue Notiz",
+  "microphoneTooltip": "Mikrofon",
+  "unpinTooltip": "Lösen",
+  "pinTooltip": "Anheften",
+  "favoriteTooltip": "Favorit",
+  "editNoteLabel": "Notiz bearbeiten",
+  "lockedContent": "Gesperrter Inhalt"
 }

@@ -478,5 +478,16 @@
   "appearanceTooltip": "المظهر",
   "appearanceSemantics": "إعدادات المظهر",
   "searchFiltersTooltip": "عوامل تصفية البحث",
-  "hideDailyInspiration": "إخفاء الإلهام اليومي"
+  "hideDailyInspiration": "إخفاء الإلهام اليومي",
+  "sortNotesTooltip": "ترتيب الملاحظات",
+  "listView": "عرض القائمة",
+  "gridView": "عرض الشبكة",
+  "searchLabel": "بحث",
+  "newNoteLabel": "ملاحظة جديدة",
+  "microphoneTooltip": "الميكروفون",
+  "unpinTooltip": "إلغاء التثبيت",
+  "pinTooltip": "تثبيت",
+  "favoriteTooltip": "المفضلة",
+  "editNoteLabel": "تعديل الملاحظة",
+  "lockedContent": "محتوى مقفل"
 }

@@ -478,5 +478,16 @@
   "appearanceTooltip": "दिखावट",
   "appearanceSemantics": "दिखावट सेटिंग",
   "searchFiltersTooltip": "खोज फ़िल्टर",
-  "hideDailyInspiration": "दैनिक प्रेरणा छिपाएँ"
+  "hideDailyInspiration": "दैनिक प्रेरणा छिपाएँ",
+  "sortNotesTooltip": "नोट्स क्रमबद्ध करें",
+  "listView": "सूची दृश्य",
+  "gridView": "ग्रिड दृश्य",
+  "searchLabel": "खोजें",
+  "newNoteLabel": "नया नोट",
+  "microphoneTooltip": "माइक्रोफ़ोन",
+  "unpinTooltip": "अनपिन करें",
+  "pinTooltip": "पिन करें",
+  "favoriteTooltip": "पसंदीदा",
+  "editNoteLabel": "नोट संपादित करें",
+  "lockedContent": "लॉक की गई सामग्री"
 }

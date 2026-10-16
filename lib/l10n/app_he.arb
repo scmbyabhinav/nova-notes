@@ -478,5 +478,16 @@
   "appearanceTooltip": "מראה",
   "appearanceSemantics": "הגדרות מראה",
   "searchFiltersTooltip": "מסנני חיפוש",
-  "hideDailyInspiration": "הסתר השראה יומית"
+  "hideDailyInspiration": "הסתר השראה יומית",
+  "sortNotesTooltip": "מיין פתקים",
+  "listView": "תצוגת רשימה",
+  "gridView": "תצוגת רשת",
+  "searchLabel": "חיפוש",
+  "newNoteLabel": "פתק חדש",
+  "microphoneTooltip": "מיקרופון",
+  "unpinTooltip": "בטל הצמדה",
+  "pinTooltip": "הצמד",
+  "favoriteTooltip": "מועדף",
+  "editNoteLabel": "ערוך פתק",
+  "lockedContent": "תוכן נעול"
 }
