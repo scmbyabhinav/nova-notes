@@ -484,7 +484,7 @@
   "gridView": "Vue en grille",
   "searchLabel": "Rechercher",
   "newNoteLabel": "Nouvelle note",
-  "microphoneTooltip": "Microphone",
+  "microphoneTooltip": "Micro",
   "unpinTooltip": "Désépingler",
   "pinTooltip": "Épingler",
   "favoriteTooltip": "Favori",

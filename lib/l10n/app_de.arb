@@ -448,7 +448,7 @@
   "resetVaultQuestion": "Tresor zurücksetzen?",
   "deleteVaultConfirm": "Alten Tresor löschen und neuen erstellen",
   "themeLabel": "Design",
-  "themeSystem": "System",
+  "themeSystem": "Systemstandard",
   "themeLight": "Hell",
   "themeDark": "Dunkel",
   "portableBackup": "Portables Backup",
