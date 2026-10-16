@@ -459,5 +459,16 @@
   "vaultAutoLock": "वॉल्ट ऑटो-लॉक",
   "neverLabel": "कभी नहीं",
   "dailyReflectionReminder": "दैनिक चिंतन रिमाइंडर",
-  "reminderTime": "रिमाइंडर समय"
+  "reminderTime": "रिमाइंडर समय",
+  "backupExportTitle": "बैकअप और निर्यात",
+  "vaultResetSuccess": "पुराना वॉल्ट हटा दिया गया। नया PIN बनाने के लिए वॉल्ट खोलें।",
+  "vaultResetFailed": "वॉल्ट रीसेट नहीं हो सका: {error}",
+  "backupRestoredCount": "成功恢复 {count} 条笔记。",
+  "backupError": "बैकअप त्रुटि: {error}",
+  "unusedFilesFound": "נמצאו {count} קבצים שאינם בשימוש",
+  "removedOrphanAttachments": "已移除 {count} 个孤立附件。",
+  "showDailyInspiration": "होम स्क्रीन पर दैनिक प्रेरणा दिखाएँ",
+  "showDailyInspirationDesc": "अपने नोट्स के ऊपर दैनिक चिंतन संकेत दिखाएँ।",
+  "reminderUpdateFailed": "दैनिक चिंतन रिमाइंडर अपडेट नहीं हो सका: {error}",
+  "reminderScheduleFailed": "दैनिक चिंतन शेड्यूल नहीं हो सका: {error}"
 }

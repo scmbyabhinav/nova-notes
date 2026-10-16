@@ -459,5 +459,16 @@
   "vaultAutoLock": "القفل التلقائي للخزنة",
   "neverLabel": "أبدًا",
   "dailyReflectionReminder": "تذكير بالتأمل اليومي",
-  "reminderTime": "وقت التذكير"
+  "reminderTime": "وقت التذكير",
+  "backupExportTitle": "النسخ الاحتياطي والتصدير",
+  "vaultResetSuccess": "تم حذف الخزنة القديمة. افتح الخزنة لإنشاء PIN جديد.",
+  "vaultResetFailed": "فشلت إعادة تعيين الخزنة: {error}",
+  "backupRestoredCount": "تمت استعادة {count} ملاحظة بنجاح.",
+  "backupError": "خطأ في النسخ الاحتياطي: {error}",
+  "unusedFilesFound": "تم العثور على {count} ملف غير مستخدم",
+  "removedOrphanAttachments": "تمت إزالة {count} مرفقًا يتيمًا.",
+  "showDailyInspiration": "إظهار الإلهام اليومي على الشاشة الرئيسية",
+  "showDailyInspirationDesc": "عرض فكرة للتأمل اليومي أعلى الملاحظات.",
+  "reminderUpdateFailed": "تعذر تحديث تذكير التأمل اليومي: {error}",
+  "reminderScheduleFailed": "تعذرت جدولة التأمل اليومي: {error}"
 }

@@ -459,5 +459,16 @@
   "vaultAutoLock": "Tresor automatisch sperren",
   "neverLabel": "Nie",
   "dailyReflectionReminder": "Erinnerung an tägliche Reflexion",
-  "reminderTime": "Erinnerungszeit"
+  "reminderTime": "Erinnerungszeit",
+  "backupExportTitle": "Sicherung und Export",
+  "vaultResetSuccess": "Alter Tresor gelöscht. Öffne den Tresor, um eine neue PIN zu erstellen.",
+  "vaultResetFailed": "Tresor konnte nicht zurückgesetzt werden: {error}",
+  "backupRestoredCount": "{count} Notizen erfolgreich wiederhergestellt.",
+  "backupError": "Sicherungsfehler: {error}",
+  "unusedFilesFound": "{count} ungenutzte Dateien gefunden",
+  "removedOrphanAttachments": "{count} verwaiste Anhänge entfernt.",
+  "showDailyInspiration": "Tägliche Inspiration auf dem Startbildschirm anzeigen",
+  "showDailyInspirationDesc": "Eine tägliche Reflexion über den Notizen anzeigen.",
+  "reminderUpdateFailed": "Erinnerung für tägliche Reflexion konnte nicht aktualisiert werden: {error}",
+  "reminderScheduleFailed": "Tägliche Reflexion konnte nicht geplant werden: {error}"
 }

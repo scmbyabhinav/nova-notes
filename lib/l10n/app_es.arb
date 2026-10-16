@@ -459,5 +459,16 @@
   "vaultAutoLock": "Bloqueo automático de bóveda",
   "neverLabel": "Nunca",
   "dailyReflectionReminder": "Recordatorio de reflexión diaria",
-  "reminderTime": "Hora del recordatorio"
+  "reminderTime": "Hora del recordatorio",
+  "backupExportTitle": "Copia de seguridad y exportación",
+  "vaultResetSuccess": "Se eliminó la bóveda anterior. Abre la bóveda para crear un PIN nuevo.",
+  "vaultResetFailed": "No se pudo restablecer la bóveda: {error}",
+  "backupRestoredCount": "Se restauraron {count} notas correctamente.",
+  "backupError": "Error de copia de seguridad: {error}",
+  "unusedFilesFound": "Se encontraron {count} archivos sin usar",
+  "removedOrphanAttachments": "Se eliminaron {count} archivos adjuntos huérfanos.",
+  "showDailyInspiration": "Mostrar inspiración diaria en inicio",
+  "showDailyInspirationDesc": "Mostrar una reflexión diaria sobre tus notas.",
+  "reminderUpdateFailed": "No se pudo actualizar el recordatorio de reflexión diaria: {error}",
+  "reminderScheduleFailed": "No se pudo programar la reflexión diaria: {error}"
 }

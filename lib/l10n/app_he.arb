@@ -459,5 +459,16 @@
   "vaultAutoLock": "נעילה אוטומטית של הכספת",
   "neverLabel": "לעולם לא",
   "dailyReflectionReminder": "תזכורת להרהור יומי",
-  "reminderTime": "שעת התזכורת"
+  "reminderTime": "שעת התזכורת",
+  "backupExportTitle": "גיבוי וייצוא",
+  "vaultResetSuccess": "הכספת הישנה נמחקה. פתח את הכספת כדי ליצור PIN חדש.",
+  "vaultResetFailed": "איפוס הכספת נכשל: {error}",
+  "backupRestoredCount": "{count} פתקים שוחזרו בהצלחה.",
+  "backupError": "שגיאת גיבוי: {error}",
+  "unusedFilesFound": "נמצאו {count} קבצים לא בשימוש",
+  "removedOrphanAttachments": "הוסרו {count} קבצים מצורפים יתומים.",
+  "showDailyInspiration": "הצג השראה יומית במסך הבית",
+  "showDailyInspirationDesc": "הצג הנחיית הרהור יומית מעל הפתקים.",
+  "reminderUpdateFailed": "לא ניתן לעדכן את תזכורת ההרהור היומי: {error}",
+  "reminderScheduleFailed": "לא ניתן לתזמן הרהור יומי: {error}"
 }
