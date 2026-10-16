@@ -509,5 +509,28 @@
   "filtersTooltip": "필터",
   "openOrahPro": "ORAH Pro 열기",
   "searchScreenTitle": "검색",
-  "searchFiltersTitle": "검색 필터"
+  "searchFiltersTitle": "검색 필터",
+  "homeTagline": "생각하고, 쓰고, 간직하세요.",
+  "homeSubtitle": "메모, 계획, 성찰을 위한 차분한 공간.",
+  "tapToBeginNote": "탭하여 메모 시작",
+  "selectNotePrompt": "메모 선택",
+  "desktopNoteEmpty": "이 메모는 비어 있습니다.",
+  "noContentLabel": "콘텐츠 없음",
+  "emptyNotesHint": "+ 버튼을 눌러 첫 번째 생각을 기록하세요.",
+  "justNow": "방금",
+  "minutesAgoSuffix": "분 전",
+  "hoursAgoSuffix": "시간 전",
+  "daysAgoSuffix": "일 전",
+  "hideOrahFeatures": "Orah 기능 숨기기",
+  "showOrahFeatures": "Orah 기능 표시",
+  "activeNotesCount": "메모 {count}개",
+  "completedLabel": "완료",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

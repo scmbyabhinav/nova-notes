@@ -509,5 +509,28 @@
   "filtersTooltip": "フィルター",
   "openOrahPro": "ORAH Proを開く",
   "searchScreenTitle": "検索",
-  "searchFiltersTitle": "検索フィルター"
+  "searchFiltersTitle": "検索フィルター",
+  "homeTagline": "思いついたら、書いて、残そう。",
+  "homeSubtitle": "メモ、計画、振り返りのための落ち着いた空間。",
+  "tapToBeginNote": "タップしてメモを開始",
+  "selectNotePrompt": "メモを選択",
+  "desktopNoteEmpty": "このメモは空です。",
+  "noContentLabel": "コンテンツなし",
+  "emptyNotesHint": "＋ボタンをタップして最初のアイデアを記録しましょう。",
+  "justNow": "たった今",
+  "minutesAgoSuffix": "分前",
+  "hoursAgoSuffix": "時間前",
+  "daysAgoSuffix": "日前",
+  "hideOrahFeatures": "Orahの機能を隠す",
+  "showOrahFeatures": "Orahの機能を表示",
+  "activeNotesCount": "メモ{count}件",
+  "completedLabel": "完了",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

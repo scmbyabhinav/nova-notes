@@ -509,5 +509,28 @@
   "filtersTooltip": "Filter",
   "openOrahPro": "ORAH Pro öffnen",
   "searchScreenTitle": "Suchen",
-  "searchFiltersTitle": "Suchfilter"
+  "searchFiltersTitle": "Suchfilter",
+  "homeTagline": "Denk es. Schreib es. Bewahre es.",
+  "homeSubtitle": "Ein ruhiger Ort für Notizen, Pläne und Reflexion.",
+  "tapToBeginNote": "Tippen, um eine Notiz zu beginnen",
+  "selectNotePrompt": "Notiz auswählen",
+  "desktopNoteEmpty": "Diese Notiz ist leer.",
+  "noContentLabel": "Kein Inhalt",
+  "emptyNotesHint": "Tippe auf +, um deinen ersten Gedanken festzuhalten.",
+  "justNow": "Gerade eben",
+  "minutesAgoSuffix": "Min. zuvor",
+  "hoursAgoSuffix": "Std. zuvor",
+  "daysAgoSuffix": "Tage zuvor",
+  "hideOrahFeatures": "ORAH-Funktionen ausblenden",
+  "showOrahFeatures": "ORAH-Funktionen anzeigen",
+  "activeNotesCount": "{count} Notizen",
+  "completedLabel": "erledigt",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

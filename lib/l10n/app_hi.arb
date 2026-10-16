@@ -509,5 +509,28 @@
   "filtersTooltip": "फ़िल्टर",
   "openOrahPro": "ORAH Pro खोलें",
   "searchScreenTitle": "खोजें",
-  "searchFiltersTitle": "खोज फ़िल्टर"
+  "searchFiltersTitle": "खोज फ़िल्टर",
+  "homeTagline": "सोचें। लिखें। सहेजें।",
+  "homeSubtitle": "नोट्स, योजनाओं और आत्मचिंतन के लिए एक शांत जगह।",
+  "tapToBeginNote": "नोट शुरू करने के लिए टैप करें",
+  "selectNotePrompt": "एक नोट चुनें",
+  "desktopNoteEmpty": "यह नोट खाली है।",
+  "noContentLabel": "कोई सामग्री नहीं",
+  "emptyNotesHint": "अपना पहला विचार लिखने के लिए + बटन दबाएँ।",
+  "justNow": "अभी-अभी",
+  "minutesAgoSuffix": "मिनट पहले",
+  "hoursAgoSuffix": "घंटे पहले",
+  "daysAgoSuffix": "दिन पहले",
+  "hideOrahFeatures": "Orah सुविधाएँ छिपाएँ",
+  "showOrahFeatures": "Orah सुविधाएँ दिखाएँ",
+  "activeNotesCount": "{count} नोट्स",
+  "completedLabel": "पूरे हुए",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

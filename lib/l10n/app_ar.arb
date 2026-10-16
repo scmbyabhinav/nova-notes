@@ -509,5 +509,28 @@
   "filtersTooltip": "عوامل التصفية",
   "openOrahPro": "افتح ORAH Pro",
   "searchScreenTitle": "بحث",
-  "searchFiltersTitle": "عوامل تصفية البحث"
+  "searchFiltersTitle": "عوامل تصفية البحث",
+  "homeTagline": "فكّر. اكتب. احتفظ.",
+  "homeSubtitle": "مساحة هادئة للملاحظات والخطط والتأمل.",
+  "tapToBeginNote": "اضغط لبدء ملاحظة",
+  "selectNotePrompt": "اختر ملاحظة",
+  "desktopNoteEmpty": "هذه الملاحظة فارغة.",
+  "noContentLabel": "لا يوجد محتوى",
+  "emptyNotesHint": "اضغط على زر + لتسجيل فكرتك الأولى.",
+  "justNow": "الآن",
+  "minutesAgoSuffix": "دقيقة مضت",
+  "hoursAgoSuffix": "ساعة مضت",
+  "daysAgoSuffix": "يوم مضى",
+  "hideOrahFeatures": "إخفاء ميزات ORAH",
+  "showOrahFeatures": "عرض ميزات ORAH",
+  "activeNotesCount": "{count} ملاحظة",
+  "completedLabel": "مكتمل",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

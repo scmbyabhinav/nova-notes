@@ -509,5 +509,28 @@
   "filtersTooltip": "Filtros",
   "openOrahPro": "Abrir ORAH Pro",
   "searchScreenTitle": "Pesquisar",
-  "searchFiltersTitle": "Filtros de pesquisa"
+  "searchFiltersTitle": "Filtros de pesquisa",
+  "homeTagline": "Pense. Escreva. Guarde.",
+  "homeSubtitle": "Um espaço tranquilo para notas, planos e reflexão.",
+  "tapToBeginNote": "Toque para começar uma nota",
+  "selectNotePrompt": "Selecione uma nota",
+  "desktopNoteEmpty": "Esta nota está vazia.",
+  "noContentLabel": "Sem conteúdo",
+  "emptyNotesHint": "Toque no botão + para guardar sua primeira ideia.",
+  "justNow": "Agora mesmo",
+  "minutesAgoSuffix": "min atrás",
+  "hoursAgoSuffix": "h atrás",
+  "daysAgoSuffix": "dias atrás",
+  "hideOrahFeatures": "Ocultar recursos do Orah",
+  "showOrahFeatures": "Mostrar recursos do Orah",
+  "activeNotesCount": "{count} notas",
+  "completedLabel": "concluídas",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

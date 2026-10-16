@@ -523,5 +523,28 @@
   "filtersTooltip": "Filters",
   "openOrahPro": "Open ORAH Pro",
   "searchScreenTitle": "Search",
-  "searchFiltersTitle": "Search filters"
+  "searchFiltersTitle": "Search filters",
+  "homeTagline": "Think it. Write it. Keep it.",
+  "homeSubtitle": "A calm space for notes, plans, and reflection.",
+  "tapToBeginNote": "Tap to begin a note",
+  "selectNotePrompt": "Select a note",
+  "desktopNoteEmpty": "This note is empty.",
+  "noContentLabel": "No content",
+  "emptyNotesHint": "Tap the + button to capture your first thought.",
+  "justNow": "Just now",
+  "minutesAgoSuffix": "min ago",
+  "hoursAgoSuffix": "hr ago",
+  "daysAgoSuffix": "days ago",
+  "hideOrahFeatures": "Hide Orah features",
+  "showOrahFeatures": "Show Orah features",
+  "activeNotesCount": "{count} notes",
+  "completedLabel": "completed",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

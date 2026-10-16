@@ -509,5 +509,28 @@
   "filtersTooltip": "筛选",
   "openOrahPro": "打开 ORAH Pro",
   "searchScreenTitle": "搜索",
-  "searchFiltersTitle": "搜索筛选"
+  "searchFiltersTitle": "搜索筛选",
+  "homeTagline": "想一想，写下来，保存好。",
+  "homeSubtitle": "用于记录笔记、计划和反思的宁静空间。",
+  "tapToBeginNote": "轻触以开始记笔记",
+  "selectNotePrompt": "选择一条笔记",
+  "desktopNoteEmpty": "此笔记为空。",
+  "noContentLabel": "无内容",
+  "emptyNotesHint": "轻触 + 按钮，记录你的第一个想法。",
+  "justNow": "刚刚",
+  "minutesAgoSuffix": "分钟前",
+  "hoursAgoSuffix": "小时前",
+  "daysAgoSuffix": "天前",
+  "hideOrahFeatures": "隐藏 Orah 功能",
+  "showOrahFeatures": "显示 Orah 功能",
+  "activeNotesCount": "{count} 条笔记",
+  "completedLabel": "已完成",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

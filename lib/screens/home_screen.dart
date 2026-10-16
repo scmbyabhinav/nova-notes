@@ -516,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 child: Row(
                   children: [
                     Tooltip(
-                      message: _showFeatures ? 'Hide Orah features' : 'Show Orah features',
+                      message: _showFeatures ? l10n.hideOrahFeatures : l10n.showOrahFeatures,
                       child: Material(
                         elevation: 3,
                         color: theme.colorScheme.primary,
@@ -548,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           const OrahWordmark(fontSize: 34),
                           const SizedBox(height: 2),
                           Text(
-                            'Think it. Write it. Keep it.',
+                            l10n.homeTagline,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -622,7 +622,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'A calm space for notes, plans, and reflection.',
+                                  l10n.homeSubtitle,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -779,7 +779,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'DAILY INSPIRATION  •  ${prompt.category.toUpperCase()}',
+                                      '${l10n.dailyInspiration.toUpperCase()}  •  ${prompt.category.toUpperCase()}',
                                       style: theme.textTheme.labelSmall?.copyWith(
                                         color: theme.colorScheme.primary,
                                         fontWeight: FontWeight.w800,
@@ -801,7 +801,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Tap to begin a note',
+                                      l10n.tapToBeginNote,
                                       style: theme.textTheme.bodySmall?.copyWith(
                                         color: theme.colorScheme.onSurfaceVariant,
                                       ),
@@ -841,7 +841,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ('favorites', l10n.favorites, Icons.star_outline_rounded),
                       ('checklists', l10n.checklistType, Icons.checklist_rounded),
                       ('archived', l10n.archivedLabel, Icons.archive_outlined),
-                      ('daily_reflection', 'Daily Ref', Icons.auto_awesome_rounded),
+                      ('daily_reflection', l10n.navDailyReflection, Icons.auto_awesome_rounded),
                     ])
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -1068,7 +1068,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 22, 18, 14),
                       child: Text(
-                        'Notes',
+                        l10n.notes,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -1103,7 +1103,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     ),
                     _SidebarItem(
                       assetIcon: 'star',
-                      label: 'Favorites',
+                      label: l10n.favorites,
                       count: active.where((n) => n.isFavorite).length,
                       onTap: () {},
                     ),
@@ -1115,7 +1115,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     _SidebarLabel(label: l10n.folders),
-                    ..._folderEntries(active),
+                    ..._folderEntries(active, l10n),
                     const Spacer(),
                     if (onNewNote != null || onVoiceCapture != null)
                       Padding(
@@ -1180,7 +1180,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            '@@ACTIVE_COUNT@@ notes',
+                            l10n.activeNotesCount(active.length),
                             style: theme.textTheme.bodySmall,
                           ),
                         ],
@@ -1215,7 +1215,7 @@ class _DesktopNotesLayout extends StatelessWidget {
               child: selected == null
                   ? Center(
                       child: Text(
-                        'Select a note',
+                        l10n.selectNotePrompt,
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -1232,7 +1232,7 @@ class _DesktopNotesLayout extends StatelessWidget {
     );
   }
 
-  List<Widget> _folderEntries(List<Note> active) {
+  List<Widget> _folderEntries(List<Note> active, AppLocalizations l10n) {
     final folders = <String, int>{};
     for (final note in active) {
       final id = note.folderId;
@@ -1244,7 +1244,7 @@ class _DesktopNotesLayout extends StatelessWidget {
       return [
         _SidebarItem(
           assetIcon: 'folder',
-          label: 'Folders',
+          label: l10n.folders,
           onTap: () {},
         ),
       ];
@@ -1366,9 +1366,10 @@ class _DesktopNoteRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final body = note.isLocked
-        ? 'Locked content'
+        ? l10n.lockedContent
         : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
@@ -1386,7 +1387,7 @@ class _DesktopNoteRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
+                  note.title.trim().isEmpty ? l10n.untitledNote : note.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -1405,7 +1406,7 @@ class _DesktopNoteRow extends StatelessWidget {
                 ],
                 const SizedBox(height: 5),
                 Text(
-                  '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? 'Notes'}',
+                  '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
                   style: theme.textTheme.labelSmall,
                 ),
               ],
@@ -1428,6 +1429,7 @@ class _DesktopNotePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final body = note.content.trim();
     return Column(
@@ -1438,7 +1440,7 @@ class _DesktopNotePreview extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                '@@DATE@@  ·  @@FOLDER@@',
+                '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
                 style: theme.textTheme.bodySmall,
               ),
               const Spacer(),
@@ -1462,7 +1464,7 @@ class _DesktopNotePreview extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
+                  note.title.trim().isEmpty ? l10n.untitledNote : note.title,
                   style: theme.textTheme.displaySmall?.copyWith(
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
@@ -1474,7 +1476,7 @@ class _DesktopNotePreview extends StatelessWidget {
                   _DesktopChecklistPreview(note: note)
                 else
                   SelectableText(
-                    body.isEmpty ? 'This note is empty.' : body,
+                    body.isEmpty ? l10n.desktopNoteEmpty : body,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 16,
                       height: 1.7,
@@ -1537,13 +1539,14 @@ class _NoteText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
+          note.isLocked ? l10n.privateNote : (note.title.isEmpty ? l10n.untitledNote : note.title),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleSmall?.copyWith(
@@ -1555,7 +1558,7 @@ class _NoteText extends StatelessWidget {
           Text(AppLocalizations.of(context)!.lockedContent, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ] else if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
           Text(
-            '${note.completedChecklistItems}/${note.checklistItems.length} completed',
+            '${note.completedChecklistItems}/${note.checklistItems.length} ${l10n.completedLabel}',
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
@@ -1565,7 +1568,7 @@ class _NoteText extends StatelessWidget {
           ),
         ] else
           Text(
-            note.content.isEmpty ? 'No content' : note.content,
+            note.content.isEmpty ? l10n.noContentLabel : note.content,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 14, height: 1.35, color: const Color(0xFF5B5B66)),
@@ -1582,6 +1585,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
@@ -1612,7 +1616,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Tap the + button to capture your first thought.',
+              l10n.emptyNotesHint,
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
@@ -1627,12 +1631,12 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-String _formatRelativeTime(DateTime date) {
+String _formatRelativeTime(AppLocalizations l10n, DateTime date) {
   final difference = DateTime.now().difference(date.toLocal());
-  if (difference.isNegative || difference.inMinutes < 1) return 'Just now';
-  if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
-  if (difference.inHours < 24) return '${difference.inHours}h ago';
-  if (difference.inDays < 7) return '${difference.inDays}d ago';
+  if (difference.isNegative || difference.inMinutes < 1) return l10n.justNow;
+  if (difference.inMinutes < 60) return '${difference.inMinutes} ${l10n.minutesAgoSuffix}';
+  if (difference.inHours < 24) return '${difference.inHours} ${l10n.hoursAgoSuffix}';
+  if (difference.inDays < 7) return '${difference.inDays} ${l10n.daysAgoSuffix}';
   return _formatDate(date);
 }
 
@@ -1657,12 +1661,13 @@ class _NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final title = note.isLocked
-        ? 'Private note'
-        : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
+        ? l10n.privateNote
+        : (note.title.trim().isEmpty ? l10n.untitledNote : note.title);
     final contentPreview = note.isLocked
-        ? 'Locked content'
+        ? l10n.lockedContent
         : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
     final body = contentPreview.isNotEmpty
         ? contentPreview
@@ -1742,7 +1747,7 @@ class _NoteCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      _formatRelativeTime(note.updatedAt),
+                      _formatRelativeTime(l10n, note.updatedAt),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelSmall?.copyWith(

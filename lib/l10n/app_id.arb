@@ -509,5 +509,28 @@
   "filtersTooltip": "Filter",
   "openOrahPro": "Buka ORAH Pro",
   "searchScreenTitle": "Cari",
-  "searchFiltersTitle": "Filter pencarian"
+  "searchFiltersTitle": "Filter pencarian",
+  "homeTagline": "Pikirkan. Tulis. Simpan.",
+  "homeSubtitle": "Ruang tenang untuk catatan, rencana, dan refleksi.",
+  "tapToBeginNote": "Ketuk untuk mulai mencatat",
+  "selectNotePrompt": "Pilih catatan",
+  "desktopNoteEmpty": "Catatan ini kosong.",
+  "noContentLabel": "Tidak ada konten",
+  "emptyNotesHint": "Ketuk tombol + untuk menyimpan pemikiran pertama Anda.",
+  "justNow": "Baru saja",
+  "minutesAgoSuffix": "mnt lalu",
+  "hoursAgoSuffix": "jam lalu",
+  "daysAgoSuffix": "hari lalu",
+  "hideOrahFeatures": "Sembunyikan fitur Orah",
+  "showOrahFeatures": "Tampilkan fitur Orah",
+  "activeNotesCount": "{count} catatan",
+  "completedLabel": "selesai",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

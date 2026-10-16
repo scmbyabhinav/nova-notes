@@ -509,5 +509,28 @@
   "filtersTooltip": "Filtreler",
   "openOrahPro": "ORAH Pro'yu aç",
   "searchScreenTitle": "Ara",
-  "searchFiltersTitle": "Arama filtreleri"
+  "searchFiltersTitle": "Arama filtreleri",
+  "homeTagline": "Düşün. Yaz. Sakla.",
+  "homeSubtitle": "Notlar, planlar ve düşünceler için sakin bir alan.",
+  "tapToBeginNote": "Not başlatmak için dokun",
+  "selectNotePrompt": "Bir not seçin",
+  "desktopNoteEmpty": "Bu not boş.",
+  "noContentLabel": "İçerik yok",
+  "emptyNotesHint": "İlk düşüncenizi kaydetmek için + düğmesine dokunun.",
+  "justNow": "Az önce",
+  "minutesAgoSuffix": "dk önce",
+  "hoursAgoSuffix": "sa önce",
+  "daysAgoSuffix": "gün önce",
+  "hideOrahFeatures": "Orah özelliklerini gizle",
+  "showOrahFeatures": "Orah özelliklerini göster",
+  "activeNotesCount": "{count} not",
+  "completedLabel": "tamamlandı",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

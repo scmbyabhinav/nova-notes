@@ -509,5 +509,28 @@
   "filtersTooltip": "מסננים",
   "openOrahPro": "פתח את ORAH Pro",
   "searchScreenTitle": "חיפוש",
-  "searchFiltersTitle": "מסנני חיפוש"
+  "searchFiltersTitle": "מסנני חיפוש",
+  "homeTagline": "חשוב. כתוב. שמור.",
+  "homeSubtitle": "מרחב רגוע להערות, לתוכניות ולהתבוננות.",
+  "tapToBeginNote": "הקישו כדי להתחיל הערה",
+  "selectNotePrompt": "בחרו הערה",
+  "desktopNoteEmpty": "ההערה הזו ריקה.",
+  "noContentLabel": "אין תוכן",
+  "emptyNotesHint": "הקישו על כפתור + כדי לשמור את המחשבה הראשונה שלכם.",
+  "justNow": "הרגע",
+  "minutesAgoSuffix": "דק׳ קודם",
+  "hoursAgoSuffix": "שע׳ קודם",
+  "daysAgoSuffix": "ימים קודם",
+  "hideOrahFeatures": "הסתרת תכונות Orah",
+  "showOrahFeatures": "הצגת תכונות Orah",
+  "activeNotesCount": "{count} הערות",
+  "completedLabel": "הושלמו",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
