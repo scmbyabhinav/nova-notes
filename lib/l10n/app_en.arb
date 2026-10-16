@@ -505,5 +505,21 @@
   "editNoteLabel": "Edit note",
   "lockedContent": "Locked content",
   "portableBackupDesc": "Notes, folders and attached files in one .nova package.",
-  "vaultAutoLockDesc": "Require authentication after the app is in the background"
+  "vaultAutoLockDesc": "Require authentication after the app is in the background",
+  "searchClear": "Clear",
+  "favoritesOnly": "Favorites only",
+  "pinnedOnly": "Pinned only",
+  "folderLabel": "Folder",
+  "allFolders": "All folders",
+  "archivedLabel": "Archived",
+  "noteTypeLabel": "Note type",
+  "allTypes": "All types",
+  "typeText": "Text",
+  "typeChecklist": "Checklist",
+  "typeVoice": "Voice",
+  "typeImage": "Image",
+  "typeDrawing": "Drawing",
+  "applyFilters": "Apply filters",
+  "filtersTooltip": "Filters",
+  "openOrahPro": "Open ORAH Pro"
 }

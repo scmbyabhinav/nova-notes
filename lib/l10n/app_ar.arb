@@ -491,5 +491,21 @@
   "editNoteLabel": "تعديل الملاحظة",
   "lockedContent": "محتوى مقفل",
   "portableBackupDesc": "ملاحظات ومجلدات وملفات مرفقة في حزمة .nova واحدة.",
-  "vaultAutoLockDesc": "طلب المصادقة بعد انتقال التطبيق إلى الخلفية"
+  "vaultAutoLockDesc": "طلب المصادقة بعد انتقال التطبيق إلى الخلفية",
+  "searchClear": "مسح",
+  "favoritesOnly": "المفضلة فقط",
+  "pinnedOnly": "المثبتة فقط",
+  "folderLabel": "المجلد",
+  "allFolders": "كل المجلدات",
+  "archivedLabel": "المؤرشفة",
+  "noteTypeLabel": "نوع الملاحظة",
+  "allTypes": "كل الأنواع",
+  "typeText": "نص",
+  "typeChecklist": "قائمة تحقق",
+  "typeVoice": "صوت",
+  "typeImage": "صورة",
+  "typeDrawing": "رسم",
+  "applyFilters": "تطبيق عوامل التصفية",
+  "filtersTooltip": "عوامل التصفية",
+  "openOrahPro": "افتح ORAH Pro"
 }

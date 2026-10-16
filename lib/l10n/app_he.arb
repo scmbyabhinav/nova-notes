@@ -491,5 +491,21 @@
   "editNoteLabel": "ערוך פתק",
   "lockedContent": "תוכן נעול",
   "portableBackupDesc": "פתקים, תיקיות וקבצים מצורפים בחבילת ‎.nova אחת.",
-  "vaultAutoLockDesc": "דרוש אימות לאחר שהאפליקציה עוברת לרקע"
+  "vaultAutoLockDesc": "דרוש אימות לאחר שהאפליקציה עוברת לרקע",
+  "searchClear": "נקה",
+  "favoritesOnly": "מועדפים בלבד",
+  "pinnedOnly": "מוצמדים בלבד",
+  "folderLabel": "תיקייה",
+  "allFolders": "כל התיקיות",
+  "archivedLabel": "בארכיון",
+  "noteTypeLabel": "סוג פתק",
+  "allTypes": "כל הסוגים",
+  "typeText": "טקסט",
+  "typeChecklist": "רשימת משימות",
+  "typeVoice": "קול",
+  "typeImage": "תמונה",
+  "typeDrawing": "ציור",
+  "applyFilters": "החל מסננים",
+  "filtersTooltip": "מסננים",
+  "openOrahPro": "פתח את ORAH Pro"
 }

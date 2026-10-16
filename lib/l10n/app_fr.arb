@@ -491,5 +491,21 @@
   "editNoteLabel": "Modifier la note",
   "lockedContent": "Contenu verrouillé",
   "portableBackupDesc": "Notes, dossiers et fichiers joints dans un seul paquet .nova.",
-  "vaultAutoLockDesc": "Exiger une authentification lorsque l’application passe en arrière-plan"
+  "vaultAutoLockDesc": "Exiger une authentification lorsque l’application passe en arrière-plan",
+  "searchClear": "Effacer",
+  "favoritesOnly": "Favoris uniquement",
+  "pinnedOnly": "Épinglés uniquement",
+  "folderLabel": "Dossier",
+  "allFolders": "Tous les dossiers",
+  "archivedLabel": "Archivées",
+  "noteTypeLabel": "Type de note",
+  "allTypes": "Tous les types",
+  "typeText": "Texte",
+  "typeChecklist": "Liste de tâches",
+  "typeVoice": "Voix",
+  "typeImage": "Image",
+  "typeDrawing": "Dessin",
+  "applyFilters": "Appliquer les filtres",
+  "filtersTooltip": "Filtres",
+  "openOrahPro": "Ouvrir ORAH Pro"
 }

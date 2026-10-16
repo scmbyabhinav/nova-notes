@@ -491,5 +491,21 @@
   "editNoteLabel": "नोट संपादित करें",
   "lockedContent": "लॉक की गई सामग्री",
   "portableBackupDesc": "नोट्स, फ़ोल्डर और संलग्न फ़ाइलें एक .nova पैकेज में।",
-  "vaultAutoLockDesc": "ऐप बैकग्राउंड में जाने के बाद प्रमाणीकरण आवश्यक करें"
+  "vaultAutoLockDesc": "ऐप बैकग्राउंड में जाने के बाद प्रमाणीकरण आवश्यक करें",
+  "searchClear": "साफ़ करें",
+  "favoritesOnly": "केवल पसंदीदा",
+  "pinnedOnly": "केवल पिन किए गए",
+  "folderLabel": "फ़ोल्डर",
+  "allFolders": "सभी फ़ोल्डर",
+  "archivedLabel": "संग्रहित",
+  "noteTypeLabel": "नोट का प्रकार",
+  "allTypes": "सभी प्रकार",
+  "typeText": "पाठ",
+  "typeChecklist": "चेकलिस्ट",
+  "typeVoice": "आवाज़",
+  "typeImage": "छवि",
+  "typeDrawing": "ड्रॉइंग",
+  "applyFilters": "फ़िल्टर लागू करें",
+  "filtersTooltip": "फ़िल्टर",
+  "openOrahPro": "ORAH Pro खोलें"
 }

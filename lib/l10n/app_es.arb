@@ -491,5 +491,21 @@
   "editNoteLabel": "Editar nota",
   "lockedContent": "Contenido bloqueado",
   "portableBackupDesc": "Notas, carpetas y archivos adjuntos en un paquete .nova.",
-  "vaultAutoLockDesc": "Solicitar autenticación al dejar la app en segundo plano"
+  "vaultAutoLockDesc": "Solicitar autenticación al dejar la app en segundo plano",
+  "searchClear": "Borrar",
+  "favoritesOnly": "Solo favoritos",
+  "pinnedOnly": "Solo fijados",
+  "folderLabel": "Carpeta",
+  "allFolders": "Todas las carpetas",
+  "archivedLabel": "Archivadas",
+  "noteTypeLabel": "Tipo de nota",
+  "allTypes": "Todos los tipos",
+  "typeText": "Texto",
+  "typeChecklist": "Lista de tareas",
+  "typeVoice": "Voz",
+  "typeImage": "Imagen",
+  "typeDrawing": "Dibujo",
+  "applyFilters": "Aplicar filtros",
+  "filtersTooltip": "Filtros",
+  "openOrahPro": "Abrir ORAH Pro"
 }

@@ -491,5 +491,21 @@
   "editNoteLabel": "Notiz bearbeiten",
   "lockedContent": "Gesperrter Inhalt",
   "portableBackupDesc": "Notizen, Ordner und Anhänge in einem .nova-Paket.",
-  "vaultAutoLockDesc": "Authentifizierung verlangen, wenn die App im Hintergrund ist"
+  "vaultAutoLockDesc": "Authentifizierung verlangen, wenn die App im Hintergrund ist",
+  "searchClear": "Leeren",
+  "favoritesOnly": "Nur Favoriten",
+  "pinnedOnly": "Nur angeheftete",
+  "folderLabel": "Ordner",
+  "allFolders": "Alle Ordner",
+  "archivedLabel": "Archiviert",
+  "noteTypeLabel": "Notiztyp",
+  "allTypes": "Alle Typen",
+  "typeText": "Text",
+  "typeChecklist": "Checkliste",
+  "typeVoice": "Sprache",
+  "typeImage": "Bild",
+  "typeDrawing": "Zeichnung",
+  "applyFilters": "Filter anwenden",
+  "filtersTooltip": "Filter",
+  "openOrahPro": "ORAH Pro öffnen"
 }
