@@ -470,5 +470,13 @@
   "showDailyInspiration": "ホーム画面に毎日のインスピレーションを表示",
   "showDailyInspirationDesc": "ノートの上に毎日の振り返りを表示。",
   "reminderUpdateFailed": "毎日の振り返りリマインダーを更新できませんでした：{error}",
-  "reminderScheduleFailed": "毎日の振り返りをスケジュールできませんでした：{error}"
+  "reminderScheduleFailed": "毎日の振り返りをスケジュールできませんでした：{error}",
+  "orahFeaturesSemantics": "Orahの機能",
+  "vaultTooltip": "保管庫 / ロックされたノート",
+  "calendarHistoryTooltip": "カレンダーと履歴",
+  "statisticsTooltip": "統計と分析",
+  "appearanceTooltip": "外観",
+  "appearanceSemantics": "外観設定",
+  "searchFiltersTooltip": "検索フィルター",
+  "hideDailyInspiration": "毎日のインスピレーションを非表示"
 }

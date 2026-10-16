@@ -470,5 +470,13 @@
   "showDailyInspiration": "Mostrar inspiração diária na tela inicial",
   "showDailyInspirationDesc": "Exibir uma reflexão diária acima das notas.",
   "reminderUpdateFailed": "Não foi possível atualizar o lembrete de reflexão diária: {error}",
-  "reminderScheduleFailed": "Não foi possível agendar a reflexão diária: {error}"
+  "reminderScheduleFailed": "Não foi possível agendar a reflexão diária: {error}",
+  "orahFeaturesSemantics": "Recursos do Orah",
+  "vaultTooltip": "Cofre / Notas bloqueadas",
+  "calendarHistoryTooltip": "Calendário e histórico",
+  "statisticsTooltip": "Estatísticas e insights",
+  "appearanceTooltip": "Aparência",
+  "appearanceSemantics": "Configurações de aparência",
+  "searchFiltersTooltip": "Filtros de pesquisa",
+  "hideDailyInspiration": "Ocultar inspiração diária"
 }

@@ -470,5 +470,13 @@
   "showDailyInspiration": "Ana ekranda günlük ilhamı göster",
   "showDailyInspirationDesc": "Notlarınızın üzerinde günlük düşünce önerisi gösterin.",
   "reminderUpdateFailed": "Günlük düşünce hatırlatıcısı güncellenemedi: {error}",
-  "reminderScheduleFailed": "Günlük düşünce planlanamadı: {error}"
+  "reminderScheduleFailed": "Günlük düşünce planlanamadı: {error}",
+  "orahFeaturesSemantics": "Orah özellikleri",
+  "vaultTooltip": "Kasa / Kilitli notlar",
+  "calendarHistoryTooltip": "Takvim ve geçmiş",
+  "statisticsTooltip": "İstatistikler ve içgörüler",
+  "appearanceTooltip": "Görünüm",
+  "appearanceSemantics": "Görünüm ayarları",
+  "searchFiltersTooltip": "Arama filtreleri",
+  "hideDailyInspiration": "Günlük ilhamı gizle"
 }

@@ -470,5 +470,13 @@
   "showDailyInspiration": "홈 화면에 매일의 영감 표시",
   "showDailyInspirationDesc": "메모 위에 일일 성찰 프롬프트 표시.",
   "reminderUpdateFailed": "일일 성찰 알림을 업데이트할 수 없습니다: {error}",
-  "reminderScheduleFailed": "일일 성찰을 예약할 수 없습니다: {error}"
+  "reminderScheduleFailed": "일일 성찰을 예약할 수 없습니다: {error}",
+  "orahFeaturesSemantics": "Orah 기능",
+  "vaultTooltip": "보관함 / 잠긴 메모",
+  "calendarHistoryTooltip": "캘린더 및 기록",
+  "statisticsTooltip": "통계 및 인사이트",
+  "appearanceTooltip": "화면 모양",
+  "appearanceSemantics": "화면 모양 설정",
+  "searchFiltersTooltip": "검색 필터",
+  "hideDailyInspiration": "매일의 영감 숨기기"
 }

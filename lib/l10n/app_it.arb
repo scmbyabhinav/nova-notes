@@ -470,5 +470,13 @@
   "showDailyInspiration": "Tampilkan inspirasi harian di layar utama",
   "showDailyInspirationDesc": "Tampilkan prompt refleksi harian di atas catatan.",
   "reminderUpdateFailed": "Tidak dapat memperbarui pengingat refleksi harian: {error}",
-  "reminderScheduleFailed": "Tidak dapat menjadwalkan refleksi harian: {error}"
+  "reminderScheduleFailed": "Tidak dapat menjadwalkan refleksi harian: {error}",
+  "orahFeaturesSemantics": "Fitur Orah",
+  "vaultTooltip": "Brankas / Catatan Terkunci",
+  "calendarHistoryTooltip": "Kalender & riwayat",
+  "statisticsTooltip": "Statistik & wawasan",
+  "appearanceTooltip": "Tampilan",
+  "appearanceSemantics": "Pengaturan tampilan",
+  "searchFiltersTooltip": "Filter pencarian",
+  "hideDailyInspiration": "Sembunyikan inspirasi harian"
 }
