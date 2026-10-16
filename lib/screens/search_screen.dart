@@ -280,7 +280,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   value: folderId,
                   decoration: InputDecoration(labelText: AppLocalizations.of(context)!.folderLabel),
                   items: [
-                    const DropdownMenuItem<String?>(
+                    DropdownMenuItem<String?>(
                       value: null,
                       child: Text(AppLocalizations.of(context)!.allFolders),
                     ),
@@ -301,10 +301,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 DropdownButtonFormField<NoteType?>(
                   value: type,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.noteTypeLabel,
                   ),
-                  items: const [
+                  items: [
                     DropdownMenuItem<NoteType?>(
                       value: null,
                       child: Text(AppLocalizations.of(context)!.allTypes),
