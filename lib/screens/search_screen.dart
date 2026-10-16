@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../core/services/nova_security_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/note_repository_provider.dart';
@@ -243,7 +244,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Row(
                   children: [
                     Text(
-                      'Search filters',
+                      AppLocalizations.of(context)!.filtersTooltip,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
@@ -259,29 +260,29 @@ class _SearchScreenState extends State<SearchScreen> {
                           type = null;
                         });
                       },
-                      child: const Text('Clear'),
+                      child: Text(AppLocalizations.of(context)!.searchClear),
                     ),
                   ],
                 ),
                 SwitchListTile(
                   value: favorites,
-                  title: const Text('Favorites only'),
+                  title: Text(AppLocalizations.of(context)!.favoritesOnly),
                   onChanged: (value) =>
                       setSheetState(() => favorites = value),
                 ),
                 SwitchListTile(
                   value: pinned,
-                  title: const Text('Pinned only'),
+                  title: Text(AppLocalizations.of(context)!.pinnedOnly),
                   onChanged: (value) => setSheetState(() => pinned = value),
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String?>(
                   value: folderId,
-                  decoration: const InputDecoration(labelText: 'Folder'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)!.folderLabel),
                   items: [
                     const DropdownMenuItem<String?>(
                       value: null,
-                      child: Text('All folders'),
+                      child: Text(AppLocalizations.of(context)!.allFolders),
                     ),
                     ..._folders.map(
                       (folder) => DropdownMenuItem<String?>(
@@ -295,38 +296,38 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 SwitchListTile(
                   value: archived,
-                  title: const Text('Archived'),
+                  title: Text(AppLocalizations.of(context)!.archivedLabel),
                   onChanged: (value) => setSheetState(() => archived = value),
                 ),
                 DropdownButtonFormField<NoteType?>(
                   value: type,
                   decoration: const InputDecoration(
-                    labelText: 'Note type',
+                    labelText: AppLocalizations.of(context)!.noteTypeLabel,
                   ),
                   items: const [
                     DropdownMenuItem<NoteType?>(
                       value: null,
-                      child: Text('All types'),
+                      child: Text(AppLocalizations.of(context)!.allTypes),
                     ),
                     DropdownMenuItem(
                       value: NoteType.text,
-                      child: Text('Text'),
+                      child: Text(AppLocalizations.of(context)!.typeText),
                     ),
                     DropdownMenuItem(
                       value: NoteType.checklist,
-                      child: Text('Checklist'),
+                      child: Text(AppLocalizations.of(context)!.typeChecklist),
                     ),
                     DropdownMenuItem(
                       value: NoteType.voice,
-                      child: Text('Voice'),
+                      child: Text(AppLocalizations.of(context)!.typeVoice),
                     ),
                     DropdownMenuItem(
                       value: NoteType.image,
-                      child: Text('Image'),
+                      child: Text(AppLocalizations.of(context)!.typeImage),
                     ),
                     DropdownMenuItem(
                       value: NoteType.drawing,
-                      child: Text('Drawing'),
+                      child: Text(AppLocalizations.of(context)!.typeDrawing),
                     ),
                   ],
                   onChanged: (value) => setSheetState(() => type = value),
@@ -347,7 +348,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       );
                     },
-                    child: const Text('Apply filters'),
+                    child: Text(AppLocalizations.of(context)!.applyFilters),
                   ),
                 ),
               ],
@@ -383,7 +384,7 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: 'Filters',
+            tooltip: AppLocalizations.of(context)!.filtersTooltip,
             onPressed: _showFilters,
             icon: Badge(
               isLabelVisible: !_filter.isEmpty,
@@ -402,12 +403,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: SearchBar(
                       controller: _controller,
                       focusNode: _focusNode,
-                      hintText: 'Search title, content or tags...',
+                      hintText: AppLocalizations.of(context)!.searchHint,
                       leading: const OrahAssetIcon('search'),
                       trailing: [
                         if (query.isNotEmpty)
                           IconButton(
-                            tooltip: 'Clear',
+                            tooltip: AppLocalizations.of(context)!.searchClear,
                             onPressed: () => _controller.clear(),
                             icon: const Icon(Icons.close_rounded),
                           ),
@@ -483,7 +484,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         MaterialPageRoute(builder: (_) => const OrahProScreen()),
                                       ),
                                       icon: const Icon(Icons.workspace_premium_rounded),
-                                      label: const Text('Open ORAH Pro'),
+                                      label: Text(AppLocalizations.of(context)!.openOrahPro),
                                     ),
                                   ],
                                 ],
