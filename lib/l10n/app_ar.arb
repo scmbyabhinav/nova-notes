@@ -470,5 +470,13 @@
   "showDailyInspiration": "إظهار الإلهام اليومي على الشاشة الرئيسية",
   "showDailyInspirationDesc": "عرض فكرة للتأمل اليومي أعلى الملاحظات.",
   "reminderUpdateFailed": "تعذر تحديث تذكير التأمل اليومي: {error}",
-  "reminderScheduleFailed": "تعذرت جدولة التأمل اليومي: {error}"
+  "reminderScheduleFailed": "تعذرت جدولة التأمل اليومي: {error}",
+  "orahFeaturesSemantics": "ميزات Orah",
+  "vaultTooltip": "الخزنة / الملاحظات المقفلة",
+  "calendarHistoryTooltip": "التقويم والسجل",
+  "statisticsTooltip": "الإحصاءات والرؤى",
+  "appearanceTooltip": "المظهر",
+  "appearanceSemantics": "إعدادات المظهر",
+  "searchFiltersTooltip": "عوامل تصفية البحث",
+  "hideDailyInspiration": "إخفاء الإلهام اليومي"
 }

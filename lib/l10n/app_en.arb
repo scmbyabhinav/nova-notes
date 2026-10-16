@@ -484,5 +484,13 @@
   "showDailyInspiration": "Show Daily Inspiration on Home Screen",
   "showDailyInspirationDesc": "Display a daily reflection prompt above your notes.",
   "reminderUpdateFailed": "Could not update Daily Reflection reminder: {error}",
-  "reminderScheduleFailed": "Could not schedule Daily Reflection: {error}"
+  "reminderScheduleFailed": "Could not schedule Daily Reflection: {error}",
+  "orahFeaturesSemantics": "Orah features",
+  "vaultTooltip": "Vault / Locked Notes",
+  "calendarHistoryTooltip": "Calendar & history",
+  "statisticsTooltip": "Statistics & insights",
+  "appearanceTooltip": "Appearance",
+  "appearanceSemantics": "Appearance settings",
+  "searchFiltersTooltip": "Search filters",
+  "hideDailyInspiration": "Hide daily inspiration"
 }

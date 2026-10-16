@@ -470,5 +470,13 @@
   "showDailyInspiration": "Tägliche Inspiration auf dem Startbildschirm anzeigen",
   "showDailyInspirationDesc": "Eine tägliche Reflexion über den Notizen anzeigen.",
   "reminderUpdateFailed": "Erinnerung für tägliche Reflexion konnte nicht aktualisiert werden: {error}",
-  "reminderScheduleFailed": "Tägliche Reflexion konnte nicht geplant werden: {error}"
+  "reminderScheduleFailed": "Tägliche Reflexion konnte nicht geplant werden: {error}",
+  "orahFeaturesSemantics": "Orah-Funktionen",
+  "vaultTooltip": "Tresor / Gesperrte Notizen",
+  "calendarHistoryTooltip": "Kalender und Verlauf",
+  "statisticsTooltip": "Statistiken und Einblicke",
+  "appearanceTooltip": "Darstellung",
+  "appearanceSemantics": "Darstellungseinstellungen",
+  "searchFiltersTooltip": "Suchfilter",
+  "hideDailyInspiration": "Tägliche Inspiration ausblenden"
 }

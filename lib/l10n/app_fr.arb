@@ -470,5 +470,13 @@
   "showDailyInspiration": "Afficher l’inspiration quotidienne sur l’accueil",
   "showDailyInspirationDesc": "Afficher une réflexion quotidienne au-dessus des notes.",
   "reminderUpdateFailed": "Impossible de mettre à jour le rappel de réflexion quotidienne : {error}",
-  "reminderScheduleFailed": "Impossible de programmer la réflexion quotidienne : {error}"
+  "reminderScheduleFailed": "Impossible de programmer la réflexion quotidienne : {error}",
+  "orahFeaturesSemantics": "Fonctionnalités d’Orah",
+  "vaultTooltip": "Coffre-fort / Notes verrouillées",
+  "calendarHistoryTooltip": "Calendrier et historique",
+  "statisticsTooltip": "Statistiques et analyses",
+  "appearanceTooltip": "Apparence",
+  "appearanceSemantics": "Paramètres d’apparence",
+  "searchFiltersTooltip": "Filtres de recherche",
+  "hideDailyInspiration": "Masquer l’inspiration quotidienne"
 }

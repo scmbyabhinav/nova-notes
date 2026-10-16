@@ -470,5 +470,13 @@
   "showDailyInspiration": "होम स्क्रीन पर दैनिक प्रेरणा दिखाएँ",
   "showDailyInspirationDesc": "अपने नोट्स के ऊपर दैनिक चिंतन संकेत दिखाएँ।",
   "reminderUpdateFailed": "दैनिक चिंतन रिमाइंडर अपडेट नहीं हो सका: {error}",
-  "reminderScheduleFailed": "दैनिक चिंतन शेड्यूल नहीं हो सका: {error}"
+  "reminderScheduleFailed": "दैनिक चिंतन शेड्यूल नहीं हो सका: {error}",
+  "orahFeaturesSemantics": "Orah सुविधाएँ",
+  "vaultTooltip": "वॉल्ट / लॉक किए गए नोट्स",
+  "calendarHistoryTooltip": "कैलेंडर और इतिहास",
+  "statisticsTooltip": "आँकड़े और जानकारी",
+  "appearanceTooltip": "दिखावट",
+  "appearanceSemantics": "दिखावट सेटिंग",
+  "searchFiltersTooltip": "खोज फ़िल्टर",
+  "hideDailyInspiration": "दैनिक प्रेरणा छिपाएँ"
 }

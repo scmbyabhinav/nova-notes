@@ -470,5 +470,13 @@
   "showDailyInspiration": "Mostrar inspiración diaria en inicio",
   "showDailyInspirationDesc": "Mostrar una reflexión diaria sobre tus notas.",
   "reminderUpdateFailed": "No se pudo actualizar el recordatorio de reflexión diaria: {error}",
-  "reminderScheduleFailed": "No se pudo programar la reflexión diaria: {error}"
+  "reminderScheduleFailed": "No se pudo programar la reflexión diaria: {error}",
+  "orahFeaturesSemantics": "Funciones de Orah",
+  "vaultTooltip": "Bóveda / Notas bloqueadas",
+  "calendarHistoryTooltip": "Calendario e historial",
+  "statisticsTooltip": "Estadísticas e información",
+  "appearanceTooltip": "Apariencia",
+  "appearanceSemantics": "Configuración de apariencia",
+  "searchFiltersTooltip": "Filtros de búsqueda",
+  "hideDailyInspiration": "Ocultar inspiración diaria"
 }

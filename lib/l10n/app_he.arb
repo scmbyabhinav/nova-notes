@@ -470,5 +470,13 @@
   "showDailyInspiration": "הצג השראה יומית במסך הבית",
   "showDailyInspirationDesc": "הצג הנחיית הרהור יומית מעל הפתקים.",
   "reminderUpdateFailed": "לא ניתן לעדכן את תזכורת ההרהור היומי: {error}",
-  "reminderScheduleFailed": "לא ניתן לתזמן הרהור יומי: {error}"
+  "reminderScheduleFailed": "לא ניתן לתזמן הרהור יומי: {error}",
+  "orahFeaturesSemantics": "תכונות Orah",
+  "vaultTooltip": "כספת / פתקים נעולים",
+  "calendarHistoryTooltip": "לוח שנה והיסטוריה",
+  "statisticsTooltip": "סטטיסטיקות ותובנות",
+  "appearanceTooltip": "מראה",
+  "appearanceSemantics": "הגדרות מראה",
+  "searchFiltersTooltip": "מסנני חיפוש",
+  "hideDailyInspiration": "הסתר השראה יומית"
 }
