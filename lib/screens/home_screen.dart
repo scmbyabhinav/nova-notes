@@ -272,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             ListTile(
               leading: const OrahAssetIcon('star'),
               title: Text(
-                note.isFavorite ? 'Remove favorite' : 'Add to favorites',
+                note.isFavorite ? l10n.removeFavorite : l10n.addToFavorites,
               ),
               onTap: () => Navigator.pop(context, 'favorite'),
             ),
@@ -391,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
-              label: 'Undo',
+              label: l10n.undo,
               onPressed: () {
                 _trashSnackBarTimer?.cancel();
                 trashSnackBar.close();
@@ -615,7 +615,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Explore Orah',
+                                  l10n.exploreOrah,
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -836,11 +836,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   children: [
                     for (final filter in [
-                      ('all', 'All', Icons.notes_rounded),
-                      ('pinned', 'Pinned', Icons.push_pin_outlined),
-                      ('favorites', 'Favorites', Icons.star_outline_rounded),
-                      ('checklists', 'Checklists', Icons.checklist_rounded),
-                      ('archived', 'Archived', Icons.archive_outlined),
+                      ('all', l10n.showAllNotes, Icons.notes_rounded),
+                      ('pinned', l10n.pinnedOnly, Icons.push_pin_outlined),
+                      ('favorites', l10n.favorites, Icons.star_outline_rounded),
+                      ('checklists', l10n.checklistType, Icons.checklistType),
+                      ('archived', l10n.archivedLabel, Icons.archive_outlined),
                       ('daily_reflection', 'Daily Ref', Icons.auto_awesome_rounded),
                     ])
                       Padding(
@@ -1092,10 +1092,10 @@ class _DesktopNotesLayout extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 22),
-                    const _SidebarLabel(label: 'LIBRARY'),
+                    _SidebarLabel(label: l10n.notes),
                     _SidebarItem(
                       assetIcon: 'notes',
-                      label: 'All Notes',
+                      label: l10n.showAllNotes,
                       count: active.length,
                       selected: true,
                       onTap: () {},
@@ -1108,12 +1108,12 @@ class _DesktopNotesLayout extends StatelessWidget {
                     ),
                     _SidebarItem(
                       icon: Icons.access_time_rounded,
-                      label: 'Recent',
+                      label: l10n.recentNotes,
                       count: active.length > 8 ? 8 : active.length,
                       onTap: () {},
                     ),
                     const SizedBox(height: 16),
-                    const _SidebarLabel(label: 'FOLDERS'),
+                    _SidebarLabel(label: l10n.folders),
                     ..._folderEntries(active),
                     const Spacer(),
                     if (onNewNote != null || onVoiceCapture != null)
@@ -1171,7 +1171,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'All Notes',
+                            l10n.showAllNotes,
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -1214,7 +1214,7 @@ class _DesktopNotesLayout extends StatelessWidget {
               child: selected == null
                   ? Center(
                       child: Text(
-                        'Select a note',
+                        l10n.searchLabel,
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -1473,7 +1473,7 @@ class _DesktopNotePreview extends StatelessWidget {
                   _DesktopChecklistPreview(note: note)
                 else
                   SelectableText(
-                    body.isEmpty ? 'This note is empty.' : body,
+                    body.isEmpty ? l10n.checklistEmpty : body,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 16,
                       height: 1.7,
@@ -1564,7 +1564,7 @@ class _NoteText extends StatelessWidget {
           ),
         ] else
           Text(
-            note.content.isEmpty ? 'No content' : note.content,
+            note.content.isEmpty ? l10n.lockedContent : note.content,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 14, height: 1.35, color: const Color(0xFF5B5B66)),
@@ -1628,7 +1628,7 @@ class _EmptyState extends StatelessWidget {
 
 String _formatRelativeTime(DateTime date) {
   final difference = DateTime.now().difference(date.toLocal());
-  if (difference.isNegative || difference.inMinutes < 1) return 'Just now';
+  if (difference.isNegative || difference.inMinutes < 1) return l10n.recentlyUpdated;
   if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
   if (difference.inHours < 24) return '${difference.inHours}h ago';
   if (difference.inDays < 7) return '${difference.inDays}d ago';
