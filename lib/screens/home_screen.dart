@@ -533,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                               child: SvgPicture.asset(
                                 'assets/orah_header_icon.svg',
                                 fit: BoxFit.contain,
-                                semanticsLabel: 'Orah features',
+                                semanticsLabel: l10n.orahFeaturesSemantics,
                               ),
                             ),
                           ),
@@ -557,19 +557,19 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Vault / Locked Notes',
+                      tooltip: l10n.vaultTooltip,
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const VaultScreen()),
                       ),
                       icon: const Icon(Icons.security_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Calendar & history',
+                      tooltip: l10n.calendarHistoryTooltip,
                       onPressed: widget.onCalendarHistory,
                       icon: const Icon(Icons.calendar_month_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Statistics & insights',
+                      tooltip: l10n.statisticsTooltip,
                       onPressed: widget.onStatistics,
                       icon: const Icon(Icons.bar_chart_rounded, size: 24),
                     ),
@@ -585,13 +585,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                     ),
                     if (_showFeatures)
                       IconButton.filledTonal(
-                        tooltip: 'Appearance',
+                        tooltip: l10n.appearanceTooltip,
                         onPressed: widget.onSettings,
                         icon: SvgPicture.asset(
                           'assets/appearance_icon.svg',
                           width: 26,
                           height: 26,
-                          semanticsLabel: 'Appearance settings',
+                          semanticsLabel: l10n.appearanceSemantics,
                         ),
                       ),
                   ],
@@ -728,7 +728,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   },
                   trailing: [
                     IconButton(
-                      tooltip: 'Search filters',
+                      tooltip: l10n.searchFiltersTooltip,
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -810,7 +810,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                 ),
                               ),
                               IconButton(
-                                tooltip: 'Hide daily inspiration',
+                                tooltip: l10n.hideDailyInspiration,
                                 visualDensity: VisualDensity.compact,
                                 onPressed: () => _setDailyPromptHidden(true),
                                 icon: Icon(
@@ -934,7 +934,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         ),
                       const SizedBox(width: 4),
                       PopupMenuButton<String>(
-                        tooltip: 'Sort notes',
+                        tooltip: l10n.sortNotesTooltip,
                         initialValue: _sort,
                         onSelected: (value) async { setState(() => _sort = value); await _savePreferences(); },
                         itemBuilder: (_) => [
@@ -945,7 +945,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         icon: const Icon(Icons.sort_rounded),
                       ),
                       IconButton(
-                        tooltip: _gridView ? 'List view' : 'Grid view',
+                        tooltip: _gridView ? l10n.listView : l10n.gridView,
                         onPressed: () async {
                           setState(() => _gridView = !_gridView);
                           await _savePreferences();
@@ -1078,7 +1078,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: SearchBar(
-                        hintText: 'Search',
+                        hintText: l10n.searchLabel,
                         leading: const OrahAssetIcon('search', size: 19),
                         elevation: const WidgetStatePropertyAll(0),
                         backgroundColor: WidgetStatePropertyAll(
@@ -1126,7 +1126,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 child: FilledButton.icon(
                                   onPressed: onNewNote,
                                   icon: OrahAssetIcon('new-note', size: 18, color: theme.colorScheme.onPrimary),
-                                  label: const Text('New Note'),
+                                  label: Text(l10n.newNoteLabel),
                                   style: FilledButton.styleFrom(
                                     minimumSize: const Size.fromHeight(44),
                                     shape: RoundedRectangleBorder(
@@ -1142,7 +1142,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 width: 48,
                                 height: 44,
                                 child: IconButton.filledTonal(
-                                  tooltip: 'Microphone',
+                                  tooltip: l10n.microphoneTooltip,
                                   onPressed: onVoiceCapture,
                                   icon: OrahAssetIcon('microphone', color: theme.colorScheme.onSecondaryContainer),
                                 ),
@@ -1442,12 +1442,12 @@ class _DesktopNotePreview extends StatelessWidget {
               ),
               const Spacer(),
               IconButton(
-                tooltip: note.isPinned ? 'Unpin' : 'Pin',
+                tooltip: note.isPinned ? l10n.unpinTooltip : l10n.pinTooltip,
                 onPressed: () {},
                 icon: const OrahAssetIcon('pin'),
               ),
               IconButton(
-                tooltip: 'Favorite',
+                tooltip: l10n.favoriteTooltip,
                 onPressed: () {},
                 icon: const OrahAssetIcon('star'),
               ),
@@ -1490,7 +1490,7 @@ class _DesktopNotePreview extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onEdit,
               icon: const Icon(Icons.edit_outlined),
-              label: const Text('Edit note'),
+              label: Text(l10n.editNoteLabel),
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -1551,7 +1551,7 @@ class _NoteText extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (note.isLocked) ...[
-          Text('Locked content', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(l10n.lockedContent, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ] else if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
           Text(
             '${note.completedChecklistItems}/${note.checklistItems.length} completed',
