@@ -489,5 +489,7 @@
   "pinTooltip": "הצמד",
   "favoriteTooltip": "מועדף",
   "editNoteLabel": "ערוך פתק",
-  "lockedContent": "תוכן נעול"
+  "lockedContent": "תוכן נעול",
+  "portableBackupDesc": "פתקים, תיקיות וקבצים מצורפים בחבילת ‎.nova אחת.",
+  "vaultAutoLockDesc": "דרוש אימות לאחר שהאפליקציה עוברת לרקע"
 }

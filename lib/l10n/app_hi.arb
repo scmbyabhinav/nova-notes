@@ -489,5 +489,7 @@
   "pinTooltip": "पिन करें",
   "favoriteTooltip": "पसंदीदा",
   "editNoteLabel": "नोट संपादित करें",
-  "lockedContent": "लॉक की गई सामग्री"
+  "lockedContent": "लॉक की गई सामग्री",
+  "portableBackupDesc": "नोट्स, फ़ोल्डर और संलग्न फ़ाइलें एक .nova पैकेज में।",
+  "vaultAutoLockDesc": "ऐप बैकग्राउंड में जाने के बाद प्रमाणीकरण आवश्यक करें"
 }

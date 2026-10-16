@@ -489,5 +489,7 @@
   "pinTooltip": "Anheften",
   "favoriteTooltip": "Favorit",
   "editNoteLabel": "Notiz bearbeiten",
-  "lockedContent": "Gesperrter Inhalt"
+  "lockedContent": "Gesperrter Inhalt",
+  "portableBackupDesc": "Notizen, Ordner und Anhänge in einem .nova-Paket.",
+  "vaultAutoLockDesc": "Authentifizierung verlangen, wenn die App im Hintergrund ist"
 }

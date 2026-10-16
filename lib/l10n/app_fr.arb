@@ -489,5 +489,7 @@
   "pinTooltip": "Épingler",
   "favoriteTooltip": "Favori",
   "editNoteLabel": "Modifier la note",
-  "lockedContent": "Contenu verrouillé"
+  "lockedContent": "Contenu verrouillé",
+  "portableBackupDesc": "Notes, dossiers et fichiers joints dans un seul paquet .nova.",
+  "vaultAutoLockDesc": "Exiger une authentification lorsque l’application passe en arrière-plan"
 }

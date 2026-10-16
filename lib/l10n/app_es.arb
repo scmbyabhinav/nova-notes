@@ -489,5 +489,7 @@
   "pinTooltip": "Fijar",
   "favoriteTooltip": "Favorito",
   "editNoteLabel": "Editar nota",
-  "lockedContent": "Contenido bloqueado"
+  "lockedContent": "Contenido bloqueado",
+  "portableBackupDesc": "Notas, carpetas y archivos adjuntos en un paquete .nova.",
+  "vaultAutoLockDesc": "Solicitar autenticación al dejar la app en segundo plano"
 }

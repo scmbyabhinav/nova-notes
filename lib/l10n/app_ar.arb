@@ -489,5 +489,7 @@
   "pinTooltip": "تثبيت",
   "favoriteTooltip": "المفضلة",
   "editNoteLabel": "تعديل الملاحظة",
-  "lockedContent": "محتوى مقفل"
+  "lockedContent": "محتوى مقفل",
+  "portableBackupDesc": "ملاحظات ومجلدات وملفات مرفقة في حزمة .nova واحدة.",
+  "vaultAutoLockDesc": "طلب المصادقة بعد انتقال التطبيق إلى الخلفية"
 }
