@@ -491,5 +491,21 @@
   "editNoteLabel": "Edit catatan",
   "lockedContent": "Konten terkunci",
   "portableBackupDesc": "Catatan, folder, dan file lampiran dalam satu paket .nova.",
-  "vaultAutoLockDesc": "Minta autentikasi saat aplikasi berada di latar belakang"
+  "vaultAutoLockDesc": "Minta autentikasi saat aplikasi berada di latar belakang",
+  "searchClear": "Cancella",
+  "favoritesOnly": "Solo preferiti",
+  "pinnedOnly": "Solo fissati",
+  "folderLabel": "Cartella",
+  "allFolders": "Tutte le cartelle",
+  "archivedLabel": "Archiviate",
+  "noteTypeLabel": "Tipo di nota",
+  "allTypes": "Tutti i tipi",
+  "typeText": "Testo",
+  "typeChecklist": "Lista di controllo",
+  "typeVoice": "Voce",
+  "typeImage": "Immagine",
+  "typeDrawing": "Disegno",
+  "applyFilters": "Applica filtri",
+  "filtersTooltip": "Filtri",
+  "openOrahPro": "Apri ORAH Pro"
 }

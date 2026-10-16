@@ -491,5 +491,21 @@
   "editNoteLabel": "Editar nota",
   "lockedContent": "Conteúdo bloqueado",
   "portableBackupDesc": "Notas, pastas e arquivos anexados em um pacote .nova.",
-  "vaultAutoLockDesc": "Exigir autenticação quando o app ficar em segundo plano"
+  "vaultAutoLockDesc": "Exigir autenticação quando o app ficar em segundo plano",
+  "searchClear": "Temizle",
+  "favoritesOnly": "Yalnızca favoriler",
+  "pinnedOnly": "Yalnızca sabitlenenler",
+  "folderLabel": "Klasör",
+  "allFolders": "Tüm klasörler",
+  "archivedLabel": "Arşivlendi",
+  "noteTypeLabel": "Not türü",
+  "allTypes": "Tüm türler",
+  "typeText": "Metin",
+  "typeChecklist": "Kontrol listesi",
+  "typeVoice": "Ses",
+  "typeImage": "Görsel",
+  "typeDrawing": "Çizim",
+  "applyFilters": "Filtreleri uygula",
+  "filtersTooltip": "Filtreler",
+  "openOrahPro": "ORAH Pro'yu aç"
 }

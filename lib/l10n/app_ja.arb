@@ -491,5 +491,21 @@
   "editNoteLabel": "Modifica nota",
   "lockedContent": "Contenuto bloccato",
   "portableBackupDesc": "Note, cartelle e allegati in un unico pacchetto .nova.",
-  "vaultAutoLockDesc": "Richiedi autenticazione quando l’app è in background"
+  "vaultAutoLockDesc": "Richiedi autenticazione quando l’app è in background",
+  "searchClear": "クリア",
+  "favoritesOnly": "お気に入りのみ",
+  "pinnedOnly": "ピン留めのみ",
+  "folderLabel": "フォルダ",
+  "allFolders": "すべてのフォルダ",
+  "archivedLabel": "アーカイブ済み",
+  "noteTypeLabel": "ノートの種類",
+  "allTypes": "すべての種類",
+  "typeText": "テキスト",
+  "typeChecklist": "チェックリスト",
+  "typeVoice": "音声",
+  "typeImage": "画像",
+  "typeDrawing": "描画",
+  "applyFilters": "フィルターを適用",
+  "filtersTooltip": "フィルター",
+  "openOrahPro": "ORAH Proを開く"
 }

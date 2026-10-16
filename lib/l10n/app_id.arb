@@ -491,5 +491,21 @@
   "editNoteLabel": "Edit note",
   "lockedContent": "Locked content",
   "portableBackupDesc": "Notes, folders and attached files in one .nova package.",
-  "vaultAutoLockDesc": "Require authentication after the app is in the background"
+  "vaultAutoLockDesc": "Require authentication after the app is in the background",
+  "searchClear": "Hapus",
+  "favoritesOnly": "Hanya favorit",
+  "pinnedOnly": "Hanya disematkan",
+  "folderLabel": "Folder",
+  "allFolders": "Semua folder",
+  "archivedLabel": "Diarsipkan",
+  "noteTypeLabel": "Jenis catatan",
+  "allTypes": "Semua jenis",
+  "typeText": "Teks",
+  "typeChecklist": "Daftar periksa",
+  "typeVoice": "Suara",
+  "typeImage": "Gambar",
+  "typeDrawing": "Gambar",
+  "applyFilters": "Terapkan filter",
+  "filtersTooltip": "Filter",
+  "openOrahPro": "Buka ORAH Pro"
 }

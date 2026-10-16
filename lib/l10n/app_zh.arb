@@ -491,5 +491,21 @@
   "editNoteLabel": "Notu düzenle",
   "lockedContent": "Kilitli içerik",
   "portableBackupDesc": "Notlar, klasörler ve ekler tek bir .nova paketinde.",
-  "vaultAutoLockDesc": "Uygulama arka plana geçtiğinde kimlik doğrulaması iste"
+  "vaultAutoLockDesc": "Uygulama arka plana geçtiğinde kimlik doğrulaması iste",
+  "searchClear": "清除",
+  "favoritesOnly": "仅收藏",
+  "pinnedOnly": "仅显示置顶",
+  "folderLabel": "文件夹",
+  "allFolders": "所有文件夹",
+  "archivedLabel": "已归档",
+  "noteTypeLabel": "笔记类型",
+  "allTypes": "所有类型",
+  "typeText": "文本",
+  "typeChecklist": "清单",
+  "typeVoice": "语音",
+  "typeImage": "图片",
+  "typeDrawing": "绘图",
+  "applyFilters": "应用筛选",
+  "filtersTooltip": "筛选",
+  "openOrahPro": "打开 ORAH Pro"
 }

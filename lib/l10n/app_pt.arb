@@ -491,5 +491,21 @@
   "editNoteLabel": "메모 편집",
   "lockedContent": "잠긴 콘텐츠",
   "portableBackupDesc": "메모, 폴더, 첨부 파일을 하나의 .nova 패키지로.",
-  "vaultAutoLockDesc": "앱이 백그라운드로 이동하면 인증 요구"
+  "vaultAutoLockDesc": "앱이 백그라운드로 이동하면 인증 요구",
+  "searchClear": "Limpar",
+  "favoritesOnly": "Apenas favoritos",
+  "pinnedOnly": "Apenas fixados",
+  "folderLabel": "Pasta",
+  "allFolders": "Todas as pastas",
+  "archivedLabel": "Arquivadas",
+  "noteTypeLabel": "Tipo de nota",
+  "allTypes": "Todos os tipos",
+  "typeText": "Texto",
+  "typeChecklist": "Lista de tarefas",
+  "typeVoice": "Voz",
+  "typeImage": "Imagem",
+  "typeDrawing": "Desenho",
+  "applyFilters": "Aplicar filtros",
+  "filtersTooltip": "Filtros",
+  "openOrahPro": "Abrir ORAH Pro"
 }

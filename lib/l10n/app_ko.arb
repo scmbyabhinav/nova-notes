@@ -491,5 +491,21 @@
   "editNoteLabel": "ノートを編集",
   "lockedContent": "ロックされたコンテンツ",
   "portableBackupDesc": "ノート、フォルダ、添付ファイルを1つの.novaパッケージに。",
-  "vaultAutoLockDesc": "アプリがバックグラウンドに移動した後に認証を要求"
+  "vaultAutoLockDesc": "アプリがバックグラウンドに移動した後に認証を要求",
+  "searchClear": "지우기",
+  "favoritesOnly": "즐겨찾기만",
+  "pinnedOnly": "고정 항目만",
+  "folderLabel": "폴더",
+  "allFolders": "모든 폴더",
+  "archivedLabel": "보관됨",
+  "noteTypeLabel": "메모 유형",
+  "allTypes": "모든 유형",
+  "typeText": "텍스트",
+  "typeChecklist": "체크리스트",
+  "typeVoice": "음성",
+  "typeImage": "이미지",
+  "typeDrawing": "그림",
+  "applyFilters": "필터 적용",
+  "filtersTooltip": "필터",
+  "openOrahPro": "ORAH Pro 열기"
 }
