@@ -839,7 +839,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ('all', l10n.navNotes, Icons.notes_rounded),
                       ('pinned', l10n.pinnedOnly, Icons.push_pin_outlined),
                       ('favorites', l10n.favorites, Icons.star_outline_rounded),
-                      ('checklists', l10n.checklistType, Icons.checklistType),
+                      ('checklists', l10n.checklistType, Icons.checklist_rounded),
                       ('archived', l10n.archivedLabel, Icons.archive_outlined),
                       ('daily_reflection', 'Daily Ref', Icons.auto_awesome_rounded),
                     ])
@@ -1035,6 +1035,7 @@ class _DesktopNotesLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final active = notes.where((n) => !n.isArchived).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
