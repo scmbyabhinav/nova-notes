@@ -909,7 +909,7 @@
   "searchEmptyHint": "Versuche ein anderes Wort oder entferne einen Filter.",
   "voicePreferences": "Spracheinstellungen",
   "dailyReflectionSchedule": "Zeitplan für tägliche Reflexion",
-  "versionLabel": "Version {version}",
+  "versionLabel": "App-Version {version}",
   "@versionLabel": {
     "placeholders": {
       "version": {
