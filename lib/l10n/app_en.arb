@@ -955,5 +955,9 @@
     }
   },
   "scheduleDisabled": "Disabled • Turn on to receive a daily reflection reminder",
-  "captureTitle": "Capture"
+  "captureTitle": "Capture",
+  "featureVoiceCaptureDescription": "Capture thoughts quickly with voice-first note creation.",
+  "featureChecklistDescription": "Turn notes into actionable checklists with completion tracking.",
+  "featureShareExportTitle": "Share & Export",
+  "featureShareExportDescription": "Share notes and export your content in portable formats."
 }
