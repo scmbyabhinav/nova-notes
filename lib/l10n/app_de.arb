@@ -885,5 +885,60 @@
   "androidRemindersDescription": "Erstelle Erinnerungen für Notizen und Checklisten ohne Backend.",
   "androidLocalIntegrationsNote": "Diese Integrationen sind lokale Android-Funktionen und benötigen kein Backend.",
   "androidDone": "Fertig",
-  "androidGotIt": "Verstanden"
+  "androidGotIt": "Verstanden",
+  "captureDescription": "Wähle aus, was du erfassen möchtest.",
+  "quickNote": "Schnelle Notiz",
+  "startTypingImmediately": "Sofort mit dem Schreiben beginnen",
+  "quickChecklist": "Schnelle Checkliste",
+  "captureTasksWithoutSetup": "Aufgaben ohne Einrichtung erfassen",
+  "dailyChecklistTooltip": "Tägliche Checkliste",
+  "quickCaptureHint": "Tippen zum Schreiben • Lang drücken für Checkliste und Optionen",
+  "quickCaptureTooltip": "Schnellerfassung. Für Checkliste und Optionen lange drücken.",
+  "filtersActive": "Filter aktiv",
+  "searchResultsCount": "Ergebnisse: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "Die erweiterte Suche ist eine ORAH-Pro-Funktion",
+  "noNotesFound": "Keine Notizen gefunden",
+  "searchFilterHint": "Nutze kostenlose normale Suchbegriffe oder öffne ORAH Pro, um Filter und Operatoren freizuschalten.",
+  "searchEmptyHint": "Versuche ein anderes Wort oder entferne einen Filter.",
+  "voicePreferences": "Spracheinstellungen",
+  "dailyReflectionSchedule": "Zeitplan für tägliche Reflexion",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "Die Vault-PIN kann nicht wiederhergestellt werden. Beim Zurücksetzen werden alle Vault-Notizen und der Vault-Verschlüsselungsschlüssel dauerhaft gelöscht. Deine normalen Notizen und Ordner bleiben unverändert.",
+  "portableBackupShareText": "Orah-Portable-Backup",
+  "storageAttachmentCount": "{count} Anhänge • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "Zeit für tägliche Reflexion auswählen",
+  "scheduleLoading": "Zeitplan wird geladen…",
+  "scheduleEnabledAt": "Aktiviert • Jeden Tag um {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "Deaktiviert • Aktivieren, um tägliche Erinnerungen zu erhalten"
 }
