@@ -4,6 +4,7 @@ import '../models/note.dart';
 import '../services/universal_export_service.dart';
 import '../services/orah_feature_gate.dart';
 import '../services/orah_premium_gate.dart';
+import '../l10n/app_localizations.dart';
 
 class ExportNoteSheet extends StatefulWidget {
   const ExportNoteSheet({super.key, required this.note});
@@ -87,6 +88,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -95,11 +97,11 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Export note',
+              l10n.exportSheetTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 6),
-            const Text('Choose exactly one format. The available formats are shown below.'),
+            Text(l10n.exportSheetDescription),
             const SizedBox(height: 12),
             if (_busy) const LinearProgressIndicator(),
             const SizedBox(height: 4),
@@ -132,8 +134,8 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.email_outlined),
-                    title: const Text('Send as email attachment'),
-                    subtitle: const Text('Creates a PDF and opens the system share sheet'),
+                    title: Text(l10n.sendAsEmailAttachment),
+                    subtitle: Text(l10n.emailAttachmentDescription),
                     enabled: !_busy,
                     onTap: _sendAsEmailAttachment,
                   ),
@@ -142,7 +144,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     child: TextButton.icon(
                       onPressed: _busy ? null : _exportAllSupported,
                       icon: const Icon(Icons.all_inclusive_rounded, size: 19),
-                      label: const Text('Export All Available Formats'),
+                      label: Text(l10n.exportAllAvailable),
                     ),
                   ),
                 ],
@@ -228,7 +230,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
               children: [
                 Expanded(child: Text(item.label)),
                 const Text(
-                  'Coming Soon',
+                  l10n.exportComingSoon,
                   style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                 ),
               ],
@@ -250,11 +252,11 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             Text(
-              'Planned Export Formats',
+              l10n.plannedExportFormats,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 6),
-            const Text('These formats are planned for future Orah updates and are not exported yet.'),
+            Text(l10n.plannedExportFormatsDescription),
             const SizedBox(height: 12),
             for (final category in _plannedCategories)
               _plannedSection(category),

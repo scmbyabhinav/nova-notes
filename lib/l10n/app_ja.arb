@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "メモをエクスポート",
+  "exportSheetDescription": "以下の利用可能な形式から1つだけ選択してください。",
+  "exportDocuments": "ドキュメント",
+  "exportData": "データ",
+  "exportPlannedSection": "予定 / 近日公開",
+  "exportPlannedDescription": "これらの形式は今後のOrahアップデートで対応予定です。",
+  "sendAsEmailAttachment": "メールの添付ファイルとして送信",
+  "emailAttachmentDescription": "PDFを作成し、システムの共有画面を開きます",
+  "exportAllAvailable": "利用可能なすべての形式をエクスポート",
+  "exportComingSoon": "近日公開",
+  "plannedExportFormats": "今後対応予定のエクスポート形式",
+  "plannedExportFormatsDescription": "これらの形式は今後のOrahアップデートで対応予定で、現在はエクスポートできません。"
 }

@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "تصدير الملاحظة",
+  "exportSheetDescription": "اختر تنسيقًا واحدًا فقط من التنسيقات المتاحة أدناه.",
+  "exportDocuments": "المستندات",
+  "exportData": "البيانات",
+  "exportPlannedSection": "مخطط / قريبًا",
+  "exportPlannedDescription": "هذه التنسيقات مخطط إضافتها في تحديثات Orah المستقبلية.",
+  "sendAsEmailAttachment": "إرسال كمرفق بريد إلكتروني",
+  "emailAttachmentDescription": "ينشئ ملف PDF ويفتح نافذة المشاركة في النظام",
+  "exportAllAvailable": "تصدير جميع التنسيقات المتاحة",
+  "exportComingSoon": "قريبًا",
+  "plannedExportFormats": "تنسيقات التصدير المخطط لها",
+  "plannedExportFormatsDescription": "هذه التنسيقات مخطط إضافتها في تحديثات Orah المستقبلية ولم تُتح للتصدير بعد."
 }

@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "Ekspor catatan",
+  "exportSheetDescription": "Pilih tepat satu format yang tersedia di bawah ini.",
+  "exportDocuments": "Dokumen",
+  "exportData": "Data",
+  "exportPlannedSection": "Direncanakan / Segera hadir",
+  "exportPlannedDescription": "Format ini direncanakan untuk pembaruan Orah mendatang.",
+  "sendAsEmailAttachment": "Kirim sebagai lampiran email",
+  "emailAttachmentDescription": "Membuat PDF dan membuka menu berbagi sistem",
+  "exportAllAvailable": "Ekspor semua format yang tersedia",
+  "exportComingSoon": "Segera hadir",
+  "plannedExportFormats": "Format ekspor yang direncanakan",
+  "plannedExportFormatsDescription": "Format ini direncanakan untuk pembaruan Orah mendatang dan belum dapat diekspor."
 }

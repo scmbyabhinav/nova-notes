@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "नोट निर्यात करें",
+  "exportSheetDescription": "नीचे दिए गए उपलब्ध फ़ॉर्मैट में से केवल एक चुनें।",
+  "exportDocuments": "दस्तावेज़",
+  "exportData": "डेटा",
+  "exportPlannedSection": "योजना में / जल्द आ रहा है",
+  "exportPlannedDescription": "ये फ़ॉर्मैट Orah के भविष्य के अपडेट में जोड़े जाने की योजना में हैं।",
+  "sendAsEmailAttachment": "ईमेल अटैचमेंट के रूप में भेजें",
+  "emailAttachmentDescription": "PDF बनाता है और सिस्टम का शेयर विकल्प खोलता है",
+  "exportAllAvailable": "सभी उपलब्ध फ़ॉर्मैट निर्यात करें",
+  "exportComingSoon": "जल्द आ रहा है",
+  "plannedExportFormats": "नियोजित निर्यात फ़ॉर्मैट",
+  "plannedExportFormatsDescription": "ये फ़ॉर्मैट भविष्य के Orah अपडेट के लिए नियोजित हैं और अभी निर्यात नहीं किए जा सकते।"
 }

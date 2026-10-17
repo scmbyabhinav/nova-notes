@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "Exportar nota",
+  "exportSheetDescription": "Escolha exatamente um formato entre os disponíveis abaixo.",
+  "exportDocuments": "Documentos",
+  "exportData": "Dados",
+  "exportPlannedSection": "Planejado / Em breve",
+  "exportPlannedDescription": "Estes formatos estão previstos para futuras atualizações do Orah.",
+  "sendAsEmailAttachment": "Enviar como anexo de e-mail",
+  "emailAttachmentDescription": "Cria um PDF e abre o menu de partilha do sistema",
+  "exportAllAvailable": "Exportar todos os formatos disponíveis",
+  "exportComingSoon": "Em breve",
+  "plannedExportFormats": "Formatos de exportação planejados",
+  "plannedExportFormatsDescription": "Estes formatos estão previstos para futuras atualizações do Orah e ainda não podem ser exportados."
 }

@@ -720,5 +720,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "Export note",
+  "exportSheetDescription": "Choose exactly one format. The available formats are shown below.",
+  "exportDocuments": "Documents",
+  "exportData": "Data",
+  "exportPlannedSection": "Planned / Coming Soon",
+  "exportPlannedDescription": "These formats are planned for future Orah updates.",
+  "sendAsEmailAttachment": "Send as email attachment",
+  "emailAttachmentDescription": "Creates a PDF and opens the system share sheet",
+  "exportAllAvailable": "Export All Available Formats",
+  "exportComingSoon": "Coming Soon",
+  "plannedExportFormats": "Planned Export Formats",
+  "plannedExportFormatsDescription": "These formats are planned for future Orah updates and are not exported yet."
 }

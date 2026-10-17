@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "ייצוא פתק",
+  "exportSheetDescription": "בחרו פורמט אחד בלבד מתוך הפורמטים הזמינים למטה.",
+  "exportDocuments": "מסמכים",
+  "exportData": "נתונים",
+  "exportPlannedSection": "מתוכנן / בקרוב",
+  "exportPlannedDescription": "הפורמטים האלה מתוכננים לעדכונים עתידיים של Orah.",
+  "sendAsEmailAttachment": "שליחה כקובץ מצורף לדוא״ל",
+  "emailAttachmentDescription": "יוצר קובץ PDF ופותח את חלון השיתוף של המערכת",
+  "exportAllAvailable": "ייצוא כל הפורמטים הזמינים",
+  "exportComingSoon": "בקרוב",
+  "plannedExportFormats": "פורמטי ייצוא מתוכננים",
+  "plannedExportFormatsDescription": "הפורמטים האלה מתוכננים לעדכונים עתידיים של Orah ואינם זמינים לייצוא עדיין."
 }

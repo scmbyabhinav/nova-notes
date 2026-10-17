@@ -706,5 +706,17 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportSheetTitle": "메모 내보내기",
+  "exportSheetDescription": "아래에서 사용 가능한 형식 중 하나만 선택하세요.",
+  "exportDocuments": "문서",
+  "exportData": "데이터",
+  "exportPlannedSection": "예정 / 곧 제공",
+  "exportPlannedDescription": "이 형식은 향후 Orah 업데이트에서 제공될 예정입니다.",
+  "sendAsEmailAttachment": "이메일 첨부 파일로 보내기",
+  "emailAttachmentDescription": "PDF를 만들고 시스템 공유 창을 엽니다",
+  "exportAllAvailable": "사용 가능한 모든 형식 내보내기",
+  "exportComingSoon": "곧 제공",
+  "plannedExportFormats": "예정된 내보내기 형식",
+  "plannedExportFormatsDescription": "이 형식은 향후 Orah 업데이트에서 제공될 예정이며 현재는 내보낼 수 없습니다."
 }
