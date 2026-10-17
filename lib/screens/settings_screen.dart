@@ -69,24 +69,24 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               leading: const OrahAssetIcon('settings'),
               title: Text(l10n.appearance),
-              subtitle: Text(_appearanceLabel()),
+              subtitle: Text(_appearanceLabel(context)),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showAppearance(context),
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Voice Preferences'),
+          _sectionHeader(theme, l10n.voicePreferences),
           const Card(
             child: _VoiceGreetingSettingTile(),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Daily inspiration'),
+          _sectionHeader(theme, l10n.dailyInspiration),
           const Card(
             child: _DailyInspirationSettingTile(),
           ),
           const SizedBox(height: 16),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Daily Reflection schedule'),
+          _sectionHeader(theme, l10n.dailyReflectionSchedule),
           const Card(child: _DailyReflectionScheduleSettingTile()),
           _sectionHeader(theme, l10n.securityAndPrivacy),
           const Card(child: _VaultAutoLockSettingTile()),
@@ -218,7 +218,7 @@ class SettingsScreen extends StatelessWidget {
           const OrahWordmark(fontSize: 28, textAlign: TextAlign.center),
           const SizedBox(height: 4),
           Text(
-            'Version 1.0.0',
+            l10n.versionLabel('1.0.2'),
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -226,7 +226,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Think it. Write it. Keep it.',
+            l10n.homeTagline,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -250,11 +250,12 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  String _appearanceLabel() {
+  String _appearanceLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final mode = switch (themeController.mode) {
-      ThemeMode.system => 'System theme',
-      ThemeMode.light => 'Light theme',
-      ThemeMode.dark => 'Dark theme',
+      ThemeMode.system => l10n.themeSystem,
+      ThemeMode.light => l10n.themeLight,
+      ThemeMode.dark => l10n.themeDark,
     };
     return '$mode • ' + Color(themeController.accent).value.toRadixString(16).toUpperCase();
   }
@@ -273,7 +274,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         content: const SingleChildScrollView(
           child: Text(
-            'There is NO recovery for a forgotten Vault PIN. Orah cannot bypass, recover, or reset the existing Vault while preserving its protected contents.\\n\\nIf you continue, the current Vault records and Vault encryption key will be permanently destroyed. A new Vault PIN can then be created. Your normal Notes, Folders, and other app data will not be reset.',
+            AppLocalizations.of(context)!.vaultResetWarning,
           ),
         ),
         actions: [
@@ -362,7 +363,7 @@ class SettingsScreen extends StatelessWidget {
       final service = NovaBackupService(prefs);
       if (action == 'create') {
         final file = await service.createBackup();
-        await Share.shareXFiles([XFile(file.path)], text: 'Orah portable backup');
+        await Share.shareXFiles([XFile(file.path)], text: AppLocalizations.of(context)!.portableBackupShareText);
       } else {
         final result = await FilePicker.pickFiles(
           type: FileType.custom,
@@ -400,7 +401,7 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(title: Text(AppLocalizations.of(context)!.storageMaintenance), subtitle: Text('${attachmentFiles.length} attachments • ${_formatBytes(bytes)}')),
+          ListTile(title: Text(AppLocalizations.of(context)!.storageMaintenance), subtitle: Text(AppLocalizations.of(context)!.storageAttachmentCount(attachmentFiles.length, _formatBytes(bytes)))),
           ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(AppLocalizations.of(context)!.cleanOrphanAttachments), subtitle: Text(AppLocalizations.of(context)!.unusedFilesFound(orphanCount)), onTap: () => Navigator.pop(context, 'clean')),
         ]),
       ),
@@ -591,12 +592,8 @@ class _DailyReflectionScheduleSettingTileState
 
   TimeOfDay get _time => TimeOfDay(hour: _hour, minute: _minute);
 
-  String get _formattedTime {
-    final hour = _hour % 12 == 0 ? 12 : _hour % 12;
-    final minute = _minute.toString().padLeft(2, '0');
-    final period = _hour >= 12 ? 'PM' : 'AM';
-    return '$hour:$minute $period';
-  }
+  String _formattedTime(BuildContext context) =>
+      MaterialLocalizations.of(context).formatTimeOfDay(_time);
 
   Future<void> _setEnabled(bool value) async {
     try {
@@ -621,7 +618,7 @@ class _DailyReflectionScheduleSettingTileState
     final selected = await showTimePicker(
       context: context,
       initialTime: _time,
-      helpText: 'Choose daily reflection time',
+      helpText: AppLocalizations.of(context)!.dailyReflectionTimePicker,
     );
     if (selected == null) return;
 
@@ -654,10 +651,10 @@ class _DailyReflectionScheduleSettingTileState
           secondary: const Icon(Icons.notifications_active_outlined),
           title: Text(AppLocalizations.of(context)!.dailyReflectionReminder),
           subtitle: Text(_loading
-              ? 'Loading schedule…'
+              ? AppLocalizations.of(context)!.scheduleLoading
               : _enabled
-                  ? 'Enabled • Every day at $_formattedTime'
-                  : 'Disabled • Turn on to receive a daily reflection reminder'),
+                  ? AppLocalizations.of(context)!.scheduleEnabledAt(_formattedTime(context))
+                  : AppLocalizations.of(context)!.scheduleDisabled),
           value: _enabled,
           onChanged: _loading ? null : _setEnabled,
         ),
@@ -665,7 +662,7 @@ class _DailyReflectionScheduleSettingTileState
         ListTile(
           leading: const Icon(Icons.schedule_rounded),
           title: Text(AppLocalizations.of(context)!.reminderTime),
-          subtitle: Text(_formattedTime),
+          subtitle: Text(_formattedTime(context)),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: _loading ? null : _pickTime,
         ),
