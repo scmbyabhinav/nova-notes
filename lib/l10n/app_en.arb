@@ -899,5 +899,60 @@
   "androidRemindersDescription": "Create note and checklist reminders without a backend.",
   "androidLocalIntegrationsNote": "These integrations are local Android features. No backend is required for them.",
   "androidDone": "Done",
-  "androidGotIt": "Got it"
+  "androidGotIt": "Got it",
+  "captureDescription": "Choose what you want to capture.",
+  "quickNote": "Quick note",
+  "startTypingImmediately": "Start typing immediately",
+  "quickChecklist": "Quick checklist",
+  "captureTasksWithoutSetup": "Capture tasks without setup",
+  "dailyChecklistTooltip": "Daily checklist",
+  "quickCaptureHint": "Tap to write • Long-press for checklist & quick options",
+  "quickCaptureTooltip": "Quick capture. Long-press for checklist and quick options.",
+  "filtersActive": "Filters active",
+  "searchResultsCount": "Results: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "Advanced search is a Pro feature",
+  "noNotesFound": "No notes found",
+  "searchFilterHint": "Use normal keywords for free, or open ORAH Pro to unlock filters and operators.",
+  "searchEmptyHint": "Try another word or remove a filter.",
+  "voicePreferences": "Voice preferences",
+  "dailyReflectionSchedule": "Daily Reflection schedule",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "Vault PINs cannot be recovered. Resetting permanently deletes all Vault notes and the Vault encryption key. Your regular notes and folders will remain unchanged.",
+  "portableBackupShareText": "Orah portable backup",
+  "storageAttachmentCount": "{count} attachments • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "Choose daily reflection time",
+  "scheduleLoading": "Loading schedule…",
+  "scheduleEnabledAt": "Enabled • Every day at {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "Disabled • Turn on to receive a daily reflection reminder"
 }
