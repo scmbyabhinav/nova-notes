@@ -45,7 +45,7 @@ void main() {
       expect(matches, isEmpty, reason: '$path contains hard-coded UI text: $matches');
 
       final hardCodedAttributes = RegExp(
-        r'''(?:tooltip|message|hintText|labelText|helpText)\s*:\s*(['"])([^'"]{2,})\1''',
+        r'''(?:tooltip|message|hintText|labelText|helpText|semanticsLabel|label)\s*:\s*(['"])([^'"]{2,})\1''',
       ).allMatches(source).map((match) => match.group(2)!).where((value) =>
         !value.contains(String.fromCharCode(36)) &&
         value.toLowerCase() != 'orah' &&
