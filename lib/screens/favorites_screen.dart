@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
 import '../data/repositories/note_repository_provider.dart';
@@ -54,6 +55,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return SafeArea(
@@ -65,7 +67,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 24, 20, 14),
                   sliver: SliverToBoxAdapter(
                     child: Text(
-                      'Favorites',
+                      l10n.favorites,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -84,14 +86,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                             OrahAssetIcon('star', size: 48, color: theme.colorScheme.primary),
                             const SizedBox(height: 12),
                             Text(
-                              'No favorites yet',
+                              l10n.favoritesEmptyTitle,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              'Star important notes and they will appear here.',
+                              l10n.favoritesEmptyDescription,
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class PrivacyPledgeScreen extends StatelessWidget {
   const PrivacyPledgeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Privacy Pledge'),
+        title: Text(l10n.privacyPledge),
       ),
       body: SafeArea(
         child: Column(
@@ -36,7 +38,7 @@ class PrivacyPledgeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Our Privacy Pledge',
+                    l10n.privacyPledgeHeadline,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
@@ -45,7 +47,7 @@ class PrivacyPledgeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Your thoughts are personal. Orah is designed to keep your notes private and under your control.',
+                    l10n.privacyPledgeIntro,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: colors.onSurfaceVariant,
@@ -55,34 +57,34 @@ class PrivacyPledgeScreen extends StatelessWidget {
                   const SizedBox(height: 28),
                   _PledgePoint(
                     icon: Icons.phone_android_outlined,
-                    title: '100% Local',
+                    title: l10n.privacyLocalTitle,
                     description:
-                        'Your notes are stored only on this device.',
+                        l10n.privacyLocalDescription,
                   ),
                   const SizedBox(height: 12),
                   _PledgePoint(
                     icon: Icons.cloud_off_outlined,
-                    title: 'Zero Cloud',
+                    title: l10n.privacyCloudTitle,
                     description:
-                        'Orah has no note-sync server. Notes stay on your device unless you choose to share or export them.',
+                        l10n.privacyCloudDescription,
                   ),
                   const SizedBox(height: 12),
                   _PledgePoint(
                     icon: Icons.smart_toy_outlined,
-                    title: 'Zero AI',
+                    title: l10n.privacyAiTitle,
                     description:
-                        'Orah does not scan, read, or train AI on your notes.',
+                        l10n.privacyAiDescription,
                   ),
                   const SizedBox(height: 12),
                   _PledgePoint(
                     icon: Icons.lock_outline_rounded,
-                    title: 'Encrypted Vault',
+                    title: l10n.privacyVaultTitle,
                     description:
-                        'Sensitive notes in the Vault are protected with AES-256-GCM encryption.',
+                        l10n.privacyVaultDescription,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sharing, exporting, device services, and operating-system features may send information outside the app when you choose to use them.',
+                    l10n.privacySharingDisclosure,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                       height: 1.4,
@@ -100,7 +102,7 @@ class PrivacyPledgeScreen extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('Got it'),
+                  child: Text(l10n.gotIt),
                 ),
               ),
             ),

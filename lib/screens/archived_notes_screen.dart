@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 import '../data/repositories/note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
@@ -60,25 +61,27 @@ class _ArchivedNotesScreenState extends State<ArchivedNotesScreen> {
   }
 
   Future<void> _restore(Note note) async {
+    final l10n = AppLocalizations.of(context)!;
     final repository = _repository ?? await NoteRepositoryProvider.instance();
     await repository.saveNote(
       note.copyWith(isArchived: false, updatedAt: DateTime.now()),
     );
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Note restored to your notes.')),
+      SnackBar(content: Text(l10n.archivedRestoreMessage)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Archived Notes'),
+        title: Text(l10n.navArchivedNotes),
         actions: [
           IconButton(
-            tooltip: 'Refresh archived notes',
+            tooltip: l10n.archivedRefreshTooltip,
             onPressed: _loadNotes,
             icon: const Icon(Icons.refresh_rounded),
           ),
@@ -100,14 +103,14 @@ class _ArchivedNotesScreenState extends State<ArchivedNotesScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No archived notes',
+                          l10n.archivedEmptyTitle,
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Notes you archive will appear here. You can open them or restore them to your main notes list.',
+                          l10n.archivedEmptyDescription,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
@@ -127,13 +130,13 @@ class _ArchivedNotesScreenState extends State<ArchivedNotesScreen> {
                     itemBuilder: (context, index) {
                       final note = _notes[index];
                       final title = note.isLocked
-                          ? 'Private note'
-                          : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
+                          ? l10n.privateNote
+                          : (note.title.trim().isEmpty ? l10n.untitledNote : note.title);
                       final subtitle = note.isLocked
-                          ? 'Locked note • Updated ${_formatDate(note.updatedAt)}'
+                          ? '${l10n.trashLockedNote} • ${l10n.updated} ${_formatDate(note.updatedAt)}'
                           : [
                               if (note.content.trim().isNotEmpty) note.content.trim(),
-                              'Updated ${_formatDate(note.updatedAt)}',
+                              '${l10n.updated} ${_formatDate(note.updatedAt)}',
                             ].join(' • ');
                       return Card(
                         clipBehavior: Clip.antiAlias,
