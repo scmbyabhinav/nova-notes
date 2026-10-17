@@ -28,7 +28,7 @@ class AndroidFeaturesScreen extends StatelessWidget {
   Future<void> _setupQuickShortcuts(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      await const QuickActions().setShortcutItems(const [
+      await const QuickActions().setShortcutItems([
         ShortcutItem(type: 'new_note', localizedTitle: l10n.androidShortcutNewNote, icon: 'ic_launcher'),
         ShortcutItem(type: 'new_checklist', localizedTitle: l10n.androidShortcutNewChecklist, icon: 'ic_launcher'),
         ShortcutItem(type: 'search', localizedTitle: l10n.androidShortcutSearch, icon: 'ic_launcher'),
