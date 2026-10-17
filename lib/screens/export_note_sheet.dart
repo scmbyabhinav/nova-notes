@@ -76,6 +76,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   }
 
   Future<void> _sendAsEmailAttachment() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     try {
       final file = await const UniversalExportService().export(widget.note, NovaExportFormat.pdf);
@@ -131,7 +132,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: Text(l10n.exportPlannedDescription, style: TextStyle(fontSize: 12)),
                   ),
-                  for (final category in _plannedCategories)
+                  for (final category in _plannedCategories(l10n))
                     _plannedSection(category),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -184,6 +185,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   }
 
   Future<void> _exportAllSupported() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
     final files = <XFile>[];
     try {
@@ -288,8 +290,17 @@ class _PlannedExport {
   final String category;
 }
 
-const _plannedCategories = <String>[
-  'Documents', 'Ebooks', 'Academic', 'Data', 'Presentation',
-  'Speech / Audio', 'Subtitles', 'Email', 'Code / Literate',
-  'Archive', 'Database', 'Clipboard',
+List<String> _plannedCategories(AppLocalizations l10n) => <String>[
+  l10n.exportDocuments,
+  l10n.exportCategoryEbooks,
+  l10n.exportCategoryAcademic,
+  l10n.exportData,
+  l10n.exportCategoryPresentation,
+  l10n.exportCategorySpeechAudio,
+  l10n.exportCategorySubtitles,
+  l10n.exportCategoryEmail,
+  l10n.exportCategoryCodeLiterate,
+  l10n.exportCategoryArchive,
+  l10n.exportCategoryDatabase,
+  l10n.exportCategoryClipboard,
 ];
