@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "ORAH ウィジェットを追加",
+  "androidWidgetSetupBody": "Android のホーム画面で空いている場所を長押しし、ウィジェットを選択して ORAH を探し、ホーム画面にドラッグします。",
+  "androidQuickShortcutDialogTitle": "クイックノートのショートカット",
+  "androidQuickShortcutDialogBody": "Android のホーム画面で ORAH のアイコンを長押しします。ショートカットメニューから「新しいメモ」または「新しいチェックリスト」を選びます。",
+  "androidShortcutNewNote": "新しいメモ",
+  "androidShortcutNewChecklist": "新しいチェックリスト",
+  "androidShortcutSearch": "検索",
+  "androidShareUnavailable": "この端末では ORAH への共有を利用できません。",
+  "androidFeatureHeading": "Android 版 ORAH",
+  "androidFeatureIntro": "Android の標準機能との連携により、すばやい記録、共有、ホーム画面からのアクセスができます。",
+  "androidWidgetTitle": "ホーム画面ウィジェット",
+  "androidWidgetDescription": "ホーム画面からメモやチェックリストを作成したり、検索を開いたりできます。",
+  "androidQuickCaptureTitle": "クイックノートのショートカット",
+  "androidQuickCaptureDescription": "ORAH を直接開いてすぐに記録できます。",
+  "androidShareTitle": "ORAH に共有",
+  "androidShareDescription": "対応するテキストやコンテンツを ORAH の新しいメモに送信します。",
+  "androidRemindersTitle": "リマインダー",
+  "androidRemindersDescription": "バックエンドなしでメモやチェックリストのリマインダーを作成できます。",
+  "androidLocalIntegrationsNote": "これらは端末内で動作する Android 機能で、バックエンドは不要です。",
+  "androidDone": "完了",
+  "androidGotIt": "了解"
 }

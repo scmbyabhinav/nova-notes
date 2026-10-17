@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "ORAH विजेट जोड़ें",
+  "androidWidgetSetupBody": "Android होम स्क्रीन पर खाली जगह को देर तक दबाएँ, Widgets चुनें, ORAH खोजें और विजेट को होम स्क्रीन पर खींचें।",
+  "androidQuickShortcutDialogTitle": "क्विक नोट शॉर्टकट",
+  "androidQuickShortcutDialogBody": "Android होम स्क्रीन पर ORAH आइकन को देर तक दबाएँ। शॉर्टकट मेनू से नया नोट या नई चेकलिस्ट चुनें।",
+  "androidShortcutNewNote": "नया नोट",
+  "androidShortcutNewChecklist": "नई चेकलिस्ट",
+  "androidShortcutSearch": "खोजें",
+  "androidShareUnavailable": "इस डिवाइस पर ORAH में साझा करने की सुविधा उपलब्ध नहीं है।",
+  "androidFeatureHeading": "Android पर ORAH",
+  "androidFeatureIntro": "Android के मूल एकीकरण से ORAH में तेज़ कैप्चर, शेयरिंग और होम स्क्रीन से पहुँच मिलती है।",
+  "androidWidgetTitle": "होम स्क्रीन विजेट",
+  "androidWidgetDescription": "होम स्क्रीन से नोट या चेकलिस्ट बनाएँ या खोज खोलें।",
+  "androidQuickCaptureTitle": "क्विक नोट शॉर्टकट",
+  "androidQuickCaptureDescription": "तुरंत नोट लिखने के लिए ORAH सीधे खोलें।",
+  "androidShareTitle": "ORAH में साझा करें",
+  "androidShareDescription": "समर्थित टेक्स्ट और सामग्री को नए ORAH नोट में भेजें।",
+  "androidRemindersTitle": "रिमाइंडर",
+  "androidRemindersDescription": "बैकएंड के बिना नोट और चेकलिस्ट रिमाइंडर बनाएँ।",
+  "androidLocalIntegrationsNote": "ये Android की स्थानीय सुविधाएँ हैं और इनके लिए बैकएंड की आवश्यकता नहीं है।",
+  "androidDone": "हो गया",
+  "androidGotIt": "समझ गया"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import 'package:quick_actions/quick_actions.dart';
 
@@ -11,26 +12,26 @@ class AndroidFeaturesScreen extends StatelessWidget {
   const AndroidFeaturesScreen({super.key});
 
   Future<void> _showWidgetHelp(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Add the ORAH widget'),
-        content: const Text(
-          'On your Android home screen, long-press an empty area, choose Widgets, find ORAH, then drag the ORAH widget onto the home screen.',
-        ),
+        title: Text(l10n.androidWidgetSetupTitle),
+        content: Text(l10n.androidWidgetSetupBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Got it')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.androidGotIt)),
         ],
       ),
     );
   }
 
   Future<void> _setupQuickShortcuts(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await const QuickActions().setShortcutItems(const [
-        ShortcutItem(type: 'new_note', localizedTitle: 'New note', icon: 'ic_launcher'),
-        ShortcutItem(type: 'new_checklist', localizedTitle: 'New checklist', icon: 'ic_launcher'),
-        ShortcutItem(type: 'search', localizedTitle: 'Search', icon: 'ic_launcher'),
+        ShortcutItem(type: 'new_note', localizedTitle: l10n.androidShortcutNewNote, icon: 'ic_launcher'),
+        ShortcutItem(type: 'new_checklist', localizedTitle: l10n.androidShortcutNewChecklist, icon: 'ic_launcher'),
+        ShortcutItem(type: 'search', localizedTitle: l10n.androidShortcutSearch, icon: 'ic_launcher'),
       ]);
     } catch (_) {
       // The native static shortcuts remain available even if the plugin is unavailable.
@@ -39,22 +40,21 @@ class AndroidFeaturesScreen extends StatelessWidget {
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Quick Note shortcut'),
-        content: const Text(
-          'Long-press the ORAH app icon on your Android home screen. Use New note or New checklist from the shortcut menu.',
-        ),
+        title: Text(l10n.androidQuickShortcutDialogTitle),
+        content: Text(l10n.androidQuickShortcutDialogBody),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Done')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.androidDone)),
         ],
       ),
     );
   }
 
   Future<void> _shareIntoOrah(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final ok = await OrahAndroidIntentService.instance.shareIntoOrah();
     if (!context.mounted || ok) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Android share-to-ORAH is unavailable on this device.')),
+      SnackBar(content: Text(l10n.androidShareUnavailable)),
     );
   }
 
@@ -74,48 +74,48 @@ class AndroidFeaturesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Android features')),
+      appBar: AppBar(title: Text(l10n.androidFeatures)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'ORAH on Android',
+            l10n.androidFeatureHeading,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Fast capture, sharing and home-screen access are built into ORAH '
-            'through native Android integrations.',
+            l10n.androidFeatureIntro,
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 20),
           _FeatureTile(
             icon: Icons.widgets_outlined,
-            title: 'Home-screen widget',
-            subtitle: 'Create a note, checklist or open search from your home screen.',
+            title: l10n.androidWidgetTitle,
+            subtitle: l10n.androidWidgetDescription,
             onTap: () => _showWidgetHelp(context),
           ),
           _FeatureTile(
             icon: Icons.bolt_outlined,
-            title: 'Quick Note shortcut',
-            subtitle: 'Launch ORAH directly into instant capture.',
+            title: l10n.androidQuickCaptureTitle,
+            subtitle: l10n.androidQuickCaptureDescription,
             onTap: () => _setupQuickShortcuts(context),
           ),
           _FeatureTile(
             assetIcon: 'share',
-            title: 'Share to ORAH',
-            subtitle: 'Send supported text and content into a new ORAH note.',
+            title: l10n.androidShareTitle,
+            subtitle: l10n.androidShareDescription,
             onTap: () => _shareIntoOrah(context),
           ),
           _FeatureTile(
             icon: Icons.notifications_active_outlined,
-            title: 'Reminders',
-            subtitle: 'Create note and checklist reminders without a backend.',
+            title: l10n.androidRemindersTitle,
+            subtitle: l10n.androidRemindersDescription,
             onTap: () => _openReminderEditor(context),
           ),
           const SizedBox(height: 20),
@@ -129,8 +129,7 @@ class AndroidFeaturesScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'These integrations are local Android features. '
-                      'No backend is required for them.',
+                      l10n.androidLocalIntegrationsNote,
                       style: theme.textTheme.bodyMedium,
                     ),
                   ),

@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "添加 ORAH 小组件",
+  "androidWidgetSetupBody": "在 Android 主屏幕上长按空白区域，选择“小组件”，找到 ORAH，然后将小组件拖到主屏幕。",
+  "androidQuickShortcutDialogTitle": "快速记事快捷方式",
+  "androidQuickShortcutDialogBody": "在 Android 主屏幕上长按 ORAH 图标，然后从快捷菜单中选择“新建笔记”或“新建清单”。",
+  "androidShortcutNewNote": "新建笔记",
+  "androidShortcutNewChecklist": "新建清单",
+  "androidShortcutSearch": "搜索",
+  "androidShareUnavailable": "此设备暂不支持分享内容到 ORAH。",
+  "androidFeatureHeading": "Android 版 ORAH",
+  "androidFeatureIntro": "ORAH 通过 Android 原生集成提供快速记录、分享和主屏幕访问功能。",
+  "androidWidgetTitle": "主屏幕小组件",
+  "androidWidgetDescription": "从主屏幕创建笔记、清单或打开搜索。",
+  "androidQuickCaptureTitle": "快速记事快捷方式",
+  "androidQuickCaptureDescription": "直接打开 ORAH，立即记录想法。",
+  "androidShareTitle": "分享至 ORAH",
+  "androidShareDescription": "将支持的文本和内容发送到新的 ORAH 笔记。",
+  "androidRemindersTitle": "提醒",
+  "androidRemindersDescription": "无需后端即可为笔记和清单创建提醒。",
+  "androidLocalIntegrationsNote": "这些是 Android 本地功能，无需后端服务。",
+  "androidDone": "完成",
+  "androidGotIt": "知道了"
 }

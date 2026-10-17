@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "إضافة أداة ORAH",
+  "androidWidgetSetupBody": "على الشاشة الرئيسية لجهاز Android، اضغط مطولاً على مساحة فارغة، واختر الأدوات، ثم ابحث عن ORAH واسحب الأداة إلى الشاشة الرئيسية.",
+  "androidQuickShortcutDialogTitle": "اختصار الملاحظة السريعة",
+  "androidQuickShortcutDialogBody": "اضغط مطولاً على أيقونة ORAH في الشاشة الرئيسية. استخدم «ملاحظة جديدة» أو «قائمة تحقق جديدة» من قائمة الاختصارات.",
+  "androidShortcutNewNote": "ملاحظة جديدة",
+  "androidShortcutNewChecklist": "قائمة تحقق جديدة",
+  "androidShortcutSearch": "بحث",
+  "androidShareUnavailable": "مشاركة المحتوى إلى ORAH غير متاحة على هذا الجهاز.",
+  "androidFeatureHeading": "ORAH على Android",
+  "androidFeatureIntro": "يوفر ORAH التقاطاً سريعاً ومشاركة ووصولاً من الشاشة الرئيسية عبر تكاملات Android الأصلية.",
+  "androidWidgetTitle": "أداة الشاشة الرئيسية",
+  "androidWidgetDescription": "أنشئ ملاحظة أو قائمة تحقق أو افتح البحث من الشاشة الرئيسية.",
+  "androidQuickCaptureTitle": "اختصار الملاحظة السريعة",
+  "androidQuickCaptureDescription": "افتح ORAH مباشرة لبدء الالتقاط الفوري.",
+  "androidShareTitle": "المشاركة إلى ORAH",
+  "androidShareDescription": "أرسل النص والمحتوى المدعومين إلى ملاحظة جديدة في ORAH.",
+  "androidRemindersTitle": "التذكيرات",
+  "androidRemindersDescription": "أنشئ تذكيرات للملاحظات وقوائم التحقق دون الحاجة إلى خادم خلفي.",
+  "androidLocalIntegrationsNote": "هذه تكاملات محلية في Android ولا تحتاج إلى خادم خلفي.",
+  "androidDone": "تم",
+  "androidGotIt": "فهمت"
 }

@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "Tambahkan widget ORAH",
+  "androidWidgetSetupBody": "Di layar utama Android, tekan lama area kosong, pilih Widget, cari ORAH, lalu seret widget ORAH ke layar utama.",
+  "androidQuickShortcutDialogTitle": "Pintasan Catatan Cepat",
+  "androidQuickShortcutDialogBody": "Tekan lama ikon aplikasi ORAH di layar utama Android. Pilih Catatan baru atau Daftar periksa baru dari menu pintasan.",
+  "androidShortcutNewNote": "Catatan baru",
+  "androidShortcutNewChecklist": "Daftar periksa baru",
+  "androidShortcutSearch": "Cari",
+  "androidShareUnavailable": "Berbagi ke ORAH tidak tersedia di perangkat ini.",
+  "androidFeatureHeading": "ORAH di Android",
+  "androidFeatureIntro": "ORAH menyediakan pencatatan cepat, berbagi, dan akses layar utama melalui integrasi Android bawaan.",
+  "androidWidgetTitle": "Widget layar utama",
+  "androidWidgetDescription": "Buat catatan, daftar periksa, atau buka pencarian dari layar utama.",
+  "androidQuickCaptureTitle": "Pintasan Catatan Cepat",
+  "androidQuickCaptureDescription": "Buka ORAH langsung untuk mencatat dengan cepat.",
+  "androidShareTitle": "Bagikan ke ORAH",
+  "androidShareDescription": "Kirim teks dan konten yang didukung ke catatan ORAH baru.",
+  "androidRemindersTitle": "Pengingat",
+  "androidRemindersDescription": "Buat pengingat catatan dan daftar periksa tanpa backend.",
+  "androidLocalIntegrationsNote": "Integrasi ini adalah fitur Android lokal dan tidak memerlukan backend.",
+  "androidDone": "Selesai",
+  "androidGotIt": "Mengerti"
 }

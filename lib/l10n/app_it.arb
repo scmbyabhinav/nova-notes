@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "Aggiungi il widget ORAH",
+  "androidWidgetSetupBody": "Nella schermata Home di Android, tieni premuta un’area vuota, scegli Widget, cerca ORAH e trascina il widget nella schermata Home.",
+  "androidQuickShortcutDialogTitle": "Scorciatoia Nota rapida",
+  "androidQuickShortcutDialogBody": "Tieni premuta l’icona ORAH nella schermata Home di Android. Dal menu delle scorciatoie scegli Nuova nota o Nuova checklist.",
+  "androidShortcutNewNote": "Nuova nota",
+  "androidShortcutNewChecklist": "Nuova checklist",
+  "androidShortcutSearch": "Cerca",
+  "androidShareUnavailable": "La condivisione verso ORAH non è disponibile su questo dispositivo.",
+  "androidFeatureHeading": "ORAH su Android",
+  "androidFeatureIntro": "ORAH integra acquisizione rapida, condivisione e accesso dalla schermata Home tramite le funzioni native di Android.",
+  "androidWidgetTitle": "Widget schermata Home",
+  "androidWidgetDescription": "Crea una nota o una checklist oppure apri la ricerca dalla schermata Home.",
+  "androidQuickCaptureTitle": "Scorciatoia Nota rapida",
+  "androidQuickCaptureDescription": "Apri ORAH direttamente per acquisire subito un’idea.",
+  "androidShareTitle": "Condividi con ORAH",
+  "androidShareDescription": "Invia testo e contenuti supportati a una nuova nota ORAH.",
+  "androidRemindersTitle": "Promemoria",
+  "androidRemindersDescription": "Crea promemoria per note e checklist senza backend.",
+  "androidLocalIntegrationsNote": "Queste integrazioni sono funzioni Android locali e non richiedono un backend.",
+  "androidDone": "Fatto",
+  "androidGotIt": "Ho capito"
 }

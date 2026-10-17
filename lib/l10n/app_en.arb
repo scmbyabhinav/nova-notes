@@ -878,5 +878,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "Add the ORAH widget",
+  "androidWidgetSetupBody": "On your Android home screen, long-press an empty area, choose Widgets, find ORAH, then drag the ORAH widget onto the home screen.",
+  "androidQuickShortcutDialogTitle": "Quick Note shortcut",
+  "androidQuickShortcutDialogBody": "Long-press the ORAH app icon on your Android home screen. Use New note or New checklist from the shortcut menu.",
+  "androidShortcutNewNote": "New note",
+  "androidShortcutNewChecklist": "New checklist",
+  "androidShortcutSearch": "Search",
+  "androidShareUnavailable": "Android share-to-ORAH is unavailable on this device.",
+  "androidFeatureHeading": "ORAH on Android",
+  "androidFeatureIntro": "Fast capture, sharing and home-screen access are built into ORAH through native Android integrations.",
+  "androidWidgetTitle": "Home-screen widget",
+  "androidWidgetDescription": "Create a note, checklist or open search from your home screen.",
+  "androidQuickCaptureTitle": "Quick Note shortcut",
+  "androidQuickCaptureDescription": "Launch ORAH directly into instant capture.",
+  "androidShareTitle": "Share to ORAH",
+  "androidShareDescription": "Send supported text and content into a new ORAH note.",
+  "androidRemindersTitle": "Reminders",
+  "androidRemindersDescription": "Create note and checklist reminders without a backend.",
+  "androidLocalIntegrationsNote": "These integrations are local Android features. No backend is required for them.",
+  "androidDone": "Done",
+  "androidGotIt": "Got it"
 }

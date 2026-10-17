@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "ORAH-Widget hinzufügen",
+  "androidWidgetSetupBody": "Halte auf dem Android-Startbildschirm eine freie Stelle gedrückt, wähle Widgets, suche ORAH und ziehe das Widget auf den Startbildschirm.",
+  "androidQuickShortcutDialogTitle": "Schnellnotiz-Verknüpfung",
+  "androidQuickShortcutDialogBody": "Halte das ORAH-App-Symbol auf dem Android-Startbildschirm gedrückt. Wähle im Kontextmenü „Neue Notiz“ oder „Neue Checkliste“.",
+  "androidShortcutNewNote": "Neue Notiz",
+  "androidShortcutNewChecklist": "Neue Checkliste",
+  "androidShortcutSearch": "Suchen",
+  "androidShareUnavailable": "Teilen mit ORAH ist auf diesem Gerät nicht verfügbar.",
+  "androidFeatureHeading": "ORAH auf Android",
+  "androidFeatureIntro": "ORAH bietet dank nativer Android-Integrationen schnelle Erfassung, Teilen und Zugriff über den Startbildschirm.",
+  "androidWidgetTitle": "Startbildschirm-Widget",
+  "androidWidgetDescription": "Erstelle eine Notiz oder Checkliste oder öffne die Suche direkt vom Startbildschirm.",
+  "androidQuickCaptureTitle": "Schnellnotiz-Verknüpfung",
+  "androidQuickCaptureDescription": "Öffne ORAH direkt zur sofortigen Erfassung.",
+  "androidShareTitle": "Mit ORAH teilen",
+  "androidShareDescription": "Übertrage unterstützte Texte und Inhalte in eine neue ORAH-Notiz.",
+  "androidRemindersTitle": "Erinnerungen",
+  "androidRemindersDescription": "Erstelle Erinnerungen für Notizen und Checklisten ohne Backend.",
+  "androidLocalIntegrationsNote": "Diese Integrationen sind lokale Android-Funktionen und benötigen kein Backend.",
+  "androidDone": "Fertig",
+  "androidGotIt": "Verstanden"
 }

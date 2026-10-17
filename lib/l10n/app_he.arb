@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "הוספת הווידג׳ט של ORAH",
+  "androidWidgetSetupBody": "במסך הבית של Android, לחצו לחיצה ארוכה על אזור ריק, בחרו Widgets, חפשו ORAH וגררו את הווידג׳ט למסך הבית.",
+  "androidQuickShortcutDialogTitle": "קיצור דרך להערה מהירה",
+  "androidQuickShortcutDialogBody": "לחצו לחיצה ארוכה על סמל ORAH במסך הבית. בחרו «הערה חדשה» או «רשימת משימות חדשה» מתפריט קיצורי הדרך.",
+  "androidShortcutNewNote": "הערה חדשה",
+  "androidShortcutNewChecklist": "רשימת משימות חדשה",
+  "androidShortcutSearch": "חיפוש",
+  "androidShareUnavailable": "השיתוף אל ORAH אינו זמין במכשיר הזה.",
+  "androidFeatureHeading": "ORAH ב-Android",
+  "androidFeatureIntro": "ORAH כוללת לכידה מהירה, שיתוף וגישה ממסך הבית באמצעות שילובים מובנים של Android.",
+  "androidWidgetTitle": "ווידג׳ט למסך הבית",
+  "androidWidgetDescription": "צרו הערה או רשימת משימות, או פתחו חיפוש ישירות ממסך הבית.",
+  "androidQuickCaptureTitle": "קיצור דרך להערה מהירה",
+  "androidQuickCaptureDescription": "פתחו את ORAH ישירות ללכידה מיידית.",
+  "androidShareTitle": "שיתוף אל ORAH",
+  "androidShareDescription": "שלחו טקסט ותוכן נתמכים להערה חדשה ב-ORAH.",
+  "androidRemindersTitle": "תזכורות",
+  "androidRemindersDescription": "צרו תזכורות להערות ולרשימות משימות ללא שרת backend.",
+  "androidLocalIntegrationsNote": "אלה תכונות Android מקומיות שאינן דורשות שרת backend.",
+  "androidDone": "בוצע",
+  "androidGotIt": "הבנתי"
 }

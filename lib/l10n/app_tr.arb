@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "ORAH widget'ını ekle",
+  "androidWidgetSetupBody": "Android ana ekranında boş bir alana uzun basın, Widget'lar'ı seçin, ORAH'ı bulun ve widget'ı ana ekrana sürükleyin.",
+  "androidQuickShortcutDialogTitle": "Hızlı Not kısayolu",
+  "androidQuickShortcutDialogBody": "Android ana ekranında ORAH uygulama simgesine uzun basın. Kısayol menüsünden Yeni not veya Yeni kontrol listesi'ni seçin.",
+  "androidShortcutNewNote": "Yeni not",
+  "androidShortcutNewChecklist": "Yeni kontrol listesi",
+  "androidShortcutSearch": "Ara",
+  "androidShareUnavailable": "Bu cihazda ORAH ile paylaşım kullanılamıyor.",
+  "androidFeatureHeading": "Android'de ORAH",
+  "androidFeatureIntro": "ORAH, yerel Android entegrasyonlarıyla hızlı kayıt, paylaşım ve ana ekrandan erişim sunar.",
+  "androidWidgetTitle": "Ana ekran widget'ı",
+  "androidWidgetDescription": "Ana ekrandan not veya kontrol listesi oluşturun ya da aramayı açın.",
+  "androidQuickCaptureTitle": "Hızlı Not kısayolu",
+  "androidQuickCaptureDescription": "Anında kayıt için ORAH'ı doğrudan açın.",
+  "androidShareTitle": "ORAH ile paylaş",
+  "androidShareDescription": "Desteklenen metin ve içerikleri yeni bir ORAH notuna gönderin.",
+  "androidRemindersTitle": "Hatırlatıcılar",
+  "androidRemindersDescription": "Arka uç olmadan not ve kontrol listesi hatırlatıcıları oluşturun.",
+  "androidLocalIntegrationsNote": "Bu entegrasyonlar yerel Android özellikleridir ve arka uç gerektirmez.",
+  "androidDone": "Bitti",
+  "androidGotIt": "Anladım"
 }

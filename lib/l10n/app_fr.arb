@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "Ajouter le widget ORAH",
+  "androidWidgetSetupBody": "Sur l’écran d’accueil Android, maintenez une zone vide appuyée, choisissez Widgets, recherchez ORAH, puis faites glisser le widget sur l’écran d’accueil.",
+  "androidQuickShortcutDialogTitle": "Raccourci Note rapide",
+  "androidQuickShortcutDialogBody": "Maintenez l’icône ORAH appuyée sur l’écran d’accueil Android. Choisissez « Nouvelle note » ou « Nouvelle liste » dans le menu des raccourcis.",
+  "androidShortcutNewNote": "Nouvelle note",
+  "androidShortcutNewChecklist": "Nouvelle liste",
+  "androidShortcutSearch": "Rechercher",
+  "androidShareUnavailable": "Le partage vers ORAH n’est pas disponible sur cet appareil.",
+  "androidFeatureHeading": "ORAH sur Android",
+  "androidFeatureIntro": "ORAH intègre la capture rapide, le partage et l’accès depuis l’écran d’accueil grâce aux fonctions natives d’Android.",
+  "androidWidgetTitle": "Widget d’écran d’accueil",
+  "androidWidgetDescription": "Créez une note, une liste ou ouvrez la recherche depuis l’écran d’accueil.",
+  "androidQuickCaptureTitle": "Raccourci Note rapide",
+  "androidQuickCaptureDescription": "Ouvrez ORAH directement pour capturer une idée instantanément.",
+  "androidShareTitle": "Partager vers ORAH",
+  "androidShareDescription": "Envoyez du texte et du contenu compatibles dans une nouvelle note ORAH.",
+  "androidRemindersTitle": "Rappels",
+  "androidRemindersDescription": "Créez des rappels pour les notes et les listes sans serveur distant.",
+  "androidLocalIntegrationsNote": "Ces intégrations sont des fonctions Android locales qui ne nécessitent aucun serveur distant.",
+  "androidDone": "Terminé",
+  "androidGotIt": "Compris"
 }

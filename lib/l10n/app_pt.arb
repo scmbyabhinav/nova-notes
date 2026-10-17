@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "Adicionar o widget ORAH",
+  "androidWidgetSetupBody": "No ecrã inicial do Android, mantenha premida uma área vazia, escolha Widgets, procure ORAH e arraste o widget para o ecrã inicial.",
+  "androidQuickShortcutDialogTitle": "Atalho de nota rápida",
+  "androidQuickShortcutDialogBody": "Mantenha premido o ícone do ORAH no ecrã inicial do Android. Escolha Nova nota ou Nova lista no menu de atalhos.",
+  "androidShortcutNewNote": "Nova nota",
+  "androidShortcutNewChecklist": "Nova lista",
+  "androidShortcutSearch": "Pesquisar",
+  "androidShareUnavailable": "A partilha para o ORAH não está disponível neste dispositivo.",
+  "androidFeatureHeading": "ORAH no Android",
+  "androidFeatureIntro": "O ORAH integra captura rápida, partilha e acesso ao ecrã inicial através das funcionalidades nativas do Android.",
+  "androidWidgetTitle": "Widget do ecrã inicial",
+  "androidWidgetDescription": "Crie uma nota, uma lista ou abra a pesquisa a partir do ecrã inicial.",
+  "androidQuickCaptureTitle": "Atalho de nota rápida",
+  "androidQuickCaptureDescription": "Abra o ORAH diretamente para capturar uma ideia de imediato.",
+  "androidShareTitle": "Partilhar para o ORAH",
+  "androidShareDescription": "Envie texto e conteúdo compatíveis para uma nova nota ORAH.",
+  "androidRemindersTitle": "Lembretes",
+  "androidRemindersDescription": "Crie lembretes para notas e listas sem backend.",
+  "androidLocalIntegrationsNote": "Estas integrações são funcionalidades locais do Android e não precisam de backend.",
+  "androidDone": "Concluído",
+  "androidGotIt": "Entendi"
 }

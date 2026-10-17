@@ -6,6 +6,7 @@ void main() {
   test('critical utility screens do not regress to hard-coded UI copy', () {
     const screens = <String>[
       'lib/screens/trash_screen.dart',
+      'lib/screens/android_features_screen.dart',
       'lib/screens/security_settings_screen.dart',
       'lib/screens/organization_picker_screen.dart',
       'lib/screens/vault_screen.dart',

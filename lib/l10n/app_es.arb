@@ -864,5 +864,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "androidWidgetSetupTitle": "Añadir el widget de ORAH",
+  "androidWidgetSetupBody": "En la pantalla de inicio de Android, mantén pulsada una zona vacía, elige Widgets, busca ORAH y arrastra el widget a la pantalla de inicio.",
+  "androidQuickShortcutDialogTitle": "Acceso directo a nota rápida",
+  "androidQuickShortcutDialogBody": "Mantén pulsado el icono de ORAH en la pantalla de inicio. Usa «Nueva nota» o «Nueva lista» en el menú de accesos directos.",
+  "androidShortcutNewNote": "Nueva nota",
+  "androidShortcutNewChecklist": "Nueva lista",
+  "androidShortcutSearch": "Buscar",
+  "androidShareUnavailable": "Compartir con ORAH no está disponible en este dispositivo.",
+  "androidFeatureHeading": "ORAH en Android",
+  "androidFeatureIntro": "ORAH integra captura rápida, uso compartido y acceso desde la pantalla de inicio mediante funciones nativas de Android.",
+  "androidWidgetTitle": "Widget de pantalla de inicio",
+  "androidWidgetDescription": "Crea una nota o lista, o abre la búsqueda desde la pantalla de inicio.",
+  "androidQuickCaptureTitle": "Acceso directo a nota rápida",
+  "androidQuickCaptureDescription": "Abre ORAH directamente para capturar algo al instante.",
+  "androidShareTitle": "Compartir con ORAH",
+  "androidShareDescription": "Envía texto y contenido compatibles a una nueva nota de ORAH.",
+  "androidRemindersTitle": "Recordatorios",
+  "androidRemindersDescription": "Crea recordatorios para notas y listas sin necesidad de un backend.",
+  "androidLocalIntegrationsNote": "Estas integraciones son funciones locales de Android y no necesitan un backend.",
+  "androidDone": "Hecho",
+  "androidGotIt": "Entendido"
 }
