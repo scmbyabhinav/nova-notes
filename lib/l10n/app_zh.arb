@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "感恩",
+  "reflectionCategoryMindfulness": "正念",
+  "reflectionCategoryPersonalGrowth": "个人成长",
+  "reflectionCategoryRelationships": "人际关系",
+  "reflectionCategorySelfCompassion": "自我关怀",
+  "reflectionCategoryClarity": "清晰",
+  "reflectionCategoryPossibility": "可能性",
+  "reflectionCategoryDailyReview": "每日回顾",
+  "reflectionCategoryPurposeValues": "目标与价值观",
+  "reflectionCategoryResilience": "韧性",
+  "reflectionCategoryCreativityCuriosity": "创造力与好奇心",
+  "reflectionCategoryRestRenewal": "休息与恢复",
+  "reflectionWriteHint": "写下此刻想到的任何内容…",
+  "reflectionSaveError": "无法保存反思：{error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }

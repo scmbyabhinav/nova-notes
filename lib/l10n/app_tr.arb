@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "Şükran",
+  "reflectionCategoryMindfulness": "Bilinçli farkındalık",
+  "reflectionCategoryPersonalGrowth": "Kişisel gelişim",
+  "reflectionCategoryRelationships": "İlişkiler",
+  "reflectionCategorySelfCompassion": "Öz şefkat",
+  "reflectionCategoryClarity": "Netlik",
+  "reflectionCategoryPossibility": "Olasılıklar",
+  "reflectionCategoryDailyReview": "Günlük değerlendirme",
+  "reflectionCategoryPurposeValues": "Amaç ve değerler",
+  "reflectionCategoryResilience": "Dayanıklılık",
+  "reflectionCategoryCreativityCuriosity": "Yaratıcılık ve merak",
+  "reflectionCategoryRestRenewal": "Dinlenme ve yenilenme",
+  "reflectionWriteHint": "Aklınıza gelenleri yazın…",
+  "reflectionSaveError": "Yansıma kaydedilemedi: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }
