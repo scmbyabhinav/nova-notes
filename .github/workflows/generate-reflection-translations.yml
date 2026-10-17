@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: reflection-translation-generation
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   translate:
