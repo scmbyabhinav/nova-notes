@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-const _fullyTranslatedLocales = <String>{'hi', 'es', 'fr', 'de', 'he'};
+const _fullyTranslatedLocales = <String>{'ar', 'de', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'tr', 'zh'};
 
 final _placeholderPattern = RegExp(r'\{([A-Za-z][A-Za-z0-9_]*)\}');
 
@@ -27,9 +27,9 @@ const _localeNeutralKeys = <String, Set<String>>{
   'ko': {'emailExample', 'pin'},
   'zh': {'emailExample'},
   // PIN is a standard technical abbreviation; these short labels are approved.
-  'de': {'pin', 'details', 'moodNeutral', 'linkLabel'},
+  'de': {'pin', 'details', 'moodNeutral'},
   'es': {'pin', 'total', 'moodNeutral', 'templateAgenda'},
-  'id': {'pin', 'template', 'total'},
+  'id': {'pin', 'total', 'templateAgenda'},
   'it': {'pin'},
   'pt': {'pin', 'total'},
   'tr': {'pin'},
