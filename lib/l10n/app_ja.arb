@@ -85,7 +85,7 @@
   "untitledNote": "無題のノート",
   "scheduledLabel": "予定済み",
   "createdLabel": "作成済み",
-  "calendarItemStatusDate": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {date}",
   "writingRhythm": "あなたの書くリズム",
   "historyTimeline": "履歴タイムライン",
   "storyStartsWithNote": "あなたの物語はノートから始まります",
