@@ -955,5 +955,7 @@
   "notificationDoneAction": "완료",
   "notificationSnooze10Action": "10분 후 다시 알림",
   "notificationSnooze60Action": "1시간 후 다시 알림",
-  "notificationReminderTitle": "ORAH 알림"
+  "notificationReminderTitle": "ORAH 알림",
+  "genericTryAgain": "다시 시도해 주세요.",
+  "registrationFailed": "등록을 완료할 수 없습니다. 다시 시도해 주세요."
 }
