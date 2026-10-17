@@ -421,8 +421,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         Text(
                           query.isEmpty
-                              ? '${_results.length} notes'
-                              : '${_results.length} result${_results.length == 1 ? '' : 's'}',
+                              ? AppLocalizations.of(context)!.activeNotesCount(_results.length)
+                              : AppLocalizations.of(context)!.searchResultsCount(_results.length),
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -430,7 +430,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         const Spacer(),
                         if (!_filter.isEmpty)
                           Text(
-                            'Filters active',
+                            AppLocalizations.of(context)!.filtersActive,
                             style: theme.textTheme.labelMedium?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w700,
@@ -462,7 +462,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    _advancedBlocked ? 'Advanced search is a Pro feature' : 'No notes found',
+                                    _advancedBlocked ? AppLocalizations.of(context)!.advancedSearchProFeature : AppLocalizations.of(context)!.noNotesFound,
                                     style: theme.textTheme.titleMedium
                                         ?.copyWith(
                                       fontWeight: FontWeight.w800,
@@ -470,7 +470,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    _advancedBlocked ? 'Use normal keywords for free, or open ORAH Pro to unlock filters and operators.' : 'Try another word or remove a filter.',
+                                    _advancedBlocked ? AppLocalizations.of(context)!.searchFilterHint : AppLocalizations.of(context)!.searchEmptyHint,
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color:
@@ -528,7 +528,7 @@ class _SearchResultTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final text = note.isLocked ? 'Authenticate to open this private note' : (note.content.isEmpty ? 'No content' : note.content);
+    final text = note.isLocked ? AppLocalizations.of(context)!.unlockPrivateNoteHint : (note.content.isEmpty ? AppLocalizations.of(context)!.noContentLabel : note.content);
 
     return Card(
       child: ListTile(
@@ -542,7 +542,7 @@ class _SearchResultTile extends StatelessWidget {
               : const OrahAssetIcon('notes', size: 24),
         ),
         title: _HighlightedText(
-          text: note.isLocked ? '🔒 Locked Note' : (note.title.isEmpty ? 'Untitled note' : note.title),
+          text: note.isLocked ? '🔒 ${AppLocalizations.of(context)!.trashLockedNote}' : (note.title.isEmpty ? AppLocalizations.of(context)!.untitledNote : note.title),
           query: query,
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w800,
