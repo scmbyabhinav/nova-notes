@@ -562,7 +562,7 @@
   "reflectionCategoryPurposeValues": "目的と価値観",
   "reflectionCategoryResilience": "回復力",
   "reflectionCategoryCreativityCuriosity": "創造性と好奇心",
-  "reflectionCategoryRestRenewal": "休息と焕新",
+  "reflectionCategoryRestRenewal": "休息と心身の回復",
   "reflectionWriteHint": "思いついたことを自由に書いてください…",
   "reflectionSaveError": "振り返りを保存できませんでした：{error}",
   "@reflectionSaveError": {
