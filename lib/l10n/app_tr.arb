@@ -885,5 +885,61 @@
   "androidRemindersDescription": "Arka uç olmadan not ve kontrol listesi hatırlatıcıları oluşturun.",
   "androidLocalIntegrationsNote": "Bu entegrasyonlar yerel Android özellikleridir ve arka uç gerektirmez.",
   "androidDone": "Bitti",
-  "androidGotIt": "Anladım"
+  "androidGotIt": "Anladım",
+  "captureTitle": "Kaydet",
+  "captureDescription": "Neyi kaydetmek istediğinizi seçin.",
+  "quickNote": "Hızlı not",
+  "startTypingImmediately": "Hemen yazmaya başlayın",
+  "quickChecklist": "Hızlı kontrol listesi",
+  "captureTasksWithoutSetup": "Kurulum yapmadan görevleri kaydedin",
+  "dailyChecklistTooltip": "Günlük kontrol listesi",
+  "quickCaptureHint": "Yazmak için dokunun • Liste ve seçenekler için basılı tutun",
+  "quickCaptureTooltip": "Hızlı kayıt. Liste ve seçenekler için basılı tutun.",
+  "filtersActive": "Filtreler etkin",
+  "searchResultsCount": "Sonuçlar: {count}",
+  "advancedSearchProFeature": "Gelişmiş arama ORAH Pro özelliğidir",
+  "noNotesFound": "Not bulunamadı",
+  "searchFilterHint": "Ücretsiz olarak normal anahtar kelimeleri kullanın veya filtreleri ve operatörleri açmak için ORAH Pro'yu açın.",
+  "searchEmptyHint": "Başka bir kelime deneyin veya bir filtreyi kaldırın.",
+  "voicePreferences": "Ses tercihleri",
+  "dailyReflectionSchedule": "Günlük düşünme zamanlaması",
+  "versionLabel": "Sürüm {version}",
+  "vaultResetWarning": "Vault PIN'i kurtarılamaz. Sıfırlama, tüm Vault notlarını ve şifreleme anahtarını kalıcı olarak siler. Normal notlarınız ve klasörleriniz değişmeden kalır.",
+  "portableBackupShareText": "Orah taşınabilir yedeği",
+  "storageAttachmentCount": "{count} ek • {size}",
+  "dailyReflectionTimePicker": "Günlük düşünme saatini seçin",
+  "scheduleLoading": "Zamanlama yükleniyor…",
+  "scheduleEnabledAt": "Etkin • Her gün {time}",
+  "scheduleDisabled": "Devre dışı • Günlük hatırlatıcı almak için etkinleştirin",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
