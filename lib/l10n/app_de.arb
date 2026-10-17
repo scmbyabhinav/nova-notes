@@ -917,7 +917,7 @@
       }
     }
   },
-  "vaultResetWarning": "Die Vault-PIN kann nicht wiederhergestellt werden. Beim Zurücksetzen werden alle Vault-Notizen und der Vault-Verschlüsselungsschlüssel dauerhaft gelöscht. Deine normalen Notizen und Ordner bleiben unverändert.",
+  "vaultResetWarning": "Die Vault-PIN kann nicht wiederhergestellt werden. Beim Zurücksetzen werden alle Vault-Notizen und der Verschlüsselungsschlüssel dauerhaft gelöscht. Normale Notizen und Ordner bleiben unverändert.",
   "portableBackupShareText": "Orah-Portable-Backup",
   "storageAttachmentCount": "{count} Anhänge • {size}",
   "@storageAttachmentCount": {
@@ -940,5 +940,6 @@
       }
     }
   },
-  "scheduleDisabled": "Deaktiviert • Aktivieren, um tägliche Erinnerungen zu erhalten"
+  "scheduleDisabled": "Deaktiviert • Aktivieren, um tägliche Erinnerungen zu erhalten",
+  "captureTitle": "Erfassen"
 }
