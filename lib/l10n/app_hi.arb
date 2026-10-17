@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "स्थायी रूप से मिटाएँ?",
+  "trashDeletePermanentlyMessage": "यह नोट हमेशा के लिए हट जाएगा।",
+  "trashEmptyTitle": "ट्रैश खाली करें?",
+  "trashEmptyMessage": "{count} नोट हमेशा के लिए मिटाएँ?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "ट्रैश खाली करें",
+  "trashNoNotesTitle": "अभी कोई नोट नहीं है।",
+  "trashPrivateNote": "निजी नोट",
+  "trashLockedNote": "लॉक किया गया नोट",
+  "trashChecklist": "चेकलिस्ट",
+  "trashNote": "नोट",
+  "trashDeletePermanentlyAction": "स्थायी रूप से मिटाएँ",
+  "favoritesEmptyTitle": "अभी कोई पसंदीदा नहीं",
+  "favoritesEmptyDescription": "ज़रूरी नोट पर स्टार लगाएँ; वे यहाँ दिखाई देंगे।",
+  "favoritesNoContent": "कोई सामग्री नहीं",
+  "archivedRestoreMessage": "नोट आपके नोट्स में बहाल कर दिया गया।",
+  "archivedRefreshTooltip": "आर्काइव नोट्स रीफ़्रेश करें",
+  "archivedEmptyTitle": "कोई आर्काइव नोट नहीं",
+  "archivedEmptyDescription": "आपके आर्काइव किए गए नोट यहाँ दिखेंगे। आप उन्हें खोल सकते हैं या मुख्य सूची में बहाल कर सकते हैं।",
+  "privacyPledgeHeadline": "हमारा गोपनीयता वचन",
+  "privacyPledgeIntro": "आपके विचार निजी हैं। Orah आपके नोट्स को निजी और आपके नियंत्रण में रखने के लिए बनाया गया है।",
+  "privacyLocalTitle": "पूरी तरह स्थानीय",
+  "privacyLocalDescription": "आपके नोट केवल इसी डिवाइस पर संग्रहीत होते हैं।",
+  "privacyCloudTitle": "कोई क्लाउड नहीं",
+  "privacyCloudDescription": "Orah में नोट सिंक करने वाला सर्वर नहीं है। जब तक आप साझा या निर्यात नहीं करते, नोट आपके डिवाइस पर रहते हैं।",
+  "privacyAiTitle": "कोई AI नहीं",
+  "privacyAiDescription": "Orah आपके नोट्स को स्कैन या पढ़ता नहीं है और उन पर AI को प्रशिक्षित नहीं करता।",
+  "privacyVaultTitle": "एन्क्रिप्टेड वॉल्ट",
+  "privacyVaultDescription": "वॉल्ट में संवेदनशील नोट AES-256-GCM एन्क्रिप्शन से सुरक्षित हैं।",
+  "privacySharingDisclosure": "जब आप साझा करने, निर्यात, डिवाइस सेवाओं या सिस्टम सुविधाओं का उपयोग चुनते हैं, तो जानकारी ऐप के बाहर भेजी जा सकती है।",
+  "gotIt": "समझ गया",
+  "aboutFast": "तेज़",
+  "aboutFastDescription": "तुरंत नोट करने के लिए बनाया गया।",
+  "aboutOfflineFirst": "ऑफ़लाइन-प्रथम",
+  "aboutOfflineFirstDescription": "आपके नोट बिना खाते के काम करते हैं।",
+  "aboutPrivate": "निजी",
+  "aboutPrivateDescription": "स्थानीय डेटा और वैकल्पिक डिवाइस सुरक्षा।",
+  "aboutSummary": "Orah को सरल रखने के लिए बनाया गया है: खोलें, लिखें, व्यवस्थित करें, खोजें।",
+  "developerSignatureLabel": "अभिनव बाजपेयी — डेवलपर हस्ताक्षर",
+  "aboutFeedback": "फ़ीचर सुझावों, प्रतिक्रिया या विचारों के लिए:",
+  "aboutCopyright": "कॉपीराइट © 2026 अभिनव बाजपेयी। सर्वाधिकार सुरक्षित।",
+  "aboutLegalNotice": "Orah का ऐप कोड, मूल ब्रांडिंग, कलाकृति और उत्पाद संपत्तियाँ अभिनव बाजपेयी की हैं। तृतीय-पक्ष घटक अपने संबंधित लाइसेंस के अधीन हैं।"
 }

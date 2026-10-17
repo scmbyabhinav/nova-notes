@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "完全に削除しますか？",
+  "trashDeletePermanentlyMessage": "このメモは完全に削除されます。",
+  "trashEmptyTitle": "ゴミ箱を空にしますか？",
+  "trashEmptyMessage": "メモ {count} 件を完全に削除しますか？",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "ゴミ箱を空にする",
+  "trashNoNotesTitle": "まだメモはありません。",
+  "trashPrivateNote": "プライベートメモ",
+  "trashLockedNote": "ロックされたメモ",
+  "trashChecklist": "チェックリスト",
+  "trashNote": "メモ",
+  "trashDeletePermanentlyAction": "完全に削除",
+  "favoritesEmptyTitle": "お気に入りはまだありません",
+  "favoritesEmptyDescription": "大切なメモに星を付けると、ここに表示されます。",
+  "favoritesNoContent": "内容なし",
+  "archivedRestoreMessage": "メモをメモ一覧に復元しました。",
+  "archivedRefreshTooltip": "アーカイブ済みメモを更新",
+  "archivedEmptyTitle": "アーカイブ済みメモはありません",
+  "archivedEmptyDescription": "アーカイブしたメモがここに表示されます。開くか、メモ一覧に戻せます。",
+  "privacyPledgeHeadline": "プライバシーへの約束",
+  "privacyPledgeIntro": "考えは個人的なものです。Orahはメモを非公開に保ち、自分で管理できるよう設計されています。",
+  "privacyLocalTitle": "完全ローカル",
+  "privacyLocalDescription": "メモはこのデバイスにのみ保存されます。",
+  "privacyCloudTitle": "クラウド不使用",
+  "privacyCloudDescription": "Orahにはメモ同期サーバーがありません。共有またはエクスポートしない限り、メモは端末内に保存されます。",
+  "privacyAiTitle": "AI不使用",
+  "privacyAiDescription": "Orahはメモをスキャン・閲覧したり、メモを使ってAIを学習させたりしません。",
+  "privacyVaultTitle": "暗号化された保管庫",
+  "privacyVaultDescription": "保管庫内の機密メモはAES-256-GCM暗号化で保護されます。",
+  "privacySharingDisclosure": "共有、エクスポート、端末サービス、OS機能を使うと、選択に応じて情報がアプリ外へ送信される場合があります。",
+  "gotIt": "了解しました",
+  "aboutFast": "高速",
+  "aboutFastDescription": "すぐに記録できるよう設計されています。",
+  "aboutOfflineFirst": "オフライン優先",
+  "aboutOfflineFirstDescription": "アカウントなしでメモを利用できます。",
+  "aboutPrivate": "プライベート",
+  "aboutPrivateDescription": "ローカルデータと任意の端末保護。",
+  "aboutSummary": "Orahは邪魔をせず、開く・記録する・整理する・見つけることに集中できます。",
+  "developerSignatureLabel": "Abhinav Bajpai — 開発者署名",
+  "aboutFeedback": "機能の提案、フィードバック、ご意見はこちら：",
+  "aboutCopyright": "Copyright © 2026 Abhinav Bajpai. All rights reserved.",
+  "aboutLegalNotice": "Orahのアプリコード、オリジナルブランド、アートワーク、製品アセットはAbhinav Bajpaiが所有します。サードパーティ製コンポーネントは各ライセンスに従います。"
 }

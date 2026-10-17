@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "永久删除？",
+  "trashDeletePermanentlyMessage": "此笔记将被永久删除。",
+  "trashEmptyTitle": "清空回收站？",
+  "trashEmptyMessage": "永久删除 {count} 条笔记？",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "清空回收站",
+  "trashNoNotesTitle": "还没有笔记。",
+  "trashPrivateNote": "私人笔记",
+  "trashLockedNote": "已锁定笔记",
+  "trashChecklist": "清单",
+  "trashNote": "笔记",
+  "trashDeletePermanentlyAction": "永久删除",
+  "favoritesEmptyTitle": "还没有收藏",
+  "favoritesEmptyDescription": "为重要笔记加星标，它们就会显示在这里。",
+  "favoritesNoContent": "没有内容",
+  "archivedRestoreMessage": "笔记已恢复到你的笔记列表。",
+  "archivedRefreshTooltip": "刷新已归档笔记",
+  "archivedEmptyTitle": "没有已归档笔记",
+  "archivedEmptyDescription": "归档的笔记会显示在这里。你可以打开它们或恢复到主笔记列表。",
+  "privacyPledgeHeadline": "我们的隐私承诺",
+  "privacyPledgeIntro": "你的想法属于个人隐私。Orah 旨在让笔记保持私密并由你掌控。",
+  "privacyLocalTitle": "完全本地",
+  "privacyLocalDescription": "你的笔记仅存储在此设备上。",
+  "privacyCloudTitle": "不使用云端",
+  "privacyCloudDescription": "Orah 没有笔记同步服务器。除非你选择分享或导出，否则笔记会保留在设备上。",
+  "privacyAiTitle": "不使用 AI",
+  "privacyAiDescription": "Orah 不会扫描、读取你的笔记，也不会用笔记训练 AI。",
+  "privacyVaultTitle": "加密保险库",
+  "privacyVaultDescription": "保险库中的敏感笔记采用 AES-256-GCM 加密保护。",
+  "privacySharingDisclosure": "当你选择使用分享、导出、设备服务或操作系统功能时，信息可能会发送到应用之外。",
+  "gotIt": "知道了",
+  "aboutFast": "快速",
+  "aboutFastDescription": "专为快速记录而设计。",
+  "aboutOfflineFirst": "离线优先",
+  "aboutOfflineFirstDescription": "无需账户即可使用笔记。",
+  "aboutPrivate": "私密",
+  "aboutPrivateDescription": "本地数据，可选择启用设备保护。",
+  "aboutSummary": "Orah 力求简洁：打开、记录、整理、查找。",
+  "developerSignatureLabel": "Abhinav Bajpai — 开发者签名",
+  "aboutFeedback": "如需提出功能建议、反馈或想法：",
+  "aboutCopyright": "版权所有 © 2026 Abhinav Bajpai。保留所有权利。",
+  "aboutLegalNotice": "Orah 应用代码、原创品牌、艺术作品和产品资产归 Abhinav Bajpai 所有。第三方组件仍受其各自许可证约束。"
 }

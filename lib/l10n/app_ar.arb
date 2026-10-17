@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "الحذف نهائيًا؟",
+  "trashDeletePermanentlyMessage": "ستتم إزالة هذه الملاحظة نهائيًا.",
+  "trashEmptyTitle": "إفراغ سلة المهملات؟",
+  "trashEmptyMessage": "حذف {count} ملاحظة نهائيًا؟",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "إفراغ السلة",
+  "trashNoNotesTitle": "لا توجد ملاحظات بعد.",
+  "trashPrivateNote": "ملاحظة خاصة",
+  "trashLockedNote": "ملاحظة مقفلة",
+  "trashChecklist": "قائمة تحقق",
+  "trashNote": "ملاحظة",
+  "trashDeletePermanentlyAction": "حذف نهائيًا",
+  "favoritesEmptyTitle": "لا توجد مفضلة بعد",
+  "favoritesEmptyDescription": "ضع نجمة على الملاحظات المهمة وستظهر هنا.",
+  "favoritesNoContent": "لا يوجد محتوى",
+  "archivedRestoreMessage": "تمت استعادة الملاحظة إلى ملاحظاتك.",
+  "archivedRefreshTooltip": "تحديث الملاحظات المؤرشفة",
+  "archivedEmptyTitle": "لا توجد ملاحظات مؤرشفة",
+  "archivedEmptyDescription": "ستظهر الملاحظات التي تؤرشفها هنا. يمكنك فتحها أو استعادتها إلى قائمة ملاحظاتك الرئيسية.",
+  "privacyPledgeHeadline": "تعهدنا بالخصوصية",
+  "privacyPledgeIntro": "أفكارك شخصية. صُمم Orah للحفاظ على خصوصية ملاحظاتك ومنحك التحكم بها.",
+  "privacyLocalTitle": "محلي بالكامل",
+  "privacyLocalDescription": "تُخزَّن ملاحظاتك على هذا الجهاز فقط.",
+  "privacyCloudTitle": "بدون سحابة",
+  "privacyCloudDescription": "لا يستخدم Orah خادمًا لمزامنة الملاحظات. تبقى الملاحظات على جهازك ما لم تختر مشاركتها أو تصديرها.",
+  "privacyAiTitle": "بدون ذكاء اصطناعي",
+  "privacyAiDescription": "لا يفحص Orah ملاحظاتك أو يقرأها أو يدرّب الذكاء الاصطناعي عليها.",
+  "privacyVaultTitle": "خزنة مشفرة",
+  "privacyVaultDescription": "تُحمى الملاحظات الحساسة في الخزنة بتشفير AES-256-GCM.",
+  "privacySharingDisclosure": "قد تؤدي المشاركة والتصدير وخدمات الجهاز وميزات نظام التشغيل إلى إرسال معلومات خارج التطبيق عند اختيارك استخدامها.",
+  "gotIt": "فهمت",
+  "aboutFast": "سريع",
+  "aboutFastDescription": "مصمم لتسجيل الأفكار فورًا.",
+  "aboutOfflineFirst": "يعمل دون اتصال أولًا",
+  "aboutOfflineFirstDescription": "تعمل ملاحظاتك دون حساب.",
+  "aboutPrivate": "خاص",
+  "aboutPrivateDescription": "بيانات محلية مع حماية اختيارية للجهاز.",
+  "aboutSummary": "صُمم Orah ليبقى بسيطًا: افتح، سجّل، نظّم، واعثر.",
+  "developerSignatureLabel": "أبهيناف باجباي — توقيع المطوّر",
+  "aboutFeedback": "لاقتراح الميزات أو إرسال الملاحظات أو الأفكار:",
+  "aboutCopyright": "حقوق النشر © 2026 أبهيناف باجباي. جميع الحقوق محفوظة.",
+  "aboutLegalNotice": "تعود ملكية كود تطبيق Orah والعلامة التجارية الأصلية والأعمال الفنية وأصول المنتج إلى أبهيناف باجباي. وتخضع مكونات الجهات الخارجية لتراخيصها الخاصة."
 }

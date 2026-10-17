@@ -586,5 +586,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "Delete permanently?",
+  "trashDeletePermanentlyMessage": "This note will be permanently removed.",
+  "trashEmptyTitle": "Empty Trash?",
+  "trashEmptyMessage": "Permanently delete {count} notes?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Empty Trash",
+  "trashNoNotesTitle": "No notes yet.",
+  "trashPrivateNote": "Private note",
+  "trashLockedNote": "Locked note",
+  "trashChecklist": "Checklist",
+  "trashNote": "Note",
+  "trashDeletePermanentlyAction": "Delete permanently",
+  "favoritesEmptyTitle": "No favorites yet",
+  "favoritesEmptyDescription": "Star important notes and they will appear here.",
+  "favoritesNoContent": "No content",
+  "archivedRestoreMessage": "Note restored to your notes.",
+  "archivedRefreshTooltip": "Refresh archived notes",
+  "archivedEmptyTitle": "No archived notes",
+  "archivedEmptyDescription": "Notes you archive will appear here. You can open them or restore them to your main notes list.",
+  "privacyPledgeHeadline": "Our Privacy Pledge",
+  "privacyPledgeIntro": "Your thoughts are personal. Orah is designed to keep your notes private and under your control.",
+  "privacyLocalTitle": "100% Local",
+  "privacyLocalDescription": "Your notes are stored only on this device.",
+  "privacyCloudTitle": "Zero Cloud",
+  "privacyCloudDescription": "Orah has no note-sync server. Notes stay on your device unless you choose to share or export them.",
+  "privacyAiTitle": "Zero AI",
+  "privacyAiDescription": "Orah does not scan, read, or train AI on your notes.",
+  "privacyVaultTitle": "Encrypted Vault",
+  "privacyVaultDescription": "Sensitive notes in the Vault are protected with AES-256-GCM encryption.",
+  "privacySharingDisclosure": "Sharing, exporting, device services, and operating-system features may send information outside the app when you choose to use them.",
+  "gotIt": "Got it",
+  "aboutFast": "Fast",
+  "aboutFastDescription": "Designed for instant capture.",
+  "aboutOfflineFirst": "Offline-first",
+  "aboutOfflineFirstDescription": "Your notes work without an account.",
+  "aboutPrivate": "Private",
+  "aboutPrivateDescription": "Local data with optional device protection.",
+  "aboutSummary": "Orah is built to stay out of the way: open, capture, organize, find.",
+  "developerSignatureLabel": "Abhinav Bajpai — Developer signature",
+  "aboutFeedback": "For feature suggestions, feedback, or ideas:",
+  "aboutCopyright": "Copyright © 2026 Abhinav Bajpai. All rights reserved.",
+  "aboutLegalNotice": "Orah application code, original branding, artwork and product assets are owned by Abhinav Bajpai. Third-party components remain subject to their respective licenses."
 }

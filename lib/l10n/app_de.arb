@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "Endgültig löschen?",
+  "trashDeletePermanentlyMessage": "Diese Notiz wird endgültig entfernt.",
+  "trashEmptyTitle": "Papierkorb leeren?",
+  "trashEmptyMessage": "{count} Notizen endgültig löschen?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Papierkorb leeren",
+  "trashNoNotesTitle": "Noch keine Notizen.",
+  "trashPrivateNote": "Private Notiz",
+  "trashLockedNote": "Gesperrte Notiz",
+  "trashChecklist": "Checkliste",
+  "trashNote": "Notiz",
+  "trashDeletePermanentlyAction": "Endgültig löschen",
+  "favoritesEmptyTitle": "Noch keine Favoriten",
+  "favoritesEmptyDescription": "Markiere wichtige Notizen mit einem Stern; sie erscheinen hier.",
+  "favoritesNoContent": "Kein Inhalt",
+  "archivedRestoreMessage": "Notiz wurde in deine Notizen verschoben.",
+  "archivedRefreshTooltip": "Archivierte Notizen aktualisieren",
+  "archivedEmptyTitle": "Keine archivierten Notizen",
+  "archivedEmptyDescription": "Archivierte Notizen erscheinen hier. Du kannst sie öffnen oder in deine Notizen zurückholen.",
+  "privacyPledgeHeadline": "Unser Datenschutzversprechen",
+  "privacyPledgeIntro": "Deine Gedanken sind persönlich. Orah soll deine Notizen privat und unter deiner Kontrolle halten.",
+  "privacyLocalTitle": "100 % lokal",
+  "privacyLocalDescription": "Deine Notizen werden nur auf diesem Gerät gespeichert.",
+  "privacyCloudTitle": "Keine Cloud",
+  "privacyCloudDescription": "Orah hat keinen Server zur Notizsynchronisierung. Notizen bleiben auf deinem Gerät, sofern du sie nicht teilst oder exportierst.",
+  "privacyAiTitle": "Keine KI",
+  "privacyAiDescription": "Orah scannt oder liest deine Notizen nicht und trainiert keine KI damit.",
+  "privacyVaultTitle": "Verschlüsselter Tresor",
+  "privacyVaultDescription": "Sensible Notizen im Tresor sind mit AES-256-GCM verschlüsselt.",
+  "privacySharingDisclosure": "Beim Teilen, Exportieren sowie bei Geräte- und Betriebssystemdiensten können Informationen die App verlassen, wenn du diese Funktionen nutzt.",
+  "gotIt": "Verstanden",
+  "aboutFast": "Schnell",
+  "aboutFastDescription": "Für die sofortige Erfassung entwickelt.",
+  "aboutOfflineFirst": "Offline-first",
+  "aboutOfflineFirstDescription": "Deine Notizen funktionieren ohne Konto.",
+  "aboutPrivate": "Privat",
+  "aboutPrivateDescription": "Lokale Daten mit optionalem Geräteschutz.",
+  "aboutSummary": "Orah hält sich im Hintergrund: öffnen, erfassen, organisieren, finden.",
+  "developerSignatureLabel": "Abhinav Bajpai – Entwicklersignatur",
+  "aboutFeedback": "Für Funktionsvorschläge, Feedback oder Ideen:",
+  "aboutCopyright": "Copyright © 2026 Abhinav Bajpai. Alle Rechte vorbehalten.",
+  "aboutLegalNotice": "Der Anwendungscode, die Originalmarke, Grafiken und Produktressourcen von Orah gehören Abhinav Bajpai. Komponenten Dritter unterliegen ihren jeweiligen Lizenzen."
 }

@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "Eliminare definitivamente?",
+  "trashDeletePermanentlyMessage": "Questa nota verrà rimossa definitivamente.",
+  "trashEmptyTitle": "Svuotare il cestino?",
+  "trashEmptyMessage": "Eliminare definitivamente {count} note?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Svuota cestino",
+  "trashNoNotesTitle": "Ancora nessuna nota.",
+  "trashPrivateNote": "Nota privata",
+  "trashLockedNote": "Nota bloccata",
+  "trashChecklist": "Lista di controllo",
+  "trashNote": "Nota",
+  "trashDeletePermanentlyAction": "Elimina definitivamente",
+  "favoritesEmptyTitle": "Ancora nessun preferito",
+  "favoritesEmptyDescription": "Aggiungi una stella alle note importanti per vederle qui.",
+  "favoritesNoContent": "Nessun contenuto",
+  "archivedRestoreMessage": "Nota ripristinata nelle tue note.",
+  "archivedRefreshTooltip": "Aggiorna note archiviate",
+  "archivedEmptyTitle": "Nessuna nota archiviata",
+  "archivedEmptyDescription": "Le note archiviate appariranno qui. Puoi aprirle o ripristinarle nell'elenco principale.",
+  "privacyPledgeHeadline": "Il nostro impegno per la privacy",
+  "privacyPledgeIntro": "I tuoi pensieri sono personali. Orah è progettato per mantenere le tue note private e sotto il tuo controllo.",
+  "privacyLocalTitle": "100% locale",
+  "privacyLocalDescription": "Le tue note sono archiviate solo su questo dispositivo.",
+  "privacyCloudTitle": "Niente cloud",
+  "privacyCloudDescription": "Orah non ha un server per sincronizzare le note. Restano sul dispositivo, a meno che tu scelga di condividerle o esportarle.",
+  "privacyAiTitle": "Niente IA",
+  "privacyAiDescription": "Orah non scansiona né legge le tue note e non addestra l'IA su di esse.",
+  "privacyVaultTitle": "Cassaforte crittografata",
+  "privacyVaultDescription": "Le note sensibili nella cassaforte sono protette dalla crittografia AES-256-GCM.",
+  "privacySharingDisclosure": "La condivisione, l'esportazione e i servizi del dispositivo o del sistema operativo possono inviare informazioni fuori dall'app se scegli di usarli.",
+  "gotIt": "Capito",
+  "aboutFast": "Veloce",
+  "aboutFastDescription": "Progettato per acquisire idee all'istante.",
+  "aboutOfflineFirst": "Prima di tutto offline",
+  "aboutOfflineFirstDescription": "Le tue note funzionano senza un account.",
+  "aboutPrivate": "Privato",
+  "aboutPrivateDescription": "Dati locali con protezione opzionale del dispositivo.",
+  "aboutSummary": "Orah non intralcia: apri, acquisisci, organizza, trova.",
+  "developerSignatureLabel": "Abhinav Bajpai — firma dello sviluppatore",
+  "aboutFeedback": "Per suggerimenti, feedback o idee sulle funzionalità:",
+  "aboutCopyright": "Copyright © 2026 Abhinav Bajpai. Tutti i diritti riservati.",
+  "aboutLegalNotice": "Il codice dell'app Orah, il marchio originale, le opere grafiche e le risorse del prodotto appartengono ad Abhinav Bajpai. I componenti di terze parti restano soggetti alle rispettive licenze."
 }

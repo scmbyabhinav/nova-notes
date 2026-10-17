@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "Kalıcı olarak silinsin mi?",
+  "trashDeletePermanentlyMessage": "Bu not kalıcı olarak kaldırılacak.",
+  "trashEmptyTitle": "Çöp kutusu boşaltılsın mı?",
+  "trashEmptyMessage": "{count} not kalıcı olarak silinsin mi?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Çöp kutusunu boşalt",
+  "trashNoNotesTitle": "Henüz not yok.",
+  "trashPrivateNote": "Özel not",
+  "trashLockedNote": "Kilitli not",
+  "trashChecklist": "Kontrol listesi",
+  "trashNote": "Not",
+  "trashDeletePermanentlyAction": "Kalıcı olarak sil",
+  "favoritesEmptyTitle": "Henüz favori yok",
+  "favoritesEmptyDescription": "Önemli notları yıldızlayın; burada görünürler.",
+  "favoritesNoContent": "İçerik yok",
+  "archivedRestoreMessage": "Not, notlarınıza geri yüklendi.",
+  "archivedRefreshTooltip": "Arşivlenmiş notları yenile",
+  "archivedEmptyTitle": "Arşivlenmiş not yok",
+  "archivedEmptyDescription": "Arşivlediğiniz notlar burada görünür. Açabilir veya ana not listenize geri yükleyebilirsiniz.",
+  "privacyPledgeHeadline": "Gizlilik Taahhüdümüz",
+  "privacyPledgeIntro": "Düşünceleriniz kişiseldir. Orah, notlarınızı gizli ve kontrolünüz altında tutmak için tasarlanmıştır.",
+  "privacyLocalTitle": "%100 yerel",
+  "privacyLocalDescription": "Notlarınız yalnızca bu cihazda saklanır.",
+  "privacyCloudTitle": "Bulut yok",
+  "privacyCloudDescription": "Orah'ın not senkronizasyon sunucusu yoktur. Paylaşmayı veya dışa aktarmayı seçmediğiniz sürece notlar cihazınızda kalır.",
+  "privacyAiTitle": "Yapay zekâ yok",
+  "privacyAiDescription": "Orah notlarınızı taramaz, okumaz veya notlarınızla yapay zekâ eğitmez.",
+  "privacyVaultTitle": "Şifrelenmiş kasa",
+  "privacyVaultDescription": "Kasadaki hassas notlar AES-256-GCM şifrelemesiyle korunur.",
+  "privacySharingDisclosure": "Paylaşım, dışa aktarma, cihaz hizmetleri ve işletim sistemi özellikleri, kullanmayı seçtiğinizde bilgileri uygulama dışına gönderebilir.",
+  "gotIt": "Anladım",
+  "aboutFast": "Hızlı",
+  "aboutFastDescription": "Anında not almak için tasarlandı.",
+  "aboutOfflineFirst": "Önce çevrimdışı",
+  "aboutOfflineFirstDescription": "Notlarınız hesap olmadan çalışır.",
+  "aboutPrivate": "Özel",
+  "aboutPrivateDescription": "İsteğe bağlı cihaz korumasıyla yerel veriler.",
+  "aboutSummary": "Orah sade kalır: açın, kaydedin, düzenleyin, bulun.",
+  "developerSignatureLabel": "Abhinav Bajpai — geliştirici imzası",
+  "aboutFeedback": "Özellik önerileri, geri bildirim veya fikirler için:",
+  "aboutCopyright": "Telif hakkı © 2026 Abhinav Bajpai. Tüm hakları saklıdır.",
+  "aboutLegalNotice": "Orah uygulama kodu, özgün marka, çizimler ve ürün varlıkları Abhinav Bajpai'ye aittir. Üçüncü taraf bileşenler kendi lisanslarına tabidir."
 }

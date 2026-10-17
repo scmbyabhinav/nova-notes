@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "Hapus permanen?",
+  "trashDeletePermanentlyMessage": "Catatan ini akan dihapus secara permanen.",
+  "trashEmptyTitle": "Kosongkan Sampah?",
+  "trashEmptyMessage": "Hapus {count} catatan secara permanen?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Kosongkan Sampah",
+  "trashNoNotesTitle": "Belum ada catatan.",
+  "trashPrivateNote": "Catatan pribadi",
+  "trashLockedNote": "Catatan terkunci",
+  "trashChecklist": "Daftar periksa",
+  "trashNote": "Catatan",
+  "trashDeletePermanentlyAction": "Hapus permanen",
+  "favoritesEmptyTitle": "Belum ada favorit",
+  "favoritesEmptyDescription": "Beri bintang pada catatan penting agar muncul di sini.",
+  "favoritesNoContent": "Tidak ada konten",
+  "archivedRestoreMessage": "Catatan dipulihkan ke daftar catatan.",
+  "archivedRefreshTooltip": "Muat ulang catatan arsip",
+  "archivedEmptyTitle": "Tidak ada catatan arsip",
+  "archivedEmptyDescription": "Catatan yang diarsipkan akan muncul di sini. Anda dapat membukanya atau memulihkannya ke daftar utama.",
+  "privacyPledgeHeadline": "Komitmen Privasi Kami",
+  "privacyPledgeIntro": "Pikiran Anda bersifat pribadi. Orah dirancang agar catatan tetap pribadi dan berada dalam kendali Anda.",
+  "privacyLocalTitle": "Sepenuhnya lokal",
+  "privacyLocalDescription": "Catatan Anda hanya disimpan di perangkat ini.",
+  "privacyCloudTitle": "Tanpa cloud",
+  "privacyCloudDescription": "Orah tidak memiliki server sinkronisasi catatan. Catatan tetap di perangkat kecuali Anda memilih untuk membagikan atau mengekspornya.",
+  "privacyAiTitle": "Tanpa AI",
+  "privacyAiDescription": "Orah tidak memindai atau membaca catatan Anda maupun melatih AI menggunakan catatan tersebut.",
+  "privacyVaultTitle": "Brankas terenkripsi",
+  "privacyVaultDescription": "Catatan sensitif di brankas dilindungi dengan enkripsi AES-256-GCM.",
+  "privacySharingDisclosure": "Berbagi, ekspor, layanan perangkat, dan fitur sistem operasi dapat mengirim informasi ke luar aplikasi saat Anda memilih untuk menggunakannya.",
+  "gotIt": "Mengerti",
+  "aboutFast": "Cepat",
+  "aboutFastDescription": "Dirancang untuk mencatat dengan cepat.",
+  "aboutOfflineFirst": "Utamakan offline",
+  "aboutOfflineFirstDescription": "Catatan Anda berfungsi tanpa akun.",
+  "aboutPrivate": "Pribadi",
+  "aboutPrivateDescription": "Data lokal dengan perlindungan perangkat opsional.",
+  "aboutSummary": "Orah dirancang agar praktis: buka, catat, atur, temukan.",
+  "developerSignatureLabel": "Abhinav Bajpai — tanda tangan pengembang",
+  "aboutFeedback": "Untuk saran fitur, masukan, atau ide:",
+  "aboutCopyright": "Hak cipta © 2026 Abhinav Bajpai. Hak cipta dilindungi.",
+  "aboutLegalNotice": "Kode aplikasi, merek asli, karya seni, dan aset produk Orah dimiliki oleh Abhinav Bajpai. Komponen pihak ketiga tunduk pada lisensi masing-masing."
 }

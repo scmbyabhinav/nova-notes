@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "למחוק לצמיתות?",
+  "trashDeletePermanentlyMessage": "הפתק הזה יימחק לצמיתות.",
+  "trashEmptyTitle": "לרוקן את האשפה?",
+  "trashEmptyMessage": "למחוק לצמיתות {count} פתקים?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "ריקון האשפה",
+  "trashNoNotesTitle": "עדיין אין פתקים.",
+  "trashPrivateNote": "פתק פרטי",
+  "trashLockedNote": "פתק נעול",
+  "trashChecklist": "רשימת משימות",
+  "trashNote": "פתק",
+  "trashDeletePermanentlyAction": "מחיקה לצמיתות",
+  "favoritesEmptyTitle": "עדיין אין מועדפים",
+  "favoritesEmptyDescription": "סמנו פתקים חשובים בכוכב והם יופיעו כאן.",
+  "favoritesNoContent": "אין תוכן",
+  "archivedRestoreMessage": "הפתק שוחזר לרשימת הפתקים.",
+  "archivedRefreshTooltip": "רענון פתקים בארכיון",
+  "archivedEmptyTitle": "אין פתקים בארכיון",
+  "archivedEmptyDescription": "פתקים שתעבירו לארכיון יופיעו כאן. אפשר לפתוח אותם או לשחזר אותם לרשימה הראשית.",
+  "privacyPledgeHeadline": "ההבטחה שלנו לפרטיות",
+  "privacyPledgeIntro": "המחשבות שלך אישיות. Orah נועד לשמור על הפתקים שלך פרטיים ובשליטתך.",
+  "privacyLocalTitle": "محلي بالكامل",
+  "privacyLocalDescription": "הפתקים שלך נשמרים במכשיר הזה בלבד.",
+  "privacyCloudTitle": "ללא ענן",
+  "privacyCloudDescription": "ל-Orah אין שרת לסנכרון פתקים. הם נשארים במכשיר שלך אלא אם תבחר לשתף או לייצא אותם.",
+  "privacyAiTitle": "ללא בינה מלאכותית",
+  "privacyAiDescription": "Orah אינו סורק או קורא את הפתקים שלך ואינו מאמן עליהם בינה מלאכותית.",
+  "privacyVaultTitle": "כספת מוצפנת",
+  "privacyVaultDescription": "פתקים רגישים בכספת מוגנים בהצפנת AES-256-GCM.",
+  "privacySharingDisclosure": "שיתוף, ייצוא, שירותי מכשיר ותכונות מערכת ההפעלה עשויים להעביר מידע מחוץ לאפליקציה כשתבחר להשתמש בהם.",
+  "gotIt": "הבנתי",
+  "aboutFast": "מהיר",
+  "aboutFastDescription": "נועד ללכידה מיידית.",
+  "aboutOfflineFirst": "يعمل دون اتصال",
+  "aboutOfflineFirstDescription": "הפתקים שלך פועלים ללא חשבון.",
+  "aboutPrivate": "פרטי",
+  "aboutPrivateDescription": "נתונים מקומיים עם הגנה אופציונלית למכשיר.",
+  "aboutSummary": "Orah נשאר פשוט: פותחים, מתעדים, מארגנים ומוצאים.",
+  "developerSignatureLabel": "Abhinav Bajpai — חתימת המפתח",
+  "aboutFeedback": "להצעות לתכונות, משוב או רעיונות:",
+  "aboutCopyright": "זכויות יוצרים © 2026 Abhinav Bajpai. כל הזכויות שמורות.",
+  "aboutLegalNotice": "קוד אפליקציית Orah, המותג המקורי, הגרפיקה ונכסי המוצר הם בבעלות Abhinav Bajpai. רכיבי צד שלישי כפופים לרישיונות שלהם."
 }

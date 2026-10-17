@@ -572,5 +572,54 @@
         "type": "Object"
       }
     }
-  }
+  },
+  "trashDeletePermanentlyTitle": "영구 삭제할까요?",
+  "trashDeletePermanentlyMessage": "이 메모는 영구적으로 삭제됩니다.",
+  "trashEmptyTitle": "휴지통을 비울까요?",
+  "trashEmptyMessage": "메모 {count}개를 영구 삭제할까요?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "휴지통 비우기",
+  "trashNoNotesTitle": "아직 메모가 없습니다.",
+  "trashPrivateNote": "비공개 메모",
+  "trashLockedNote": "잠긴 메모",
+  "trashChecklist": "체크리스트",
+  "trashNote": "메모",
+  "trashDeletePermanentlyAction": "영구 삭제",
+  "favoritesEmptyTitle": "즐겨찾기가 없습니다",
+  "favoritesEmptyDescription": "중요한 메모에 별표를 표시하면 여기에 나타납니다.",
+  "favoritesNoContent": "내용 없음",
+  "archivedRestoreMessage": "메모가 메모 목록으로 복원되었습니다.",
+  "archivedRefreshTooltip": "보관된 메모 새로고침",
+  "archivedEmptyTitle": "보관된 메모가 없습니다",
+  "archivedEmptyDescription": "보관한 메모가 여기에 표시됩니다. 열거나 기본 메모 목록으로 복원할 수 있습니다.",
+  "privacyPledgeHeadline": "개인정보 보호 약속",
+  "privacyPledgeIntro": "생각은 개인적인 것입니다. Orah는 메모를 비공개로 유지하고 사용자가 직접 관리하도록 설계되었습니다.",
+  "privacyLocalTitle": "100% 로컬",
+  "privacyLocalDescription": "메모는 이 기기에만 저장됩니다.",
+  "privacyCloudTitle": "클라우드 없음",
+  "privacyCloudDescription": "Orah에는 메모 동기화 서버가 없습니다. 공유하거나 내보내지 않는 한 메모는 기기에 남습니다.",
+  "privacyAiTitle": "AI 사용 안 함",
+  "privacyAiDescription": "Orah는 메모를 스캔하거나 읽지 않으며 메모로 AI를 학습시키지 않습니다.",
+  "privacyVaultTitle": "암호화된 보관함",
+  "privacyVaultDescription": "보관함의 민감한 메모는 AES-256-GCM 암호화로 보호됩니다.",
+  "privacySharingDisclosure": "공유, 내보내기, 기기 서비스 및 운영체제 기능을 사용하면 선택에 따라 정보가 앱 외부로 전송될 수 있습니다.",
+  "gotIt": "알겠습니다",
+  "aboutFast": "빠름",
+  "aboutFastDescription": "즉시 기록하도록 설계되었습니다.",
+  "aboutOfflineFirst": "오프라인 우선",
+  "aboutOfflineFirstDescription": "계정 없이도 메모를 사용할 수 있습니다.",
+  "aboutPrivate": "비공개",
+  "aboutPrivateDescription": "로컬 데이터와 선택적 기기 보호.",
+  "aboutSummary": "Orah는 방해 없이 열고, 기록하고, 정리하고, 찾도록 설계되었습니다.",
+  "developerSignatureLabel": "Abhinav Bajpai — 개발자 서명",
+  "aboutFeedback": "기능 제안, 피드백 또는 아이디어 문의:",
+  "aboutCopyright": "저작권 © 2026 Abhinav Bajpai. 모든 권리 보유.",
+  "aboutLegalNotice": "Orah 앱 코드, 오리지널 브랜딩, 아트워크 및 제품 자산은 Abhinav Bajpai의 소유입니다. 타사 구성 요소는 각 라이선스를 따릅니다."
 }
