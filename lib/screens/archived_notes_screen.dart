@@ -155,7 +155,7 @@ class _ArchivedNotesScreenState extends State<ArchivedNotesScreen> {
                           ),
                           onTap: () => _openNote(note),
                           trailing: IconButton(
-                            tooltip: 'Restore note',
+                            tooltip: AppLocalizations.of(context)!.restoreNote,
                             onPressed: () => _restore(note),
                             icon: const Icon(Icons.unarchive_outlined),
                           ),
