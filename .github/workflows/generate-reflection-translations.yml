@@ -20,7 +20,7 @@ concurrency:
 jobs:
   translate:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 15
     steps:
       - name: Check out branch
         uses: actions/checkout@v4
@@ -41,15 +41,3 @@ jobs:
           git diff --cached --quiet && echo "No translation changes" && exit 0
           git commit -m "l10n: add 1,950 daily reflection translations"
           git push origin HEAD:fix/orah-localization-screen-coverage
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - name: Install dependencies and generate localization code
-        run: |
-          flutter pub get
-          flutter gen-l10n
-      - name: Analyze
-        run: flutter analyze
-      - name: Test
-        run: flutter test

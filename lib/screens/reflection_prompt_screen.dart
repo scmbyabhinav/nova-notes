@@ -48,11 +48,13 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
     if (response.isEmpty || _saving) return;
 
     setState(() => _saving = true);
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     final created = DateTime.now();
     final note = Note(
       id: '${created.microsecondsSinceEpoch}_reflection',
       title: l10n.dailyReflection,
-      content: '${l10n.reflectionPrompt}: ${_prompt.localizedText(Localizations.localeOf(context).languageCode)}\n\n$response',
+      content: '${l10n.reflectionPrompt}: ${_prompt.localizedText(locale)}\n\n$response',
       type: NoteType.text,
       createdAt: created,
       updatedAt: created,
@@ -116,7 +118,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            ${_localizedReflectionCategory(l10n, _prompt.category).toUpperCase()},
+            _localizedReflectionCategory(l10n, _prompt.category).toUpperCase(),
             style: theme.textTheme.labelMedium?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.w800,
@@ -138,7 +140,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
             minLines: 8,
             maxLines: 14,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: l10n.reflectionWriteHint,
               border: OutlineInputBorder(),
               alignLabelWithHint: true,
