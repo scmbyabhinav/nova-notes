@@ -955,5 +955,7 @@
   "notificationDoneAction": "Tamamlandı",
   "notificationSnooze10Action": "10 dk ertele",
   "notificationSnooze60Action": "1 saat ertele",
-  "notificationReminderTitle": "ORAH hatırlatıcısı"
+  "notificationReminderTitle": "ORAH hatırlatıcısı",
+  "genericTryAgain": "Lütfen tekrar deneyin.",
+  "registrationFailed": "Kayıt tamamlanamadı. Lütfen tekrar deneyin."
 }
