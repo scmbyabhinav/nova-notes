@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "Registe ideias rapidamente através da criação de notas por voz.",
+  "featureChecklistDescription": "Transforme notas em listas práticas com acompanhamento das tarefas concluídas.",
+  "featureShareExportTitle": "Partilhar e exportar",
+  "featureShareExportDescription": "Partilhe notas e exporte conteúdo em formatos portáteis."
 }
