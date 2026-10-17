@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "תעדו מחשבות במהירות באמצעות יצירת פתקים בקול.",
+  "featureChecklistDescription": "הפכו פתקים לרשימות משימות מעשיות עם מעקב אחר השלמה.",
+  "featureShareExportTitle": "שיתוף וייצוא",
+  "featureShareExportDescription": "שתפו פתקים וייצאו את התוכן בפורמטים ניידים."
 }
