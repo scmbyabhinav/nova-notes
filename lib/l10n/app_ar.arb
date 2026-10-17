@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "الامتنان",
+  "reflectionCategoryMindfulness": "اليقظة الذهنية",
+  "reflectionCategoryPersonalGrowth": "النمو الشخصي",
+  "reflectionCategoryRelationships": "العلاقات",
+  "reflectionCategorySelfCompassion": "التعاطف مع الذات",
+  "reflectionCategoryClarity": "الوضوح",
+  "reflectionCategoryPossibility": "الإمكانيات",
+  "reflectionCategoryDailyReview": "مراجعة اليوم",
+  "reflectionCategoryPurposeValues": "الغاية والقيم",
+  "reflectionCategoryResilience": "المرونة",
+  "reflectionCategoryCreativityCuriosity": "الإبداع والفضول",
+  "reflectionCategoryRestRenewal": "الراحة والتجدد",
+  "reflectionWriteHint": "اكتب ما يخطر ببالك…",
+  "reflectionSaveError": "تعذّر حفظ التأمل: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }
