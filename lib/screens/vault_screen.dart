@@ -145,8 +145,8 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (confirm)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 12),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
                   l10n.vaultPinRecoveryWarning,
                   style: TextStyle(fontWeight: FontWeight.w600),
@@ -161,7 +161,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           FilledButton(
             onPressed: () {
               if (confirm && first.text != second.text) {
-                ScaffoldMessenger.of(dialogContext).showSnackBar(const SnackBar(content: Text(l10n.vaultPinsMismatch)));
+                ScaffoldMessenger.of(dialogContext).showSnackBar(SnackBar(content: Text(l10n.vaultPinsMismatch)));
                 return;
               }
               Navigator.of(dialogContext).pop(first.text);
@@ -174,7 +174,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     first.dispose();
     second.dispose();
     if (result == null || !RegExp(r'^\d{4,8}$').hasMatch(result)) {
-      if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(l10n.vaultPinDigitsError)));
+      if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.vaultPinDigitsError)));
       return null;
     }
     return result;
@@ -195,7 +195,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       final ok = await security.verifyVaultPin(pin);
       if (!ok && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(l10n.vaultIncorrectPin)),
+          SnackBar(content: Text(l10n.vaultIncorrectPin)),
         );
       }
       return ok;
@@ -224,13 +224,13 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   Future<void> _changeVaultPin() async {
     final current = await _promptVaultPin(title: AppLocalizations.of(context)!.vaultVerifyCurrentPin, confirm: false);
     if (current == null || !await NovaSecurityService().verifyVaultPin(current)) {
-      if (mounted && current != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(l10n.vaultIncorrectCurrentPin)));
+      if (mounted && current != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.vaultIncorrectCurrentPin)));
       return;
     }
     final next = await _promptVaultPin(title: AppLocalizations.of(context)!.vaultCreateNewPin, confirm: true);
     if (next == null) return;
     await NovaSecurityService().setVaultPin(next);
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinChanged)));
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinChanged)));
   }
 
   Future<void> _createFolder() async {
@@ -427,7 +427,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) { if (value == 'change_pin') _changeVaultPin(); },
-            itemBuilder: (_) => const [
+            itemBuilder: (_) => [
               PopupMenuItem(value: 'change_pin', child: Text(l10n.vaultChangePin)),
             ],
           ),
@@ -474,7 +474,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                                   _deleteFolder(folder);
                                 }
                               },
-                              itemBuilder: (context) => const [
+                              itemBuilder: (context) => [
                                 PopupMenuItem(
                                   value: 'rename',
                                   child: ListTile(

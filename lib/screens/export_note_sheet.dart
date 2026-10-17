@@ -19,7 +19,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   bool _busy = false;
   NovaExportFormat _selected = NovaExportFormat.pdf;
 
-  static const _options = <_ExportOption>[
+  List<_ExportOption> _options(AppLocalizations l10n) => <_ExportOption>[
     _ExportOption(NovaExportFormat.pdf, Icons.picture_as_pdf_outlined, l10n.exportFormatPdf, l10n.exportDescriptionPdf, 'Documents', true),
     _ExportOption(NovaExportFormat.word, Icons.description_outlined, l10n.exportFormatWord, l10n.exportDescriptionWord, 'Documents', false),
     _ExportOption(NovaExportFormat.text, Icons.text_snippet_outlined, l10n.exportFormatText, l10n.exportDescriptionText, 'Documents', false),
@@ -60,7 +60,9 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   ];
 
   Future<void> _exportSelected() async {
-    final option = _options.firstWhere((item) => item.format == _selected);
+    final l10n = AppLocalizations.of(context)!;
+    final options = _options(l10n);
+    final option = options.firstWhere((item) => item.format == _selected);
     if (option.premium && !await OrahPremiumGate.check(context, OrahFeature.advancedExport)) return;
     setState(() => _busy = true);
     try {
@@ -110,17 +112,17 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, top: 4, bottom: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
                     child: Text(l10n.exportDocuments, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                  for (final option in _options.where((o) => o.category == 'Documents'))
+                  for (final option in _options(l10n).where((o) => o.category == 'Documents'))
                     _formatTile(option),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, top: 10, bottom: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, top: 10, bottom: 4),
                     child: Text(l10n.exportData, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                  for (final option in _options.where((o) => o.category == 'Data'))
+                  for (final option in _options(l10n).where((o) => o.category == 'Data'))
                     _formatTile(option),
                   const Padding(
                     padding: EdgeInsets.only(left: 4, top: 14, bottom: 4),
@@ -186,7 +188,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     setState(() => _busy = true);
     final files = <XFile>[];
     try {
-      for (final option in _options) {
+      for (final option in _options(AppLocalizations.of(context)!)) {
         if (option.premium &&
             !await OrahPremiumGate.check(context, OrahFeature.advancedExport)) {
           continue;
@@ -230,7 +232,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
             title: Row(
               children: [
                 Expanded(child: Text(item.label)),
-                const Text(
+                Text(
                   l10n.exportComingSoon,
                   style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                 ),
