@@ -29,7 +29,7 @@ void main() {
       'lib/screens/vault_screen.dart',
       'lib/screens/welcome_splash_screen.dart',
     ];
-    final hardCodedText = RegExp(r'''Text\(\s*(?:const\s+)?['"]([^'"]{2,})['"]''');
+    final hardCodedText = RegExp(r'''(?:Text|SelectableText)\(\s*(?:const\s+)?['"]([^'"]{2,})['"]''');
     for (final path in screens) {
       final source = File(path).readAsStringSync();
       final matches = hardCodedText.allMatches(source)
@@ -53,6 +53,16 @@ void main() {
       ).toList();
       expect(hardCodedAttributes, isEmpty,
           reason: '$path contains hard-coded tooltip/label copy: $hardCodedAttributes');
+
+      final hardCodedSpans = RegExp(
+        r'''TextSpan\(\s*text:\s*(['"])([^'"]{2,})\1''',
+      ).allMatches(source).map((match) => match.group(2)!).where((value) =>
+        !value.contains(String.fromCharCode(36)) &&
+        value.toLowerCase() != 'orah' &&
+        value.toLowerCase() != 'orah pro'
+      ).toList();
+      expect(hardCodedSpans, isEmpty,
+          reason: '$path contains hard-coded rich-text copy: $hardCodedSpans');
     }
   });
 }
