@@ -885,5 +885,60 @@
   "androidRemindersDescription": "बैकएंड के बिना नोट और चेकलिस्ट रिमाइंडर बनाएँ।",
   "androidLocalIntegrationsNote": "ये Android की स्थानीय सुविधाएँ हैं और इनके लिए बैकएंड की आवश्यकता नहीं है।",
   "androidDone": "हो गया",
-  "androidGotIt": "समझ गया"
+  "androidGotIt": "समझ गया",
+  "captureDescription": "आप क्या कैप्चर करना चाहते हैं, चुनें।",
+  "quickNote": "त्वरित नोट",
+  "startTypingImmediately": "तुरंत लिखना शुरू करें",
+  "quickChecklist": "त्वरित चेकलिस्ट",
+  "captureTasksWithoutSetup": "बिना सेटअप के काम दर्ज करें",
+  "dailyChecklistTooltip": "दैनिक चेकलिस्ट",
+  "quickCaptureHint": "लिखने के लिए टैप करें • चेकलिस्ट और विकल्पों के लिए देर तक दबाएँ",
+  "quickCaptureTooltip": "त्वरित कैप्चर। चेकलिस्ट और विकल्पों के लिए देर तक दबाएँ।",
+  "filtersActive": "फ़िल्टर सक्रिय हैं",
+  "searchResultsCount": "परिणाम: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "उन्नत खोज ORAH Pro की सुविधा है",
+  "noNotesFound": "कोई नोट नहीं मिला",
+  "searchFilterHint": "मुफ़्त में सामान्य शब्द खोजें, या फ़िल्टर और ऑपरेटर अनलॉक करने के लिए ORAH Pro खोलें।",
+  "searchEmptyHint": "कोई दूसरा शब्द आज़माएँ या फ़िल्टर हटाएँ।",
+  "voicePreferences": "आवाज़ की प्राथमिकताएँ",
+  "dailyReflectionSchedule": "दैनिक चिंतन का समय",
+  "versionLabel": "संस्करण {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "Vault PIN वापस प्राप्त नहीं किया जा सकता। रीसेट करने पर Vault के सभी नोट और एन्क्रिप्शन कुंजी स्थायी रूप से मिट जाएँगे। आपके सामान्य नोट और फ़ोल्डर सुरक्षित रहेंगे।",
+  "portableBackupShareText": "Orah पोर्टेबल बैकअप",
+  "storageAttachmentCount": "{count} अटैचमेंट • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "दैनिक चिंतन का समय चुनें",
+  "scheduleLoading": "समय-सारणी लोड हो रही है…",
+  "scheduleEnabledAt": "सक्रिय • हर दिन {time} पर",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "बंद • दैनिक चिंतन रिमाइंडर पाने के लिए चालू करें"
 }
