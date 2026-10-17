@@ -745,7 +745,7 @@
   "exportCategorySubtitles": "उपशीर्षक",
   "exportCategoryEmail": "ईमेल",
   "exportCategoryCodeLiterate": "कोड / तकनीकी दस्तावेज़",
-  "exportCategoryArchive": "संग्रह",
+  "exportCategoryArchive": "पुरालेख",
   "exportCategoryDatabase": "डेटाबेस",
   "exportCategoryClipboard": "क्लिपबोर्ड",
   "@exportFailed": {
@@ -831,7 +831,7 @@
   "plannedExportPlainClipboardDescription": "सादा टेक्स्ट क्लिपबोर्ड फ़ॉर्मैट",
   "exportShareSubject": "ORAH — निर्यात: {title}",
   "exportShareBody": "ORAH से निर्यात किया गया",
-  "emailAttachmentSubject": "ORAH — ईमेल अटैचमेंट: {title}",
+  "emailAttachmentSubject": "ORAH — संलग्नक: {title}",
   "emailAttachmentBody": "ORAH से संलग्न",
   "exportAllShareSubject": "ORAH — {title} — निर्यात पैकेज",
   "exportAllShareBody": "ORAH से सभी उपलब्ध फ़ॉर्मेट में निर्यात किया गया",
