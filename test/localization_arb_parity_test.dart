@@ -199,12 +199,14 @@ void main() {
               resolvedDirection = Directionality.of(context);
               final l10n = AppLocalizations.of(context)!;
               return Scaffold(
-                body: Column(
-                  children: [
-                    Text(l10n.captureDescription),
-                    Text(l10n.searchFilterHint),
-                    Text(l10n.vaultResetWarning),
-                  ],
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(l10n.captureDescription),
+                      Text(l10n.searchFilterHint),
+                      Text(l10n.vaultResetWarning),
+                    ],
+                  ),
                 ),
               );
             },
