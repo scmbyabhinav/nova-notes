@@ -17,16 +17,14 @@ void main() {
     final hardCodedText = RegExp(r'''Text\(\s*(?:const\s+)?['"]([^'"]{2,})['"]''');
     for (final path in screens) {
       final source = File(path).readAsStringSync();
-      final matches = hardCodedText.allMatches(source).map((match) => match.group(1)!).where((value) =>
-        value != 'Abhinav Bajpai' &&
-        value != 'vajpaiabhinav@gmail.com' &&
-        !value.contains(r'
-      ).toList();
-      expect(matches, isEmpty, reason: '$path contains hard-coded UI text: $matches');
-    }
-  });
-}),
-      ).toList();
+      final matches = hardCodedText.allMatches(source)
+          .map((match) => match.group(1)!)
+          .where((value) {
+            if (value.contains(String.fromCharCode(36))) return false;
+            return value != 'Abhinav Bajpai' &&
+                value != 'vajpaiabhinav@gmail.com';
+          })
+          .toList();
       expect(matches, isEmpty, reason: '$path contains hard-coded UI text: $matches');
     }
   });

@@ -5,7 +5,6 @@ import '../services/universal_export_service.dart';
 import '../services/orah_feature_gate.dart';
 import '../services/orah_premium_gate.dart';
 import '../l10n/app_localizations.dart';
-import '../l10n/app_localizations.dart';
 
 class ExportNoteSheet extends StatefulWidget {
   const ExportNoteSheet({super.key, required this.note});
