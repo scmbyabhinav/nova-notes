@@ -955,5 +955,7 @@
   "notificationDoneAction": "完了",
   "notificationSnooze10Action": "10分後に再通知",
   "notificationSnooze60Action": "1時間後に再通知",
-  "notificationReminderTitle": "ORAHリマインダー"
+  "notificationReminderTitle": "ORAHリマインダー",
+  "genericTryAgain": "もう一度お試しください。",
+  "registrationFailed": "登録を完了できませんでした。もう一度お試しください。"
 }
