@@ -746,7 +746,7 @@
   "exportCategoryEmail": "이메일",
   "exportCategoryCodeLiterate": "코드 / 기술 문서",
   "exportCategoryArchive": "보관",
-  "exportCategoryDatabase": "이메일",
+  "exportCategoryDatabase": "데이터베이스",
   "exportCategoryClipboard": "클립보드",
   "@exportFailed": {
     "placeholders": {
@@ -829,9 +829,9 @@
   "plannedExportHtmlClipboardDescription": "클립보드 HTML 형식",
   "plannedExportPlainClipboard": "일반 텍스트 클립보드",
   "plannedExportPlainClipboardDescription": "일반 텍스트 클립보드 형식",
-  "exportShareSubject": "ORAH — {title}",
+  "exportShareSubject": "ORAH — 내보내기: {title}",
   "exportShareBody": "ORAH에서 내보냄",
-  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentSubject": "ORAH — 이메일 첨부: {title}",
   "emailAttachmentBody": "ORAH에서 첨부",
   "exportAllShareSubject": "ORAH — {title} — 내보내기 묶음",
   "exportAllShareBody": "ORAH에서 현재 사용할 수 있는 모든 형식으로 내보냈습니다",
