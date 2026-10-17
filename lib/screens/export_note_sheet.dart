@@ -219,7 +219,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
 
   Widget _plannedSection(String category) {
     final l10n = AppLocalizations.of(context)!;
-    final items = _planned.where((item) => item.category == category);
+    final items = _planned(l10n).where((item) => item.category == category);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,7 +264,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
             const SizedBox(height: 6),
             Text(l10n.plannedExportFormatsDescription),
             const SizedBox(height: 12),
-            for (final category in _plannedCategories)
+            for (final category in _plannedCategories(l10n))
               _plannedSection(category),
           ],
         ),
