@@ -770,7 +770,7 @@
     }
   },
   "organizationFolderLabel": "Ordner",
-  "organizationTagsLabel": "Tags",
+  "organizationTagsLabel": "Schlagwörter",
   "plannedExportRichText": "Rich Text (.rtf)",
   "plannedExportRichTextDescription": "Plattformübergreifender Rich Text",
   "plannedExportOpenDocument": "OpenDocument (.odt)",
