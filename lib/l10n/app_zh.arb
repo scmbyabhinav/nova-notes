@@ -885,5 +885,61 @@
   "androidRemindersDescription": "无需后端即可为笔记和清单创建提醒。",
   "androidLocalIntegrationsNote": "这些是 Android 本地功能，无需后端服务。",
   "androidDone": "完成",
-  "androidGotIt": "知道了"
+  "androidGotIt": "知道了",
+  "captureTitle": "记录",
+  "captureDescription": "选择要记录的内容。",
+  "quickNote": "快速笔记",
+  "startTypingImmediately": "立即开始输入",
+  "quickChecklist": "快速清单",
+  "captureTasksWithoutSetup": "无需设置即可记录任务",
+  "dailyChecklistTooltip": "每日清单",
+  "quickCaptureHint": "点击开始书写 • 长按查看清单和选项",
+  "quickCaptureTooltip": "快速记录。长按可查看清单和选项。",
+  "filtersActive": "筛选条件已启用",
+  "searchResultsCount": "结果：{count}",
+  "advancedSearchProFeature": "高级搜索是 ORAH Pro 功能",
+  "noNotesFound": "未找到笔记",
+  "searchFilterHint": "可免费使用普通关键词搜索；如需筛选条件和运算符，请打开 ORAH Pro。",
+  "searchEmptyHint": "请尝试其他词语或移除筛选条件。",
+  "voicePreferences": "语音偏好",
+  "dailyReflectionSchedule": "每日反思计划",
+  "versionLabel": "版本 {version}",
+  "vaultResetWarning": "Vault PIN 无法恢复。重置将永久删除所有 Vault 笔记及其加密密钥。普通笔记和文件夹不会受到影响。",
+  "portableBackupShareText": "Orah 便携备份",
+  "storageAttachmentCount": "{count} 个附件 • {size}",
+  "dailyReflectionTimePicker": "选择每日反思时间",
+  "scheduleLoading": "正在加载计划…",
+  "scheduleEnabledAt": "已启用 • 每天 {time}",
+  "scheduleDisabled": "已停用 • 开启后可接收每日反思提醒",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
