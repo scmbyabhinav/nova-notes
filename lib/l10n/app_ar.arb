@@ -885,5 +885,60 @@
   "androidRemindersDescription": "أنشئ تذكيرات للملاحظات وقوائم التحقق دون الحاجة إلى خادم خلفي.",
   "androidLocalIntegrationsNote": "هذه تكاملات محلية في Android ولا تحتاج إلى خادم خلفي.",
   "androidDone": "تم",
-  "androidGotIt": "فهمت"
+  "androidGotIt": "فهمت",
+  "captureDescription": "اختر ما تريد تدوينه.",
+  "quickNote": "ملاحظة سريعة",
+  "startTypingImmediately": "ابدأ الكتابة فورًا",
+  "quickChecklist": "قائمة مهام سريعة",
+  "captureTasksWithoutSetup": "سجّل المهام دون إعداد",
+  "dailyChecklistTooltip": "قائمة المهام اليومية",
+  "quickCaptureHint": "اضغط للكتابة • اضغط مطولًا لعرض القائمة والخيارات",
+  "quickCaptureTooltip": "تدوين سريع. اضغط مطولًا لعرض القائمة والخيارات.",
+  "filtersActive": "الفلاتر نشطة",
+  "searchResultsCount": "النتائج: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "البحث المتقدم ميزة في ORAH Pro",
+  "noNotesFound": "لم يتم العثور على ملاحظات",
+  "searchFilterHint": "استخدم كلمات عادية مجانًا، أو افتح ORAH Pro لإلغاء قفل الفلاتر وعوامل البحث.",
+  "searchEmptyHint": "جرّب كلمة أخرى أو أزل أحد الفلاتر.",
+  "voicePreferences": "تفضيلات الصوت",
+  "dailyReflectionSchedule": "جدول التأمل اليومي",
+  "versionLabel": "الإصدار {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "لا يمكن استعادة رمز PIN للخزنة. ستؤدي إعادة التعيين إلى حذف جميع ملاحظات الخزنة ومفتاح التشفير نهائيًا. ستبقى ملاحظاتك ومجلداتك العادية كما هي.",
+  "portableBackupShareText": "نسخة احتياطية محمولة من Orah",
+  "storageAttachmentCount": "{count} مرفقات • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "اختر وقت التأمل اليومي",
+  "scheduleLoading": "جارٍ تحميل الجدول…",
+  "scheduleEnabledAt": "مفعّل • يوميًا في {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "معطّل • فعّله لتلقي تذكير يومي بالتأمل"
 }
