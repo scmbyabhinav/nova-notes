@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "Sesle not oluşturarak düşüncelerinizi hızla kaydedin.",
   "featureChecklistDescription": "Notları tamamlanma takibi olan uygulanabilir kontrol listelerine dönüştürün.",
   "featureShareExportTitle": "Paylaş ve dışa aktar",
-  "featureShareExportDescription": "Notları paylaşın ve içeriğinizi taşınabilir biçimlerde dışa aktarın."
+  "featureShareExportDescription": "Notları paylaşın ve içeriğinizi taşınabilir biçimlerde dışa aktarın.",
+  "notificationDailyReflectionTitle": "Günlük düşünme zamanı",
+  "notificationDailyReflectionBody": "Aklınızdan geçenleri yazmak için sakin bir an ayırın.",
+  "notificationDailyReflectionChannel": "Günlük düşünme",
+  "notificationDailyReflectionChannelDescription": "Durup düşünmek için nazik bir günlük hatırlatma",
+  "notificationReminderChannel": "Orah hatırlatıcıları",
+  "notificationReminderChannelDescription": "Notlar ve görevler için hatırlatıcılar",
+  "notificationDoneAction": "Tamamlandı",
+  "notificationSnooze10Action": "10 dk ertele",
+  "notificationSnooze60Action": "1 saat ertele",
+  "notificationReminderTitle": "ORAH hatırlatıcısı"
 }
