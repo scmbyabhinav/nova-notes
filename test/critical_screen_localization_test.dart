@@ -11,6 +11,7 @@ void main() {
     const screens = <String>[
       'lib/app.dart',
       'lib/screens/about_nova_screen.dart',
+      'lib/screens/app_lock_screen.dart',
       'lib/screens/android_features_screen.dart',
       'lib/screens/archived_notes_screen.dart',
       'lib/screens/calendar_history_screen.dart',
@@ -20,6 +21,7 @@ void main() {
       'lib/screens/folders_screen.dart',
       'lib/screens/home_screen.dart',
       'lib/screens/note_editor_screen.dart',
+      'lib/screens/orah_features_screen.dart',
       'lib/screens/orah_pro_screen.dart',
       'lib/screens/orah_registration_screen.dart',
       'lib/screens/organization_picker_screen.dart',
