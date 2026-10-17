@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "Cattura rapidamente i pensieri creando note tramite la voce.",
+  "featureChecklistDescription": "Trasforma le note in checklist operative con monitoraggio dei completamenti.",
+  "featureShareExportTitle": "Condividi ed esporta",
+  "featureShareExportDescription": "Condividi note ed esporta i contenuti in formati portatili."
 }
