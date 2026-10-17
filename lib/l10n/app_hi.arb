@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "आवाज़ से नोट बनाकर विचारों को जल्दी दर्ज करें।",
   "featureChecklistDescription": "नोट्स को पूरा होने की ट्रैकिंग वाली काम की चेकलिस्ट में बदलें।",
   "featureShareExportTitle": "साझा करें और एक्सपोर्ट करें",
-  "featureShareExportDescription": "नोट्स साझा करें और सामग्री को पोर्टेबल फ़ॉर्मैट में एक्सपोर्ट करें।"
+  "featureShareExportDescription": "नोट्स साझा करें और सामग्री को पोर्टेबल फ़ॉर्मैट में एक्सपोर्ट करें।",
+  "notificationDailyReflectionTitle": "दैनिक चिंतन का समय",
+  "notificationDailyReflectionBody": "अपने मन की बात लिखने के लिए एक शांत पल निकालें।",
+  "notificationDailyReflectionChannel": "दैनिक चिंतन",
+  "notificationDailyReflectionChannelDescription": "रुककर चिंतन करने के लिए एक सौम्य दैनिक संकेत",
+  "notificationReminderChannel": "Orah रिमाइंडर",
+  "notificationReminderChannelDescription": "नोट्स और कार्यों के रिमाइंडर",
+  "notificationDoneAction": "हो गया",
+  "notificationSnooze10Action": "10 मिनट बाद",
+  "notificationSnooze60Action": "1 घंटे बाद",
+  "notificationReminderTitle": "ORAH रिमाइंडर"
 }
