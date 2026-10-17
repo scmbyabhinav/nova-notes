@@ -621,5 +621,9 @@
   "developerSignatureLabel": "Abhinav Bajpai — assinatura do desenvolvedor",
   "aboutFeedback": "Para sugestões de recursos, comentários ou ideias:",
   "aboutCopyright": "Copyright © 2026 Abhinav Bajpai. Todos os direitos reservados.",
-  "aboutLegalNotice": "O código do aplicativo Orah, a marca original, as artes e os recursos do produto pertencem a Abhinav Bajpai. Componentes de terceiros seguem suas respectivas licenças."
+  "aboutLegalNotice": "O código do aplicativo Orah, a marca original, as artes e os recursos do produto pertencem a Abhinav Bajpai. Componentes de terceiros seguem suas respectivas licenças.",
+  "voiceLanguageTitle": "Idioma da voz",
+  "voiceLanguageDescription": "Escolha o idioma em que você vai falar. Ele pode ser diferente do idioma do app.",
+  "voiceLanguageSystemDefault": "Usar idioma do dispositivo",
+  "voiceLanguageNoLocales": "O serviço de reconhecimento de fala deste dispositivo não oferece idiomas disponíveis."
 }

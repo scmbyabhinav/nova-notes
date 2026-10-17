@@ -621,5 +621,9 @@
   "developerSignatureLabel": "Abhinav Bajpai — tanda tangan pengembang",
   "aboutFeedback": "Untuk saran fitur, masukan, atau ide:",
   "aboutCopyright": "Hak cipta © 2026 Abhinav Bajpai. Hak cipta dilindungi.",
-  "aboutLegalNotice": "Kode aplikasi, merek asli, karya seni, dan aset produk Orah dimiliki oleh Abhinav Bajpai. Komponen pihak ketiga tunduk pada lisensi masing-masing."
+  "aboutLegalNotice": "Kode aplikasi, merek asli, karya seni, dan aset produk Orah dimiliki oleh Abhinav Bajpai. Komponen pihak ketiga tunduk pada lisensi masing-masing.",
+  "voiceLanguageTitle": "Bahasa suara",
+  "voiceLanguageDescription": "Pilih bahasa yang akan Anda gunakan untuk berbicara. Bahasa ini bisa berbeda dari bahasa aplikasi.",
+  "voiceLanguageSystemDefault": "Gunakan bahasa perangkat",
+  "voiceLanguageNoLocales": "Tidak ada bahasa yang tersedia dari layanan pengenalan suara perangkat ini."
 }

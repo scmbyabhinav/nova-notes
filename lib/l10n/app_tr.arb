@@ -621,5 +621,9 @@
   "developerSignatureLabel": "Abhinav Bajpai — geliştirici imzası",
   "aboutFeedback": "Özellik önerileri, geri bildirim veya fikirler için:",
   "aboutCopyright": "Telif hakkı © 2026 Abhinav Bajpai. Tüm hakları saklıdır.",
-  "aboutLegalNotice": "Orah uygulama kodu, özgün marka, çizimler ve ürün varlıkları Abhinav Bajpai'ye aittir. Üçüncü taraf bileşenler kendi lisanslarına tabidir."
+  "aboutLegalNotice": "Orah uygulama kodu, özgün marka, çizimler ve ürün varlıkları Abhinav Bajpai'ye aittir. Üçüncü taraf bileşenler kendi lisanslarına tabidir.",
+  "voiceLanguageTitle": "Konuşma dili",
+  "voiceLanguageDescription": "Konuşacağınız dili seçin. Bu, uygulama dilinden farklı olabilir.",
+  "voiceLanguageSystemDefault": "Cihaz varsayılanını kullan",
+  "voiceLanguageNoLocales": "Bu cihazın konuşma tanıma hizmetinde kullanılabilir dil yok."
 }

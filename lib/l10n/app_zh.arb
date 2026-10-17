@@ -621,5 +621,9 @@
   "developerSignatureLabel": "Abhinav Bajpai — 开发者签名",
   "aboutFeedback": "如需提出功能建议、反馈或想法：",
   "aboutCopyright": "版权所有 © 2026 Abhinav Bajpai。保留所有权利。",
-  "aboutLegalNotice": "Orah 应用代码、原创品牌、艺术作品和产品资产归 Abhinav Bajpai 所有。第三方组件仍受其各自许可证约束。"
+  "aboutLegalNotice": "Orah 应用代码、原创品牌、艺术作品和产品资产归 Abhinav Bajpai 所有。第三方组件仍受其各自许可证约束。",
+  "voiceLanguageTitle": "语音语言",
+  "voiceLanguageDescription": "选择你要说的语言。它可以与应用界面语言不同。",
+  "voiceLanguageSystemDefault": "使用设备默认语言",
+  "voiceLanguageNoLocales": "此设备的语音识别服务没有提供可用语言。"
 }
