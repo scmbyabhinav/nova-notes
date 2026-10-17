@@ -885,5 +885,61 @@
   "androidRemindersDescription": "Crie lembretes para notas e listas sem backend.",
   "androidLocalIntegrationsNote": "Estas integrações são funcionalidades locais do Android e não precisam de backend.",
   "androidDone": "Concluído",
-  "androidGotIt": "Entendi"
+  "androidGotIt": "Entendi",
+  "captureTitle": "Capturar",
+  "captureDescription": "Escolha o que pretende capturar.",
+  "quickNote": "Nota rápida",
+  "startTypingImmediately": "Comece a escrever imediatamente",
+  "quickChecklist": "Lista rápida",
+  "captureTasksWithoutSetup": "Registe tarefas sem configuração",
+  "dailyChecklistTooltip": "Lista diária",
+  "quickCaptureHint": "Toque para escrever • Prima sem soltar para ver a lista e opções",
+  "quickCaptureTooltip": "Captura rápida. Prima sem soltar para ver a lista e opções.",
+  "filtersActive": "Filtros ativos",
+  "searchResultsCount": "Resultados: {count}",
+  "advancedSearchProFeature": "A pesquisa avançada é uma funcionalidade do ORAH Pro",
+  "noNotesFound": "Nenhuma nota encontrada",
+  "searchFilterHint": "Use palavras-chave normais gratuitamente ou abra o ORAH Pro para desbloquear filtros e operadores.",
+  "searchEmptyHint": "Experimente outra palavra ou remova um filtro.",
+  "voicePreferences": "Preferências de voz",
+  "dailyReflectionSchedule": "Agenda de reflexão diária",
+  "versionLabel": "Versão {version}",
+  "vaultResetWarning": "O PIN do Vault não pode ser recuperado. A reposição elimina permanentemente todas as notas do Vault e a respetiva chave de encriptação. As notas e pastas normais permanecem inalteradas.",
+  "portableBackupShareText": "Cópia de segurança portátil do Orah",
+  "storageAttachmentCount": "{count} anexos • {size}",
+  "dailyReflectionTimePicker": "Escolher a hora da reflexão diária",
+  "scheduleLoading": "A carregar agenda…",
+  "scheduleEnabledAt": "Ativado • Todos os dias às {time}",
+  "scheduleDisabled": "Desativado • Ative para receber um lembrete diário",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
