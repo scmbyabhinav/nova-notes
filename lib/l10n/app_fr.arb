@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "Presse-papiers HTML",
   "plannedExportHtmlClipboardDescription": "Format HTML du presse-papiers",
   "plannedExportPlainClipboard": "Presse-papiers texte brut",
-  "plannedExportPlainClipboardDescription": "Format texte brut du presse-papiers"
+  "plannedExportPlainClipboardDescription": "Format texte brut du presse-papiers",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Exporté depuis ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Pièce jointe depuis ORAH",
+  "exportAllShareSubject": "ORAH — {title} — lot d’exportation",
+  "exportAllShareBody": "Exporté depuis ORAH dans tous les formats disponibles",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

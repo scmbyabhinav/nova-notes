@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "HTML panosu",
   "plannedExportHtmlClipboardDescription": "Pano HTML biçimi",
   "plannedExportPlainClipboard": "Düz metin panosu",
-  "plannedExportPlainClipboardDescription": "Pano düz metin biçimi"
+  "plannedExportPlainClipboardDescription": "Pano düz metin biçimi",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "ORAH'dan dışa aktarıldı",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "ORAH'dan ek",
+  "exportAllShareSubject": "ORAH — {title} — dışa aktarma paketi",
+  "exportAllShareBody": "ORAH'dan şu anda kullanılabilen tüm biçimlerde dışa aktarıldı",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

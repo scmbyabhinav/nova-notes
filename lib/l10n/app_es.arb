@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "Portapapeles HTML",
   "plannedExportHtmlClipboardDescription": "Formato HTML del portapapeles",
   "plannedExportPlainClipboard": "Portapapeles de texto plano",
-  "plannedExportPlainClipboardDescription": "Formato de portapapeles de texto plano"
+  "plannedExportPlainClipboardDescription": "Formato de portapapeles de texto plano",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Exportado desde ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Adjunto desde ORAH",
+  "exportAllShareSubject": "ORAH — {title} — paquete de exportación",
+  "exportAllShareBody": "Exportado desde ORAH en todos los formatos disponibles",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

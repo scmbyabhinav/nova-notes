@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "HTML 클립보드",
   "plannedExportHtmlClipboardDescription": "클립보드 HTML 형식",
   "plannedExportPlainClipboard": "일반 텍스트 클립보드",
-  "plannedExportPlainClipboardDescription": "일반 텍스트 클립보드 형식"
+  "plannedExportPlainClipboardDescription": "일반 텍스트 클립보드 형식",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "ORAH에서 내보냄",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "ORAH에서 첨부",
+  "exportAllShareSubject": "ORAH — {title} — 내보내기 묶음",
+  "exportAllShareBody": "ORAH에서 현재 사용할 수 있는 모든 형식으로 내보냈습니다",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

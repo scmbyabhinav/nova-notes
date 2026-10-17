@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "HTML क्लिपबोर्ड",
   "plannedExportHtmlClipboardDescription": "क्लिपबोर्ड HTML फ़ॉर्मैट",
   "plannedExportPlainClipboard": "सादा टेक्स्ट क्लिपबोर्ड",
-  "plannedExportPlainClipboardDescription": "सादा टेक्स्ट क्लिपबोर्ड फ़ॉर्मैट"
+  "plannedExportPlainClipboardDescription": "सादा टेक्स्ट क्लिपबोर्ड फ़ॉर्मैट",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "ORAH से निर्यात किया गया",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "ORAH से संलग्न",
+  "exportAllShareSubject": "ORAH — {title} — निर्यात पैकेज",
+  "exportAllShareBody": "ORAH से सभी उपलब्ध फ़ॉर्मेट में निर्यात किया गया",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

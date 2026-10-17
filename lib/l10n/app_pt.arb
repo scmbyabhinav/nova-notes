@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "Área de transferência HTML",
   "plannedExportHtmlClipboardDescription": "Formato HTML da área de transferência",
   "plannedExportPlainClipboard": "Área de transferência de texto simples",
-  "plannedExportPlainClipboardDescription": "Formato de texto simples da área de transferência"
+  "plannedExportPlainClipboardDescription": "Formato de texto simples da área de transferência",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Exportado do ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Anexo do ORAH",
+  "exportAllShareSubject": "ORAH — {title} — pacote de exportação",
+  "exportAllShareBody": "Exportado do ORAH em todos os formatos disponíveis",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

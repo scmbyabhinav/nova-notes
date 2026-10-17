@@ -67,7 +67,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     try {
       final file = await const UniversalExportService().export(widget.note, _selected);
       if (!mounted) return;
-      await Share.shareXFiles([XFile(file.path)], subject: 'ORAH — ${widget.note.title}', text: 'Exported from ORAH');
+      await Share.shareXFiles([XFile(file.path)], subject: l10n.exportShareSubject(widget.note.title), text: l10n.exportShareBody);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exportFailed(e.toString()))));
     } finally {
@@ -81,7 +81,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     try {
       final file = await const UniversalExportService().export(widget.note, NovaExportFormat.pdf);
       if (!mounted) return;
-      await Share.shareXFiles([XFile(file.path)], subject: 'ORAH — ${widget.note.title}', text: 'Attached from ORAH');
+      await Share.shareXFiles([XFile(file.path)], subject: l10n.emailAttachmentSubject(widget.note.title), text: l10n.emailAttachmentBody);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exportEmailAttachmentFailed(e.toString()))));
     } finally {
@@ -133,7 +133,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     child: Text(l10n.exportPlannedDescription, style: TextStyle(fontSize: 12)),
                   ),
                   for (final category in _plannedCategories(l10n))
-                    _plannedSection(category),
+                    _plannedSection(category, l10n)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.email_outlined),
@@ -201,8 +201,8 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
       if (files.isNotEmpty) {
         await Share.shareXFiles(
           files,
-          subject: 'ORAH — ' + widget.note.title + ' — Export bundle',
-          text: 'Exported from ORAH in all currently available formats',
+          subject: l10n.exportAllShareSubject(widget.note.title),
+          text: l10n.exportAllShareBody,
         );
       }
       if (mounted) await _showPlannedFormats();
@@ -217,8 +217,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     }
   }
 
-  Widget _plannedSection(String category) {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _plannedSection(String category, AppLocalizations l10n) {
     final items = _planned(l10n).where((item) => item.category == category);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "HTMLクリップボード",
   "plannedExportHtmlClipboardDescription": "クリップボードのHTML形式",
   "plannedExportPlainClipboard": "プレーンテキストクリップボード",
-  "plannedExportPlainClipboardDescription": "プレーンテキストのクリップボード形式"
+  "plannedExportPlainClipboardDescription": "プレーンテキストのクリップボード形式",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "ORAHからエクスポート",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "ORAHから添付",
+  "exportAllShareSubject": "ORAH — {title} — エクスポート一式",
+  "exportAllShareBody": "ORAHから現在利用可能なすべての形式でエクスポートしました",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

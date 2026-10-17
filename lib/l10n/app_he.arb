@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "לוח HTML",
   "plannedExportHtmlClipboardDescription": "פורמט HTML ללוח",
   "plannedExportPlainClipboard": "לוח טקסט פשוט",
-  "plannedExportPlainClipboardDescription": "פורמט טקסט פשוט ללוח"
+  "plannedExportPlainClipboardDescription": "פורמט טקסט פשוט ללוח",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "יוצא מ‑ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "מצורף מ‑ORAH",
+  "exportAllShareSubject": "ORAH — {title} — חבילת ייצוא",
+  "exportAllShareBody": "יוצא מ‑ORAH בכל הפורמטים הזמינים כרגע",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "Clipboard HTML",
   "plannedExportHtmlClipboardDescription": "Format HTML clipboard",
   "plannedExportPlainClipboard": "Clipboard teks biasa",
-  "plannedExportPlainClipboardDescription": "Format clipboard teks biasa"
+  "plannedExportPlainClipboardDescription": "Format clipboard teks biasa",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Diekspor dari ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Lampiran dari ORAH",
+  "exportAllShareSubject": "ORAH — {title} — paket ekspor",
+  "exportAllShareBody": "Diekspor dari ORAH dalam semua format yang tersedia",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

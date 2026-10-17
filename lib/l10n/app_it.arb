@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "Appunti HTML",
   "plannedExportHtmlClipboardDescription": "Formato HTML degli appunti",
   "plannedExportPlainClipboard": "Appunti testo semplice",
-  "plannedExportPlainClipboardDescription": "Formato testo semplice degli appunti"
+  "plannedExportPlainClipboardDescription": "Formato testo semplice degli appunti",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Esportato da ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Allegato da ORAH",
+  "exportAllShareSubject": "ORAH — {title} — pacchetto di esportazione",
+  "exportAllShareBody": "Esportato da ORAH in tutti i formati disponibili",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

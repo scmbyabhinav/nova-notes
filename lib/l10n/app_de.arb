@@ -828,5 +828,32 @@
   "plannedExportHtmlClipboard": "HTML-Zwischenablage",
   "plannedExportHtmlClipboardDescription": "HTML-Zwischenablageformat",
   "plannedExportPlainClipboard": "Text-Zwischenablage",
-  "plannedExportPlainClipboardDescription": "Nur-Text-Zwischenablageformat"
+  "plannedExportPlainClipboardDescription": "Nur-Text-Zwischenablageformat",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Aus ORAH exportiert",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Anhang aus ORAH",
+  "exportAllShareSubject": "ORAH — {title} — Exportpaket",
+  "exportAllShareBody": "Aus ORAH in allen derzeit verfügbaren Formaten exportiert",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

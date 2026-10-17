@@ -842,5 +842,32 @@
   "plannedExportHtmlClipboard": "HTML Clipboard",
   "plannedExportHtmlClipboardDescription": "HTML clipboard format",
   "plannedExportPlainClipboard": "Plain Text Clipboard",
-  "plannedExportPlainClipboardDescription": "Plain text clipboard format"
+  "plannedExportPlainClipboardDescription": "Plain text clipboard format",
+  "exportShareSubject": "ORAH — {title}",
+  "exportShareBody": "Exported from ORAH",
+  "emailAttachmentSubject": "ORAH — {title}",
+  "emailAttachmentBody": "Attached from ORAH",
+  "exportAllShareSubject": "ORAH — {title} — Export bundle",
+  "exportAllShareBody": "Exported from ORAH in all currently available formats",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }
