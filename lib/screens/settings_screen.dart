@@ -304,7 +304,7 @@ class SettingsScreen extends StatelessWidget {
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.vaultResetFailed(error.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultResetFailed(AppLocalizations.of(context)!.genericTryAgain))),
       );
     }
   }
@@ -381,7 +381,7 @@ class SettingsScreen extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.backupError(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.backupError(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -609,7 +609,7 @@ class _DailyReflectionScheduleSettingTileState
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.reminderUpdateFailed(error.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context)!.reminderUpdateFailed(AppLocalizations.of(context)!.genericTryAgain))),
       );
     }
   }
@@ -631,7 +631,7 @@ class _DailyReflectionScheduleSettingTileState
       } catch (error) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.reminderScheduleFailed(error.toString()))),
+            SnackBar(content: Text(AppLocalizations.of(context)!.reminderScheduleFailed(AppLocalizations.of(context)!.genericTryAgain))),
           );
         }
       }
