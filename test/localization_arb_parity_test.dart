@@ -205,6 +205,9 @@ void main() {
                       Text(l10n.captureDescription),
                       Text(l10n.searchFilterHint),
                       Text(l10n.vaultResetWarning),
+                      Text(l10n.featureVoiceCaptureDescription),
+                      Text(l10n.notificationDailyReflectionTitle),
+                      Text(l10n.notificationDailyReflectionBody),
                     ],
                   ),
                 ),
@@ -222,6 +225,12 @@ void main() {
           reason: 'Search copy did not resolve for $localeCode.');
       expect(find.text(expected.vaultResetWarning), findsOneWidget,
           reason: 'Vault warning did not resolve for $localeCode.');
+      expect(find.text(expected.featureVoiceCaptureDescription), findsOneWidget,
+          reason: 'Feature copy did not resolve for $localeCode.');
+      expect(find.text(expected.notificationDailyReflectionTitle), findsOneWidget,
+          reason: 'Notification title did not resolve for $localeCode.');
+      expect(find.text(expected.notificationDailyReflectionBody), findsOneWidget,
+          reason: 'Notification body did not resolve for $localeCode.');
       expect(resolvedDirection,
           (localeCode == 'ar' || localeCode == 'he')
               ? TextDirection.rtl
