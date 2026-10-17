@@ -85,7 +85,7 @@
   "untitledNote": "ملاحظة بلا عنوان",
   "scheduledLabel": "مجدولة",
   "createdLabel": "أُنشئت",
-  "calendarItemStatusTime": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {time}",
   "writingRhythm": "إيقاع كتابتك",
   "historyTimeline": "الخط الزمني للسجل",
   "storyStartsWithNote": "تبدأ قصتك بملاحظة",
