@@ -12,7 +12,7 @@ OUTPUT = Path("lib/data/reflection_prompt_translations.dart")
 LOCALES = ["ar", "de", "es", "fr", "he", "hi", "id", "it", "ja", "ko", "pt", "tr", "zh"]
 
 def extract_prompts(source):
-    pattern = re.compile(r"ReflectionPrompt\\(text:\\s*(['\"])(.*?)\\1,\\s*category:\\s*(['\"])(.*?)\\3\\)", re.S)
+    pattern = re.compile(r"ReflectionPrompt\(text:\s*(['\"])(.*?)\1,\s*category:\s*(['\"])(.*?)\3\)", re.S)
     prompts = []
     for match in pattern.finditer(source):
         raw = match.group(2)
@@ -72,7 +72,7 @@ def main():
         lines.append("  },")
     lines.append("};")
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+    OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote translations for {len(prompts)} prompts in {len(LOCALES)} locales to {OUTPUT}")
 
 if __name__ == "__main__":
