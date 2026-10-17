@@ -85,8 +85,8 @@
   "untitledNote": "Untitled note",
   "scheduledLabel": "Scheduled",
   "createdLabel": "Created",
-  "calendarItemStatusTime": "{status} • {date}",
-  "@calendarItemStatusDate": {
+  "calendarItemStatusTime": "{status} • {time}",
+  "@calendarItemStatusTime": {
     "description": "Status and time shown on a calendar item",
     "placeholders": {
       "status": { "type": "String" },
