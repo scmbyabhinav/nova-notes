@@ -954,5 +954,6 @@
       }
     }
   },
-  "scheduleDisabled": "Disabled • Turn on to receive a daily reflection reminder"
+  "scheduleDisabled": "Disabled • Turn on to receive a daily reflection reminder",
+  "captureTitle": "Capture"
 }
