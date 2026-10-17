@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "Halte Gedanken schnell per Spracheingabe fest.",
   "featureChecklistDescription": "Verwandle Notizen in umsetzbare Checklisten mit Fortschrittsanzeige.",
   "featureShareExportTitle": "Teilen und exportieren",
-  "featureShareExportDescription": "Teile Notizen und exportiere Inhalte in portablen Formaten."
+  "featureShareExportDescription": "Teile Notizen und exportiere Inhalte in portablen Formaten.",
+  "notificationDailyReflectionTitle": "Zeit für deine tägliche Reflexion",
+  "notificationDailyReflectionBody": "Nimm dir einen ruhigen Moment, um deine Gedanken aufzuschreiben.",
+  "notificationDailyReflectionChannel": "Tägliche Reflexion",
+  "notificationDailyReflectionChannelDescription": "Eine sanfte tägliche Erinnerung zum Innehalten und Nachdenken",
+  "notificationReminderChannel": "Orah-Erinnerungen",
+  "notificationReminderChannelDescription": "Erinnerungen für Notizen und Aufgaben",
+  "notificationDoneAction": "Erledigt",
+  "notificationSnooze10Action": "10 Min. verschieben",
+  "notificationSnooze60Action": "1 Std. verschieben",
+  "notificationReminderTitle": "ORAH-Erinnerung"
 }
