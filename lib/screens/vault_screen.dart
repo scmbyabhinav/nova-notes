@@ -181,6 +181,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<bool> _authenticateVault() async {
+    final l10n = AppLocalizations.of(context)!;
     final security = NovaSecurityService();
     final hasVaultPin = await security.hasVaultPin();
     final hasLegacyPin = await security.hasPin();
@@ -222,15 +223,16 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _changeVaultPin() async {
-    final current = await _promptVaultPin(title: AppLocalizations.of(context)!.vaultVerifyCurrentPin, confirm: false);
+    final l10n = AppLocalizations.of(context)!;
+    final current = await _promptVaultPin(title: l10n.vaultVerifyCurrentPin, confirm: false);
     if (current == null || !await NovaSecurityService().verifyVaultPin(current)) {
       if (mounted && current != null) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.vaultIncorrectCurrentPin)));
       return;
     }
-    final next = await _promptVaultPin(title: AppLocalizations.of(context)!.vaultCreateNewPin, confirm: true);
+    final next = await _promptVaultPin(title: l10n.vaultCreateNewPin, confirm: true);
     if (next == null) return;
     await NovaSecurityService().setVaultPin(next);
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinChanged)));
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.vaultPinChanged)));
   }
 
   Future<void> _createFolder() async {

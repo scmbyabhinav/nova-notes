@@ -124,12 +124,12 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                   ),
                   for (final option in _options(l10n).where((o) => o.category == 'Data'))
                     _formatTile(option),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, top: 14, bottom: 4),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, top: 14, bottom: 4),
                     child: Text(l10n.exportPlannedSection, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, bottom: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: Text(l10n.exportPlannedDescription, style: TextStyle(fontSize: 12)),
                   ),
                   for (final category in _plannedCategories)
@@ -217,6 +217,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   }
 
   Widget _plannedSection(String category) {
+    final l10n = AppLocalizations.of(context)!;
     final items = _planned.where((item) => item.category == category);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,6 +248,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
 
   Future<void> _showPlannedFormats() async {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
