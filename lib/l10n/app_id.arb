@@ -885,5 +885,61 @@
   "androidRemindersDescription": "Buat pengingat catatan dan daftar periksa tanpa backend.",
   "androidLocalIntegrationsNote": "Integrasi ini adalah fitur Android lokal dan tidak memerlukan backend.",
   "androidDone": "Selesai",
-  "androidGotIt": "Mengerti"
+  "androidGotIt": "Mengerti",
+  "captureTitle": "Catat",
+  "captureDescription": "Pilih apa yang ingin Anda catat.",
+  "quickNote": "Catatan cepat",
+  "startTypingImmediately": "Mulai mengetik sekarang",
+  "quickChecklist": "Daftar tugas cepat",
+  "captureTasksWithoutSetup": "Catat tugas tanpa pengaturan",
+  "dailyChecklistTooltip": "Daftar tugas harian",
+  "quickCaptureHint": "Ketuk untuk menulis • Tekan lama untuk daftar dan opsi",
+  "quickCaptureTooltip": "Catatan cepat. Tekan lama untuk daftar dan opsi.",
+  "filtersActive": "Filter aktif",
+  "searchResultsCount": "Hasil: {count}",
+  "advancedSearchProFeature": "Pencarian lanjutan adalah fitur ORAH Pro",
+  "noNotesFound": "Catatan tidak ditemukan",
+  "searchFilterHint": "Gunakan kata kunci biasa secara gratis, atau buka ORAH Pro untuk membuka filter dan operator.",
+  "searchEmptyHint": "Coba kata lain atau hapus filter.",
+  "voicePreferences": "Preferensi suara",
+  "dailyReflectionSchedule": "Jadwal refleksi harian",
+  "versionLabel": "Versi {version}",
+  "vaultResetWarning": "PIN Vault tidak dapat dipulihkan. Mengatur ulang akan menghapus semua catatan Vault dan kunci enkripsinya secara permanen. Catatan dan folder biasa Anda tidak akan berubah.",
+  "portableBackupShareText": "Cadangan portabel Orah",
+  "storageAttachmentCount": "{count} lampiran • {size}",
+  "dailyReflectionTimePicker": "Pilih waktu refleksi harian",
+  "scheduleLoading": "Memuat jadwal…",
+  "scheduleEnabledAt": "Aktif • Setiap hari pukul {time}",
+  "scheduleDisabled": "Nonaktif • Aktifkan untuk menerima pengingat refleksi harian",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
