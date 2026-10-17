@@ -50,6 +50,17 @@ void main() {
     await event;
   });
 
+  test('concurrent saves preserve every note', () async {
+    repository = await createRepository();
+    await Future.wait([
+      repository.saveNote(makeNote('concurrent-a')),
+      repository.saveNote(makeNote('concurrent-b')),
+      repository.saveNote(makeNote('concurrent-c')),
+    ]);
+    final notes = await repository.getNotes();
+    expect(notes.map((note) => note.id).toSet(),
+        {'concurrent-a', 'concurrent-b', 'concurrent-c'});
+  });
   test('deleteNote publishes the updated list to watchNotes immediately', () async {
     repository = await createRepository();
     final note = makeNote('delete-stream-test');
