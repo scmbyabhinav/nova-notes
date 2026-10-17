@@ -955,5 +955,7 @@
   "notificationDoneAction": "Erledigt",
   "notificationSnooze10Action": "10 Min. verschieben",
   "notificationSnooze60Action": "1 Std. verschieben",
-  "notificationReminderTitle": "ORAH-Erinnerung"
+  "notificationReminderTitle": "ORAH-Erinnerung",
+  "genericTryAgain": "Bitte versuche es erneut.",
+  "registrationFailed": "Die Registrierung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
 }
