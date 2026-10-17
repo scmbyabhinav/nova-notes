@@ -267,7 +267,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       }
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceInputUnavailableWithMessage(error.toString()))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceInputUnavailableWithMessage(AppLocalizations.of(context)!.genericTryAgain))));
     }
   }
   Future<void> _toggleVoiceInput() async {
@@ -386,7 +386,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _isListening = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotStartVoiceCapture(error.toString()))),
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotStartVoiceCapture(AppLocalizations.of(context)!.genericTryAgain))),
       );
     }
   }
@@ -626,7 +626,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotUnlockPrivateNote(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotUnlockPrivateNote(AppLocalizations.of(context)!.genericTryAgain))),
         );
         Navigator.of(context).pop();
       }
@@ -689,7 +689,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceFirst('FormatException: ', ''))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.genericTryAgain)),
         );
       }
       return false;
@@ -1157,7 +1157,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddImage(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddImage(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -1183,7 +1183,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddFiles(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddFiles(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -1230,7 +1230,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (mounted) {
         setState(() => _isCapturingNoteCard = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotShareNoteCard(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotShareNoteCard(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -1265,7 +1265,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       });
       await _save();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.couldNotRenameAttachment(e.toString()))));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.couldNotRenameAttachment(AppLocalizations.of(context)!.genericTryAgain))));
     }
   }
 
@@ -1279,7 +1279,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(p.basename(path)),
-        content: Text(AppLocalizations.of(context)!.attachmentDetailsFormat(_formatBytes(bytes), stat.modified.toLocal().toString())),
+        content: Text(AppLocalizations.of(context)!.attachmentDetailsFormat(_formatBytes(bytes), DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(stat.modified.toLocal()))),
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close))],
       ),
     );
