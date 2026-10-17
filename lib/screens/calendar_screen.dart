@@ -201,7 +201,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             child: Icon(scheduled ? Icons.alarm_rounded : Icons.note_alt_outlined, color: theme.colorScheme.onPrimaryContainer),
                           ),
                           title: Text(note.title.isEmpty ? l10n.untitledNote : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('${scheduled ? l10n.scheduledLabel : l10n.createdLabel} • ${DateFormat('h:mm a').format(time)}'),
+                          subtitle: Text(
+                             l10n.calendarItemStatusDate(
+                               scheduled ? l10n.scheduledLabel : l10n.createdLabel,
+                               time,
+                             ),
+                           ),
                           trailing: const Icon(Icons.chevron_right_rounded),
                         ),
                       ),
