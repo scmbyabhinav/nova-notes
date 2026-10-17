@@ -745,8 +745,8 @@
   "exportCategorySubtitles": "Sous-titres",
   "exportCategoryEmail": "E-mail",
   "exportCategoryCodeLiterate": "Code / documents techniques",
-  "exportCategoryArchive": "Archive",
-  "exportCategoryDatabase": "E-mail",
+  "exportCategoryArchive": "Archives",
+  "exportCategoryDatabase": "Base de données",
   "exportCategoryClipboard": "Presse-papiers",
   "@exportFailed": {
     "placeholders": {
