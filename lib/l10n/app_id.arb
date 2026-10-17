@@ -955,5 +955,7 @@
   "notificationDoneAction": "Selesai",
   "notificationSnooze10Action": "Tunda 10 mnt",
   "notificationSnooze60Action": "Tunda 1 jam",
-  "notificationReminderTitle": "Pengingat ORAH"
+  "notificationReminderTitle": "Pengingat ORAH",
+  "genericTryAgain": "Silakan coba lagi.",
+  "registrationFailed": "Pendaftaran tidak dapat diselesaikan. Silakan coba lagi."
 }
