@@ -28,11 +28,12 @@ import 'screens/app_lock_screen.dart';
 import 'core/services/nova_security_service.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.securityService, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.securityService, this.locale, this.skipRegistrationForTesting = false});
 
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final NovaSecurityService? securityService;
+  final Locale? locale;
   final bool skipRegistrationForTesting;
 
   @override
@@ -68,6 +69,7 @@ class _OrahAppState extends State<OrahApp> {
       theme: light,
       darkTheme: dark,
       themeMode: _theme.mode,
+      locale: widget.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: const [
         Locale('en'), Locale('hi'), Locale('es'), Locale('fr'), Locale('de'), Locale('he'),
