@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "سجّل أفكارك بسرعة باستخدام إنشاء الملاحظات بالصوت أولًا.",
   "featureChecklistDescription": "حوّل الملاحظات إلى قوائم مهام قابلة للتنفيذ مع تتبّع الإنجاز.",
   "featureShareExportTitle": "المشاركة والتصدير",
-  "featureShareExportDescription": "شارك الملاحظات وصدّر محتواك بتنسيقات قابلة للنقل."
+  "featureShareExportDescription": "شارك الملاحظات وصدّر محتواك بتنسيقات قابلة للنقل.",
+  "notificationDailyReflectionTitle": "حان وقت التأمل اليومي",
+  "notificationDailyReflectionBody": "خذ لحظة هادئة لتدوين ما يدور في ذهنك.",
+  "notificationDailyReflectionChannel": "التأمل اليومي",
+  "notificationDailyReflectionChannelDescription": "تذكير يومي لطيف للتوقف والتأمل",
+  "notificationReminderChannel": "تذكيرات Orah",
+  "notificationReminderChannelDescription": "تذكيرات للملاحظات والمهام",
+  "notificationDoneAction": "تم",
+  "notificationSnooze10Action": "تأجيل 10 دقائق",
+  "notificationSnooze60Action": "تأجيل ساعة",
+  "notificationReminderTitle": "تذكير ORAH"
 }
