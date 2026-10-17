@@ -941,5 +941,9 @@
     }
   },
   "scheduleDisabled": "Désactivé • Activez pour recevoir un rappel quotidien",
-  "captureTitle": "Capturer"
+  "captureTitle": "Capturer",
+  "featureVoiceCaptureDescription": "Capturez rapidement vos idées en créant des notes à la voix.",
+  "featureChecklistDescription": "Transformez vos notes en listes d’actions avec suivi de l’avancement.",
+  "featureShareExportTitle": "Partager et exporter",
+  "featureShareExportDescription": "Partagez vos notes et exportez leur contenu dans des formats portables."
 }
