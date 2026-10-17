@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "הכרת תודה",
+  "reflectionCategoryMindfulness": "קשיבות",
+  "reflectionCategoryPersonalGrowth": "צמיחה אישית",
+  "reflectionCategoryRelationships": "מערכות יחסים",
+  "reflectionCategorySelfCompassion": "חמלה עצמית",
+  "reflectionCategoryClarity": "בהירות",
+  "reflectionCategoryPossibility": "אפשרויות",
+  "reflectionCategoryDailyReview": "סקירה יומית",
+  "reflectionCategoryPurposeValues": "מטרה וערכים",
+  "reflectionCategoryResilience": "חוסן נפשי",
+  "reflectionCategoryCreativityCuriosity": "יצירתיות וסקרנות",
+  "reflectionCategoryRestRenewal": "מנוחה והתחדשות",
+  "reflectionWriteHint": "כתוב כל מה שעולה בדעתך…",
+  "reflectionSaveError": "לא ניתן לשמור את ההרהור: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }

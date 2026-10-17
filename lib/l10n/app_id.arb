@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "Rasa syukur",
+  "reflectionCategoryMindfulness": "Kesadaran penuh",
+  "reflectionCategoryPersonalGrowth": "Pertumbuhan pribadi",
+  "reflectionCategoryRelationships": "Hubungan",
+  "reflectionCategorySelfCompassion": "Belas kasih pada diri",
+  "reflectionCategoryClarity": "Kejelasan",
+  "reflectionCategoryPossibility": "Kemungkinan",
+  "reflectionCategoryDailyReview": "Tinjauan harian",
+  "reflectionCategoryPurposeValues": "Tujuan & nilai",
+  "reflectionCategoryResilience": "Ketahanan",
+  "reflectionCategoryCreativityCuriosity": "Kreativitas & rasa ingin tahu",
+  "reflectionCategoryRestRenewal": "Istirahat & pemulihan",
+  "reflectionWriteHint": "Tuliskan apa pun yang terlintas di pikiran…",
+  "reflectionSaveError": "Refleksi tidak dapat disimpan: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }

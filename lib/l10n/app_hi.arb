@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "कृतज्ञता",
+  "reflectionCategoryMindfulness": "सजगता",
+  "reflectionCategoryPersonalGrowth": "व्यक्तिगत विकास",
+  "reflectionCategoryRelationships": "रिश्ते",
+  "reflectionCategorySelfCompassion": "आत्म-करुणा",
+  "reflectionCategoryClarity": "स्पष्टता",
+  "reflectionCategoryPossibility": "संभावनाएँ",
+  "reflectionCategoryDailyReview": "दैनिक समीक्षा",
+  "reflectionCategoryPurposeValues": "उद्देश्य और मूल्य",
+  "reflectionCategoryResilience": "लचीलापन",
+  "reflectionCategoryCreativityCuriosity": "रचनात्मकता और जिज्ञासा",
+  "reflectionCategoryRestRenewal": "आराम और नई ऊर्जा",
+  "reflectionWriteHint": "जो मन में आए, लिखें…",
+  "reflectionSaveError": "चिंतन सहेजा नहीं जा सका: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }

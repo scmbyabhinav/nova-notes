@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "Gratitude",
+  "reflectionCategoryMindfulness": "Pleine conscience",
+  "reflectionCategoryPersonalGrowth": "Développement personnel",
+  "reflectionCategoryRelationships": "Relations",
+  "reflectionCategorySelfCompassion": "Autocompassion",
+  "reflectionCategoryClarity": "Clarté",
+  "reflectionCategoryPossibility": "Possibilités",
+  "reflectionCategoryDailyReview": "Bilan quotidien",
+  "reflectionCategoryPurposeValues": "Sens et valeurs",
+  "reflectionCategoryResilience": "Résilience",
+  "reflectionCategoryCreativityCuriosity": "Créativité et curiosité",
+  "reflectionCategoryRestRenewal": "Repos et renouveau",
+  "reflectionWriteHint": "Écrivez ce qui vous vient à l’esprit…",
+  "reflectionSaveError": "Impossible d’enregistrer la réflexion : {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }
