@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "음성으로 빠르게 생각을 메모로 기록하세요.",
+  "featureChecklistDescription": "메모를 실행 가능한 체크리스트로 바꾸고 완료 상태를 추적하세요.",
+  "featureShareExportTitle": "공유 및 내보내기",
+  "featureShareExportDescription": "메모를 공유하고 콘텐츠를 휴대 가능한 형식으로 내보내세요."
 }
