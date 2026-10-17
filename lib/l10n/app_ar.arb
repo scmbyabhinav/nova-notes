@@ -941,5 +941,9 @@
     }
   },
   "scheduleDisabled": "معطّل • فعّله لتلقي تذكير يومي بالتأمل",
-  "captureTitle": "تدوين"
+  "captureTitle": "تدوين",
+  "featureVoiceCaptureDescription": "سجّل أفكارك بسرعة باستخدام إنشاء الملاحظات بالصوت أولًا.",
+  "featureChecklistDescription": "حوّل الملاحظات إلى قوائم مهام قابلة للتنفيذ مع تتبّع الإنجاز.",
+  "featureShareExportTitle": "المشاركة والتصدير",
+  "featureShareExportDescription": "شارك الملاحظات وصدّر محتواك بتنسيقات قابلة للنقل."
 }
