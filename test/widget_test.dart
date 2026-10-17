@@ -52,6 +52,42 @@ void main() {
     expect(find.byTooltip('New note'), findsNothing);
   });
 
+  testWidgets('ORAH shell renders across all 14 locales with correct text direction', (tester) async {
+    const localeCodes = <String>[
+      'en', 'hi', 'es', 'fr', 'de', 'he', 'ar',
+      'id', 'it', 'ja', 'ko', 'pt', 'tr', 'zh',
+    ];
+
+    for (final code in localeCodes) {
+      final locale = Locale(code);
+      final l10n = await AppLocalizations.delegate.load(locale);
+      await tester.pumpWidget(
+        OrahApp(
+          locale: locale,
+          skipRegistrationForTesting: true,
+          securityService: _FakeSecurityService(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OrahWordmark), findsOneWidget,
+          reason: 'Brand wordmark missing for $code.');
+      expect(find.byTooltip(l10n.quickCaptureTooltip), findsOneWidget,
+          reason: 'Quick Capture tooltip did not localize for $code.');
+
+      final directions = tester.widgetList<Directionality>(
+        find.byType(Directionality),
+      );
+      expect(
+        directions.first.textDirection,
+        (code == 'ar' || code == 'he')
+            ? TextDirection.rtl
+            : TextDirection.ltr,
+        reason: 'Incorrect text direction for $code.',
+      );
+    }
+  });
+
   testWidgets('quick capture opens a note immediately', (tester) async {
     await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, securityService: _FakeSecurityService()));
     await tester.pumpAndSettle();
