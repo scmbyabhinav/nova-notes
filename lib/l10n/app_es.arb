@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "Captura ideas rápidamente creando notas mediante la voz.",
   "featureChecklistDescription": "Convierte notas en listas prácticas con seguimiento de tareas completadas.",
   "featureShareExportTitle": "Compartir y exportar",
-  "featureShareExportDescription": "Comparte notas y exporta contenido en formatos portátiles."
+  "featureShareExportDescription": "Comparte notas y exporta contenido en formatos portátiles.",
+  "notificationDailyReflectionTitle": "Es hora de tu reflexión diaria",
+  "notificationDailyReflectionBody": "Tómate un momento tranquilo para escribir lo que tienes en mente.",
+  "notificationDailyReflectionChannel": "Reflexión diaria",
+  "notificationDailyReflectionChannelDescription": "Un recordatorio diario amable para hacer una pausa y reflexionar",
+  "notificationReminderChannel": "Recordatorios de Orah",
+  "notificationReminderChannelDescription": "Recordatorios para notas y tareas",
+  "notificationDoneAction": "Hecho",
+  "notificationSnooze10Action": "Posponer 10 min",
+  "notificationSnooze60Action": "Posponer 1 h",
+  "notificationReminderTitle": "Recordatorio de ORAH"
 }
