@@ -855,5 +855,14 @@
         "type": "String"
       }
     }
+  },
+  "vaultAutoLockDuration": "{count} 分钟",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

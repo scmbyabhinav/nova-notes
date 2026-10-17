@@ -457,9 +457,9 @@ class _VaultAutoLockSettingTileState extends State<_VaultAutoLockSettingTile> {
       value: _minutes,
       onChanged: _setMinutes,
       items: [
-        DropdownMenuItem(value: 1, child: const Text('1 min')),
-        const DropdownMenuItem(value: 5, child: Text('5 min')),
-        const DropdownMenuItem(value: 10, child: Text('10 min')),
+        DropdownMenuItem(value: 1, child: Text(AppLocalizations.of(context)!.vaultAutoLockDuration(1))),
+        DropdownMenuItem(value: 5, child: Text(AppLocalizations.of(context)!.vaultAutoLockDuration(5))),
+        DropdownMenuItem(value: 10, child: Text(AppLocalizations.of(context)!.vaultAutoLockDuration(10))),
         DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context)!.neverLabel)),
       ],
     ),
