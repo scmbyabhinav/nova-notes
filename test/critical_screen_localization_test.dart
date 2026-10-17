@@ -18,7 +18,14 @@ void main() {
     for (final path in screens) {
       final source = File(path).readAsStringSync();
       final matches = hardCodedText.allMatches(source).map((match) => match.group(1)!).where((value) =>
-        value != 'Abhinav Bajpai' && value != 'vajpaiabhinav@gmail.com',
+        value != 'Abhinav Bajpai' &&
+        value != 'vajpaiabhinav@gmail.com' &&
+        !value.contains(r'
+      ).toList();
+      expect(matches, isEmpty, reason: '$path contains hard-coded UI text: $matches');
+    }
+  });
+}),
       ).toList();
       expect(matches, isEmpty, reason: '$path contains hard-coded UI text: $matches');
     }

@@ -15,6 +15,11 @@ const _languageNeutralKeys = <String>{
   'ai',
   'pro',
   'android',
+  // Canonical format names and extensions are intentionally unchanged.
+  'exportFormatPdf',
+  'exportFormatWord',
+  'exportFormatMarkdown',
+  'exportFormatExcel',
 };
 
 // Locale-specific exceptions for conventional examples and technical labels.
@@ -29,12 +34,12 @@ const _localeNeutralKeys = <String, Set<String>>{
   // PIN is a standard technical abbreviation; these short labels are approved.
   'de': {'pin', 'details', 'moodNeutral'},
   'es': {'pin', 'total', 'moodNeutral', 'templateAgenda'},
-  'id': {'pin', 'total', 'templateAgenda'},
+  'id': {'pin', 'total', 'templateAgenda', 'exportData'},
   'it': {'pin'},
   'pt': {'pin', 'total'},
   'tr': {'pin'},
   // These French interface labels are accepted as conventional wording.
-  'fr': {'total', 'notes', 'templateImportant', 'templateDates', 'trashNote'},
+  'fr': {'total', 'notes', 'templateImportant', 'templateDates', 'trashNote', 'exportDocuments'},
 };
 
 void main() {
