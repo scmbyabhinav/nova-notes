@@ -743,10 +743,10 @@
   "exportCategoryPresentation": "عرض تقديمي",
   "exportCategorySpeechAudio": "الكلام / الصوت",
   "exportCategorySubtitles": "ترجمات مصاحبة",
-  "exportCategoryEmail": "البريد الإلكتروني",
+  "exportCategoryEmail": "بريد إلكتروني",
   "exportCategoryCodeLiterate": "الرمز / المستندات البرمجية",
   "exportCategoryArchive": "أرشيف",
-  "exportCategoryDatabase": "Email",
+  "exportCategoryDatabase": "قاعدة بيانات",
   "exportCategoryClipboard": "الحافظة",
   "@exportFailed": {
     "placeholders": {
@@ -770,7 +770,7 @@
     }
   },
   "organizationFolderLabel": "مجلد",
-  "organizationTagsLabel": "Tag",
+  "organizationTagsLabel": "الوسوم",
   "plannedExportRichText": "Rich Text (.rtf)",
   "plannedExportRichTextDescription": "Texte enrichi multiplateforme",
   "plannedExportOpenDocument": "OpenDocument (.odt)",
@@ -813,7 +813,7 @@
   "plannedExportVttDescription": "ترجمات الويب والفيديو",
   "plannedExportEml": "Email (.eml)",
   "plannedExportEmlDescription": "تنسيق رسالة بريد إلكتروني",
-  "plannedExportHtmlEmail": "HTML Email",
+  "plannedExportHtmlEmail": "بريد HTML",
   "plannedExportHtmlEmailDescription": "بريد HTML جاهز للإرسال",
   "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
   "plannedExportJupyterDescription": "مستندات البرمجة",
