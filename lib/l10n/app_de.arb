@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ Es gibt keine PIN-Wiederherstellung. Wenn du sie vergisst, kann der Tresor nicht wiederhergestellt werden.",
+  "vaultPinDigitsHint": "Tresor-PIN mit 4–8 Ziffern",
+  "vaultConfirmPin": "PIN bestätigen",
+  "vaultCancel": "Abbrechen",
+  "vaultPinsMismatch": "Die PINs stimmen nicht überein.",
+  "vaultPinDigitsError": "Die Tresor-PIN muss 4–8 Ziffern enthalten.",
+  "vaultIncorrectPin": "Falsche Tresor-PIN.",
+  "vaultVerifyCurrentPin": "Aktuelle Tresor-PIN überprüfen",
+  "vaultIncorrectCurrentPin": "Aktuelle Tresor-PIN ist falsch.",
+  "vaultCreateNewPin": "Neue Tresor-PIN erstellen",
+  "vaultPinChanged": "Tresor-PIN geändert.",
+  "vaultNewFolder": "Neuer Tresorordner",
+  "vaultFolderName": "Ordnername",
+  "vaultCreate": "Erstellen",
+  "vaultRenameFolder": "Tresorordner umbenennen",
+  "vaultSave": "Speichern",
+  "vaultDelete": "Löschen",
+  "vaultLockedTitle": "Tresor / Gesperrte Notizen",
+  "vaultChangePin": "Tresor-PIN ändern",
+  "vaultTrustBadge": "Tresor mit hoher Sicherheit",
+  "vaultCreatePrivateNote": "Private Notiz erstellen",
+  "vaultAllFolders": "Alle Ordner",
+  "vaultFolderOptions": "Tresorordner-Optionen",
+  "vaultRename": "Umbenennen",
+  "vaultNewFolderAction": "Neuer Ordner",
+  "vaultEmptyTitle": "Dein Tresor ist leer",
+  "vaultEmptyDescription": "Sperre eine Notiz im Editor oder erstelle eine private Notiz.",
+  "vaultMoveToFolder": "In Ordner verschieben",
+  "vaultUnfiled": "Ohne Ordner",
+  "vaultJustNow": "Gerade eben",
+  "vaultMinutesAgoSuffix": "Min. her",
+  "vaultHoursAgoSuffix": "Std. her",
+  "vaultDaysAgoSuffix": "Tage her",
+  "vaultDeleteFolderTitle": "{folderName} löschen?",
+  "vaultFolderEmpty": "Dieser Ordner ist leer.",
+  "vaultDeleteFolderWithNotes": "Bist du sicher? {count} private Notiz(en) werden in „Ohne Ordner“ verschoben.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

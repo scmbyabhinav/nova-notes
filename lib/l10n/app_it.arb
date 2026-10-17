@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ Il PIN non può essere recuperato. Se lo dimentichi, il Vault non potrà essere recuperato.",
+  "vaultPinDigitsHint": "PIN Vault di 4–8 cifre",
+  "vaultConfirmPin": "Conferma PIN",
+  "vaultCancel": "Annulla",
+  "vaultPinsMismatch": "I PIN non corrispondono.",
+  "vaultPinDigitsError": "Il PIN Vault deve contenere da 4 a 8 cifre.",
+  "vaultIncorrectPin": "PIN Vault errato.",
+  "vaultVerifyCurrentPin": "Verifica il PIN Vault attuale",
+  "vaultIncorrectCurrentPin": "Il PIN Vault attuale è errato.",
+  "vaultCreateNewPin": "Crea un nuovo PIN Vault",
+  "vaultPinChanged": "PIN Vault modificato.",
+  "vaultNewFolder": "Nuova cartella Vault",
+  "vaultFolderName": "Nome cartella",
+  "vaultCreate": "Crea",
+  "vaultRenameFolder": "Rinomina cartella Vault",
+  "vaultSave": "Salva",
+  "vaultDelete": "Elimina",
+  "vaultLockedTitle": "Vault / Note bloccate",
+  "vaultChangePin": "Modifica PIN Vault",
+  "vaultTrustBadge": "Vault ad alta sicurezza",
+  "vaultCreatePrivateNote": "Crea nota privata",
+  "vaultAllFolders": "Tutte le cartelle",
+  "vaultFolderOptions": "Opzioni cartella Vault",
+  "vaultRename": "Rinomina",
+  "vaultNewFolderAction": "Nuova cartella",
+  "vaultEmptyTitle": "Il Vault è vuoto",
+  "vaultEmptyDescription": "Blocca una nota dall’editor oppure crea una nota privata.",
+  "vaultMoveToFolder": "Sposta nella cartella",
+  "vaultUnfiled": "Senza cartella",
+  "vaultJustNow": "Proprio ora",
+  "vaultMinutesAgoSuffix": "min fa",
+  "vaultHoursAgoSuffix": "ore fa",
+  "vaultDaysAgoSuffix": "giorni fa",
+  "vaultDeleteFolderTitle": "Eliminare {folderName}?",
+  "vaultFolderEmpty": "Questa cartella è vuota.",
+  "vaultDeleteFolderWithNotes": "Continuare? {count} note private saranno spostate in Senza cartella.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

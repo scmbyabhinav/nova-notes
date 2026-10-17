@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ No es posible recuperar el PIN. Si lo olvidas, no podrás recuperar la bóveda.",
+  "vaultPinDigitsHint": "PIN de la bóveda de 4 a 8 dígitos",
+  "vaultConfirmPin": "Confirmar PIN",
+  "vaultCancel": "Cancelar",
+  "vaultPinsMismatch": "Los PIN no coinciden.",
+  "vaultPinDigitsError": "El PIN de la bóveda debe tener entre 4 y 8 dígitos.",
+  "vaultIncorrectPin": "PIN de la bóveda incorrecto.",
+  "vaultVerifyCurrentPin": "Verificar el PIN actual de la bóveda",
+  "vaultIncorrectCurrentPin": "El PIN actual de la bóveda es incorrecto.",
+  "vaultCreateNewPin": "Crear un nuevo PIN de la bóveda",
+  "vaultPinChanged": "PIN de la bóveda cambiado.",
+  "vaultNewFolder": "Nueva carpeta de la bóveda",
+  "vaultFolderName": "Nombre de la carpeta",
+  "vaultCreate": "Crear",
+  "vaultRenameFolder": "Renombrar carpeta de la bóveda",
+  "vaultSave": "Guardar",
+  "vaultDelete": "Eliminar",
+  "vaultLockedTitle": "Bóveda / Notas bloqueadas",
+  "vaultChangePin": "Cambiar PIN de la bóveda",
+  "vaultTrustBadge": "Bóveda de alta seguridad",
+  "vaultCreatePrivateNote": "Crear nota privada",
+  "vaultAllFolders": "Todas las carpetas",
+  "vaultFolderOptions": "Opciones de carpeta de la bóveda",
+  "vaultRename": "Renombrar",
+  "vaultNewFolderAction": "Nueva carpeta",
+  "vaultEmptyTitle": "La bóveda está vacía",
+  "vaultEmptyDescription": "Bloquea una nota desde el editor o crea una nota privada.",
+  "vaultMoveToFolder": "Mover a carpeta",
+  "vaultUnfiled": "Sin carpeta",
+  "vaultJustNow": "Ahora mismo",
+  "vaultMinutesAgoSuffix": "min atrás",
+  "vaultHoursAgoSuffix": "h atrás",
+  "vaultDaysAgoSuffix": "días atrás",
+  "vaultDeleteFolderTitle": "¿Eliminar {folderName}?",
+  "vaultFolderEmpty": "Esta carpeta está vacía.",
+  "vaultDeleteFolderWithNotes": "¿Seguro? {count} nota(s) privada(s) se moverán a Sin carpeta.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

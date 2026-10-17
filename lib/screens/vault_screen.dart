@@ -10,6 +10,7 @@ import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../models/vault_folder.dart';
+import '../l10n/app_localizations.dart';
 import 'note_editor_screen.dart';
 
 class VaultScreen extends StatefulWidget {
@@ -132,6 +133,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<String?> _promptVaultPin({required String title, required bool confirm}) async {
+    final l10n = AppLocalizations.of(context)!;
     final first = TextEditingController();
     final second = TextEditingController();
     final result = await showDialog<String>(
@@ -146,25 +148,25 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
               const Padding(
                 padding: EdgeInsets.only(bottom: 12),
                 child: Text(
-                  '⚠️ No PIN recovery. Forget it and the Vault cannot be recovered.',
+                  l10n.vaultPinRecoveryWarning,
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
-            TextField(controller: first, autofocus: true, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: '4–8 digit Vault PIN')),
-            if (confirm) TextField(controller: second, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: const InputDecoration(labelText: 'Confirm PIN')),
+            TextField(controller: first, autofocus: true, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: InputDecoration(labelText: l10n.vaultPinDigitsHint)),
+            if (confirm) TextField(controller: second, obscureText: true, keyboardType: TextInputType.number, maxLength: 8, decoration: InputDecoration(labelText: l10n.vaultConfirmPin)),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(l10n.vaultCancel)),
           FilledButton(
             onPressed: () {
               if (confirm && first.text != second.text) {
-                ScaffoldMessenger.of(dialogContext).showSnackBar(const SnackBar(content: Text('PINs do not match.')));
+                ScaffoldMessenger.of(dialogContext).showSnackBar(const SnackBar(content: Text(l10n.vaultPinsMismatch)));
                 return;
               }
               Navigator.of(dialogContext).pop(first.text);
             },
-            child: Text(confirm ? 'Create Vault' : 'Unlock'),
+            child: Text(confirm ? l10n.createVaultPin : l10n.unlock),
           ),
         ],
       ),
@@ -172,7 +174,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     first.dispose();
     second.dispose();
     if (result == null || !RegExp(r'^\d{4,8}$').hasMatch(result)) {
-      if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN must contain 4–8 digits.')));
+      if (result != null && mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(l10n.vaultPinDigitsError)));
       return null;
     }
     return result;
@@ -184,7 +186,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     final hasLegacyPin = await security.hasPin();
 
     final pin = await _promptVaultPin(
-      title: hasVaultPin || hasLegacyPin ? 'Unlock Vault' : 'Create Vault PIN',
+      title: hasVaultPin || hasLegacyPin ? l10n.unlock : l10n.createVaultPin,
       confirm: !hasVaultPin && !hasLegacyPin,
     );
     if (pin == null) return false;
@@ -193,7 +195,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       final ok = await security.verifyVaultPin(pin);
       if (!ok && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Incorrect Vault PIN.')),
+          const SnackBar(content: Text(l10n.vaultIncorrectPin)),
         );
       }
       return ok;
@@ -220,28 +222,29 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _changeVaultPin() async {
-    final current = await _promptVaultPin(title: 'Verify current Vault PIN', confirm: false);
+    final current = await _promptVaultPin(title: AppLocalizations.of(context)!.vaultVerifyCurrentPin, confirm: false);
     if (current == null || !await NovaSecurityService().verifyVaultPin(current)) {
-      if (mounted && current != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Incorrect current Vault PIN.')));
+      if (mounted && current != null) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(l10n.vaultIncorrectCurrentPin)));
       return;
     }
-    final next = await _promptVaultPin(title: 'Create new Vault PIN', confirm: true);
+    final next = await _promptVaultPin(title: AppLocalizations.of(context)!.vaultCreateNewPin, confirm: true);
     if (next == null) return;
     await NovaSecurityService().setVaultPin(next);
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vault PIN changed.')));
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinChanged)));
   }
 
   Future<void> _createFolder() async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController();
     final name = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('New Vault folder'),
+        title: Text(l10n.vaultNewFolder),
         content: TextField(
           controller: controller,
           autofocus: true,
           maxLength: 40,
-          decoration: const InputDecoration(labelText: 'Folder name'),
+          decoration: InputDecoration(labelText: l10n.vaultFolderName),
           onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
         ),
         actions: [
@@ -251,7 +254,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
-            child: const Text('Create'),
+            child: Text(l10n.vaultCreate),
           ),
         ],
       ),
@@ -280,11 +283,12 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _renameFolder(VaultFolder folder) async {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: folder.name);
     final name = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Rename Vault folder'),
+        title: Text(l10n.vaultRenameFolder),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -299,7 +303,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(l10n.vaultSave),
           ),
         ],
       ),
@@ -324,15 +328,16 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _deleteFolder(VaultFolder folder) async {
+    final l10n = AppLocalizations.of(context)!;
     final noteCount = _lockedNotes.where((note) => note.vaultFolderId == folder.id).length;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Delete ${folder.name}?'),
+        title: Text(l10n.vaultDeleteFolderTitle(folder.name)),
         content: Text(
           noteCount == 0
-              ? 'This folder is empty.'
-              : 'Are you sure? $noteCount private note(s) will be moved to Unfiled.',
+              ? l10n.vaultFolderEmpty
+              : l10n.vaultDeleteFolderWithNotes(noteCount),
         ),
         actions: [
           TextButton(
@@ -341,7 +346,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.vaultDelete),
           ),
         ],
       ),
@@ -414,15 +419,16 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Vault / Locked Notes'),
+        title: Text(l10n.vaultLockedTitle),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) { if (value == 'change_pin') _changeVaultPin(); },
             itemBuilder: (_) => const [
-              PopupMenuItem(value: 'change_pin', child: Text('Change Vault PIN')),
+              PopupMenuItem(value: 'change_pin', child: Text(l10n.vaultChangePin)),
             ],
           ),
         ],
@@ -437,9 +443,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                     children: [
                       Icon(Icons.verified_user_rounded, size: 18, color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
-                      Text('Military-Grade Vault', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w700)),
+                      Text(l10n.vaultTrustBadge, style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w700)),
                       const Spacer(),
-                      IconButton(tooltip: 'Create private note', onPressed: _createPrivateNote, icon: const Icon(Icons.add_rounded)),
+                      IconButton(tooltip: l10n.vaultCreatePrivateNote, onPressed: _createPrivateNote, icon: const Icon(Icons.add_rounded)),
                     ],
                   ),
                 ),
@@ -448,7 +454,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(children: [
-                      ChoiceChip(label: const Text('All folders'), selected: _selectedFolderId == null, onSelected: (_) => setState(() => _selectedFolderId = null)),
+                      ChoiceChip(label: Text(l10n.vaultAllFolders), selected: _selectedFolderId == null, onSelected: (_) => setState(() => _selectedFolderId = null)),
                       const SizedBox(width: 6),
                       for (final folder in _folders) ...[
                         Row(
@@ -460,7 +466,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                               onSelected: (_) => setState(() => _selectedFolderId = folder.id),
                             ),
                             PopupMenuButton<String>(
-                              tooltip: 'Vault folder options',
+                              tooltip: l10n.vaultFolderOptions,
                               onSelected: (action) {
                                 if (action == 'rename') {
                                   _renameFolder(folder);
@@ -474,7 +480,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                                   child: ListTile(
                                     dense: true,
                                     leading: Icon(Icons.drive_file_rename_outline),
-                                    title: Text('Rename'),
+                                    title: Text(l10n.vaultRename),
                                   ),
                                 ),
                                 PopupMenuItem(
@@ -482,7 +488,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                                   child: ListTile(
                                     dense: true,
                                     leading: Icon(Icons.delete_outline),
-                                    title: Text('Delete'),
+                                    title: Text(l10n.vaultDelete),
                                   ),
                                 ),
                               ],
@@ -491,7 +497,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                         ),
                         const SizedBox(width: 6),
                       ],
-                      ActionChip(avatar: const Icon(Icons.create_new_folder_outlined, size: 18), label: const Text('New folder'), onPressed: _createFolder),
+                      ActionChip(avatar: const Icon(Icons.create_new_folder_outlined, size: 18), label: Text(l10n.vaultNewFolderAction), onPressed: _createFolder),
                     ]),
                   ),
                 ),
@@ -505,9 +511,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                               children: [
                                 Icon(Icons.lock_outline_rounded, size: 56, color: theme.colorScheme.primary),
                                 const SizedBox(height: 14),
-                                Text('Your vault is empty', style: theme.textTheme.titleLarge),
+                                Text(l10n.vaultEmptyTitle, style: theme.textTheme.titleLarge),
                                 const SizedBox(height: 8),
-                                Text('Lock a note from its editor or create a private note.', textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                                Text(l10n.vaultEmptyDescription, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                               ],
                             ),
                           ),
@@ -526,13 +532,13 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                             return Card(
                               child: ListTile(
                                 leading: Icon(Icons.security_rounded, color: Theme.of(context).colorScheme.primary),
-                                title: Text(note.title.isEmpty ? 'Private note' : note.title),
-                                subtitle: Text('${folder?.name ?? 'Unfiled'} · Updated ${_relativeTime(note.updatedAt)}'),
+                                title: Text(note.title.isEmpty ? l10n.privateNote : note.title),
+                                subtitle: Text('${folder?.name ?? l10n.vaultUnfiled} · Updated ${_relativeTime(note.updatedAt)}'),
                                 trailing: PopupMenuButton<String>(
-                                  tooltip: 'Move to folder',
+                                  tooltip: l10n.vaultMoveToFolder,
                                   onSelected: (folderId) => _assignFolder(note, folderId == '__unfiled__' ? null : folderId),
                                   itemBuilder: (_) => [
-                                    const PopupMenuItem(value: '__unfiled__', child: Text('Unfiled')),
+                                    PopupMenuItem(value: '__unfiled__', child: Text(l10n.vaultUnfiled)),
                                     for (final folder in _folders) PopupMenuItem(value: folder.id, child: Text(folder.name)),
                                   ],
                                 ),
@@ -549,10 +555,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
 
   String _relativeTime(DateTime date) {
     final difference = DateTime.now().difference(date);
-    if (difference.inMinutes < 1) return 'just now';
-    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
-    if (difference.inDays < 1) return '${difference.inHours}h ago';
-    if (difference.inDays < 7) return '${difference.inDays}d ago';
+    if (difference.inMinutes < 1) return AppLocalizations.of(context)!.vaultJustNow;
+    if (difference.inHours < 1) return '${difference.inMinutes}${AppLocalizations.of(context)!.vaultMinutesAgoSuffix}';
+    if (difference.inDays < 1) return '${difference.inHours}${AppLocalizations.of(context)!.vaultHoursAgoSuffix}';
+    if (difference.inDays < 7) return '${difference.inDays}${AppLocalizations.of(context)!.vaultDaysAgoSuffix}';
     return '${date.day}/${date.month}/${date.year}';
   }
 }

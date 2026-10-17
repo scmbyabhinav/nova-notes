@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN tidak dapat dipulihkan. Jika lupa, Vault tidak dapat dipulihkan.",
+  "vaultPinDigitsHint": "PIN Vault 4–8 digit",
+  "vaultConfirmPin": "Konfirmasi PIN",
+  "vaultCancel": "Batal",
+  "vaultPinsMismatch": "PIN tidak cocok.",
+  "vaultPinDigitsError": "PIN Vault harus terdiri dari 4–8 digit.",
+  "vaultIncorrectPin": "PIN Vault salah.",
+  "vaultVerifyCurrentPin": "Verifikasi PIN Vault saat ini",
+  "vaultIncorrectCurrentPin": "PIN Vault saat ini salah.",
+  "vaultCreateNewPin": "Buat PIN Vault baru",
+  "vaultPinChanged": "PIN Vault diubah.",
+  "vaultNewFolder": "Folder Vault baru",
+  "vaultFolderName": "Nama folder",
+  "vaultCreate": "Buat",
+  "vaultRenameFolder": "Ganti nama folder Vault",
+  "vaultSave": "Simpan",
+  "vaultDelete": "Hapus",
+  "vaultLockedTitle": "Vault / Catatan Terkunci",
+  "vaultChangePin": "Ubah PIN Vault",
+  "vaultTrustBadge": "Vault berkeamanan tinggi",
+  "vaultCreatePrivateNote": "Buat catatan pribadi",
+  "vaultAllFolders": "Semua folder",
+  "vaultFolderOptions": "Opsi folder Vault",
+  "vaultRename": "Ganti nama",
+  "vaultNewFolderAction": "Folder baru",
+  "vaultEmptyTitle": "Vault Anda kosong",
+  "vaultEmptyDescription": "Kunci catatan dari editor atau buat catatan pribadi.",
+  "vaultMoveToFolder": "Pindahkan ke folder",
+  "vaultUnfiled": "Tanpa folder",
+  "vaultJustNow": "Baru saja",
+  "vaultMinutesAgoSuffix": "mnt lalu",
+  "vaultHoursAgoSuffix": "jam lalu",
+  "vaultDaysAgoSuffix": "hari lalu",
+  "vaultDeleteFolderTitle": "Hapus {folderName}?",
+  "vaultFolderEmpty": "Folder ini kosong.",
+  "vaultDeleteFolderWithNotes": "Yakin? {count} catatan pribadi akan dipindahkan ke Tanpa folder.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

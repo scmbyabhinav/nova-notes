@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN 无法恢复。忘记后将无法找回保险库。",
+  "vaultPinDigitsHint": "4–8 位保险库 PIN",
+  "vaultConfirmPin": "确认 PIN",
+  "vaultCancel": "取消",
+  "vaultPinsMismatch": "两次 PIN 不一致。",
+  "vaultPinDigitsError": "保险库 PIN 必须为 4–8 位数字。",
+  "vaultIncorrectPin": "保险库 PIN 错误。",
+  "vaultVerifyCurrentPin": "验证当前保险库 PIN",
+  "vaultIncorrectCurrentPin": "当前保险库 PIN 错误。",
+  "vaultCreateNewPin": "创建新的保险库 PIN",
+  "vaultPinChanged": "保险库 PIN 已更改。",
+  "vaultNewFolder": "新建保险库文件夹",
+  "vaultFolderName": "文件夹名称",
+  "vaultCreate": "创建",
+  "vaultRenameFolder": "重命名保险库文件夹",
+  "vaultSave": "保存",
+  "vaultDelete": "删除",
+  "vaultLockedTitle": "保险库 / 已锁定笔记",
+  "vaultChangePin": "更改保险库 PIN",
+  "vaultTrustBadge": "高安全性保险库",
+  "vaultCreatePrivateNote": "创建私人笔记",
+  "vaultAllFolders": "所有文件夹",
+  "vaultFolderOptions": "保险库文件夹选项",
+  "vaultRename": "重命名",
+  "vaultNewFolderAction": "新建文件夹",
+  "vaultEmptyTitle": "保险库为空",
+  "vaultEmptyDescription": "请在编辑器中锁定笔记，或创建私人笔记。",
+  "vaultMoveToFolder": "移动到文件夹",
+  "vaultUnfiled": "未归类",
+  "vaultJustNow": "刚刚",
+  "vaultMinutesAgoSuffix": "分钟前",
+  "vaultHoursAgoSuffix": "小时前",
+  "vaultDaysAgoSuffix": "天前",
+  "vaultDeleteFolderTitle": "删除 {folderName}？",
+  "vaultFolderEmpty": "此文件夹为空。",
+  "vaultDeleteFolderWithNotes": "确定继续吗？{count} 条私人笔记将移至未归类。",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

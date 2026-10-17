@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN은 복구할 수 없습니다. 잊어버리면 보관함을 복구할 수 없습니다.",
+  "vaultPinDigitsHint": "4~8자리 보관함 PIN",
+  "vaultConfirmPin": "PIN 확인",
+  "vaultCancel": "취소",
+  "vaultPinsMismatch": "PIN이 일치하지 않습니다.",
+  "vaultPinDigitsError": "보관함 PIN은 4~8자리여야 합니다.",
+  "vaultIncorrectPin": "보관함 PIN이 올바르지 않습니다.",
+  "vaultVerifyCurrentPin": "현재 보관함 PIN 확인",
+  "vaultIncorrectCurrentPin": "현재 보관함 PIN이 올바르지 않습니다.",
+  "vaultCreateNewPin": "새 보관함 PIN 만들기",
+  "vaultPinChanged": "보관함 PIN이 변경되었습니다.",
+  "vaultNewFolder": "새 보관함 폴더",
+  "vaultFolderName": "폴더 이름",
+  "vaultCreate": "만들기",
+  "vaultRenameFolder": "보관함 폴더 이름 변경",
+  "vaultSave": "저장",
+  "vaultDelete": "삭제",
+  "vaultLockedTitle": "보관함 / 잠긴 메모",
+  "vaultChangePin": "보관함 PIN 변경",
+  "vaultTrustBadge": "고보안 보관함",
+  "vaultCreatePrivateNote": "비공개 메모 만들기",
+  "vaultAllFolders": "모든 폴더",
+  "vaultFolderOptions": "보관함 폴더 옵션",
+  "vaultRename": "이름 변경",
+  "vaultNewFolderAction": "새 폴더",
+  "vaultEmptyTitle": "보관함이 비어 있습니다",
+  "vaultEmptyDescription": "편집기에서 메모를 잠그거나 비공개 메모를 만드세요.",
+  "vaultMoveToFolder": "폴더로 이동",
+  "vaultUnfiled": "미분류",
+  "vaultJustNow": "방금",
+  "vaultMinutesAgoSuffix": "분 전",
+  "vaultHoursAgoSuffix": "시간 전",
+  "vaultDaysAgoSuffix": "일 전",
+  "vaultDeleteFolderTitle": "{folderName}을(를) 삭제할까요?",
+  "vaultFolderEmpty": "이 폴더는 비어 있습니다.",
+  "vaultDeleteFolderWithNotes": "계속할까요? 비공개 메모 {count}개가 미분류로 이동합니다.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

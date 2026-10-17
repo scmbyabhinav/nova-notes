@@ -668,5 +668,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ No PIN recovery. If you forget it, the Vault cannot be recovered.",
+  "vaultPinDigitsHint": "4–8 digit Vault PIN",
+  "vaultConfirmPin": "Confirm PIN",
+  "vaultCancel": "Cancel",
+  "vaultPinsMismatch": "PINs do not match.",
+  "vaultPinDigitsError": "Vault PIN must contain 4–8 digits.",
+  "vaultIncorrectPin": "Incorrect Vault PIN.",
+  "vaultVerifyCurrentPin": "Verify current Vault PIN",
+  "vaultIncorrectCurrentPin": "Incorrect current Vault PIN.",
+  "vaultCreateNewPin": "Create new Vault PIN",
+  "vaultPinChanged": "Vault PIN changed.",
+  "vaultNewFolder": "New Vault folder",
+  "vaultFolderName": "Folder name",
+  "vaultCreate": "Create",
+  "vaultRenameFolder": "Rename Vault folder",
+  "vaultSave": "Save",
+  "vaultDelete": "Delete",
+  "vaultLockedTitle": "Vault / Locked Notes",
+  "vaultChangePin": "Change Vault PIN",
+  "vaultTrustBadge": "High-security Vault",
+  "vaultCreatePrivateNote": "Create private note",
+  "vaultAllFolders": "All folders",
+  "vaultFolderOptions": "Vault folder options",
+  "vaultRename": "Rename",
+  "vaultNewFolderAction": "New folder",
+  "vaultEmptyTitle": "Your vault is empty",
+  "vaultEmptyDescription": "Lock a note from its editor or create a private note.",
+  "vaultMoveToFolder": "Move to folder",
+  "vaultUnfiled": "Unfiled",
+  "vaultJustNow": "Just now",
+  "vaultMinutesAgoSuffix": "min ago",
+  "vaultHoursAgoSuffix": "hr ago",
+  "vaultDaysAgoSuffix": "days ago",
+  "vaultDeleteFolderTitle": "Delete {folderName}?",
+  "vaultFolderEmpty": "This folder is empty.",
+  "vaultDeleteFolderWithNotes": "Are you sure? {count} private note(s) will be moved to Unfiled.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

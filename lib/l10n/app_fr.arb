@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ Le code PIN ne peut pas être récupéré. Si vous l’oubliez, le coffre ne pourra pas être récupéré.",
+  "vaultPinDigitsHint": "Code PIN du coffre de 4 à 8 chiffres",
+  "vaultConfirmPin": "Confirmer le code PIN",
+  "vaultCancel": "Annuler",
+  "vaultPinsMismatch": "Les codes PIN ne correspondent pas.",
+  "vaultPinDigitsError": "Le code PIN du coffre doit contenir 4 à 8 chiffres.",
+  "vaultIncorrectPin": "Code PIN du coffre incorrect.",
+  "vaultVerifyCurrentPin": "Vérifier le code PIN actuel du coffre",
+  "vaultIncorrectCurrentPin": "Le code PIN actuel du coffre est incorrect.",
+  "vaultCreateNewPin": "Créer un nouveau code PIN du coffre",
+  "vaultPinChanged": "Code PIN du coffre modifié.",
+  "vaultNewFolder": "Nouveau dossier du coffre",
+  "vaultFolderName": "Nom du dossier",
+  "vaultCreate": "Créer",
+  "vaultRenameFolder": "Renommer le dossier du coffre",
+  "vaultSave": "Enregistrer",
+  "vaultDelete": "Supprimer",
+  "vaultLockedTitle": "Coffre / Notes verrouillées",
+  "vaultChangePin": "Modifier le code PIN du coffre",
+  "vaultTrustBadge": "Coffre hautement sécurisé",
+  "vaultCreatePrivateNote": "Créer une note privée",
+  "vaultAllFolders": "Tous les dossiers",
+  "vaultFolderOptions": "Options du dossier du coffre",
+  "vaultRename": "Renommer",
+  "vaultNewFolderAction": "Nouveau dossier",
+  "vaultEmptyTitle": "Votre coffre est vide",
+  "vaultEmptyDescription": "Verrouillez une note depuis l’éditeur ou créez une note privée.",
+  "vaultMoveToFolder": "Déplacer vers un dossier",
+  "vaultUnfiled": "Sans dossier",
+  "vaultJustNow": "À l’instant",
+  "vaultMinutesAgoSuffix": "min plus tôt",
+  "vaultHoursAgoSuffix": "h plus tôt",
+  "vaultDaysAgoSuffix": "jours plus tôt",
+  "vaultDeleteFolderTitle": "Supprimer {folderName} ?",
+  "vaultFolderEmpty": "Ce dossier est vide.",
+  "vaultDeleteFolderWithNotes": "Voulez-vous continuer ? {count} note(s) privée(s) seront déplacées vers « Sans dossier ».",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

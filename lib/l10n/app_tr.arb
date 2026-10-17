@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN kurtarılamaz. Unutursanız kasa geri getirilemez.",
+  "vaultPinDigitsHint": "4–8 haneli kasa PIN'i",
+  "vaultConfirmPin": "PIN'i doğrula",
+  "vaultCancel": "İptal",
+  "vaultPinsMismatch": "PIN'ler eşleşmiyor.",
+  "vaultPinDigitsError": "Kasa PIN'i 4–8 rakamdan oluşmalıdır.",
+  "vaultIncorrectPin": "Kasa PIN'i yanlış.",
+  "vaultVerifyCurrentPin": "Mevcut kasa PIN'ini doğrula",
+  "vaultIncorrectCurrentPin": "Mevcut kasa PIN'i yanlış.",
+  "vaultCreateNewPin": "Yeni kasa PIN'i oluştur",
+  "vaultPinChanged": "Kasa PIN'i değiştirildi.",
+  "vaultNewFolder": "Yeni kasa klasörü",
+  "vaultFolderName": "Klasör adı",
+  "vaultCreate": "Oluştur",
+  "vaultRenameFolder": "Kasa klasörünü yeniden adlandır",
+  "vaultSave": "Kaydet",
+  "vaultDelete": "Sil",
+  "vaultLockedTitle": "Kasa / Kilitli Notlar",
+  "vaultChangePin": "Kasa PIN'ini değiştir",
+  "vaultTrustBadge": "Yüksek güvenlikli kasa",
+  "vaultCreatePrivateNote": "Özel not oluştur",
+  "vaultAllFolders": "Tüm klasörler",
+  "vaultFolderOptions": "Kasa klasörü seçenekleri",
+  "vaultRename": "Yeniden adlandır",
+  "vaultNewFolderAction": "Yeni klasör",
+  "vaultEmptyTitle": "Kasanız boş",
+  "vaultEmptyDescription": "Düzenleyicide bir notu kilitleyin veya özel not oluşturun.",
+  "vaultMoveToFolder": "Klasöre taşı",
+  "vaultUnfiled": "Dosyalanmamış",
+  "vaultJustNow": "Şimdi",
+  "vaultMinutesAgoSuffix": "dk önce",
+  "vaultHoursAgoSuffix": "sa önce",
+  "vaultDaysAgoSuffix": "gün önce",
+  "vaultDeleteFolderTitle": "{folderName} silinsin mi?",
+  "vaultFolderEmpty": "Bu klasör boş.",
+  "vaultDeleteFolderWithNotes": "Emin misiniz? {count} özel not Dosyalanmamış bölümüne taşınacak.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

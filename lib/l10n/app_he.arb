@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ לא ניתן לשחזר את קוד ה‑PIN. אם תשכחו אותו, לא ניתן יהיה לשחזר את הכספת.",
+  "vaultPinDigitsHint": "קוד PIN לכספת בן 4–8 ספרות",
+  "vaultConfirmPin": "אישור PIN",
+  "vaultCancel": "ביטול",
+  "vaultPinsMismatch": "קודי ה‑PIN אינם תואמים.",
+  "vaultPinDigitsError": "קוד ה‑PIN של הכספת חייב להכיל 4–8 ספרות.",
+  "vaultIncorrectPin": "קוד PIN שגוי לכספת.",
+  "vaultVerifyCurrentPin": "אימות קוד ה‑PIN הנוכחי של הכספת",
+  "vaultIncorrectCurrentPin": "קוד ה‑PIN הנוכחי של הכספת שגוי.",
+  "vaultCreateNewPin": "יצירת קוד PIN חדש לכספת",
+  "vaultPinChanged": "קוד ה‑PIN של הכספת שונה.",
+  "vaultNewFolder": "תיקייה חדשה בכספת",
+  "vaultFolderName": "שם התיקייה",
+  "vaultCreate": "יצירה",
+  "vaultRenameFolder": "שינוי שם תיקיית הכספת",
+  "vaultSave": "שמירה",
+  "vaultDelete": "מחיקה",
+  "vaultLockedTitle": "כספת / פתקים נעולים",
+  "vaultChangePin": "שינוי קוד PIN לכספת",
+  "vaultTrustBadge": "כספת מאובטחת",
+  "vaultCreatePrivateNote": "יצירת פתק פרטי",
+  "vaultAllFolders": "כל התיקיות",
+  "vaultFolderOptions": "אפשרויות תיקיית הכספת",
+  "vaultRename": "שינוי שם",
+  "vaultNewFolderAction": "תיקייה חדשה",
+  "vaultEmptyTitle": "הכספת ריקה",
+  "vaultEmptyDescription": "נעלו פתק מתוך העורך או צרו פתק פרטי.",
+  "vaultMoveToFolder": "העברה לתיקייה",
+  "vaultUnfiled": "ללא תיקייה",
+  "vaultJustNow": "כרגע",
+  "vaultMinutesAgoSuffix": "דק׳ לפני",
+  "vaultHoursAgoSuffix": "שע׳ לפני",
+  "vaultDaysAgoSuffix": "ימים לפני",
+  "vaultDeleteFolderTitle": "למחוק את {folderName}?",
+  "vaultFolderEmpty": "התיקייה ריקה.",
+  "vaultDeleteFolderWithNotes": "להמשיך? {count} פתקים פרטיים יועברו אל «ללא תיקייה».",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

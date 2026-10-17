@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PINは復元できません。忘れるとVaultを復元できません。",
+  "vaultPinDigitsHint": "4～8桁のVault PIN",
+  "vaultConfirmPin": "PINを確認",
+  "vaultCancel": "キャンセル",
+  "vaultPinsMismatch": "PINが一致しません。",
+  "vaultPinDigitsError": "Vault PINは4～8桁である必要があります。",
+  "vaultIncorrectPin": "Vault PINが正しくありません。",
+  "vaultVerifyCurrentPin": "現在のVault PINを確認",
+  "vaultIncorrectCurrentPin": "現在のVault PINが正しくありません。",
+  "vaultCreateNewPin": "新しいVault PINを作成",
+  "vaultPinChanged": "Vault PINを変更しました。",
+  "vaultNewFolder": "新しいVaultフォルダー",
+  "vaultFolderName": "フォルダー名",
+  "vaultCreate": "作成",
+  "vaultRenameFolder": "Vaultフォルダー名を変更",
+  "vaultSave": "保存",
+  "vaultDelete": "削除",
+  "vaultLockedTitle": "Vault／ロックしたメモ",
+  "vaultChangePin": "Vault PINを変更",
+  "vaultTrustBadge": "高い安全性のVault",
+  "vaultCreatePrivateNote": "プライベートメモを作成",
+  "vaultAllFolders": "すべてのフォルダー",
+  "vaultFolderOptions": "Vaultフォルダーのオプション",
+  "vaultRename": "名前を変更",
+  "vaultNewFolderAction": "新しいフォルダー",
+  "vaultEmptyTitle": "Vaultは空です",
+  "vaultEmptyDescription": "エディターでメモをロックするか、プライベートメモを作成してください。",
+  "vaultMoveToFolder": "フォルダーに移動",
+  "vaultUnfiled": "未分類",
+  "vaultJustNow": "たった今",
+  "vaultMinutesAgoSuffix": "分前",
+  "vaultHoursAgoSuffix": "時間前",
+  "vaultDaysAgoSuffix": "日前",
+  "vaultDeleteFolderTitle": "{folderName}を削除しますか？",
+  "vaultFolderEmpty": "このフォルダーは空です。",
+  "vaultDeleteFolderWithNotes": "よろしいですか？プライベートメモ{count}件を未分類に移動します。",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -654,5 +654,57 @@
         "type": "String"
       }
     }
+  },
+  "vaultPinRecoveryWarning": "⚠️ لا يمكن استعادة رمز PIN. إذا نسيته، فلن تتمكن من استعادة الخزنة.",
+  "vaultPinDigitsHint": "رمز PIN للخزنة من 4 إلى 8 أرقام",
+  "vaultConfirmPin": "تأكيد رمز PIN",
+  "vaultCancel": "إلغاء",
+  "vaultPinsMismatch": "رمزا PIN غير متطابقين.",
+  "vaultPinDigitsError": "يجب أن يتكون رمز PIN للخزنة من 4 إلى 8 أرقام.",
+  "vaultIncorrectPin": "رمز PIN للخزنة غير صحيح.",
+  "vaultVerifyCurrentPin": "تحقق من رمز PIN الحالي للخزنة",
+  "vaultIncorrectCurrentPin": "رمز PIN الحالي للخزنة غير صحيح.",
+  "vaultCreateNewPin": "إنشاء رمز PIN جديد للخزنة",
+  "vaultPinChanged": "تم تغيير رمز PIN للخزنة.",
+  "vaultNewFolder": "مجلد جديد في الخزنة",
+  "vaultFolderName": "اسم المجلد",
+  "vaultCreate": "إنشاء",
+  "vaultRenameFolder": "إعادة تسمية مجلد الخزنة",
+  "vaultSave": "حفظ",
+  "vaultDelete": "حذف",
+  "vaultLockedTitle": "الخزنة / الملاحظات المقفلة",
+  "vaultChangePin": "تغيير رمز PIN للخزنة",
+  "vaultTrustBadge": "خزنة عالية الأمان",
+  "vaultCreatePrivateNote": "إنشاء ملاحظة خاصة",
+  "vaultAllFolders": "كل المجلدات",
+  "vaultFolderOptions": "خيارات مجلد الخزنة",
+  "vaultRename": "إعادة تسمية",
+  "vaultNewFolderAction": "مجلد جديد",
+  "vaultEmptyTitle": "خزنتك فارغة",
+  "vaultEmptyDescription": "اقفل ملاحظة من المحرر أو أنشئ ملاحظة خاصة.",
+  "vaultMoveToFolder": "نقل إلى مجلد",
+  "vaultUnfiled": "بلا مجلد",
+  "vaultJustNow": "الآن",
+  "vaultMinutesAgoSuffix": "دقيقة مضت",
+  "vaultHoursAgoSuffix": "ساعة مضت",
+  "vaultDaysAgoSuffix": "أيام مضت",
+  "vaultDeleteFolderTitle": "حذف {folderName}؟",
+  "vaultFolderEmpty": "هذا المجلد فارغ.",
+  "vaultDeleteFolderWithNotes": "هل أنت متأكد؟ سيتم نقل {count} من الملاحظات الخاصة إلى «بلا مجلد».",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
