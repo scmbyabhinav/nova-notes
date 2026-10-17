@@ -85,12 +85,12 @@
   "untitledNote": "Untitled note",
   "scheduledLabel": "Scheduled",
   "createdLabel": "Created",
-  "calendarItemStatusDate": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {date}",
   "@calendarItemStatusDate": {
-    "description": "Status and date shown on a calendar item",
+    "description": "Status and time shown on a calendar item",
     "placeholders": {
       "status": { "type": "String" },
-      "date": { "type": "DateTime", "format": "yMMMd" }
+      "time": { "type": "DateTime", "format": "jm" }
     }
   },
   "writingRhythm": "Your writing rhythm",
