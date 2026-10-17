@@ -65,5 +65,898 @@
   "unlock": "فتح القفل",
   "useBiometrics": "استخدام القياسات الحيوية",
   "incorrectPin": "رمز PIN غير صحيح",
-  "biometricFallbackError": "تم إلغاء التحقق الحيوي أو أنه غير متاح. أدخل رمز PIN لفتح القفل."
+  "biometricFallbackError": "تم إلغاء التحقق الحيوي أو أنه غير متاح. أدخل رمز PIN لفتح القفل.",
+  "journeyTitle": "رحلتك",
+  "journeyHeadline": "اللحظات الصغيرة تتراكم.",
+  "journeySubtitle": "نظرة لطيفة على عادات الكتابة والتأمل لديك.",
+  "dayInARow": "يوم متتالٍ",
+  "daysInARow": "أيام متتالية",
+  "notesSaved": "ملاحظات محفوظة",
+  "notesStayOnDevice": "تبقى ملاحظاتك على هذا الجهاز. تُحسب هذه الإحصاءات من ملاحظاتك المحفوظة.",
+  "moodStoryStarts": "تبدأ قصة مشاعرك هنا",
+  "chooseMoodToSeeDistribution": "اختر شعورًا عند كتابة ملاحظة لتظهر توزيعات مشاعرك هنا.",
+  "moodDistributionSubtitle": "المشاعر التي سجلتها",
+  "notesCreatedLast7Days": "الملاحظات المنشأة خلال آخر 7 أيام",
+  "calendarSubtitle": "الملاحظات حسب اليوم والتذكيرات المجدولة",
+  "goToToday": "الانتقال إلى اليوم",
+  "scheduleNote": "جدولة ملاحظة",
+  "nothingOnThisDay": "لا شيء في هذا اليوم",
+  "chooseAnotherDate": "اختر تاريخًا آخر أو جدولة ملاحظة لهذا اليوم.",
+  "untitledNote": "ملاحظة بلا عنوان",
+  "scheduledLabel": "مجدولة",
+  "createdLabel": "أُنشئت",
+  "calendarItemStatusTime": "{status} • {time}",
+  "writingRhythm": "إيقاع كتابتك",
+  "historyTimeline": "الخط الزمني للسجل",
+  "storyStartsWithNote": "تبدأ قصتك بملاحظة",
+  "pickHighlightedDay": "اختر يومًا مميزًا لاستعادة لحظة أو تصفح السجل الكامل.",
+  "savedDaysHighlighted": "ستظهر الأيام التي تحتوي على ملاحظات محفوظة في التقويم.",
+  "addFolderImage": "إضافة صورة للمجلد",
+  "changeImage": "تغيير الصورة",
+  "removeImage": "إزالة الصورة",
+  "folderName": "اسم المجلد",
+  "folderNameHint": "مثلاً: العمل، الأفكار، الشخصي",
+  "cancel": "إلغاء",
+  "create": "إنشاء",
+  "newFolder": "مجلد جديد",
+  "editFolder": "تعديل المجلد",
+  "save": "حفظ",
+  "deleteFolderTitle": "حذف {folderName}؟",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "المجلد فارغ.",
+  "notesMovedFromFolder": "سيتم الاحتفاظ بـ {count} من الملاحظات ونقلها مرة أخرى إلى كل الملاحظات.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "حذف",
+  "selectedFoldersDeleteTitle": "حذف {count} من المجلدات؟",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "المجلدات المحددة فارغة.",
+  "deleteSelected": "حذف المحدد",
+  "cancelSelection": "إلغاء التحديد",
+  "selectedCount": "تم تحديد {count}",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "حذف المجلدات المحددة",
+  "folderOptions": "خيارات المجلد",
+  "open": "فتح",
+  "rename": "إعادة تسمية",
+  "folderNoteCount": "{count} من الملاحظات",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "إزالة من المجلد",
+  "moveToTrash": "نقل إلى سلة المهملات",
+  "noFoldersYet": "لا توجد مجلدات بعد",
+  "emptyFoldersDescription": "أنشئ مجلدات لتنظيم الملاحظات المرتبطة ببعضها.",
+  "createFolder": "إنشاء مجلد",
+  "noNotesInFolder": "لا توجد ملاحظات في هذا المجلد بعد.\nافتح ملاحظة واختر «تنظيم» لإضافتها هنا.",
+  "welcomeToOrah": "مرحبًا بك في Orah",
+  "personalizeYourSpace": "خصص مساحتك. أدخل اسمك وبريدك الإلكتروني للبدء.",
+  "fullName": "الاسم الكامل",
+  "yourName": "اسمك",
+  "emailAddress": "البريد الإلكتروني",
+  "emailExample": "you@example.com",
+  "enterFullName": "أدخل اسمك الكامل.",
+  "enterValidEmail": "أدخل عنوان بريد إلكتروني صالحًا.",
+  "registerAndContinue": "التسجيل والمتابعة",
+  "profileStoredOnDevice": "يُخزَّن ملفك الشخصي بأمان على هذا الجهاز. تتطلب مزامنة قائمة المشتركين إعداد خدمة النشرة البريدية.",
+  "proRestore": "استعادة",
+  "proHeroEyebrow": "ملاحظاتك، بقوة أكبر",
+  "proHeroHeadline": "اجعل كل ملاحظة أكثر فاعلية.",
+  "proHeroDescription": "حوّل الورق إلى معرفة قابلة للبحث، واعثر على التفاصيل التي تحتاجها، وخذ ملاحظاتك معك أينما يأخذك العمل.",
+  "proHeroFootnote": "قم بالترقية عندما تحتاج إلى مزيد من القوة. تظل ملاحظاتك اليومية ملكك.",
+  "proMoreThanNotes": "أكثر من مجرد ملاحظات",
+  "proOcrTitle": "OCR makes images searchable",
+  "proOcrDescription": "استخرج النص من الصور والمستندات المدعومة بدلًا من إعادة كتابته.",
+  "proExportTitle": "صدّر بالتنسيق الذي تحتاجه",
+  "proExportDescription": "استخدم ملاحظاتك خارج ORAH عبر التصدير المميز إلى PDF وWord وExcel.",
+  "proSearchTitle": "اعثر على الإبرة في كومة القش",
+  "proSearchDescription": "استخدم البحث المتقدم والفلاتر للوصول إلى التفاصيل المهمة بسرعة.",
+  "proWorkspaceTitle": "مساحة عمل أكثر تنظيمًا",
+  "proWorkspaceDescription": "افتح القوالب المميزة وأدوات الإنتاجية المتقدمة عند توفرها في إصدارك.",
+  "proEntitlementActive": "اشتراك Pro الخاص بك نشط.",
+  "proChoosePlan": "اختر خطة Pro",
+  "proPricesFromPlay": "يحدد Google Play الأسعار وفقًا لمنطقتك.",
+  "proPlanYearly": "سنوي",
+  "proBestValue": "أفضل قيمة",
+  "proPlanMonthly": "شهري",
+  "proMonthlySubtitle": "الدفع شهريًا",
+  "proOfferInstruction": "هل لديك عرض ORAH من جهة العمل أو المطوّر؟ استخدم رابط العرض أو الرمز المرفق بالدعوة في Google Play، ثم عُد إلى هنا واضغط على استعادة.",
+  "proRestorePurchases": "استعادة المشتريات",
+  "proRenewalDisclosure": "تتجدد الاشتراكات تلقائيًا ما لم تُلغَ من Google Play. راجع السعر وفترة الفوترة وأي شروط للتجربة يعرضها Google Play قبل التأكيد. يمكنك إدارة الاشتراك أو إلغاءه من حساب Play Store.",
+  "proBestValueBadge": "أفضل قيمة",
+  "proLoadingPrice": "جارٍ تحميل السعر…",
+  "proUnavailable": "غير متاح حاليًا",
+  "proChooseButton": "اختيار",
+  "microphoneAccessNeeded": "يلزم السماح بالوصول إلى الميكروفون",
+  "microphoneAccessPermanentDenied": "يحتاج ORAH Notes إلى الميكروفون لتحويل صوتك إلى نص. يمكنك تفعيل الإذن من الإعدادات.",
+  "microphoneAccessRequest": "يحتاج ORAH Notes إلى الميكروفون لتحويل صوتك إلى نص. يُرجى السماح بالوصول أو تفعيله من الإعدادات.",
+  "notNow": "ليس الآن",
+  "openSettings": "فتح الإعدادات",
+  "voiceInputUnavailableWithMessage": "الإدخال الصوتي غير متاح: {message}",
+  "voiceInputUnavailable": "الإدخال الصوتي غير متاح على هذا الجهاز.",
+  "couldNotStartVoiceCapture": "تعذّر بدء التسجيل الصوتي: {error}",
+  "voiceTextSaved": "تم حفظ النص الصوتي في الملاحظة.",
+  "recordingStoppedPartialSaved": "توقف التسجيل. تم حفظ النص الجزئي.",
+  "addTask": "إضافة مهمة",
+  "taskHint": "ما المطلوب إنجازه؟",
+  "add": "إضافة",
+  "editTask": "تعديل المهمة",
+  "enterVaultPin": "أدخل رمز PIN للخزنة",
+  "pinDigitsLabel": "رمز PIN من 4 إلى 8 أرقام",
+  "vaultAuthenticationFailed": "فشل التحقق. جرّب القياسات الحيوية أو رمز PIN للخزنة.",
+  "secureYourVault": "أمّن خزنتك",
+  "vaultSetupDescription": "لقفل هذه الملاحظة، يجب أولًا إعداد رمز PIN أو المصادقة الحيوية. هذا يضمن أن تتمكن أنت فقط من الوصول إليها.",
+  "setUpSecurity": "إعداد الأمان",
+  "createVaultPin": "إنشاء رمز PIN للخزنة",
+  "confirmVaultPin": "تأكيد رمز PIN للخزنة",
+  "vaultPinsDoNotMatch": "رمزا PIN غير متطابقين. لم يتم قفل الملاحظة.",
+  "vaultPinCreated": "تم إنشاء رمز PIN للخزنة. جارٍ تأمين الملاحظة…",
+  "enterPinDigits": "أدخل من 4 إلى 8 أرقام",
+  "addContentBeforeLock": "أضف محتوى قبل قفل هذه الملاحظة.",
+  "vaultAuthenticationNotCompleted": "لم تكتمل المصادقة. لم يتم قفل الملاحظة.",
+  "noteLockedMovedToVault": "تم قفل الملاحظة ونقلها إلى الخزنة.",
+  "noteUnlockedMovedToNotes": "تم إلغاء قفل الملاحظة وإعادتها إلى ملاحظاتك.",
+  "continueLabel": "متابعة",
+  "ocrNoReadableText": "لم يتم العثور على نص قابل للقراءة.",
+  "ocrTextExtracted": "تم استخراج النص من الصورة.",
+  "ocrCouldNotReadImage": "تعذرت قراءة النص من هذه الصورة.",
+  "chooseTemplate": "اختر قالبًا",
+  "replaceCurrentNote": "هل تريد استبدال الملاحظة الحالية؟",
+  "templateReplaceWarning": "سيستبدل هذا القالب العنوان والمحتوى الحاليين.",
+  "replace": "استبدال",
+  "insertLink": "إدراج رابط",
+  "insert": "إدراج",
+  "couldNotAddImage": "تعذرت إضافة الصورة: {error}",
+  "couldNotAddFiles": "تعذرت إضافة الملفات: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "إعادة تسمية المرفق",
+  "preview": "معاينة",
+  "share": "مشاركة",
+  "details": "التفاصيل",
+  "removeFromNote": "إزالة من الملاحظة",
+  "chooseFromGallery": "اختيار من المعرض",
+  "takePhoto": "التقاط صورة",
+  "attachFiles": "إرفاق ملفات",
+  "close": "إغلاق",
+  "couldNotUnlockPrivateNote": "تعذر فتح الملاحظة الخاصة: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "تصدير",
+  "removeFavorite": "إزالة من المفضلة",
+  "addToFavorites": "إضافة إلى المفضلة",
+  "addImage": "إضافة صورة",
+  "template": "قالب",
+  "setReminder": "تعيين تذكير",
+  "reminderAt": "تذكير: {date}",
+  "clearReminder": "مسح التذكير",
+  "noteColor": "لون الملاحظة",
+  "unarchive": "إلغاء الأرشفة",
+  "archive": "أرشفة",
+  "back": "رجوع",
+  "remove": "إزالة",
+  "retry": "إعادة المحاولة",
+  "titleHint": "العنوان",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "تعذرت مشاركة بطاقة الملاحظة: {error}",
+  "couldNotRenameAttachment": "تعذرت إعادة تسمية المرفق: {error}",
+  "attachmentDetailsFormat": "الحجم: {size}\nالتعديل: {modified}",
+  "authenticationFailedNoteNotDeleted": "فشل التحقق من الهوية. لم تُحذف الملاحظة.",
+  "privateNote": "ملاحظة خاصة",
+  "thisNoteIsPrivate": "هذه الملاحظة خاصة",
+  "unlockPrivateNoteHint": "افتحها باستخدام القياسات الحيوية أو رقم PIN لعرضها.",
+  "exitZenMode": "الخروج من الوضع الهادئ",
+  "exportAsCard": "تصدير كبطاقة",
+  "scanTextFromImage": "استخراج النص من صورة",
+  "folderAndTags": "المجلدات والعلامات",
+  "lockNote": "قفل الملاحظة",
+  "unlockAndMoveToNotes": "إلغاء القفل والنقل إلى الملاحظات",
+  "stopAndSave": "إيقاف وحفظ",
+  "startWritingHint": "ابدأ الكتابة...",
+  "howAreYouFeeling": "كيف تشعر؟",
+  "checklistEmpty": "قائمة المهام فارغة",
+  "addFirstTask": "إضافة المهمة الأولى",
+  "moveUp": "تحريك لأعلى",
+  "moveDown": "تحريك لأسفل",
+  "deleteTask": "حذف المهمة",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "جارٍ إلغاء القفل…",
+  "unlockNote": "إلغاء قفل الملاحظة",
+  "zenMode": "وضع التركيز",
+  "edit": "تعديل",
+  "pinNote": "تثبيت",
+  "unpinNote": "إلغاء التثبيت",
+  "bold": "عريض",
+  "italic": "مائل",
+  "strikethrough": "يتوسطه خط",
+  "heading": "عنوان",
+  "bullets": "تعداد نقطي",
+  "numberedList": "قائمة مرقمة",
+  "quote": "اقتباس",
+  "linkLabel": "رابط",
+  "addImageOrFile": "إضافة صورة أو ملف",
+  "stopVoiceInput": "إيقاف الإدخال الصوتي",
+  "voiceInput": "إدخال صوتي",
+  "stopAndSaveVoiceInput": "إيقاف الإدخال الصوتي وحفظه",
+  "tapMicToSpeak": "اضغط على الميكروفون لإملاء ملاحظتك",
+  "voiceNote": "ملاحظة صوتية",
+  "preparing": "جارٍ التحضير…",
+  "saving": "جارٍ الحفظ…",
+  "unsavedChanges": "تغييرات غير محفوظة",
+  "saved": "تم الحفظ",
+  "recordingVoiceInput": "جارٍ التسجيل • {duration}",
+  "savingVoiceText": "جارٍ حفظ النص الصوتي…",
+  "preparingMicrophone": "جارٍ تجهيز الميكروفون…",
+  "textNote": "ملاحظة نصية",
+  "checklistType": "قائمة تحقق",
+  "templateMeetingNotes": "ملاحظات الاجتماع",
+  "templateAgenda": "جدول الأعمال",
+  "templateDecisions": "القرارات",
+  "templateActionItems": "مهام للتنفيذ",
+  "templateDailyPlan": "الخطة اليومية",
+  "templateTopPriority": "الأولوية القصوى",
+  "templateImportant": "مهم",
+  "templateIfTimeAllows": "إذا سمح الوقت",
+  "templateShoppingList": "قائمة التسوق",
+  "templateMilk": "حليب",
+  "templateVegetables": "خضروات",
+  "templateHousehold": "مستلزمات المنزل",
+  "templateTravelPlan": "خطة السفر",
+  "templateDates": "التواريخ",
+  "templateBookings": "الحجوزات",
+  "templatePlacesToVisit": "أماكن للزيارة",
+  "orahNoteCard": "بطاقة ملاحظة Orah",
+  "sharedFromOrah": "تمت المشاركة من Orah",
+  "noteCardCaptureError": "تعذر التقاط بطاقة الملاحظة.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "مرحبًا، {name}",
+  "welcomeBack": "مرحبًا بعودتك",
+  "friend": "صديق",
+  "voiceGreeting": "مرحبًا، {name}",
+  "voicePreviewGreeting": "مرحبًا، هذه Orah Notes",
+  "speakMyNameAtStartup": "انطق اسمي عند بدء التشغيل",
+  "voiceGreetingEnabledDescription": "سترحب بك Orah باللغة المحددة عند فتح التطبيق.",
+  "voiceGreetingDisabledDescription": "سيظل الترحيب صامتًا.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "إلغاء الأرشفة",
+  "archiveNote": "أرشفة",
+  "duplicateNote": "تكرار الملاحظة",
+  "navNotes": "الملاحظات",
+  "navFolders": "المجلدات",
+  "navFavorites": "المفضلة",
+  "navArchivedNotes": "الملاحظات المؤرشفة",
+  "navDailyReflection": "تأمل يومي",
+  "navVoiceCapture": "الإدخال الصوتي",
+  "navChecklists": "قوائم التحقق",
+  "navAppearance": "المظهر",
+  "navSearch": "بحث",
+  "offlineAccess": "الوصول دون اتصال",
+  "backupExport": "النسخ الاحتياطي والتصدير",
+  "recentlyUpdated": "تم التحديث مؤخرًا",
+  "recentlyCreated": "تم إنشاؤها مؤخرًا",
+  "titleAZ": "العنوان أ–ي",
+  "noNotesYet": "لا توجد ملاحظات بعد",
+  "vaultLocked": "الخزنة / الملاحظات المقفلة",
+  "vaultLockedDesc": "افتح ملاحظاتك الخاصة والمشفرة",
+  "privacyPledge": "تعهد الخصوصية",
+  "privacyPledgeDesc": "اقرأ وعدنا بعدم استخدام السحابة",
+  "backupExportDesc": "نسخ احتياطي محلي وبيانات قابلة للنقل",
+  "vaultResetTitle": "هل نسيت PIN؟ إعادة تعيين الخزنة",
+  "vaultResetDesc": "لا يمكن الاسترداد. ستؤدي إعادة التعيين إلى فقدان الخزنة القديمة نهائيًا.",
+  "pinBiometric": "الحماية برمز PIN والقياسات الحيوية",
+  "androidFeaturesDesc": "الأدوات والاختصارات والمشاركة",
+  "archivedNotesTitle": "الملاحظات المؤرشفة",
+  "archivedNotesDesc": "افتح الملاحظات المؤرشفة أو استعدها",
+  "trashTitle": "المهملات",
+  "trashDesc": "استعد الملاحظات أو احذفها نهائيًا",
+  "orahFeaturesTitle": "ميزات Orah",
+  "orahFeaturesDesc": "اكتشف ما يمكن أن يقدمه Orah",
+  "aboutOrahTitle": "حول Orah",
+  "aboutOrahDesc": "معلومات المنتج ونهج الخصوصية",
+  "cancelLabel": "إلغاء",
+  "resetVaultQuestion": "إعادة تعيين الخزنة؟",
+  "deleteVaultConfirm": "حذف الخزنة القديمة وإنشاء جديدة",
+  "themeLabel": "السمة",
+  "themeSystem": "النظام",
+  "themeLight": "فاتح",
+  "themeDark": "داكن",
+  "portableBackup": "نسخة احتياطية محمولة",
+  "createBackup": "إنشاء نسخة احتياطية",
+  "restoreBackup": "استعادة نسخة احتياطية",
+  "storageMaintenance": "صيانة التخزين",
+  "cleanOrphanAttachments": "تنظيف المرفقات اليتيمة",
+  "vaultAutoLock": "القفل التلقائي للخزنة",
+  "neverLabel": "أبدًا",
+  "dailyReflectionReminder": "تذكير بالتأمل اليومي",
+  "reminderTime": "وقت التذكير",
+  "backupExportTitle": "النسخ الاحتياطي والتصدير",
+  "vaultResetSuccess": "تم حذف الخزنة القديمة. افتح الخزنة لإنشاء PIN جديد.",
+  "vaultResetFailed": "فشلت إعادة تعيين الخزنة: {error}",
+  "backupRestoredCount": "تمت استعادة {count} ملاحظة بنجاح.",
+  "backupError": "خطأ في النسخ الاحتياطي: {error}",
+  "unusedFilesFound": "تم العثور على {count} ملف غير مستخدم",
+  "removedOrphanAttachments": "تمت إزالة {count} مرفقًا يتيمًا.",
+  "showDailyInspiration": "إظهار الإلهام اليومي على الشاشة الرئيسية",
+  "showDailyInspirationDesc": "عرض فكرة للتأمل اليومي أعلى الملاحظات.",
+  "reminderUpdateFailed": "تعذر تحديث تذكير التأمل اليومي: {error}",
+  "reminderScheduleFailed": "تعذرت جدولة التأمل اليومي: {error}",
+  "orahFeaturesSemantics": "ميزات Orah",
+  "vaultTooltip": "الخزنة / الملاحظات المقفلة",
+  "calendarHistoryTooltip": "التقويم والسجل",
+  "statisticsTooltip": "الإحصاءات والرؤى",
+  "appearanceTooltip": "المظهر",
+  "appearanceSemantics": "إعدادات المظهر",
+  "searchFiltersTooltip": "عوامل تصفية البحث",
+  "hideDailyInspiration": "إخفاء الإلهام اليومي",
+  "sortNotesTooltip": "ترتيب الملاحظات",
+  "listView": "عرض القائمة",
+  "gridView": "عرض الشبكة",
+  "searchLabel": "بحث",
+  "newNoteLabel": "ملاحظة جديدة",
+  "microphoneTooltip": "الميكروفون",
+  "unpinTooltip": "إلغاء التثبيت",
+  "pinTooltip": "تثبيت",
+  "favoriteTooltip": "المفضلة",
+  "editNoteLabel": "تعديل الملاحظة",
+  "lockedContent": "محتوى مقفل",
+  "portableBackupDesc": "ملاحظات ومجلدات وملفات مرفقة في حزمة .nova واحدة.",
+  "vaultAutoLockDesc": "طلب المصادقة بعد انتقال التطبيق إلى الخلفية",
+  "searchClear": "مسح",
+  "favoritesOnly": "المفضلة فقط",
+  "pinnedOnly": "المثبتة فقط",
+  "folderLabel": "المجلد",
+  "allFolders": "كل المجلدات",
+  "archivedLabel": "المؤرشفة",
+  "noteTypeLabel": "نوع الملاحظة",
+  "allTypes": "كل الأنواع",
+  "typeText": "نص",
+  "typeChecklist": "قائمة تحقق",
+  "typeVoice": "صوت",
+  "typeImage": "صورة",
+  "typeDrawing": "رسم",
+  "applyFilters": "تطبيق عوامل التصفية",
+  "filtersTooltip": "عوامل التصفية",
+  "openOrahPro": "افتح ORAH Pro",
+  "searchScreenTitle": "بحث",
+  "searchFiltersTitle": "عوامل تصفية البحث",
+  "homeTagline": "فكّر. اكتب. احتفظ.",
+  "homeSubtitle": "مساحة هادئة للملاحظات والخطط والتأمل.",
+  "tapToBeginNote": "اضغط لبدء ملاحظة",
+  "selectNotePrompt": "اختر ملاحظة",
+  "desktopNoteEmpty": "هذه الملاحظة فارغة.",
+  "noContentLabel": "لا يوجد محتوى",
+  "emptyNotesHint": "اضغط على زر + لتسجيل فكرتك الأولى.",
+  "justNow": "الآن",
+  "minutesAgoSuffix": "دقيقة مضت",
+  "hoursAgoSuffix": "ساعة مضت",
+  "daysAgoSuffix": "يوم مضى",
+  "hideOrahFeatures": "إخفاء ميزات ORAH",
+  "showOrahFeatures": "عرض ميزات ORAH",
+  "activeNotesCount": "{count} ملاحظة",
+  "completedLabel": "مكتمل",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "اكتمل {count}",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (نسخة)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "الامتنان",
+  "reflectionCategoryMindfulness": "اليقظة الذهنية",
+  "reflectionCategoryPersonalGrowth": "النمو الشخصي",
+  "reflectionCategoryRelationships": "العلاقات",
+  "reflectionCategorySelfCompassion": "التعاطف مع الذات",
+  "reflectionCategoryClarity": "الوضوح",
+  "reflectionCategoryPossibility": "الإمكانيات",
+  "reflectionCategoryDailyReview": "مراجعة اليوم",
+  "reflectionCategoryPurposeValues": "الغاية والقيم",
+  "reflectionCategoryResilience": "المرونة",
+  "reflectionCategoryCreativityCuriosity": "الإبداع والفضول",
+  "reflectionCategoryRestRenewal": "الراحة والتجدد",
+  "reflectionWriteHint": "اكتب ما يخطر ببالك…",
+  "reflectionSaveError": "تعذّر حفظ التأمل: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "الحذف نهائيًا؟",
+  "trashDeletePermanentlyMessage": "ستتم إزالة هذه الملاحظة نهائيًا.",
+  "trashEmptyTitle": "إفراغ سلة المهملات؟",
+  "trashEmptyMessage": "حذف {count} ملاحظة نهائيًا؟",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "إفراغ السلة",
+  "trashNoNotesTitle": "لا توجد ملاحظات بعد.",
+  "trashPrivateNote": "ملاحظة خاصة",
+  "trashLockedNote": "ملاحظة مقفلة",
+  "trashChecklist": "قائمة تحقق",
+  "trashNote": "ملاحظة",
+  "trashDeletePermanentlyAction": "حذف نهائيًا",
+  "favoritesEmptyTitle": "لا توجد مفضلة بعد",
+  "favoritesEmptyDescription": "ضع نجمة على الملاحظات المهمة وستظهر هنا.",
+  "favoritesNoContent": "لا يوجد محتوى",
+  "archivedRestoreMessage": "تمت استعادة الملاحظة إلى ملاحظاتك.",
+  "archivedRefreshTooltip": "تحديث الملاحظات المؤرشفة",
+  "archivedEmptyTitle": "لا توجد ملاحظات مؤرشفة",
+  "archivedEmptyDescription": "ستظهر الملاحظات التي تؤرشفها هنا. يمكنك فتحها أو استعادتها إلى قائمة ملاحظاتك الرئيسية.",
+  "privacyPledgeHeadline": "تعهدنا بالخصوصية",
+  "privacyPledgeIntro": "أفكارك شخصية. صُمم Orah للحفاظ على خصوصية ملاحظاتك ومنحك التحكم بها.",
+  "privacyLocalTitle": "محلي بالكامل",
+  "privacyLocalDescription": "تُخزَّن ملاحظاتك على هذا الجهاز فقط.",
+  "privacyCloudTitle": "بدون سحابة",
+  "privacyCloudDescription": "لا يستخدم Orah خادمًا لمزامنة الملاحظات. تبقى الملاحظات على جهازك ما لم تختر مشاركتها أو تصديرها.",
+  "privacyAiTitle": "بدون ذكاء اصطناعي",
+  "privacyAiDescription": "لا يفحص Orah ملاحظاتك أو يقرأها أو يدرّب الذكاء الاصطناعي عليها.",
+  "privacyVaultTitle": "خزنة مشفرة",
+  "privacyVaultDescription": "تُحمى الملاحظات الحساسة في الخزنة بتشفير AES-256-GCM.",
+  "privacySharingDisclosure": "قد تؤدي المشاركة والتصدير وخدمات الجهاز وميزات نظام التشغيل إلى إرسال معلومات خارج التطبيق عند اختيارك استخدامها.",
+  "gotIt": "فهمت",
+  "aboutFast": "سريع",
+  "aboutFastDescription": "مصمم لتسجيل الأفكار فورًا.",
+  "aboutOfflineFirst": "يعمل دون اتصال أولًا",
+  "aboutOfflineFirstDescription": "تعمل ملاحظاتك دون حساب.",
+  "aboutPrivate": "خاص",
+  "aboutPrivateDescription": "بيانات محلية مع حماية اختيارية للجهاز.",
+  "aboutSummary": "صُمم Orah ليبقى بسيطًا: افتح، سجّل، نظّم، واعثر.",
+  "developerSignatureLabel": "أبهيناف باجباي — توقيع المطوّر",
+  "aboutFeedback": "لاقتراح الميزات أو إرسال الملاحظات أو الأفكار:",
+  "aboutCopyright": "حقوق النشر © 2026 أبهيناف باجباي. جميع الحقوق محفوظة.",
+  "aboutLegalNotice": "تعود ملكية كود تطبيق Orah والعلامة التجارية الأصلية والأعمال الفنية وأصول المنتج إلى أبهيناف باجباي. وتخضع مكونات الجهات الخارجية لتراخيصها الخاصة.",
+  "voiceLanguageTitle": "لغة التحدث",
+  "voiceLanguageDescription": "اختر اللغة التي ستتحدث بها. يمكن أن تختلف عن لغة التطبيق.",
+  "voiceLanguageSystemDefault": "استخدام لغة الجهاز",
+  "voiceLanguageNoLocales": "لا تتوفر لغات للتعرف على الكلام من خدمة الجهاز.",
+  "securityCreatePin": "إنشاء رمز PIN",
+  "securityConfirmPin": "تأكيد رمز PIN",
+  "securityPinMismatch": "رمزا PIN غير متطابقين.",
+  "securityPinCreated": "تم إنشاء رمز PIN وتفعيل قفل التطبيق.",
+  "securityPinActionFailed": "تعذّر تحديث رمز PIN: {error}",
+  "securityEnterCurrentPin": "أدخل رمز PIN الحالي",
+  "securityPinDisabled": "تم تعطيل رمز PIN وقفل التطبيق.",
+  "securityBiometricNotCompleted": "لم يكتمل التحقق البيومتري.",
+  "securityPinDigitsHint": "من 4 إلى 8 أرقام",
+  "securityEnterDigits": "أدخل من 4 إلى 8 أرقام",
+  "securityAppLock": "قفل التطبيق",
+  "securityRequirePin": "طلب رمز PIN عند قفل ORAH",
+  "securityCreatePinToProtect": "أنشئ رمز PIN لحماية ORAH",
+  "securityChangePin": "تغيير رمز PIN",
+  "securityReplacePinSubtitle": "استبدال رمز PIN الحالي لـ ORAH",
+  "securityRemovePin": "إزالة رمز PIN",
+  "securityTurnOffPinProtection": "إيقاف الحماية برمز PIN",
+  "securityBiometricUnlock": "فتح القفل بالقياسات الحيوية",
+  "securityUseBiometrics": "استخدم بصمة الإصبع أو القياسات الحيوية للجهاز",
+  "securityLocalFirstPrivacy": "الخصوصية مع التخزين المحلي أولاً",
+  "securityLocalFirstDescription": "لا يتطلب ORAH حساباً أو مزامنة سحابية لملاحظاتك.",
+  "securityStorageNote": "ملاحظة أمنية: تُخزَّن بيانات اعتماد PIN في مساحة التخزين الآمنة في Android/iOS. يبقى محتوى الملاحظات الحساسة على جهازك. ستُضاف مساحة تخزين مشفّرة بالكامل للخزنة قبل أن يصف ORAH محتواه بأنه مشفّر من طرف إلى طرف.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ لا يمكن استعادة رمز PIN. إذا نسيته، فلن تتمكن من استعادة الخزنة.",
+  "vaultPinDigitsHint": "رمز PIN للخزنة من 4 إلى 8 أرقام",
+  "vaultConfirmPin": "تأكيد رمز PIN",
+  "vaultCancel": "إلغاء",
+  "vaultPinsMismatch": "رمزا PIN غير متطابقين.",
+  "vaultPinDigitsError": "يجب أن يتكون رمز PIN للخزنة من 4 إلى 8 أرقام.",
+  "vaultIncorrectPin": "رمز PIN للخزنة غير صحيح.",
+  "vaultVerifyCurrentPin": "تحقق من رمز PIN الحالي للخزنة",
+  "vaultIncorrectCurrentPin": "رمز PIN الحالي للخزنة غير صحيح.",
+  "vaultCreateNewPin": "إنشاء رمز PIN جديد للخزنة",
+  "vaultPinChanged": "تم تغيير رمز PIN للخزنة.",
+  "vaultNewFolder": "مجلد جديد في الخزنة",
+  "vaultFolderName": "اسم المجلد",
+  "vaultCreate": "إنشاء",
+  "vaultRenameFolder": "إعادة تسمية مجلد الخزنة",
+  "vaultSave": "حفظ",
+  "vaultDelete": "حذف",
+  "vaultLockedTitle": "الخزنة / الملاحظات المقفلة",
+  "vaultChangePin": "تغيير رمز PIN للخزنة",
+  "vaultTrustBadge": "خزنة عالية الأمان",
+  "vaultCreatePrivateNote": "إنشاء ملاحظة خاصة",
+  "vaultAllFolders": "كل المجلدات",
+  "vaultFolderOptions": "خيارات مجلد الخزنة",
+  "vaultRename": "إعادة تسمية",
+  "vaultNewFolderAction": "مجلد جديد",
+  "vaultEmptyTitle": "خزنتك فارغة",
+  "vaultEmptyDescription": "اقفل ملاحظة من المحرر أو أنشئ ملاحظة خاصة.",
+  "vaultMoveToFolder": "نقل إلى مجلد",
+  "vaultUnfiled": "بلا مجلد",
+  "vaultJustNow": "الآن",
+  "vaultMinutesAgoSuffix": "دقيقة مضت",
+  "vaultHoursAgoSuffix": "ساعة مضت",
+  "vaultDaysAgoSuffix": "أيام مضت",
+  "vaultDeleteFolderTitle": "حذف {folderName}؟",
+  "vaultFolderEmpty": "هذا المجلد فارغ.",
+  "vaultDeleteFolderWithNotes": "هل أنت متأكد؟ سيتم نقل {count} من الملاحظات الخاصة إلى «بلا مجلد».",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "تصدير الملاحظة",
+  "exportSheetDescription": "اختر تنسيقًا واحدًا فقط من التنسيقات المتاحة أدناه.",
+  "exportDocuments": "المستندات",
+  "exportData": "البيانات",
+  "exportPlannedSection": "مخطط / قريبًا",
+  "exportPlannedDescription": "هذه التنسيقات مخطط لها في تحديثات Orah المستقبلية.",
+  "sendAsEmailAttachment": "إرسال كمرفق بريد إلكتروني",
+  "emailAttachmentDescription": "ينشئ ملف PDF ويفتح نافذة المشاركة في النظام",
+  "exportAllAvailable": "تصدير جميع التنسيقات المتاحة",
+  "exportComingSoon": "قريبًا",
+  "plannedExportFormats": "تنسيقات التصدير المخطط لها",
+  "plannedExportFormatsDescription": "هذه التنسيقات مخطط إضافتها في تحديثات Orah المستقبلية ولم تُتح للتصدير بعد.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "مستند قابل للطباعة",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "مستند Microsoft Word قابل للتحرير",
+  "exportFormatText": "نص عادي",
+  "exportDescriptionText": "أقصى توافق",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown قابل للنقل",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "تتحول قوائم التحقق إلى صفوف",
+  "organizationPickerTitle": "تنظيم الملاحظة",
+  "organizationDone": "تم",
+  "organizationNoFolder": "لا يوجد مجلد",
+  "organizationAddTagHint": "إضافة وسم",
+  "organizationAddTag": "إضافة",
+  "organizationNoTags": "لا توجد وسوم بعد.",
+  "exportFailed": "فشل التصدير: {error}",
+  "exportEmailAttachmentFailed": "فشل إرفاق البريد الإلكتروني: {error}",
+  "exportAllFailed": "فشل تصدير الكل: {error}",
+  "exportCategoryEbooks": "كتب إلكترونية",
+  "exportCategoryAcademic": "أكاديمي",
+  "exportCategoryPresentation": "عرض تقديمي",
+  "exportCategorySpeechAudio": "الكلام / الصوت",
+  "exportCategorySubtitles": "ترجمات مصاحبة",
+  "exportCategoryEmail": "البريد الإلكتروني",
+  "exportCategoryCodeLiterate": "الرمز / المستندات البرمجية",
+  "exportCategoryArchive": "أرشيف",
+  "exportCategoryDatabase": "قاعدة بيانات",
+  "exportCategoryClipboard": "الحافظة",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "مجلد",
+  "organizationTagsLabel": "الوسوم",
+  "plannedExportRichText": "Rich Text (.rtf)",
+  "plannedExportRichTextDescription": "Texte enrichi multiplateforme",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "معيار مفتوح لـ LibreOffice",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "صفحات ويب وبريد إلكتروني ومدونات",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "معظم قارئات الكتب الإلكترونية",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "Kindle أقدم",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "Kindle حديث",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "تنسيق كتب إلكترونية شائع",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "أبحاث ووثائق رياضية",
+  "plannedExportLatexPdf": "PDF from LaTeX (.pdf)",
+  "plannedExportLatexPdfDescription": "أبحاث أكاديمية نهائية",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "إدارة المراجع",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "الجداول وتحليل البيانات",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "للمطورين وواجهات API والبيانات المنظمة",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "مستندات منظمة",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "إعدادات وبيانات مقروءة",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "جداول مفصولة بعلامات الجدولة",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "العروض التقديمية",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "صوت تحويل النص إلى كلام",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "صوت تحويل النص إلى كلام",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "ترجمات الفيديو",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "ترجمات الويب والفيديو",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "تنسيق رسالة بريد إلكتروني",
+  "plannedExportHtmlEmail": "بريد HTML",
+  "plannedExportHtmlEmailDescription": "بريد HTML جاهز للإرسال",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "مستندات البرمجة",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "حزمة تصدير مضغوطة",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "حزمة تصدير مضغوطة",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "تصدير قاعدة بيانات",
+  "plannedExportRichClipboard": "Presse-papiers texte enrichi",
+  "plannedExportRichClipboardDescription": "Format presse-papiers texte enrichi",
+  "plannedExportHtmlClipboard": "Presse-papiers HTML",
+  "plannedExportHtmlClipboardDescription": "Format HTML du presse-papiers",
+  "plannedExportPlainClipboard": "Presse-papiers texte brut",
+  "plannedExportPlainClipboardDescription": "Format presse-papiers texte brut",
+  "exportShareSubject": "ORAH — تصدير: {title}",
+  "exportShareBody": "تم التصدير من ORAH",
+  "emailAttachmentSubject": "ORAH — مرفق: {title}",
+  "emailAttachmentBody": "مرفق من ORAH",
+  "exportAllShareSubject": "ORAH — {title} — حزمة التصدير",
+  "exportAllShareBody": "تم تصدير جميع التنسيقات المتاحة حاليًا من ORAH",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} دقيقة",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "إضافة أداة ORAH",
+  "androidWidgetSetupBody": "على الشاشة الرئيسية لجهاز Android، اضغط مطولاً على مساحة فارغة، واختر الأدوات، ثم ابحث عن ORAH واسحب الأداة إلى الشاشة الرئيسية.",
+  "androidQuickShortcutDialogTitle": "اختصار الملاحظة السريعة",
+  "androidQuickShortcutDialogBody": "اضغط مطولاً على أيقونة ORAH في الشاشة الرئيسية. استخدم «ملاحظة جديدة» أو «قائمة تحقق جديدة» من قائمة الاختصارات.",
+  "androidShortcutNewNote": "ملاحظة جديدة",
+  "androidShortcutNewChecklist": "قائمة تحقق جديدة",
+  "androidShortcutSearch": "بحث",
+  "androidShareUnavailable": "مشاركة المحتوى إلى ORAH غير متاحة على هذا الجهاز.",
+  "androidFeatureHeading": "ORAH على Android",
+  "androidFeatureIntro": "يوفر ORAH التقاطاً سريعاً ومشاركة ووصولاً من الشاشة الرئيسية عبر تكاملات Android الأصلية.",
+  "androidWidgetTitle": "أداة الشاشة الرئيسية",
+  "androidWidgetDescription": "أنشئ ملاحظة أو قائمة تحقق أو افتح البحث من الشاشة الرئيسية.",
+  "androidQuickCaptureTitle": "اختصار الملاحظة السريعة",
+  "androidQuickCaptureDescription": "افتح ORAH مباشرة لبدء الالتقاط الفوري.",
+  "androidShareTitle": "المشاركة إلى ORAH",
+  "androidShareDescription": "أرسل النص والمحتوى المدعومين إلى ملاحظة جديدة في ORAH.",
+  "androidRemindersTitle": "التذكيرات",
+  "androidRemindersDescription": "أنشئ تذكيرات للملاحظات وقوائم التحقق دون الحاجة إلى خادم خلفي.",
+  "androidLocalIntegrationsNote": "هذه تكاملات محلية في Android ولا تحتاج إلى خادم خلفي.",
+  "androidDone": "تم",
+  "androidGotIt": "فهمت",
+  "captureDescription": "اختر ما تريد تدوينه.",
+  "quickNote": "ملاحظة سريعة",
+  "startTypingImmediately": "ابدأ الكتابة فورًا",
+  "quickChecklist": "قائمة مهام سريعة",
+  "captureTasksWithoutSetup": "سجّل المهام دون إعداد",
+  "dailyChecklistTooltip": "قائمة المهام اليومية",
+  "quickCaptureHint": "اضغط للكتابة • اضغط مطولًا لعرض القائمة والخيارات",
+  "quickCaptureTooltip": "تدوين سريع. اضغط مطولًا لعرض القائمة والخيارات.",
+  "filtersActive": "الفلاتر نشطة",
+  "searchResultsCount": "النتائج: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "البحث المتقدم ميزة في ORAH Pro",
+  "noNotesFound": "لم يتم العثور على ملاحظات",
+  "searchFilterHint": "استخدم كلمات عادية مجانًا، أو افتح ORAH Pro لإلغاء قفل الفلاتر وعوامل البحث.",
+  "searchEmptyHint": "جرّب كلمة أخرى أو أزل أحد الفلاتر.",
+  "voicePreferences": "تفضيلات الصوت",
+  "dailyReflectionSchedule": "جدول التأمل اليومي",
+  "versionLabel": "الإصدار {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "لا يمكن استعادة رمز PIN للخزنة. ستؤدي إعادة التعيين إلى حذف جميع ملاحظات الخزنة ومفتاح التشفير نهائيًا. ستبقى ملاحظاتك ومجلداتك العادية كما هي.",
+  "portableBackupShareText": "نسخة احتياطية محمولة من Orah",
+  "storageAttachmentCount": "{count} مرفقات • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "اختر وقت التأمل اليومي",
+  "scheduleLoading": "جارٍ تحميل الجدول…",
+  "scheduleEnabledAt": "مفعّل • يوميًا في {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "معطّل • فعّله لتلقي تذكير يومي بالتأمل",
+  "captureTitle": "تدوين",
+  "featureVoiceCaptureDescription": "سجّل أفكارك بسرعة باستخدام إنشاء الملاحظات بالصوت أولًا.",
+  "featureChecklistDescription": "حوّل الملاحظات إلى قوائم مهام قابلة للتنفيذ مع تتبّع الإنجاز.",
+  "featureShareExportTitle": "المشاركة والتصدير",
+  "featureShareExportDescription": "شارك الملاحظات وصدّر محتواك بتنسيقات قابلة للنقل.",
+  "notificationDailyReflectionTitle": "حان وقت التأمل اليومي",
+  "notificationDailyReflectionBody": "خذ لحظة هادئة لتدوين ما يدور في ذهنك.",
+  "notificationDailyReflectionChannel": "التأمل اليومي",
+  "notificationDailyReflectionChannelDescription": "تذكير يومي لطيف للتوقف والتأمل",
+  "notificationReminderChannel": "تذكيرات Orah",
+  "notificationReminderChannelDescription": "تذكيرات للملاحظات والمهام",
+  "notificationDoneAction": "تم",
+  "notificationSnooze10Action": "تأجيل 10 دقائق",
+  "notificationSnooze60Action": "تأجيل ساعة",
+  "notificationReminderTitle": "تذكير ORAH",
+  "genericTryAgain": "يرجى المحاولة مرة أخرى.",
+  "registrationFailed": "تعذّر إكمال التسجيل. يرجى المحاولة مرة أخرى."
 }

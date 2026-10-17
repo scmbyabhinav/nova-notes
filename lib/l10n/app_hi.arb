@@ -65,5 +65,898 @@
   "unlock": "अनलॉक करें",
   "useBiometrics": "बायोमेट्रिक्स का उपयोग करें",
   "incorrectPin": "गलत पिन",
-  "biometricFallbackError": "बायोमेट्रिक प्रमाणीकरण रद्द हुआ या उपलब्ध नहीं है। अनलॉक करने के लिए अपना पिन डालें।"
+  "biometricFallbackError": "बायोमेट्रिक प्रमाणीकरण रद्द हुआ या उपलब्ध नहीं है। अनलॉक करने के लिए अपना पिन डालें।",
+  "journeyTitle": "आपकी यात्रा",
+  "journeyHeadline": "छोटे पल मिलकर बड़ा बनाते हैं।",
+  "journeySubtitle": "आपकी लिखने की आदतों और आत्मचिंतन की एक सहज झलक।",
+  "dayInARow": "दिन लगातार",
+  "daysInARow": "दिन लगातार",
+  "notesSaved": "नोट सहेजे गए",
+  "notesStayOnDevice": "आपके नोट इसी डिवाइस पर रहते हैं। ये जानकारी आपके सहेजे गए नोटों से निकाली जाती है।",
+  "moodStoryStarts": "आपकी मनोदशा की कहानी यहाँ शुरू होती है",
+  "chooseMoodToSeeDistribution": "नोट लिखते समय मनोदशा चुनें। उसका वितरण यहाँ दिखाई देगा।",
+  "moodDistributionSubtitle": "आपके दर्ज किए गए एहसास",
+  "notesCreatedLast7Days": "पिछले 7 दिनों में बनाए गए नोट",
+  "calendarSubtitle": "दिन के अनुसार नोट और निर्धारित रिमाइंडर",
+  "goToToday": "आज पर जाएँ",
+  "scheduleNote": "नोट शेड्यूल करें",
+  "nothingOnThisDay": "इस दिन कुछ नहीं है",
+  "chooseAnotherDate": "दूसरी तारीख चुनें या इस दिन के लिए नोट शेड्यूल करें।",
+  "untitledNote": "बिना शीर्षक का नोट",
+  "scheduledLabel": "शेड्यूल किया गया",
+  "createdLabel": "बनाया गया",
+  "calendarItemStatusTime": "{status} • {time}",
+  "writingRhythm": "आपकी लेखन लय",
+  "historyTimeline": "इतिहास समयरेखा",
+  "storyStartsWithNote": "आपकी कहानी एक नोट से शुरू होती है",
+  "pickHighlightedDay": "किसी पल को फिर से देखने या पूरा इतिहास देखने के लिए चिह्नित दिन चुनें।",
+  "savedDaysHighlighted": "सहेजे गए नोटों वाले दिन कैलेंडर में हाइलाइट होंगे।",
+  "addFolderImage": "फ़ोल्डर की तस्वीर जोड़ें",
+  "changeImage": "तस्वीर बदलें",
+  "removeImage": "तस्वीर हटाएँ",
+  "folderName": "फ़ोल्डर का नाम",
+  "folderNameHint": "जैसे, काम, विचार, व्यक्तिगत",
+  "cancel": "रद्द करें",
+  "create": "बनाएँ",
+  "newFolder": "नया फ़ोल्डर",
+  "editFolder": "फ़ोल्डर संपादित करें",
+  "save": "सहेजें",
+  "deleteFolderTitle": "{folderName} मिटाएँ?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "फ़ोल्डर खाली है।",
+  "notesMovedFromFolder": "{count} नोट सुरक्षित रहेंगे और वापस सभी नोट्स में ले जाए जाएँगे।",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "मिटाएँ",
+  "selectedFoldersDeleteTitle": "{count} फ़ोल्डर मिटाएँ?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "चुने गए फ़ोल्डर खाली हैं।",
+  "deleteSelected": "चयन मिटाएँ",
+  "cancelSelection": "चयन रद्द करें",
+  "selectedCount": "{count} चुने गए",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "चुने गए फ़ोल्डर मिटाएँ",
+  "folderOptions": "फ़ोल्डर विकल्प",
+  "open": "खोलें",
+  "rename": "नाम बदलें",
+  "folderNoteCount": "{count} नोट",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "फ़ोल्डर से हटाएँ",
+  "moveToTrash": "ट्रैश में भेजें",
+  "noFoldersYet": "अभी कोई फ़ोल्डर नहीं",
+  "emptyFoldersDescription": "संबंधित नोट्स को साथ रखने के लिए फ़ोल्डर बनाएँ।",
+  "createFolder": "फ़ोल्डर बनाएँ",
+  "noNotesInFolder": "इस फ़ोल्डर में अभी कोई नोट नहीं है।\nनोट खोलें और उसे यहाँ जोड़ने के लिए व्यवस्थित करें चुनें।",
+  "welcomeToOrah": "Orah में आपका स्वागत है",
+  "personalizeYourSpace": "आइए आपके स्थान को व्यक्तिगत बनाएं। शुरू करने के लिए अपना नाम और ईमेल दर्ज करें।",
+  "fullName": "पूरा नाम",
+  "yourName": "आपका नाम",
+  "emailAddress": "ईमेल पता",
+  "emailExample": "you@example.com",
+  "enterFullName": "अपना पूरा नाम दर्ज करें।",
+  "enterValidEmail": "मान्य ईमेल पता दर्ज करें।",
+  "registerAndContinue": "रजिस्टर करें और आगे बढ़ें",
+  "profileStoredOnDevice": "आपकी प्रोफ़ाइल इस डिवाइस पर सुरक्षित रूप से संग्रहीत है। सब्सक्राइबर सूची सिंक करने के लिए न्यूज़लेटर सेवा कॉन्फ़िगर होनी चाहिए।",
+  "proRestore": "पुनर्स्थापित करें",
+  "proHeroEyebrow": "आपके नोट्स, और अधिक शक्तिशाली",
+  "proHeroHeadline": "हर नोट को\nऔर उपयोगी बनाएँ।",
+  "proHeroDescription": "कागज़ की जानकारी को खोजने योग्य बनाएँ, ज़रूरी विवरण ढूँढ़ें और अपने नोट्स हर जगह साथ रखें।",
+  "proHeroFootnote": "अतिरिक्त सुविधाओं की ज़रूरत हो तभी अपग्रेड करें। आपके रोज़मर्रा के नोट्स आपके ही रहेंगे।",
+  "proMoreThanNotes": "नोट्स से भी बढ़कर",
+  "proOcrTitle": "तस्वीरों में खोज करने वाला OCR",
+  "proOcrDescription": "दोबारा टाइप करने के बजाय समर्थित तस्वीरों और दस्तावेज़ों से टेक्स्ट निकालें।",
+  "proExportTitle": "अपनी ज़रूरत के फ़ॉर्मैट में निर्यात करें",
+  "proExportDescription": "PDF, Word और Excel में निर्यात करके ORAH के बाहर भी अपने नोट्स इस्तेमाल करें।",
+  "proSearchTitle": "ढेर में भी ज़रूरी जानकारी खोजें",
+  "proSearchDescription": "महत्वपूर्ण विवरण जल्दी पाने के लिए उन्नत खोज और फ़िल्टर इस्तेमाल करें।",
+  "proWorkspaceTitle": "अधिक व्यवस्थित कार्यक्षेत्र",
+  "proWorkspaceDescription": "आपके ऐप संस्करण में उपलब्ध होने पर प्रीमियम टेम्पलेट और उन्नत उत्पादकता टूल अनलॉक करें।",
+  "proEntitlementActive": "आपकी Pro सुविधा सक्रिय है।",
+  "proChoosePlan": "अपना Pro प्लान चुनें",
+  "proPricesFromPlay": "आपके क्षेत्र की कीमतें Google Play से मिलती हैं।",
+  "proPlanYearly": "वार्षिक",
+  "proBestValue": "सबसे किफ़ायती",
+  "proPlanMonthly": "मासिक",
+  "proMonthlySubtitle": "हर महीने भुगतान करें",
+  "proOfferInstruction": "क्या आपके पास नियोक्ता या डेवलपर का ORAH ऑफ़र है? आमंत्रण में दिए Google Play लिंक या कोड से इसे रिडीम करें, फिर यहाँ लौटकर पुनर्स्थापित करें दबाएँ।",
+  "proRestorePurchases": "खरीदारियाँ पुनर्स्थापित करें",
+  "proRenewalDisclosure": "Google Play में रद्द न करने पर सदस्यता अपने-आप नवीनीकृत होती है। पुष्टि करने से पहले दिखाई गई कीमत, बिलिंग अवधि और परीक्षण की शर्तें देखें। आप Play Store खाते में सदस्यता प्रबंधित या रद्द कर सकते हैं।",
+  "proBestValueBadge": "सबसे किफ़ायती",
+  "proLoadingPrice": "कीमत लोड हो रही है…",
+  "proUnavailable": "अभी उपलब्ध नहीं",
+  "proChooseButton": "चुनें",
+  "microphoneAccessNeeded": "माइक्रोफ़ोन की अनुमति ज़रूरी है",
+  "microphoneAccessPermanentDenied": "आपकी आवाज़ को टेक्स्ट में बदलने के लिए ORAH Notes को माइक्रोफ़ोन की अनुमति चाहिए। आप इसे सेटिंग्स में चालू कर सकते हैं।",
+  "microphoneAccessRequest": "आपकी आवाज़ को टेक्स्ट में बदलने के लिए ORAH Notes को माइक्रोफ़ोन की अनुमति चाहिए। कृपया अनुमति दें या सेटिंग्स में चालू करें।",
+  "notNow": "अभी नहीं",
+  "openSettings": "सेटिंग्स खोलें",
+  "voiceInputUnavailableWithMessage": "वॉइस इनपुट उपलब्ध नहीं: {message}",
+  "voiceInputUnavailable": "इस डिवाइस पर वॉइस इनपुट उपलब्ध नहीं है।",
+  "couldNotStartVoiceCapture": "वॉइस रिकॉर्डिंग शुरू नहीं हो सकी: {error}",
+  "voiceTextSaved": "वॉइस टेक्स्ट नोट में सेव हो गया।",
+  "recordingStoppedPartialSaved": "रिकॉर्डिंग रुक गई। अधूरा टेक्स्ट सेव हो गया।",
+  "addTask": "काम जोड़ें",
+  "taskHint": "क्या करना है?",
+  "add": "जोड़ें",
+  "editTask": "काम संपादित करें",
+  "enterVaultPin": "Vault PIN दर्ज करें",
+  "pinDigitsLabel": "4–8 अंकों का PIN",
+  "vaultAuthenticationFailed": "पहचान की पुष्टि विफल रही। बायोमेट्रिक्स या Vault PIN आज़माएँ।",
+  "secureYourVault": "अपनी Vault सुरक्षित करें",
+  "vaultSetupDescription": "इस नोट को लॉक करने के लिए पहले PIN या बायोमेट्रिक पहचान सेट करें। इससे केवल आप ही इसे खोल पाएँगे।",
+  "setUpSecurity": "सुरक्षा सेट करें",
+  "createVaultPin": "Vault PIN बनाएँ",
+  "confirmVaultPin": "Vault PIN की पुष्टि करें",
+  "vaultPinsDoNotMatch": "दोनों PIN मेल नहीं खाते। नोट लॉक नहीं किया गया।",
+  "vaultPinCreated": "Vault PIN बन गया। अब नोट सुरक्षित किया जा रहा है…",
+  "enterPinDigits": "4–8 अंक दर्ज करें",
+  "addContentBeforeLock": "नोट लॉक करने से पहले इसमें कुछ सामग्री जोड़ें।",
+  "vaultAuthenticationNotCompleted": "पहचान की पुष्टि पूरी नहीं हुई। नोट लॉक नहीं किया गया।",
+  "noteLockedMovedToVault": "नोट लॉक करके Vault में भेज दिया गया।",
+  "noteUnlockedMovedToNotes": "नोट अनलॉक करके वापस आपके नोट्स में भेज दिया गया।",
+  "continueLabel": "जारी रखें",
+  "ocrNoReadableText": "पढ़ने योग्य टेक्स्ट नहीं मिला।",
+  "ocrTextExtracted": "तस्वीर से टेक्स्ट निकाल लिया गया।",
+  "ocrCouldNotReadImage": "इस तस्वीर से टेक्स्ट नहीं पढ़ा जा सका।",
+  "chooseTemplate": "टेम्पलेट चुनें",
+  "replaceCurrentNote": "मौजूदा नोट बदलें?",
+  "templateReplaceWarning": "यह टेम्पलेट मौजूदा शीर्षक और सामग्री को बदल देगा।",
+  "replace": "बदलें",
+  "insertLink": "लिंक जोड़ें",
+  "insert": "जोड़ें",
+  "couldNotAddImage": "तस्वीर नहीं जोड़ी जा सकी: {error}",
+  "couldNotAddFiles": "फ़ाइलें नहीं जोड़ी जा सकीं: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "अटैचमेंट का नाम बदलें",
+  "preview": "पूर्वावलोकन",
+  "share": "शेयर करें",
+  "details": "विवरण",
+  "removeFromNote": "नोट से हटाएँ",
+  "chooseFromGallery": "गैलरी से चुनें",
+  "takePhoto": "फ़ोटो लें",
+  "attachFiles": "फ़ाइलें अटैच करें",
+  "close": "बंद करें",
+  "couldNotUnlockPrivateNote": "निजी नोट अनलॉक नहीं हो सका: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "निर्यात करें",
+  "removeFavorite": "पसंदीदा से हटाएँ",
+  "addToFavorites": "पसंदीदा में जोड़ें",
+  "addImage": "तस्वीर जोड़ें",
+  "template": "टेम्पलेट",
+  "setReminder": "रिमाइंडर सेट करें",
+  "reminderAt": "रिमाइंडर: {date}",
+  "clearReminder": "रिमाइंडर हटाएँ",
+  "noteColor": "नोट का रंग",
+  "unarchive": "आर्काइव से निकालें",
+  "archive": "आर्काइव करें",
+  "back": "वापस",
+  "remove": "हटाएँ",
+  "retry": "फिर कोशिश करें",
+  "titleHint": "शीर्षक",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "नोट कार्ड साझा नहीं हो सका: {error}",
+  "couldNotRenameAttachment": "अटैचमेंट का नाम नहीं बदला जा सका: {error}",
+  "attachmentDetailsFormat": "आकार: {size}\nसंशोधित: {modified}",
+  "authenticationFailedNoteNotDeleted": "प्रमाणीकरण विफल हुआ। नोट हटाया नहीं गया।",
+  "privateNote": "निजी नोट",
+  "thisNoteIsPrivate": "यह नोट निजी है",
+  "unlockPrivateNoteHint": "देखने के लिए बायोमेट्रिक या PIN से अनलॉक करें।",
+  "exitZenMode": "ज़ेन मोड से बाहर निकलें",
+  "exportAsCard": "कार्ड के रूप में निर्यात करें",
+  "scanTextFromImage": "तस्वीर से टेक्स्ट स्कैन करें",
+  "folderAndTags": "फ़ोल्डर और टैग",
+  "lockNote": "नोट लॉक करें",
+  "unlockAndMoveToNotes": "अनलॉक करके नोट्स में ले जाएँ",
+  "stopAndSave": "रोकें और सहेजें",
+  "startWritingHint": "लिखना शुरू करें...",
+  "howAreYouFeeling": "आप कैसा महसूस कर रहे हैं?",
+  "checklistEmpty": "आपकी चेकलिस्ट खाली है",
+  "addFirstTask": "पहला कार्य जोड़ें",
+  "moveUp": "ऊपर ले जाएँ",
+  "moveDown": "नीचे ले जाएँ",
+  "deleteTask": "कार्य हटाएँ",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "अनलॉक हो रहा है…",
+  "unlockNote": "नोट अनलॉक करें",
+  "zenMode": "ज़ेन मोड",
+  "edit": "संपादित करें",
+  "pinNote": "पिन करें",
+  "unpinNote": "अनपिन करें",
+  "bold": "बोल्ड",
+  "italic": "इटैलिक",
+  "strikethrough": "स्ट्राइकथ्रू",
+  "heading": "शीर्षक",
+  "bullets": "बुलेट सूची",
+  "numberedList": "क्रमांकित सूची",
+  "quote": "उद्धरण",
+  "linkLabel": "लिंक",
+  "addImageOrFile": "छवि या फ़ाइल जोड़ें",
+  "stopVoiceInput": "वॉइस इनपुट रोकें",
+  "voiceInput": "वॉइस इनपुट",
+  "stopAndSaveVoiceInput": "वॉइस इनपुट रोकें और सहेजें",
+  "tapMicToSpeak": "नोट बोलने के लिए माइक पर टैप करें",
+  "voiceNote": "वॉइस नोट",
+  "preparing": "तैयारी हो रही है…",
+  "saving": "सहेजा जा रहा है…",
+  "unsavedChanges": "बिना सहेजे बदलाव",
+  "saved": "सहेजा गया",
+  "recordingVoiceInput": "रिकॉर्डिंग • {duration}",
+  "savingVoiceText": "वॉइस टेक्स्ट सहेजा जा रहा है…",
+  "preparingMicrophone": "माइक्रोफ़ोन तैयार हो रहा है…",
+  "textNote": "टेक्स्ट नोट",
+  "checklistType": "चेकलिस्ट",
+  "templateMeetingNotes": "मीटिंग नोट्स",
+  "templateAgenda": "एजेंडा",
+  "templateDecisions": "निर्णय",
+  "templateActionItems": "कार्रवाई के काम",
+  "templateDailyPlan": "दैनिक योजना",
+  "templateTopPriority": "सबसे ज़रूरी",
+  "templateImportant": "महत्वपूर्ण",
+  "templateIfTimeAllows": "समय मिला तो",
+  "templateShoppingList": "खरीदारी की सूची",
+  "templateMilk": "दूध",
+  "templateVegetables": "सब्ज़ियाँ",
+  "templateHousehold": "घर का सामान",
+  "templateTravelPlan": "यात्रा योजना",
+  "templateDates": "तारीखें",
+  "templateBookings": "बुकिंग",
+  "templatePlacesToVisit": "घूमने की जगहें",
+  "orahNoteCard": "ORAH नोट कार्ड",
+  "sharedFromOrah": "ORAH से साझा किया गया",
+  "noteCardCaptureError": "नोट कार्ड कैप्चर नहीं हो सका।",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "नमस्ते, {name}",
+  "welcomeBack": "वापसी पर स्वागत है",
+  "friend": "दोस्त",
+  "voiceGreeting": "नमस्ते, {name}",
+  "voicePreviewGreeting": "नमस्ते, यह Orah Notes है",
+  "speakMyNameAtStartup": "शुरू होने पर मेरा नाम बोलें",
+  "voiceGreetingEnabledDescription": "Orah खुलने पर आपकी चुनी हुई भाषा में आपका स्वागत करेगा।",
+  "voiceGreetingDisabledDescription": "अभिवादन मौन रहेगा।",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "आर्काइव से निकालें",
+  "archiveNote": "आर्काइव करें",
+  "duplicateNote": "नोट की प्रतिलिपि बनाएँ",
+  "navNotes": "नोट्स",
+  "navFolders": "फ़ोल्डर",
+  "navFavorites": "पसंदीदा",
+  "navArchivedNotes": "संग्रहीत नोट्स",
+  "navDailyReflection": "दैनिक चिंतन",
+  "navVoiceCapture": "आवाज़ से लिखें",
+  "navChecklists": "चेकलिस्ट",
+  "navAppearance": "दिखावट",
+  "navSearch": "खोजें",
+  "offlineAccess": "ऑफ़लाइन उपयोग",
+  "backupExport": "बैकअप और निर्यात",
+  "recentlyUpdated": "हाल ही में अपडेट",
+  "recentlyCreated": "हाल ही में बनाया गया",
+  "titleAZ": "शीर्षक A–Z",
+  "noNotesYet": "अभी कोई नोट नहीं",
+  "vaultLocked": "वॉल्ट / लॉक किए गए नोट्स",
+  "vaultLockedDesc": "अपने निजी, एन्क्रिप्ट किए गए नोट खोलें",
+  "privacyPledge": "गोपनीयता प्रतिज्ञा",
+  "privacyPledgeDesc": "हमारी क्लाउड-मुक्त प्रतिज्ञा पढ़ें",
+  "backupExportDesc": "स्थानीय बैकअप और पोर्टेबल डेटा",
+  "vaultResetTitle": "वॉल्ट PIN भूल गए? वॉल्ट रीसेट करें",
+  "vaultResetDesc": "无法恢复。重置将永久删除旧保险库。",
+  "pinBiometric": "PIN और बायोमेट्रिक सुरक्षा",
+  "androidFeaturesDesc": "विजेट, शॉर्टकट और साझा करना",
+  "archivedNotesTitle": "संग्रहीत नोट्स",
+  "archivedNotesDesc": "संग्रहीत नोट खोलें या वापस लाएँ",
+  "trashTitle": "ट्रैश",
+  "trashDesc": "नोट पुनर्स्थापित करें या स्थायी रूप से हटाएँ",
+  "orahFeaturesTitle": "Orah सुविधाएँ",
+  "orahFeaturesDesc": "जानें Orah क्या कर सकता है",
+  "aboutOrahTitle": "Orah के बारे में",
+  "aboutOrahDesc": "उत्पाद जानकारी और गोपनीयता दृष्टिकोण",
+  "cancelLabel": "रद्द करें",
+  "resetVaultQuestion": "वॉल्ट रीसेट करें?",
+  "deleteVaultConfirm": "पुराना वॉल्ट हटाएँ और नया बनाएँ",
+  "themeLabel": "थीम",
+  "themeSystem": "सिस्टम",
+  "themeLight": "हल्का",
+  "themeDark": "गहरा",
+  "portableBackup": "पोर्टेबल बैकअप",
+  "createBackup": "बैकअप बनाएँ",
+  "restoreBackup": "बैकअप पुनर्स्थापित करें",
+  "storageMaintenance": "स्टोरेज रखरखाव",
+  "cleanOrphanAttachments": "अनाथ अटैचमेंट साफ़ करें",
+  "vaultAutoLock": "वॉल्ट ऑटो-लॉक",
+  "neverLabel": "कभी नहीं",
+  "dailyReflectionReminder": "दैनिक चिंतन रिमाइंडर",
+  "reminderTime": "रिमाइंडर समय",
+  "backupExportTitle": "बैकअप और निर्यात",
+  "vaultResetSuccess": "पुराना वॉल्ट हटा दिया गया। नया PIN बनाने के लिए वॉल्ट खोलें।",
+  "vaultResetFailed": "वॉल्ट रीसेट नहीं हो सका: {error}",
+  "backupRestoredCount": "成功恢复 {count} 条笔记。",
+  "backupError": "बैकअप त्रुटि: {error}",
+  "unusedFilesFound": "נמצאו {count} קבצים שאינם בשימוש",
+  "removedOrphanAttachments": "已移除 {count} 个孤立附件。",
+  "showDailyInspiration": "होम स्क्रीन पर दैनिक प्रेरणा दिखाएँ",
+  "showDailyInspirationDesc": "अपने नोट्स के ऊपर दैनिक चिंतन संकेत दिखाएँ।",
+  "reminderUpdateFailed": "दैनिक चिंतन रिमाइंडर अपडेट नहीं हो सका: {error}",
+  "reminderScheduleFailed": "दैनिक चिंतन शेड्यूल नहीं हो सका: {error}",
+  "orahFeaturesSemantics": "Orah सुविधाएँ",
+  "vaultTooltip": "वॉल्ट / लॉक किए गए नोट्स",
+  "calendarHistoryTooltip": "कैलेंडर और इतिहास",
+  "statisticsTooltip": "आँकड़े और जानकारी",
+  "appearanceTooltip": "दिखावट",
+  "appearanceSemantics": "दिखावट सेटिंग",
+  "searchFiltersTooltip": "खोज फ़िल्टर",
+  "hideDailyInspiration": "दैनिक प्रेरणा छिपाएँ",
+  "sortNotesTooltip": "नोट्स क्रमबद्ध करें",
+  "listView": "सूची दृश्य",
+  "gridView": "ग्रिड दृश्य",
+  "searchLabel": "खोजें",
+  "newNoteLabel": "नया नोट",
+  "microphoneTooltip": "माइक्रोफ़ोन",
+  "unpinTooltip": "अनपिन करें",
+  "pinTooltip": "पिन करें",
+  "favoriteTooltip": "पसंदीदा",
+  "editNoteLabel": "नोट संपादित करें",
+  "lockedContent": "लॉक की गई सामग्री",
+  "portableBackupDesc": "नोट्स, फ़ोल्डर और संलग्न फ़ाइलें एक .nova पैकेज में।",
+  "vaultAutoLockDesc": "ऐप बैकग्राउंड में जाने के बाद प्रमाणीकरण आवश्यक करें",
+  "searchClear": "साफ़ करें",
+  "favoritesOnly": "केवल पसंदीदा",
+  "pinnedOnly": "केवल पिन किए गए",
+  "folderLabel": "फ़ोल्डर",
+  "allFolders": "सभी फ़ोल्डर",
+  "archivedLabel": "संग्रहित",
+  "noteTypeLabel": "नोट का प्रकार",
+  "allTypes": "सभी प्रकार",
+  "typeText": "पाठ",
+  "typeChecklist": "चेकलिस्ट",
+  "typeVoice": "आवाज़",
+  "typeImage": "छवि",
+  "typeDrawing": "ड्रॉइंग",
+  "applyFilters": "फ़िल्टर लागू करें",
+  "filtersTooltip": "फ़िल्टर",
+  "openOrahPro": "ORAH Pro खोलें",
+  "searchScreenTitle": "खोजें",
+  "searchFiltersTitle": "खोज फ़िल्टर",
+  "homeTagline": "सोचें। लिखें। सहेजें।",
+  "homeSubtitle": "नोट्स, योजनाओं और आत्मचिंतन के लिए एक शांत जगह।",
+  "tapToBeginNote": "नोट शुरू करने के लिए टैप करें",
+  "selectNotePrompt": "एक नोट चुनें",
+  "desktopNoteEmpty": "यह नोट खाली है।",
+  "noContentLabel": "कोई सामग्री नहीं",
+  "emptyNotesHint": "अपना पहला विचार लिखने के लिए + बटन दबाएँ।",
+  "justNow": "अभी-अभी",
+  "minutesAgoSuffix": "मिनट पहले",
+  "hoursAgoSuffix": "घंटे पहले",
+  "daysAgoSuffix": "दिन पहले",
+  "hideOrahFeatures": "Orah सुविधाएँ छिपाएँ",
+  "showOrahFeatures": "Orah सुविधाएँ दिखाएँ",
+  "activeNotesCount": "{count} नोट्स",
+  "completedLabel": "पूरे हुए",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count} पूरे हुए",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (कॉपी)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "कृतज्ञता",
+  "reflectionCategoryMindfulness": "सजगता",
+  "reflectionCategoryPersonalGrowth": "व्यक्तिगत विकास",
+  "reflectionCategoryRelationships": "रिश्ते",
+  "reflectionCategorySelfCompassion": "आत्म-करुणा",
+  "reflectionCategoryClarity": "स्पष्टता",
+  "reflectionCategoryPossibility": "संभावनाएँ",
+  "reflectionCategoryDailyReview": "दैनिक समीक्षा",
+  "reflectionCategoryPurposeValues": "उद्देश्य और मूल्य",
+  "reflectionCategoryResilience": "लचीलापन",
+  "reflectionCategoryCreativityCuriosity": "रचनात्मकता और जिज्ञासा",
+  "reflectionCategoryRestRenewal": "आराम और नई ऊर्जा",
+  "reflectionWriteHint": "जो मन में आए, लिखें…",
+  "reflectionSaveError": "चिंतन सहेजा नहीं जा सका: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "स्थायी रूप से मिटाएँ?",
+  "trashDeletePermanentlyMessage": "यह नोट हमेशा के लिए हट जाएगा।",
+  "trashEmptyTitle": "ट्रैश खाली करें?",
+  "trashEmptyMessage": "{count} नोट हमेशा के लिए मिटाएँ?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "ट्रैश खाली करें",
+  "trashNoNotesTitle": "अभी कोई नोट नहीं है।",
+  "trashPrivateNote": "निजी नोट",
+  "trashLockedNote": "लॉक किया गया नोट",
+  "trashChecklist": "चेकलिस्ट",
+  "trashNote": "नोट",
+  "trashDeletePermanentlyAction": "स्थायी रूप से मिटाएँ",
+  "favoritesEmptyTitle": "अभी कोई पसंदीदा नहीं",
+  "favoritesEmptyDescription": "ज़रूरी नोट पर स्टार लगाएँ; वे यहाँ दिखाई देंगे।",
+  "favoritesNoContent": "कोई सामग्री नहीं",
+  "archivedRestoreMessage": "नोट आपके नोट्स में बहाल कर दिया गया।",
+  "archivedRefreshTooltip": "आर्काइव नोट्स रीफ़्रेश करें",
+  "archivedEmptyTitle": "कोई आर्काइव नोट नहीं",
+  "archivedEmptyDescription": "आपके आर्काइव किए गए नोट यहाँ दिखेंगे। आप उन्हें खोल सकते हैं या मुख्य सूची में बहाल कर सकते हैं।",
+  "privacyPledgeHeadline": "हमारा गोपनीयता वचन",
+  "privacyPledgeIntro": "आपके विचार निजी हैं। Orah आपके नोट्स को निजी और आपके नियंत्रण में रखने के लिए बनाया गया है।",
+  "privacyLocalTitle": "पूरी तरह स्थानीय",
+  "privacyLocalDescription": "आपके नोट केवल इसी डिवाइस पर संग्रहीत होते हैं।",
+  "privacyCloudTitle": "कोई क्लाउड नहीं",
+  "privacyCloudDescription": "Orah में नोट सिंक करने वाला सर्वर नहीं है। जब तक आप साझा या निर्यात नहीं करते, नोट आपके डिवाइस पर रहते हैं।",
+  "privacyAiTitle": "कोई AI नहीं",
+  "privacyAiDescription": "Orah आपके नोट्स को स्कैन या पढ़ता नहीं है और उन पर AI को प्रशिक्षित नहीं करता।",
+  "privacyVaultTitle": "एन्क्रिप्टेड वॉल्ट",
+  "privacyVaultDescription": "वॉल्ट में संवेदनशील नोट AES-256-GCM एन्क्रिप्शन से सुरक्षित हैं।",
+  "privacySharingDisclosure": "जब आप साझा करने, निर्यात, डिवाइस सेवाओं या सिस्टम सुविधाओं का उपयोग चुनते हैं, तो जानकारी ऐप के बाहर भेजी जा सकती है।",
+  "gotIt": "समझ गया",
+  "aboutFast": "तेज़",
+  "aboutFastDescription": "तुरंत नोट करने के लिए बनाया गया।",
+  "aboutOfflineFirst": "ऑफ़लाइन-प्रथम",
+  "aboutOfflineFirstDescription": "आपके नोट बिना खाते के काम करते हैं।",
+  "aboutPrivate": "निजी",
+  "aboutPrivateDescription": "स्थानीय डेटा और वैकल्पिक डिवाइस सुरक्षा।",
+  "aboutSummary": "Orah को सरल रखने के लिए बनाया गया है: खोलें, लिखें, व्यवस्थित करें, खोजें।",
+  "developerSignatureLabel": "अभिनव बाजपेयी — डेवलपर हस्ताक्षर",
+  "aboutFeedback": "फ़ीचर सुझावों, प्रतिक्रिया या विचारों के लिए:",
+  "aboutCopyright": "कॉपीराइट © 2026 अभिनव बाजपेयी। सर्वाधिकार सुरक्षित।",
+  "aboutLegalNotice": "Orah का ऐप कोड, मूल ब्रांडिंग, कलाकृति और उत्पाद संपत्तियाँ अभिनव बाजपेयी की हैं। तृतीय-पक्ष घटक अपने संबंधित लाइसेंस के अधीन हैं।",
+  "voiceLanguageTitle": "बोलने की भाषा",
+  "voiceLanguageDescription": "आप जिस भाषा में बोलेंगे उसे चुनें। यह ऐप की भाषा से अलग हो सकती है।",
+  "voiceLanguageSystemDefault": "डिवाइस की डिफ़ॉल्ट भाषा",
+  "voiceLanguageNoLocales": "इस डिवाइस की वाक् पहचान सेवा में कोई भाषा उपलब्ध नहीं है।",
+  "securityCreatePin": "PIN बनाएँ",
+  "securityConfirmPin": "PIN की पुष्टि करें",
+  "securityPinMismatch": "दोनों PIN मेल नहीं खाते।",
+  "securityPinCreated": "PIN बन गया है। ऐप लॉक चालू है।",
+  "securityPinActionFailed": "PIN अपडेट नहीं हो सका: {error}",
+  "securityEnterCurrentPin": "मौजूदा PIN दर्ज करें",
+  "securityPinDisabled": "PIN और ऐप लॉक बंद कर दिए गए हैं।",
+  "securityBiometricNotCompleted": "बायोमेट्रिक सत्यापन पूरा नहीं हुआ।",
+  "securityPinDigitsHint": "4–8 अंक",
+  "securityEnterDigits": "4–8 अंक दर्ज करें",
+  "securityAppLock": "ऐप लॉक",
+  "securityRequirePin": "ORAH लॉक होने पर PIN माँगें",
+  "securityCreatePinToProtect": "ORAH की सुरक्षा के लिए PIN बनाएँ",
+  "securityChangePin": "PIN बदलें",
+  "securityReplacePinSubtitle": "अपना मौजूदा ORAH PIN बदलें",
+  "securityRemovePin": "PIN हटाएँ",
+  "securityTurnOffPinProtection": "PIN सुरक्षा बंद करें",
+  "securityBiometricUnlock": "बायोमेट्रिक अनलॉक",
+  "securityUseBiometrics": "फ़िंगरप्रिंट या डिवाइस बायोमेट्रिक्स इस्तेमाल करें",
+  "securityLocalFirstPrivacy": "स्थानीय स्टोरेज को प्राथमिकता देने वाली गोपनीयता",
+  "securityLocalFirstDescription": "आपके नोट्स के लिए ORAH को खाते या क्लाउड सिंक की आवश्यकता नहीं है।",
+  "securityStorageNote": "सुरक्षा सूचना: PIN प्रमाण-पत्र Android/iOS के सुरक्षित स्टोरेज में रखे जाते हैं। संवेदनशील नोट की सामग्री डिवाइस पर ही रहती है। ORAH द्वारा सामग्री को एंड-टू-एंड एन्क्रिप्टेड बताने से पहले पूरी तरह एन्क्रिप्टेड वॉल्ट स्टोरेज जोड़ी जाएगी।",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN रिकवर नहीं किया जा सकता। भूलने पर Vault वापस नहीं मिल पाएगा।",
+  "vaultPinDigitsHint": "4–8 अंकों का Vault PIN",
+  "vaultConfirmPin": "PIN की पुष्टि करें",
+  "vaultCancel": "रद्द करें",
+  "vaultPinsMismatch": "दोनों PIN मेल नहीं खाते।",
+  "vaultPinDigitsError": "Vault PIN में 4–8 अंक होने चाहिए।",
+  "vaultIncorrectPin": "Vault PIN गलत है।",
+  "vaultVerifyCurrentPin": "मौजूदा Vault PIN सत्यापित करें",
+  "vaultIncorrectCurrentPin": "मौजूदा Vault PIN गलत है।",
+  "vaultCreateNewPin": "नया Vault PIN बनाएँ",
+  "vaultPinChanged": "Vault PIN बदल दिया गया।",
+  "vaultNewFolder": "नया Vault फ़ोल्डर",
+  "vaultFolderName": "फ़ोल्डर का नाम",
+  "vaultCreate": "बनाएँ",
+  "vaultRenameFolder": "Vault फ़ोल्डर का नाम बदलें",
+  "vaultSave": "सहेजें",
+  "vaultDelete": "हटाएँ",
+  "vaultLockedTitle": "Vault / लॉक किए गए नोट",
+  "vaultChangePin": "Vault PIN बदलें",
+  "vaultTrustBadge": "उच्च सुरक्षा वाला Vault",
+  "vaultCreatePrivateNote": "निजी नोट बनाएँ",
+  "vaultAllFolders": "सभी फ़ोल्डर",
+  "vaultFolderOptions": "Vault फ़ोल्डर विकल्प",
+  "vaultRename": "नाम बदलें",
+  "vaultNewFolderAction": "नया फ़ोल्डर",
+  "vaultEmptyTitle": "आपका Vault खाली है",
+  "vaultEmptyDescription": "एडिटर से कोई नोट लॉक करें या निजी नोट बनाएँ।",
+  "vaultMoveToFolder": "फ़ोल्डर में ले जाएँ",
+  "vaultUnfiled": "बिना फ़ोल्डर",
+  "vaultJustNow": "अभी",
+  "vaultMinutesAgoSuffix": "मिनट पहले",
+  "vaultHoursAgoSuffix": "घंटे पहले",
+  "vaultDaysAgoSuffix": "दिन पहले",
+  "vaultDeleteFolderTitle": "{folderName} हटाएँ?",
+  "vaultFolderEmpty": "यह फ़ोल्डर खाली है।",
+  "vaultDeleteFolderWithNotes": "क्या आप निश्चित हैं? {count} निजी नोट बिना फ़ोल्डर के रखे जाएँगे।",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "नोट निर्यात करें",
+  "exportSheetDescription": "नीचे दिए गए उपलब्ध फ़ॉर्मैट में से केवल एक चुनें।",
+  "exportDocuments": "दस्तावेज़",
+  "exportData": "डेटा",
+  "exportPlannedSection": "नियोजित / जल्द आ रहा है",
+  "exportPlannedDescription": "ये फ़ॉर्मैट भविष्य के Orah अपडेट के लिए नियोजित हैं।",
+  "sendAsEmailAttachment": "ईमेल अटैचमेंट के रूप में भेजें",
+  "emailAttachmentDescription": "PDF बनाता है और सिस्टम का शेयर विकल्प खोलता है",
+  "exportAllAvailable": "सभी उपलब्ध फ़ॉर्मैट निर्यात करें",
+  "exportComingSoon": "जल्द आ रहा है",
+  "plannedExportFormats": "नियोजित निर्यात फ़ॉर्मैट",
+  "plannedExportFormatsDescription": "ये फ़ॉर्मैट भविष्य के Orah अपडेट के लिए नियोजित हैं और अभी निर्यात नहीं किए जा सकते।",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "प्रिंट करने योग्य दस्तावेज़",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "संपादन योग्य Microsoft Word दस्तावेज़",
+  "exportFormatText": "सादा टेक्स्ट",
+  "exportDescriptionText": "अधिकतम संगतता",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "पोर्टेबल Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "चेकलिस्ट पंक्तियों में बदलती हैं",
+  "organizationPickerTitle": "नोट व्यवस्थित करें",
+  "organizationDone": "हो गया",
+  "organizationNoFolder": "कोई फ़ोल्डर नहीं",
+  "organizationAddTagHint": "टैग जोड़ें",
+  "organizationAddTag": "जोड़ें",
+  "organizationNoTags": "अभी कोई टैग नहीं है।",
+  "exportFailed": "निर्यात विफल: {error}",
+  "exportEmailAttachmentFailed": "ईमेल अटैचमेंट विफल: {error}",
+  "exportAllFailed": "सभी निर्यात विफल: {error}",
+  "exportCategoryEbooks": "ई-पुस्तकें",
+  "exportCategoryAcademic": "शैक्षणिक",
+  "exportCategoryPresentation": "प्रस्तुति",
+  "exportCategorySpeechAudio": "वाणी / ऑडियो",
+  "exportCategorySubtitles": "उपशीर्षक",
+  "exportCategoryEmail": "ईमेल",
+  "exportCategoryCodeLiterate": "कोड / तकनीकी दस्तावेज़",
+  "exportCategoryArchive": "पुरालेख",
+  "exportCategoryDatabase": "डेटाबेस",
+  "exportCategoryClipboard": "क्लिपबोर्ड",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "फ़ोल्डर",
+  "organizationTagsLabel": "टैग",
+  "plannedExportRichText": "रिच टेक्स्ट (.rtf)",
+  "plannedExportRichTextDescription": "टेक्स्ट का समृद्ध स्वरूप",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "معيار LibreOffice المفتوح",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "वेब पेज, ईमेल और ब्लॉग",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "अधिकांश ई-बुक रीडर",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "पुराने Kindle",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "नए Kindle",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "लोकप्रिय ई-बुक फ़ॉर्मैट",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "शोधपत्र और गणितीय दस्तावेज़",
+  "plannedExportLatexPdf": "LaTeX से PDF (.pdf)",
+  "plannedExportLatexPdfDescription": "अंतिम अकादमिक पेपर",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "संदर्भ प्रबंधन",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "तालिकाएँ और डेटा विश्लेषण",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "डेवलपर, API और संरचित डेटा",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "संरचित दस्तावेज़",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "कॉन्फ़िगरेशन और पठनीय डेटा",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "टैब से अलग की गई तालिकाएँ",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "प्रस्तुतियाँ",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "टेक्स्ट-टू-स्पीच ऑडियो",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "टेक्स्ट-टू-स्पीच ऑडियो",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "वीडियो उपशीर्षक",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "वेब/वीडियो उपशीर्षक",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "ईमेल संदेश फ़ॉर्मैट",
+  "plannedExportHtmlEmail": "HTML ईमेल",
+  "plannedExportHtmlEmailDescription": "भेजने के लिए तैयार HTML ईमेल",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "कोड दस्तावेज़",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "संपीड़ित निर्यात पैकेज",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "संपीड़ित निर्यात पैकेज",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "डेटाबेस निर्यात",
+  "plannedExportRichClipboard": "रिच टेक्स्ट क्लिपबोर्ड",
+  "plannedExportRichClipboardDescription": "रिच टेक्स्ट क्लिपबोर्ड फ़ॉर्मैट",
+  "plannedExportHtmlClipboard": "HTML क्लिपबोर्ड",
+  "plannedExportHtmlClipboardDescription": "क्लिपबोर्ड HTML फ़ॉर्मैट",
+  "plannedExportPlainClipboard": "सादा टेक्स्ट क्लिपबोर्ड",
+  "plannedExportPlainClipboardDescription": "सादा टेक्स्ट क्लिपबोर्ड फ़ॉर्मैट",
+  "exportShareSubject": "ORAH — निर्यात: {title}",
+  "exportShareBody": "ORAH से निर्यात किया गया",
+  "emailAttachmentSubject": "ORAH — संलग्नक: {title}",
+  "emailAttachmentBody": "ORAH से संलग्न",
+  "exportAllShareSubject": "ORAH — {title} — निर्यात पैकेज",
+  "exportAllShareBody": "ORAH से सभी उपलब्ध फ़ॉर्मेट में निर्यात किया गया",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} मिनट",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "ORAH विजेट जोड़ें",
+  "androidWidgetSetupBody": "Android होम स्क्रीन पर खाली जगह को देर तक दबाएँ, Widgets चुनें, ORAH खोजें और विजेट को होम स्क्रीन पर खींचें।",
+  "androidQuickShortcutDialogTitle": "क्विक नोट शॉर्टकट",
+  "androidQuickShortcutDialogBody": "Android होम स्क्रीन पर ORAH आइकन को देर तक दबाएँ। शॉर्टकट मेनू से नया नोट या नई चेकलिस्ट चुनें।",
+  "androidShortcutNewNote": "नया नोट",
+  "androidShortcutNewChecklist": "नई चेकलिस्ट",
+  "androidShortcutSearch": "खोजें",
+  "androidShareUnavailable": "इस डिवाइस पर ORAH में साझा करने की सुविधा उपलब्ध नहीं है।",
+  "androidFeatureHeading": "Android पर ORAH",
+  "androidFeatureIntro": "Android के मूल एकीकरण से ORAH में तेज़ कैप्चर, शेयरिंग और होम स्क्रीन से पहुँच मिलती है।",
+  "androidWidgetTitle": "होम स्क्रीन विजेट",
+  "androidWidgetDescription": "होम स्क्रीन से नोट या चेकलिस्ट बनाएँ या खोज खोलें।",
+  "androidQuickCaptureTitle": "क्विक नोट शॉर्टकट",
+  "androidQuickCaptureDescription": "तुरंत नोट लिखने के लिए ORAH सीधे खोलें।",
+  "androidShareTitle": "ORAH में साझा करें",
+  "androidShareDescription": "समर्थित टेक्स्ट और सामग्री को नए ORAH नोट में भेजें।",
+  "androidRemindersTitle": "रिमाइंडर",
+  "androidRemindersDescription": "बैकएंड के बिना नोट और चेकलिस्ट रिमाइंडर बनाएँ।",
+  "androidLocalIntegrationsNote": "ये Android की स्थानीय सुविधाएँ हैं और इनके लिए बैकएंड की आवश्यकता नहीं है।",
+  "androidDone": "हो गया",
+  "androidGotIt": "समझ गया",
+  "captureDescription": "आप क्या कैप्चर करना चाहते हैं, चुनें।",
+  "quickNote": "त्वरित नोट",
+  "startTypingImmediately": "तुरंत लिखना शुरू करें",
+  "quickChecklist": "त्वरित चेकलिस्ट",
+  "captureTasksWithoutSetup": "बिना सेटअप के काम दर्ज करें",
+  "dailyChecklistTooltip": "दैनिक चेकलिस्ट",
+  "quickCaptureHint": "लिखने के लिए टैप करें • चेकलिस्ट और विकल्पों के लिए देर तक दबाएँ",
+  "quickCaptureTooltip": "त्वरित कैप्चर। चेकलिस्ट और विकल्पों के लिए देर तक दबाएँ।",
+  "filtersActive": "फ़िल्टर सक्रिय हैं",
+  "searchResultsCount": "परिणाम: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "उन्नत खोज ORAH Pro की सुविधा है",
+  "noNotesFound": "कोई नोट नहीं मिला",
+  "searchFilterHint": "मुफ़्त में सामान्य शब्द खोजें, या फ़िल्टर और ऑपरेटर अनलॉक करने के लिए ORAH Pro खोलें।",
+  "searchEmptyHint": "कोई दूसरा शब्द आज़माएँ या फ़िल्टर हटाएँ।",
+  "voicePreferences": "आवाज़ की प्राथमिकताएँ",
+  "dailyReflectionSchedule": "दैनिक चिंतन का समय",
+  "versionLabel": "संस्करण {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "Vault PIN वापस प्राप्त नहीं किया जा सकता। रीसेट करने पर Vault के सभी नोट और एन्क्रिप्शन कुंजी स्थायी रूप से मिट जाएँगे। आपके सामान्य नोट और फ़ोल्डर सुरक्षित रहेंगे।",
+  "portableBackupShareText": "Orah पोर्टेबल बैकअप",
+  "storageAttachmentCount": "{count} अटैचमेंट • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "दैनिक चिंतन का समय चुनें",
+  "scheduleLoading": "समय-सारणी लोड हो रही है…",
+  "scheduleEnabledAt": "सक्रिय • हर दिन {time} पर",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "बंद • दैनिक चिंतन रिमाइंडर पाने के लिए चालू करें",
+  "captureTitle": "कैप्चर करें",
+  "featureVoiceCaptureDescription": "आवाज़ से नोट बनाकर विचारों को जल्दी दर्ज करें।",
+  "featureChecklistDescription": "नोट्स को पूरा होने की ट्रैकिंग वाली काम की चेकलिस्ट में बदलें।",
+  "featureShareExportTitle": "साझा करें और एक्सपोर्ट करें",
+  "featureShareExportDescription": "नोट्स साझा करें और सामग्री को पोर्टेबल फ़ॉर्मैट में एक्सपोर्ट करें।",
+  "notificationDailyReflectionTitle": "दैनिक चिंतन का समय",
+  "notificationDailyReflectionBody": "अपने मन की बात लिखने के लिए एक शांत पल निकालें।",
+  "notificationDailyReflectionChannel": "दैनिक चिंतन",
+  "notificationDailyReflectionChannelDescription": "रुककर चिंतन करने के लिए एक सौम्य दैनिक संकेत",
+  "notificationReminderChannel": "Orah रिमाइंडर",
+  "notificationReminderChannelDescription": "नोट्स और कार्यों के रिमाइंडर",
+  "notificationDoneAction": "हो गया",
+  "notificationSnooze10Action": "10 मिनट बाद",
+  "notificationSnooze60Action": "1 घंटे बाद",
+  "notificationReminderTitle": "ORAH रिमाइंडर",
+  "genericTryAgain": "कृपया फिर से प्रयास करें।",
+  "registrationFailed": "पंजीकरण पूरा नहीं हो सका। कृपया फिर से प्रयास करें।"
 }

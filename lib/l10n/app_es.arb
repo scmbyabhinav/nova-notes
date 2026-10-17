@@ -20,7 +20,7 @@
   "notes": "Notas",
   "moods": "Estados de ánimo",
   "moodHappy": "Feliz",
-  "moodNeutral": "Neutral",
+  "moodNeutral": "Neutro",
   "moodSad": "Triste",
   "moodAngry": "Enojado",
   "moodThoughtful": "Reflexivo",
@@ -65,5 +65,898 @@
   "unlock": "Desbloquear",
   "useBiometrics": "Usar datos biométricos",
   "incorrectPin": "PIN incorrecto",
-  "biometricFallbackError": "La autenticación biométrica se canceló o no está disponible. Introduce tu PIN para desbloquear."
+  "biometricFallbackError": "La autenticación biométrica se canceló o no está disponible. Introduce tu PIN para desbloquear.",
+  "journeyTitle": "Tu recorrido",
+  "journeyHeadline": "Los pequeños momentos se suman.",
+  "journeySubtitle": "Una mirada amable a tus hábitos de escritura y reflexión.",
+  "dayInARow": "día seguido",
+  "daysInARow": "días seguidos",
+  "notesSaved": "notas guardadas",
+  "notesStayOnDevice": "Tus notas permanecen en este dispositivo. Estas estadísticas se calculan a partir de tus notas guardadas.",
+  "moodStoryStarts": "Tu historia emocional empieza aquí",
+  "chooseMoodToSeeDistribution": "Elige un estado de ánimo al escribir una nota para ver aquí su distribución.",
+  "moodDistributionSubtitle": "Los sentimientos que has registrado",
+  "notesCreatedLast7Days": "Notas creadas en los últimos 7 días",
+  "calendarSubtitle": "Notas por día y recordatorios programados",
+  "goToToday": "Ir a hoy",
+  "scheduleNote": "Programar nota",
+  "nothingOnThisDay": "No hay nada este día",
+  "chooseAnotherDate": "Elige otra fecha o programa una nota para este día.",
+  "untitledNote": "Nota sin título",
+  "scheduledLabel": "Programada",
+  "createdLabel": "Creada",
+  "calendarItemStatusTime": "{status} • {time}",
+  "writingRhythm": "Tu ritmo de escritura",
+  "historyTimeline": "Cronología del historial",
+  "storyStartsWithNote": "Tu historia empieza con una nota",
+  "pickHighlightedDay": "Elige un día destacado para recordar un momento o consultar todo tu historial.",
+  "savedDaysHighlighted": "Los días con notas guardadas aparecerán resaltados en el calendario.",
+  "addFolderImage": "Añadir imagen de carpeta",
+  "changeImage": "Cambiar imagen",
+  "removeImage": "Eliminar imagen",
+  "folderName": "Nombre de la carpeta",
+  "folderNameHint": "p. ej., Trabajo, Ideas, Personal",
+  "cancel": "Cancelar",
+  "create": "Crear",
+  "newFolder": "Nueva carpeta",
+  "editFolder": "Editar carpeta",
+  "save": "Guardar",
+  "deleteFolderTitle": "¿Eliminar «{folderName}»?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "La carpeta está vacía.",
+  "notesMovedFromFolder": "Se conservarán {count} nota(s) y se moverán de nuevo a Todas las notas.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "Eliminar",
+  "selectedFoldersDeleteTitle": "¿Eliminar {count} carpeta(s)?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "Las carpetas seleccionadas están vacías.",
+  "deleteSelected": "Eliminar selección",
+  "cancelSelection": "Cancelar selección",
+  "selectedCount": "{count} seleccionados",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "Eliminar carpetas seleccionadas",
+  "folderOptions": "Opciones de carpeta",
+  "open": "Abrir",
+  "rename": "Cambiar nombre",
+  "folderNoteCount": "{count} notas",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "Quitar de la carpeta",
+  "moveToTrash": "Mover a la papelera",
+  "noFoldersYet": "Todavía no hay carpetas",
+  "emptyFoldersDescription": "Crea carpetas para mantener juntas las notas relacionadas.",
+  "createFolder": "Crear carpeta",
+  "noNotesInFolder": "Todavía no hay notas en esta carpeta.\nAbre una nota y elige Organizar para añadirla aquí.",
+  "welcomeToOrah": "Te damos la bienvenida a Orah",
+  "personalizeYourSpace": "Personalicemos tu espacio. Introduce tu nombre y correo electrónico para comenzar.",
+  "fullName": "Nombre completo",
+  "yourName": "Tu nombre",
+  "emailAddress": "Correo electrónico",
+  "emailExample": "tu@ejemplo.com",
+  "enterFullName": "Introduce tu nombre completo.",
+  "enterValidEmail": "Introduce un correo electrónico válido.",
+  "registerAndContinue": "Registrarse y continuar",
+  "profileStoredOnDevice": "Tu perfil se guarda de forma segura en este dispositivo. La sincronización de la lista de suscriptores requiere un servicio de boletines configurado.",
+  "proRestore": "Restaurar",
+  "proHeroEyebrow": "TUS NOTAS, CON MÁS POTENCIA",
+  "proHeroHeadline": "Saca más partido a cada nota.",
+  "proHeroDescription": "Convierte el papel en conocimiento que puedes buscar, encuentra detalles y lleva tus notas contigo.",
+  "proHeroFootnote": "Mejora cuando necesites más potencia. Tus notas diarias siguen siendo tuyas.",
+  "proMoreThanNotes": "Mucho más que notas",
+  "proOcrTitle": "OCR para buscar en imágenes",
+  "proOcrDescription": "Extrae texto de imágenes y documentos compatibles sin volver a escribirlo.",
+  "proExportTitle": "Exporta en el formato que necesitas",
+  "proExportDescription": "Usa tus notas fuera de ORAH con exportaciones premium a PDF, Word y Excel.",
+  "proSearchTitle": "Encuentra lo que buscas entre tanta información",
+  "proSearchDescription": "Usa la búsqueda avanzada y los filtros para encontrar detalles importantes más rápido.",
+  "proWorkspaceTitle": "Un espacio de trabajo más organizado",
+  "proWorkspaceDescription": "Desbloquea plantillas premium y herramientas avanzadas cuando estén disponibles en tu versión.",
+  "proEntitlementActive": "Tu acceso Pro está activo.",
+  "proChoosePlan": "Elige tu plan Pro",
+  "proPricesFromPlay": "Google Play muestra los precios de tu región.",
+  "proPlanYearly": "Anual",
+  "proBestValue": "Mejor precio",
+  "proPlanMonthly": "Mensual",
+  "proMonthlySubtitle": "Pago mensual",
+  "proOfferInstruction": "¿Tienes una oferta de ORAH de tu empresa o del desarrollador? Canjéala con el enlace o código de Google Play de tu invitación y vuelve aquí para pulsar Restaurar.",
+  "proRestorePurchases": "Restaurar compras",
+  "proRenewalDisclosure": "Las suscripciones se renuevan automáticamente salvo que las canceles en Google Play. Revisa el precio, el período de facturación y las condiciones de prueba antes de confirmar. Puedes administrar o cancelar la suscripción en tu cuenta de Play Store.",
+  "proBestValueBadge": "MEJOR PRECIO",
+  "proLoadingPrice": "Cargando precio…",
+  "proUnavailable": "No disponible actualmente",
+  "proChooseButton": "Elegir",
+  "microphoneAccessNeeded": "Se necesita acceso al micrófono",
+  "microphoneAccessPermanentDenied": "ORAH Notes necesita acceso al micrófono para transcribir tu voz. Puedes activarlo en Ajustes.",
+  "microphoneAccessRequest": "ORAH Notes necesita acceso al micrófono para transcribir tu voz. Permite el acceso o actívalo en Ajustes.",
+  "notNow": "Ahora no",
+  "openSettings": "Abrir ajustes",
+  "voiceInputUnavailableWithMessage": "Entrada de voz no disponible: {message}",
+  "voiceInputUnavailable": "La entrada de voz no está disponible en este dispositivo.",
+  "couldNotStartVoiceCapture": "No se pudo iniciar la captura de voz: {error}",
+  "voiceTextSaved": "Texto de voz guardado en la nota.",
+  "recordingStoppedPartialSaved": "Grabación detenida. Se guardó el texto parcial.",
+  "addTask": "Añadir tarea",
+  "taskHint": "¿Qué hay que hacer?",
+  "add": "Añadir",
+  "editTask": "Editar tarea",
+  "enterVaultPin": "Introduce el PIN de la bóveda",
+  "pinDigitsLabel": "PIN de 4 a 8 dígitos",
+  "vaultAuthenticationFailed": "Error de autenticación. Prueba la biometría o el PIN de la bóveda.",
+  "secureYourVault": "Protege tu bóveda",
+  "vaultSetupDescription": "Para bloquear esta nota, primero debes configurar un PIN o la autenticación biométrica. Así solo tú podrás acceder a ella.",
+  "setUpSecurity": "Configurar seguridad",
+  "createVaultPin": "Crear PIN de la bóveda",
+  "confirmVaultPin": "Confirmar PIN de la bóveda",
+  "vaultPinsDoNotMatch": "Los PIN no coinciden. La nota no se ha bloqueado.",
+  "vaultPinCreated": "PIN de la bóveda creado. Protegiendo la nota…",
+  "enterPinDigits": "Introduce entre 4 y 8 dígitos",
+  "addContentBeforeLock": "Añade contenido antes de bloquear esta nota.",
+  "vaultAuthenticationNotCompleted": "No se completó la autenticación. La nota no se ha bloqueado.",
+  "noteLockedMovedToVault": "Nota bloqueada y movida a la bóveda.",
+  "noteUnlockedMovedToNotes": "Nota desbloqueada y devuelta a tus notas.",
+  "continueLabel": "Continuar",
+  "ocrNoReadableText": "No se encontró texto legible.",
+  "ocrTextExtracted": "Texto extraído de la imagen.",
+  "ocrCouldNotReadImage": "No se pudo leer el texto de esa imagen.",
+  "chooseTemplate": "Elegir una plantilla",
+  "replaceCurrentNote": "¿Reemplazar la nota actual?",
+  "templateReplaceWarning": "Esta plantilla reemplazará el título y el contenido actuales.",
+  "replace": "Reemplazar",
+  "insertLink": "Insertar enlace",
+  "insert": "Insertar",
+  "couldNotAddImage": "No se pudo añadir la imagen: {error}",
+  "couldNotAddFiles": "No se pudieron añadir los archivos: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "Cambiar nombre del adjunto",
+  "preview": "Vista previa",
+  "share": "Compartir",
+  "details": "Detalles",
+  "removeFromNote": "Quitar de la nota",
+  "chooseFromGallery": "Elegir de la galería",
+  "takePhoto": "Tomar una foto",
+  "attachFiles": "Adjuntar archivos",
+  "close": "Cerrar",
+  "couldNotUnlockPrivateNote": "No se pudo desbloquear la nota privada: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "Exportar",
+  "removeFavorite": "Quitar de favoritos",
+  "addToFavorites": "Añadir a favoritos",
+  "addImage": "Añadir imagen",
+  "template": "Plantilla",
+  "setReminder": "Establecer recordatorio",
+  "reminderAt": "Recordatorio: {date}",
+  "clearReminder": "Borrar recordatorio",
+  "noteColor": "Color de nota",
+  "unarchive": "Desarchivar",
+  "archive": "Archivar",
+  "back": "Atrás",
+  "remove": "Quitar",
+  "retry": "Reintentar",
+  "titleHint": "Título",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "No se pudo compartir la tarjeta de nota: {error}",
+  "couldNotRenameAttachment": "No se pudo cambiar el nombre del adjunto: {error}",
+  "attachmentDetailsFormat": "Tamaño: {size}\nModificado: {modified}",
+  "authenticationFailedNoteNotDeleted": "Error de autenticación. No se eliminó la nota.",
+  "privateNote": "Nota privada",
+  "thisNoteIsPrivate": "Esta nota es privada",
+  "unlockPrivateNoteHint": "Desbloquéala con biometría o PIN para verla.",
+  "exitZenMode": "Salir del modo Zen",
+  "exportAsCard": "Exportar como tarjeta",
+  "scanTextFromImage": "Escanear texto de imagen",
+  "folderAndTags": "Carpetas y etiquetas",
+  "lockNote": "Bloquear nota",
+  "unlockAndMoveToNotes": "Desbloquear y mover a Notas",
+  "stopAndSave": "Detener y guardar",
+  "startWritingHint": "Empieza a escribir...",
+  "howAreYouFeeling": "¿Cómo te sientes?",
+  "checklistEmpty": "Tu lista está vacía",
+  "addFirstTask": "Añadir primera tarea",
+  "moveUp": "Mover arriba",
+  "moveDown": "Mover abajo",
+  "deleteTask": "Eliminar tarea",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "Desbloqueando…",
+  "unlockNote": "Desbloquear nota",
+  "zenMode": "Modo Zen",
+  "edit": "Editar",
+  "pinNote": "Fijar",
+  "unpinNote": "Desanclar",
+  "bold": "Negrita",
+  "italic": "Cursiva",
+  "strikethrough": "Tachado",
+  "heading": "Encabezado",
+  "bullets": "Viñetas",
+  "numberedList": "Lista numerada",
+  "quote": "Cita",
+  "linkLabel": "Enlace",
+  "addImageOrFile": "Añadir imagen o archivo",
+  "stopVoiceInput": "Detener entrada de voz",
+  "voiceInput": "Entrada de voz",
+  "stopAndSaveVoiceInput": "Detener y guardar la entrada de voz",
+  "tapMicToSpeak": "Toca el micrófono para dictar tu nota",
+  "voiceNote": "Nota de voz",
+  "preparing": "Preparando…",
+  "saving": "Guardando…",
+  "unsavedChanges": "Cambios sin guardar",
+  "saved": "Guardado",
+  "recordingVoiceInput": "Grabando • {duration}",
+  "savingVoiceText": "Guardando texto de voz…",
+  "preparingMicrophone": "Preparando el micrófono…",
+  "textNote": "Nota de texto",
+  "checklistType": "Lista de tareas",
+  "templateMeetingNotes": "Notas de reunión",
+  "templateAgenda": "Agenda",
+  "templateDecisions": "Decisiones",
+  "templateActionItems": "Acciones pendientes",
+  "templateDailyPlan": "Plan diario",
+  "templateTopPriority": "Prioridad principal",
+  "templateImportant": "Importante",
+  "templateIfTimeAllows": "Si hay tiempo",
+  "templateShoppingList": "Lista de compras",
+  "templateMilk": "Leche",
+  "templateVegetables": "Verduras",
+  "templateHousehold": "Hogar",
+  "templateTravelPlan": "Plan de viaje",
+  "templateDates": "Fechas",
+  "templateBookings": "Reservas",
+  "templatePlacesToVisit": "Lugares que visitar",
+  "orahNoteCard": "Tarjeta de nota de ORAH",
+  "sharedFromOrah": "Compartido desde ORAH",
+  "noteCardCaptureError": "No se pudo capturar la tarjeta de nota.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "Hola, {name}",
+  "welcomeBack": "TE DAMOS LA BIENVENIDA",
+  "friend": "Amigo/a",
+  "voiceGreeting": "Hola, {name}",
+  "voicePreviewGreeting": "Hola, esto es Orah Notes",
+  "speakMyNameAtStartup": "Decir mi nombre al iniciar",
+  "voiceGreetingEnabledDescription": "Orah te saludará en el idioma seleccionado al abrirse.",
+  "voiceGreetingDisabledDescription": "El saludo permanecerá en silencio.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "Quitar de archivados",
+  "archiveNote": "Archivar",
+  "duplicateNote": "Duplicar nota",
+  "navNotes": "Notas",
+  "navFolders": "Carpetas",
+  "navFavorites": "Favoritos",
+  "navArchivedNotes": "Notas archivadas",
+  "navDailyReflection": "Reflexión diaria",
+  "navVoiceCapture": "Captura de voz",
+  "navChecklists": "Listas de verificación",
+  "navAppearance": "Apariencia",
+  "navSearch": "Buscar",
+  "offlineAccess": "Acceso sin conexión",
+  "backupExport": "Copia de seguridad y exportación",
+  "recentlyUpdated": "Actualizadas recientemente",
+  "recentlyCreated": "Creadas recientemente",
+  "titleAZ": "Título A–Z",
+  "noNotesYet": "Aún no hay notas",
+  "vaultLocked": "Bóveda / Notas bloqueadas",
+  "vaultLockedDesc": "Abre tus notas privadas y cifradas",
+  "privacyPledge": "Compromiso de privacidad",
+  "privacyPledgeDesc": "Lee nuestro compromiso sin nube",
+  "backupExportDesc": "Copias locales y datos portátiles",
+  "vaultResetTitle": "¿Olvidaste el PIN? Restablecer bóveda",
+  "vaultResetDesc": "No se puede recuperar. Al restablecerla, perderás la bóveda anterior para siempre.",
+  "pinBiometric": "Protección con PIN y biometría",
+  "androidFeaturesDesc": "Widgets, accesos directos y uso compartido",
+  "archivedNotesTitle": "Notas archivadas",
+  "archivedNotesDesc": "Abre o restaura tus notas archivadas",
+  "trashTitle": "Papelera",
+  "trashDesc": "Restaura o elimina notas permanentemente",
+  "orahFeaturesTitle": "Funciones de Orah",
+  "orahFeaturesDesc": "Descubre lo que Orah puede hacer",
+  "aboutOrahTitle": "Acerca de Orah",
+  "aboutOrahDesc": "Información del producto y enfoque de privacidad",
+  "cancelLabel": "Cancelar",
+  "resetVaultQuestion": "¿Restablecer la bóveda?",
+  "deleteVaultConfirm": "Eliminar la bóveda anterior y crear otra",
+  "themeLabel": "Tema",
+  "themeSystem": "Sistema",
+  "themeLight": "Claro",
+  "themeDark": "Oscuro",
+  "portableBackup": "Copia portátil",
+  "createBackup": "Crear copia",
+  "restoreBackup": "Restaurar copia",
+  "storageMaintenance": "Mantenimiento del almacenamiento",
+  "cleanOrphanAttachments": "Limpiar adjuntos huérfanos",
+  "vaultAutoLock": "Bloqueo automático de bóveda",
+  "neverLabel": "Nunca",
+  "dailyReflectionReminder": "Recordatorio de reflexión diaria",
+  "reminderTime": "Hora del recordatorio",
+  "backupExportTitle": "Copia de seguridad y exportación",
+  "vaultResetSuccess": "Se eliminó la bóveda anterior. Abre la bóveda para crear un PIN nuevo.",
+  "vaultResetFailed": "No se pudo restablecer la bóveda: {error}",
+  "backupRestoredCount": "Se restauraron {count} notas correctamente.",
+  "backupError": "Error de copia de seguridad: {error}",
+  "unusedFilesFound": "Se encontraron {count} archivos sin usar",
+  "removedOrphanAttachments": "Se eliminaron {count} archivos adjuntos huérfanos.",
+  "showDailyInspiration": "Mostrar inspiración diaria en inicio",
+  "showDailyInspirationDesc": "Mostrar una reflexión diaria sobre tus notas.",
+  "reminderUpdateFailed": "No se pudo actualizar el recordatorio de reflexión diaria: {error}",
+  "reminderScheduleFailed": "No se pudo programar la reflexión diaria: {error}",
+  "orahFeaturesSemantics": "Funciones de Orah",
+  "vaultTooltip": "Bóveda / Notas bloqueadas",
+  "calendarHistoryTooltip": "Calendario e historial",
+  "statisticsTooltip": "Estadísticas e información",
+  "appearanceTooltip": "Apariencia",
+  "appearanceSemantics": "Configuración de apariencia",
+  "searchFiltersTooltip": "Filtros de búsqueda",
+  "hideDailyInspiration": "Ocultar inspiración diaria",
+  "sortNotesTooltip": "Ordenar notas",
+  "listView": "Vista de lista",
+  "gridView": "Vista de cuadrícula",
+  "searchLabel": "Buscar",
+  "newNoteLabel": "Nota nueva",
+  "microphoneTooltip": "Micrófono",
+  "unpinTooltip": "Desfijar",
+  "pinTooltip": "Fijar",
+  "favoriteTooltip": "Favorito",
+  "editNoteLabel": "Editar nota",
+  "lockedContent": "Contenido bloqueado",
+  "portableBackupDesc": "Notas, carpetas y archivos adjuntos en un paquete .nova.",
+  "vaultAutoLockDesc": "Solicitar autenticación al dejar la app en segundo plano",
+  "searchClear": "Borrar",
+  "favoritesOnly": "Solo favoritos",
+  "pinnedOnly": "Solo fijados",
+  "folderLabel": "Carpeta",
+  "allFolders": "Todas las carpetas",
+  "archivedLabel": "Archivadas",
+  "noteTypeLabel": "Tipo de nota",
+  "allTypes": "Todos los tipos",
+  "typeText": "Texto",
+  "typeChecklist": "Lista de tareas",
+  "typeVoice": "Voz",
+  "typeImage": "Imagen",
+  "typeDrawing": "Dibujo",
+  "applyFilters": "Aplicar filtros",
+  "filtersTooltip": "Filtros",
+  "openOrahPro": "Abrir ORAH Pro",
+  "searchScreenTitle": "Buscar",
+  "searchFiltersTitle": "Filtros de búsqueda",
+  "homeTagline": "Piénsalo. Escríbelo. Guárdalo.",
+  "homeSubtitle": "Un espacio tranquilo para notas, planes y reflexión.",
+  "tapToBeginNote": "Toca para empezar una nota",
+  "selectNotePrompt": "Selecciona una nota",
+  "desktopNoteEmpty": "Esta nota está vacía.",
+  "noContentLabel": "Sin contenido",
+  "emptyNotesHint": "Toca el botón + para guardar tu primera idea.",
+  "justNow": "Ahora mismo",
+  "minutesAgoSuffix": "min hace",
+  "hoursAgoSuffix": "h hace",
+  "daysAgoSuffix": "días atrás",
+  "hideOrahFeatures": "Ocultar funciones de Orah",
+  "showOrahFeatures": "Mostrar funciones de Orah",
+  "activeNotesCount": "{count} notas",
+  "completedLabel": "completadas",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count} completadas",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (Copia)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "Gratitud",
+  "reflectionCategoryMindfulness": "Atención plena",
+  "reflectionCategoryPersonalGrowth": "Crecimiento personal",
+  "reflectionCategoryRelationships": "Relaciones",
+  "reflectionCategorySelfCompassion": "Autocompasión",
+  "reflectionCategoryClarity": "Claridad",
+  "reflectionCategoryPossibility": "Posibilidades",
+  "reflectionCategoryDailyReview": "Repaso diario",
+  "reflectionCategoryPurposeValues": "Propósito y valores",
+  "reflectionCategoryResilience": "Resiliencia",
+  "reflectionCategoryCreativityCuriosity": "Creatividad y curiosidad",
+  "reflectionCategoryRestRenewal": "Descanso y renovación",
+  "reflectionWriteHint": "Escribe lo que te venga a la mente…",
+  "reflectionSaveError": "No se pudo guardar la reflexión: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "¿Eliminar permanentemente?",
+  "trashDeletePermanentlyMessage": "Esta nota se eliminará permanentemente.",
+  "trashEmptyTitle": "¿Vaciar la papelera?",
+  "trashEmptyMessage": "¿Eliminar {count} notas permanentemente?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Vaciar papelera",
+  "trashNoNotesTitle": "Aún no hay notas.",
+  "trashPrivateNote": "Nota privada",
+  "trashLockedNote": "Nota bloqueada",
+  "trashChecklist": "Lista de verificación",
+  "trashNote": "Nota",
+  "trashDeletePermanentlyAction": "Eliminar permanentemente",
+  "favoritesEmptyTitle": "Aún no hay favoritos",
+  "favoritesEmptyDescription": "Marca las notas importantes con una estrella y aparecerán aquí.",
+  "favoritesNoContent": "Sin contenido",
+  "archivedRestoreMessage": "La nota se restauró en tus notas.",
+  "archivedRefreshTooltip": "Actualizar notas archivadas",
+  "archivedEmptyTitle": "No hay notas archivadas",
+  "archivedEmptyDescription": "Las notas archivadas aparecerán aquí. Puedes abrirlas o restaurarlas a tu lista principal.",
+  "privacyPledgeHeadline": "Nuestro compromiso de privacidad",
+  "privacyPledgeIntro": "Tus pensamientos son personales. Orah está diseñado para mantener tus notas privadas y bajo tu control.",
+  "privacyLocalTitle": "100 % local",
+  "privacyLocalDescription": "Tus notas se guardan solo en este dispositivo.",
+  "privacyCloudTitle": "Sin nube",
+  "privacyCloudDescription": "Orah no tiene un servidor para sincronizar notas. Permanecen en tu dispositivo salvo que decidas compartirlas o exportarlas.",
+  "privacyAiTitle": "Sin IA",
+  "privacyAiDescription": "Orah no analiza ni lee tus notas ni entrena IA con ellas.",
+  "privacyVaultTitle": "Bóveda cifrada",
+  "privacyVaultDescription": "Las notas sensibles de la bóveda están protegidas con cifrado AES-256-GCM.",
+  "privacySharingDisclosure": "Al compartir, exportar o usar servicios del dispositivo y funciones del sistema operativo, puede enviarse información fuera de la app si eliges utilizarlos.",
+  "gotIt": "Entendido",
+  "aboutFast": "Rápido",
+  "aboutFastDescription": "Diseñado para capturar al instante.",
+  "aboutOfflineFirst": "Sin conexión primero",
+  "aboutOfflineFirstDescription": "Tus notas funcionan sin una cuenta.",
+  "aboutPrivate": "Privado",
+  "aboutPrivateDescription": "Datos locales con protección opcional del dispositivo.",
+  "aboutSummary": "Orah no estorba: abre, captura, organiza y encuentra.",
+  "developerSignatureLabel": "Abhinav Bajpai — firma del desarrollador",
+  "aboutFeedback": "Para sugerencias de funciones, comentarios o ideas:",
+  "aboutCopyright": "Copyright © 2026 Abhinav Bajpai. Todos los derechos reservados.",
+  "aboutLegalNotice": "El código de Orah, la marca original, las ilustraciones y los recursos del producto pertenecen a Abhinav Bajpai. Los componentes de terceros se rigen por sus respectivas licencias.",
+  "voiceLanguageTitle": "Idioma de voz",
+  "voiceLanguageDescription": "Elige el idioma en el que hablarás. Puede ser distinto del idioma de la app.",
+  "voiceLanguageSystemDefault": "Usar idioma del dispositivo",
+  "voiceLanguageNoLocales": "El servicio de reconocimiento de este dispositivo no ofrece idiomas disponibles.",
+  "securityCreatePin": "Crear PIN",
+  "securityConfirmPin": "Confirmar PIN",
+  "securityPinMismatch": "Los PIN no coinciden.",
+  "securityPinCreated": "PIN creado. El bloqueo de la aplicación está activado.",
+  "securityPinActionFailed": "No se pudo actualizar el PIN: {error}",
+  "securityEnterCurrentPin": "Introduce el PIN actual",
+  "securityPinDisabled": "PIN y bloqueo de la aplicación desactivados.",
+  "securityBiometricNotCompleted": "No se completó la verificación biométrica.",
+  "securityPinDigitsHint": "De 4 a 8 dígitos",
+  "securityEnterDigits": "Introduce de 4 a 8 dígitos",
+  "securityAppLock": "Bloqueo de la aplicación",
+  "securityRequirePin": "Solicitar tu PIN cuando ORAH esté bloqueado",
+  "securityCreatePinToProtect": "Crea un PIN para proteger ORAH",
+  "securityChangePin": "Cambiar PIN",
+  "securityReplacePinSubtitle": "Sustituir tu PIN actual de ORAH",
+  "securityRemovePin": "Eliminar PIN",
+  "securityTurnOffPinProtection": "Desactivar la protección por PIN",
+  "securityBiometricUnlock": "Desbloqueo biométrico",
+  "securityUseBiometrics": "Usar huella dactilar o biometría del dispositivo",
+  "securityLocalFirstPrivacy": "Privacidad con almacenamiento local",
+  "securityLocalFirstDescription": "ORAH no necesita una cuenta ni sincronización en la nube para tus notas.",
+  "securityStorageNote": "Nota de seguridad: las credenciales del PIN se guardan en el almacenamiento seguro de Android/iOS. El contenido sensible de las notas permanece en el dispositivo. Se añadirá almacenamiento cifrado completo para la bóveda antes de que ORAH afirme que el contenido está cifrado de extremo a extremo.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ No es posible recuperar el PIN. Si lo olvidas, no podrás recuperar la bóveda.",
+  "vaultPinDigitsHint": "PIN de la bóveda de 4 a 8 dígitos",
+  "vaultConfirmPin": "Confirmar PIN",
+  "vaultCancel": "Cancelar",
+  "vaultPinsMismatch": "Los PIN no coinciden.",
+  "vaultPinDigitsError": "El PIN de la bóveda debe tener entre 4 y 8 dígitos.",
+  "vaultIncorrectPin": "PIN de la bóveda incorrecto.",
+  "vaultVerifyCurrentPin": "Verificar el PIN actual de la bóveda",
+  "vaultIncorrectCurrentPin": "El PIN actual de la bóveda es incorrecto.",
+  "vaultCreateNewPin": "Crear un nuevo PIN de la bóveda",
+  "vaultPinChanged": "PIN de la bóveda cambiado.",
+  "vaultNewFolder": "Nueva carpeta de la bóveda",
+  "vaultFolderName": "Nombre de la carpeta",
+  "vaultCreate": "Crear",
+  "vaultRenameFolder": "Renombrar carpeta de la bóveda",
+  "vaultSave": "Guardar",
+  "vaultDelete": "Eliminar",
+  "vaultLockedTitle": "Bóveda / Notas bloqueadas",
+  "vaultChangePin": "Cambiar PIN de la bóveda",
+  "vaultTrustBadge": "Bóveda de alta seguridad",
+  "vaultCreatePrivateNote": "Crear nota privada",
+  "vaultAllFolders": "Todas las carpetas",
+  "vaultFolderOptions": "Opciones de carpeta de la bóveda",
+  "vaultRename": "Renombrar",
+  "vaultNewFolderAction": "Nueva carpeta",
+  "vaultEmptyTitle": "La bóveda está vacía",
+  "vaultEmptyDescription": "Bloquea una nota desde el editor o crea una nota privada.",
+  "vaultMoveToFolder": "Mover a carpeta",
+  "vaultUnfiled": "Sin carpeta",
+  "vaultJustNow": "Ahora mismo",
+  "vaultMinutesAgoSuffix": "min atrás",
+  "vaultHoursAgoSuffix": "h atrás",
+  "vaultDaysAgoSuffix": "días atrás",
+  "vaultDeleteFolderTitle": "¿Eliminar {folderName}?",
+  "vaultFolderEmpty": "Esta carpeta está vacía.",
+  "vaultDeleteFolderWithNotes": "¿Seguro? {count} nota(s) privada(s) se moverán a Sin carpeta.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "Exportar nota",
+  "exportSheetDescription": "Elige exactamente un formato de los disponibles a continuación.",
+  "exportDocuments": "Documentos",
+  "exportData": "Datos",
+  "exportPlannedSection": "Previsto / Próximamente",
+  "exportPlannedDescription": "Estos formatos están previstos para futuras actualizaciones de Orah.",
+  "sendAsEmailAttachment": "Enviar como archivo adjunto",
+  "emailAttachmentDescription": "Crea un PDF y abre el menú de compartir del sistema",
+  "exportAllAvailable": "Exportar todos los formatos disponibles",
+  "exportComingSoon": "Próximamente",
+  "plannedExportFormats": "Formatos de exportación previstos",
+  "plannedExportFormatsDescription": "Estos formatos están previstos para futuras actualizaciones de Orah y todavía no se pueden exportar.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Documento imprimible",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Documento Microsoft Word editable",
+  "exportFormatText": "Texto sin formato",
+  "exportDescriptionText": "Máxima compatibilidad",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown portátil",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Las listas se convierten en filas",
+  "organizationPickerTitle": "Organizar nota",
+  "organizationDone": "Listo",
+  "organizationNoFolder": "Sin carpeta",
+  "organizationAddTagHint": "Añadir etiqueta",
+  "organizationAddTag": "Añadir",
+  "organizationNoTags": "Aún no hay etiquetas.",
+  "exportFailed": "Error al exportar: {error}",
+  "exportEmailAttachmentFailed": "Error al adjuntar al correo: {error}",
+  "exportAllFailed": "Error al exportar todo: {error}",
+  "exportCategoryEbooks": "Libros electrónicos",
+  "exportCategoryAcademic": "Académico",
+  "exportCategoryPresentation": "Presentación",
+  "exportCategorySpeechAudio": "Voz / audio",
+  "exportCategorySubtitles": "Subtítulos",
+  "exportCategoryEmail": "Correo electrónico",
+  "exportCategoryCodeLiterate": "Código / documentos técnicos",
+  "exportCategoryArchive": "Archivo",
+  "exportCategoryDatabase": "Base de datos",
+  "exportCategoryClipboard": "Portapapeles",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "Carpeta",
+  "organizationTagsLabel": "Etiquetas",
+  "plannedExportRichText": "Texto enriquecido (.rtf)",
+  "plannedExportRichTextDescription": "Texto enriquecido multiplataforma",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "Estándar abierto para LibreOffice",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "Páginas web, correo y blogs",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "La mayoría de lectores de libros electrónicos",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "Kindle antiguos",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "Kindle modernos",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "Formato popular de libros electrónicos",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "Artículos de investigación y documentos matemáticos",
+  "plannedExportLatexPdf": "PDF desde LaTeX (.pdf)",
+  "plannedExportLatexPdfDescription": "Artículos académicos finales",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "Gestión de referencias",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "Tablas y análisis de datos",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "Desarrolladores, API y datos estructurados",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "Documentos estructurados",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "Configuración y datos legibles",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "Tablas separadas por tabuladores",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "Presentaciones",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "Audio de texto a voz",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "Audio de texto a voz",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "Subtítulos de vídeo",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "Subtítulos web y de vídeo",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "Formato de mensaje de correo",
+  "plannedExportHtmlEmail": "Correo HTML",
+  "plannedExportHtmlEmailDescription": "Correo HTML listo para enviar",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "Documentos de código",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "Paquete de exportación comprimido",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "Paquete de exportación comprimido",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "Exportación de base de datos",
+  "plannedExportRichClipboard": "Portapapeles de texto enriquecido",
+  "plannedExportRichClipboardDescription": "Formato de portapapeles de texto enriquecido",
+  "plannedExportHtmlClipboard": "Portapapeles HTML",
+  "plannedExportHtmlClipboardDescription": "Formato HTML del portapapeles",
+  "plannedExportPlainClipboard": "Portapapeles de texto plano",
+  "plannedExportPlainClipboardDescription": "Formato de portapapeles de texto plano",
+  "exportShareSubject": "ORAH — Exportar: {title}",
+  "exportShareBody": "Exportado desde ORAH",
+  "emailAttachmentSubject": "ORAH — Adjunto: {title}",
+  "emailAttachmentBody": "Adjunto desde ORAH",
+  "exportAllShareSubject": "ORAH — {title} — paquete de exportación",
+  "exportAllShareBody": "Exportado desde ORAH en todos los formatos disponibles",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} min",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "Añadir el widget de ORAH",
+  "androidWidgetSetupBody": "En la pantalla de inicio de Android, mantén pulsada una zona vacía, elige Widgets, busca ORAH y arrastra el widget a la pantalla de inicio.",
+  "androidQuickShortcutDialogTitle": "Acceso directo a nota rápida",
+  "androidQuickShortcutDialogBody": "Mantén pulsado el icono de ORAH en la pantalla de inicio. Usa «Nueva nota» o «Nueva lista» en el menú de accesos directos.",
+  "androidShortcutNewNote": "Nueva nota",
+  "androidShortcutNewChecklist": "Nueva lista",
+  "androidShortcutSearch": "Buscar",
+  "androidShareUnavailable": "Compartir con ORAH no está disponible en este dispositivo.",
+  "androidFeatureHeading": "ORAH en Android",
+  "androidFeatureIntro": "ORAH integra captura rápida, uso compartido y acceso desde la pantalla de inicio mediante funciones nativas de Android.",
+  "androidWidgetTitle": "Widget de pantalla de inicio",
+  "androidWidgetDescription": "Crea una nota o lista, o abre la búsqueda desde la pantalla de inicio.",
+  "androidQuickCaptureTitle": "Acceso directo a nota rápida",
+  "androidQuickCaptureDescription": "Abre ORAH directamente para capturar algo al instante.",
+  "androidShareTitle": "Compartir con ORAH",
+  "androidShareDescription": "Envía texto y contenido compatibles a una nueva nota de ORAH.",
+  "androidRemindersTitle": "Recordatorios",
+  "androidRemindersDescription": "Crea recordatorios para notas y listas sin necesidad de un backend.",
+  "androidLocalIntegrationsNote": "Estas integraciones son funciones locales de Android y no necesitan un backend.",
+  "androidDone": "Hecho",
+  "androidGotIt": "Entendido",
+  "captureDescription": "Elige qué quieres capturar.",
+  "quickNote": "Nota rápida",
+  "startTypingImmediately": "Empieza a escribir de inmediato",
+  "quickChecklist": "Lista rápida",
+  "captureTasksWithoutSetup": "Anota tareas sin configurar nada",
+  "dailyChecklistTooltip": "Lista diaria",
+  "quickCaptureHint": "Toca para escribir • Mantén pulsado para ver la lista y opciones",
+  "quickCaptureTooltip": "Captura rápida. Mantén pulsado para ver la lista y opciones.",
+  "filtersActive": "Filtros activos",
+  "searchResultsCount": "Resultados: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "La búsqueda avanzada es una función de ORAH Pro",
+  "noNotesFound": "No se encontraron notas",
+  "searchFilterHint": "Usa palabras normales gratis o abre ORAH Pro para desbloquear filtros y operadores.",
+  "searchEmptyHint": "Prueba otra palabra o elimina un filtro.",
+  "voicePreferences": "Preferencias de voz",
+  "dailyReflectionSchedule": "Horario de reflexión diaria",
+  "versionLabel": "Versión {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "No se puede recuperar el PIN de Vault. Al restablecerlo se eliminarán permanentemente todas las notas de Vault y su clave de cifrado. Tus notas y carpetas normales no cambiarán.",
+  "portableBackupShareText": "Copia de seguridad portátil de Orah",
+  "storageAttachmentCount": "{count} archivos adjuntos • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "Elige la hora de la reflexión diaria",
+  "scheduleLoading": "Cargando horario…",
+  "scheduleEnabledAt": "Activado • Todos los días a las {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "Desactivado • Actívalo para recibir un recordatorio diario",
+  "captureTitle": "Capturar",
+  "featureVoiceCaptureDescription": "Captura ideas rápidamente creando notas mediante la voz.",
+  "featureChecklistDescription": "Convierte notas en listas prácticas con seguimiento de tareas completadas.",
+  "featureShareExportTitle": "Compartir y exportar",
+  "featureShareExportDescription": "Comparte notas y exporta contenido en formatos portátiles.",
+  "notificationDailyReflectionTitle": "Es hora de tu reflexión diaria",
+  "notificationDailyReflectionBody": "Tómate un momento tranquilo para escribir lo que tienes en mente.",
+  "notificationDailyReflectionChannel": "Reflexión diaria",
+  "notificationDailyReflectionChannelDescription": "Un recordatorio diario amable para hacer una pausa y reflexionar",
+  "notificationReminderChannel": "Recordatorios de Orah",
+  "notificationReminderChannelDescription": "Recordatorios para notas y tareas",
+  "notificationDoneAction": "Hecho",
+  "notificationSnooze10Action": "Posponer 10 min",
+  "notificationSnooze60Action": "Posponer 1 h",
+  "notificationReminderTitle": "Recordatorio de ORAH",
+  "genericTryAgain": "Inténtalo de nuevo.",
+  "registrationFailed": "No se pudo completar el registro. Inténtalo de nuevo."
 }

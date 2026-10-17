@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../services/orah_analytics_service.dart';
 import '../services/orah_entitlement_service.dart';
+import '../l10n/app_localizations.dart';
 
 class OrahProScreen extends StatefulWidget {
   const OrahProScreen({super.key});
@@ -37,18 +38,19 @@ class _OrahProScreenState extends State<OrahProScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final plans = [
-      (OrahEntitlementService.yearlyId, 'Yearly', 'Best value', true),
-      (OrahEntitlementService.monthlyId, 'Monthly', 'Pay month to month', false),
+      (OrahEntitlementService.yearlyId, l10n.proPlanYearly, l10n.proBestValue, true),
+      (OrahEntitlementService.monthlyId, l10n.proPlanMonthly, l10n.proMonthlySubtitle, false),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ORAH Pro'),
+        title: Text(l10n.orahPro),
         actions: [
           TextButton(
             onPressed: service.restore,
-            child: const Text('Restore'),
+            child: Text(l10n.proRestore),
           ),
         ],
       ),
@@ -78,7 +80,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Text(
-                    'YOUR NOTES, WITH MORE POWER',
+                    l10n.proHeroEyebrow,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colors.primary,
                       fontWeight: FontWeight.w900,
@@ -88,7 +90,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Make every note\nwork harder.',
+                  l10n.proHeroHeadline,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     height: 1.05,
@@ -96,7 +98,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Turn paper into searchable knowledge, find the detail you need, and take your notes wherever work takes you.',
+                  l10n.proHeroDescription,
                   style: theme.textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 18),
@@ -106,7 +108,7 @@ class _OrahProScreenState extends State<OrahProScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Upgrade when you need the extra power. Your everyday notes stay yours.',
+                        l10n.proHeroFootnote,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -119,33 +121,33 @@ class _OrahProScreenState extends State<OrahProScreen> {
           ),
           const SizedBox(height: 22),
           Text(
-            'More than notes',
+            l10n.proMoreThanNotes,
             style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 12),
           _BenefitTile(
             icon: Icons.document_scanner_rounded,
-            title: 'OCR that makes images searchable',
+            title: l10n.proOcrTitle,
             description:
-                'Extract text from supported images and documents instead of retyping it.',
+                l10n.proOcrDescription,
           ),
           _BenefitTile(
             icon: Icons.picture_as_pdf_rounded,
-            title: 'Export in the format you need',
+            title: l10n.proExportTitle,
             description:
-                'Take notes beyond ORAH with premium PDF, Word and Excel exports.',
+                l10n.proExportDescription,
           ),
           _BenefitTile(
             icon: Icons.manage_search_rounded,
-            title: 'Find the needle in the haystack',
+            title: l10n.proSearchTitle,
             description:
-                'Use advanced search and filters to get back to important details faster.',
+                l10n.proSearchDescription,
           ),
           _BenefitTile(
             icon: Icons.dashboard_customize_rounded,
-            title: 'A more organised workspace',
+            title: l10n.proWorkspaceTitle,
             description:
-                'Unlock premium templates and advanced productivity tools as they become available in your build.',
+                l10n.proWorkspaceDescription,
           ),
           const SizedBox(height: 14),
           if (service.isPremium)
@@ -153,21 +155,21 @@ class _OrahProScreenState extends State<OrahProScreen> {
               child: ListTile(
                 leading: Icon(Icons.verified_rounded, color: colors.primary),
                 title: Text(service.planLabel),
-                subtitle: const Text('Your Pro entitlement is active.'),
+                subtitle: Text(l10n.proEntitlementActive),
                 trailing: TextButton(
                   onPressed: service.restore,
-                  child: const Text('Restore'),
+                  child: Text(AppLocalizations.of(context)!.proRestore),
                 ),
               ),
             )
           else ...[
             Text(
-              'Choose your Pro plan',
+              l10n.proChoosePlan,
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 6),
             Text(
-              'Prices are supplied by Google Play for your region.',
+              l10n.proPricesFromPlay,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -196,9 +198,9 @@ class _OrahProScreenState extends State<OrahProScreen> {
                 children: [
                   Icon(Icons.card_giftcard_rounded, color: colors.primary),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Have an ORAH offer from your employer or the developer? Redeem it through the Google Play offer link or code provided with your invitation, then return here and tap Restore.',
+                      l10n.proOfferInstruction,
                     ),
                   ),
                 ],
@@ -216,12 +218,12 @@ class _OrahProScreenState extends State<OrahProScreen> {
           TextButton.icon(
             onPressed: service.restore,
             icon: const Icon(Icons.restore_rounded),
-            label: const Text('Restore purchases'),
+            label: Text(l10n.proRestorePurchases),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              'Subscriptions renew automatically unless cancelled in Google Play. Review the price, billing period and any trial terms shown by Google Play before confirming. You can manage or cancel a subscription in your Play Store account.',
+              l10n.proRenewalDisclosure,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -307,6 +309,7 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -345,7 +348,7 @@ class _PlanCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            'BEST VALUE',
+                            l10n.proBestValueBadge,
                             style: TextStyle(
                               color: colors.onPrimary,
                               fontSize: 9,
@@ -360,7 +363,7 @@ class _PlanCard extends StatelessWidget {
                   Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 5),
                   Text(
-                    price ?? (loading ? 'Loading price…' : 'Currently unavailable'),
+                    price ?? (loading ? AppLocalizations.of(context)!.proLoadingPrice : AppLocalizations.of(context)!.proUnavailable),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -371,7 +374,7 @@ class _PlanCard extends StatelessWidget {
             const SizedBox(width: 8),
             FilledButton(
               onPressed: onChoose,
-              child: const Text('Choose'),
+              child: Text(AppLocalizations.of(context)!.proChooseButton),
             ),
           ],
         ),

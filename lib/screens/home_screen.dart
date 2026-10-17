@@ -55,6 +55,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Timer? _reflectionCheckTimer;
   bool _openingScheduledReflection = false;
 
+  // Resolve localized strings for callbacks and helpers outside build().
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   @override
   void initState() {
     super.initState();
@@ -166,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       MaterialPageRoute(
         builder: (_) => NoteEditorScreen(
           repository: repository,
-          initialTitle: prompt.text,
+          initialTitle: prompt.localizedText(Localizations.localeOf(context).languageCode),
           initialContent: '',
         ),
       ),
@@ -263,34 +266,34 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           children: [
             ListTile(
               leading: const OrahAssetIcon('pin'),
-              title: Text(note.isPinned ? 'Unpin note' : 'Pin note'),
+              title: Text(note.isPinned ? l10n.unpinNote : l10n.pinNote),
               onTap: () => Navigator.pop(context, 'pin'),
             ),
             ListTile(
               leading: const OrahAssetIcon('star'),
               title: Text(
-                note.isFavorite ? 'Remove favorite' : 'Add to favorites',
+                note.isFavorite ? l10n.removeFavorite : l10n.addToFavorites,
               ),
               onTap: () => Navigator.pop(context, 'favorite'),
             ),
             ListTile(
               leading: const Icon(Icons.archive_outlined),
-              title: Text(note.isArchived ? 'Unarchive' : 'Archive'),
+              title: Text(note.isArchived ? l10n.unarchiveNote : l10n.archiveNote),
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
               leading: const Icon(Icons.copy_outlined),
-              title: const Text('Duplicate note'),
+              title: Text(l10n.duplicateNote),
               onTap: () => Navigator.pop(context, 'duplicate'),
             ),
             ListTile(
               leading: const Icon(Icons.palette_outlined),
-              title: const Text('Note color'),
+              title: Text(l10n.noteColor),
               onTap: () => Navigator.pop(context, 'color'),
             ),
             ListTile(
               leading: const OrahAssetIcon('trash'),
-              title: const Text('Move to Trash'),
+              title: Text(l10n.moveToTrash),
               onTap: () => Navigator.pop(context, 'delete'),
             ),
           ],
@@ -304,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       case 'duplicate':
         final repository = await NoteRepositoryProvider.instance();
         final duplicate = note.copyWith(
-          title: '${note.title} (Copy)',
+          title: l10n.duplicateTitle(note.title),
           updatedAt: DateTime.now(),
         );
         final duplicateId = '${DateTime.now().microsecondsSinceEpoch}_copy';
@@ -384,11 +387,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         late final ScaffoldFeatureController<SnackBar, SnackBarClosedReason> trashSnackBar;
         trashSnackBar = messenger.showSnackBar(
           SnackBar(
-            content: const Text('Moved to trash'),
+            content: Text(l10n.movedToTrash),
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
-              label: 'Undo',
+              label: l10n.undo,
               onPressed: () {
                 _trashSnackBarTimer?.cancel();
                 trashSnackBar.close();
@@ -452,6 +455,24 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
   }
 
+  String _localizedReflectionCategory(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Gratitude': return l10n.reflectionCategoryGratitude;
+      case 'Mindfulness': return l10n.reflectionCategoryMindfulness;
+      case 'Personal Growth': return l10n.reflectionCategoryPersonalGrowth;
+      case 'Relationships': return l10n.reflectionCategoryRelationships;
+      case 'Self-Compassion': return l10n.reflectionCategorySelfCompassion;
+      case 'Clarity': return l10n.reflectionCategoryClarity;
+      case 'Possibility': return l10n.reflectionCategoryPossibility;
+      case 'Daily Review': return l10n.reflectionCategoryDailyReview;
+      case 'Purpose & Values': return l10n.reflectionCategoryPurposeValues;
+      case 'Resilience': return l10n.reflectionCategoryResilience;
+      case 'Creativity & Curiosity': return l10n.reflectionCategoryCreativityCuriosity;
+      case 'Rest & Renewal': return l10n.reflectionCategoryRestRenewal;
+      default: return category;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -513,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 child: Row(
                   children: [
                     Tooltip(
-                      message: _showFeatures ? 'Hide Orah features' : 'Show Orah features',
+                      message: _showFeatures ? l10n.hideOrahFeatures : l10n.showOrahFeatures,
                       child: Material(
                         elevation: 3,
                         color: theme.colorScheme.primary,
@@ -530,7 +551,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                               child: SvgPicture.asset(
                                 'assets/orah_header_icon.svg',
                                 fit: BoxFit.contain,
-                                semanticsLabel: 'Orah features',
+                                semanticsLabel: l10n.orahFeaturesSemantics,
                               ),
                             ),
                           ),
@@ -545,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           const OrahWordmark(fontSize: 34),
                           const SizedBox(height: 2),
                           Text(
-                            'Think it. Write it. Keep it.',
+                            l10n.homeTagline,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -554,41 +575,41 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Vault / Locked Notes',
+                      tooltip: l10n.vaultTooltip,
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const VaultScreen()),
                       ),
                       icon: const Icon(Icons.security_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Calendar & history',
+                      tooltip: l10n.calendarHistoryTooltip,
                       onPressed: widget.onCalendarHistory,
                       icon: const Icon(Icons.calendar_month_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Statistics & insights',
+                      tooltip: l10n.statisticsTooltip,
                       onPressed: widget.onStatistics,
                       icon: const Icon(Icons.bar_chart_rounded, size: 24),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Daily Reflection',
+                      tooltip: l10n.navDailyReflection,
                       onPressed: _openReflection,
                       icon: SvgPicture.asset(
                         'assets/daily_reflection_icon.svg',
                         width: 24,
                         height: 24,
-                        semanticsLabel: 'Daily Reflection',
+                        semanticsLabel: l10n.navDailyReflection,
                       ),
                     ),
                     if (_showFeatures)
                       IconButton.filledTonal(
-                        tooltip: 'Appearance',
+                        tooltip: l10n.appearanceTooltip,
                         onPressed: widget.onSettings,
                         icon: SvgPicture.asset(
                           'assets/appearance_icon.svg',
                           width: 26,
                           height: 26,
-                          semanticsLabel: 'Appearance settings',
+                          semanticsLabel: l10n.appearanceSemantics,
                         ),
                       ),
                   ],
@@ -612,14 +633,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Explore Orah',
+                                  l10n.exploreOrah,
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'A calm space for notes, plans, and reflection.',
+                                  l10n.homeSubtitle,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -631,17 +652,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   children: [
                                     ActionChip(
                                       avatar: const Icon(Icons.note_alt_outlined, size: 18),
-                                      label: const Text('Notes'),
+                                      label: Text(l10n.navNotes),
                                       onPressed: widget.onNotes,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.folder_outlined, size: 18),
-                                      label: const Text('Folders'),
+                                      label: Text(l10n.navFolders),
                                       onPressed: widget.onFolders,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.star_outline_rounded, size: 18),
-                                      label: const Text('Favorites'),
+                                      label: Text(l10n.navFavorites),
                                       onPressed: widget.onFavorites,
                                     ),
                                     ActionChip(
@@ -650,7 +671,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
                                       padding: const EdgeInsets.symmetric(horizontal: 7),
                                       avatar: const Icon(Icons.archive_outlined, size: 16),
-                                      label: const Text('Archived Notes'),
+                                      label: Text(l10n.navArchivedNotes),
                                       onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
                                     ),
                                     ActionChip(
@@ -659,17 +680,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                         width: 20,
                                         height: 20,
                                       ),
-                                      label: const Text('Daily Reflection'),
+                                      label: Text(l10n.navDailyReflection),
                                       onPressed: _openReflection,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.mic_none_rounded, size: 18),
-                                      label: const Text('Voice Capture'),
+                                      label: Text(l10n.navVoiceCapture),
                                       onPressed: widget.onVoiceCapture,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.checklist_rounded, size: 18),
-                                      label: const Text('Checklists'),
+                                      label: Text(l10n.navChecklists),
                                       onPressed: widget.onChecklist,
                                     ),
                                     ActionChip(
@@ -678,26 +699,26 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                         width: 20,
                                         height: 20,
                                       ),
-                                      label: const Text('Appearance'),
+                                      label: Text(l10n.navAppearance),
                                       onPressed: widget.onSettings,
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.search_rounded, size: 18),
-                                      label: const Text('Search'),
+                                      label: Text(l10n.navSearch),
                                       onPressed: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => const SearchScreen()),
                                       ),
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.cloud_off_outlined, size: 18),
-                                      label: const Text('Offline access'),
+                                      label: Text(l10n.offlineAccess),
                                       onPressed: () => Navigator.of(context).push(
                                         MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
                                       ),
                                     ),
                                     ActionChip(
                                       avatar: const Icon(Icons.ios_share_rounded, size: 18),
-                                      label: const Text('Backup & Export'),
+                                      label: Text(l10n.backupExport),
                                       onPressed: widget.onSettings,
                                     ),
                                   ],
@@ -725,7 +746,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   },
                   trailing: [
                     IconButton(
-                      tooltip: 'Search filters',
+                      tooltip: l10n.searchFiltersTooltip,
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -776,7 +797,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'DAILY INSPIRATION  •  ${prompt.category.toUpperCase()}',
+                                      '${l10n.dailyInspiration.toUpperCase()}  •  ${_localizedReflectionCategory(l10n, prompt.category).toUpperCase()}',
                                       style: theme.textTheme.labelSmall?.copyWith(
                                         color: theme.colorScheme.primary,
                                         fontWeight: FontWeight.w800,
@@ -785,7 +806,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      prompt.text,
+                                      prompt.localizedText(Localizations.localeOf(context).languageCode),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.lora(
@@ -798,7 +819,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Tap to begin a note',
+                                      l10n.tapToBeginNote,
                                       style: theme.textTheme.bodySmall?.copyWith(
                                         color: theme.colorScheme.onSurfaceVariant,
                                       ),
@@ -807,7 +828,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                 ),
                               ),
                               IconButton(
-                                tooltip: 'Hide daily inspiration',
+                                tooltip: l10n.hideDailyInspiration,
                                 visualDensity: VisualDensity.compact,
                                 onPressed: () => _setDailyPromptHidden(true),
                                 icon: Icon(
@@ -832,13 +853,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   children: [
-                    for (final filter in const [
-                      ('all', 'All', Icons.notes_rounded),
-                      ('pinned', 'Pinned', Icons.push_pin_outlined),
-                      ('favorites', 'Favorites', Icons.star_outline_rounded),
-                      ('checklists', 'Checklists', Icons.checklist_rounded),
-                      ('archived', 'Archived', Icons.archive_outlined),
-                      ('daily_reflection', 'Daily Ref', Icons.auto_awesome_rounded),
+                    for (final filter in [
+                      ('all', l10n.navNotes, Icons.notes_rounded),
+                      ('pinned', l10n.pinnedOnly, Icons.push_pin_outlined),
+                      ('favorites', l10n.favorites, Icons.star_outline_rounded),
+                      ('checklists', l10n.checklistType, Icons.checklist_rounded),
+                      ('archived', l10n.archivedLabel, Icons.archive_outlined),
+                      ('daily_reflection', l10n.navDailyReflection, Icons.auto_awesome_rounded),
                     ])
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
@@ -926,23 +947,23 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                       if (recent.isNotEmpty)
                         Text(
-                          '$completed done',
+                          l10n.completedCountLabel(completed),
                           style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         ),
                       const SizedBox(width: 4),
                       PopupMenuButton<String>(
-                        tooltip: 'Sort notes',
+                        tooltip: l10n.sortNotesTooltip,
                         initialValue: _sort,
                         onSelected: (value) async { setState(() => _sort = value); await _savePreferences(); },
-                        itemBuilder: (_) => const [
-                          PopupMenuItem(value: 'updated', child: Text('Recently updated')),
-                          PopupMenuItem(value: 'created', child: Text('Recently created')),
-                          PopupMenuItem(value: 'title', child: Text('Title A–Z')),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(value: 'updated', child: Text(l10n.recentlyUpdated)),
+                          PopupMenuItem(value: 'created', child: Text(l10n.recentlyCreated)),
+                          PopupMenuItem(value: 'title', child: Text(l10n.titleAZ)),
                         ],
                         icon: const Icon(Icons.sort_rounded),
                       ),
                       IconButton(
-                        tooltip: _gridView ? 'List view' : 'Grid view',
+                        tooltip: _gridView ? l10n.listView : l10n.gridView,
                         onPressed: () async {
                           setState(() => _gridView = !_gridView);
                           await _savePreferences();
@@ -1032,6 +1053,7 @@ class _DesktopNotesLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final active = notes.where((n) => !n.isArchived).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -1064,7 +1086,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 22, 18, 14),
                       child: Text(
-                        'Notes',
+                        l10n.notes,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
@@ -1075,7 +1097,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: SearchBar(
-                        hintText: 'Search',
+                        hintText: AppLocalizations.of(context)!.searchLabel,
                         leading: const OrahAssetIcon('search', size: 19),
                         elevation: const WidgetStatePropertyAll(0),
                         backgroundColor: WidgetStatePropertyAll(
@@ -1089,29 +1111,29 @@ class _DesktopNotesLayout extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 22),
-                    const _SidebarLabel(label: 'LIBRARY'),
+                    _SidebarLabel(label: l10n.notes),
                     _SidebarItem(
                       assetIcon: 'notes',
-                      label: 'All Notes',
+                      label: l10n.navNotes,
                       count: active.length,
                       selected: true,
                       onTap: () {},
                     ),
                     _SidebarItem(
                       assetIcon: 'star',
-                      label: 'Favorites',
+                      label: l10n.favorites,
                       count: active.where((n) => n.isFavorite).length,
                       onTap: () {},
                     ),
                     _SidebarItem(
                       icon: Icons.access_time_rounded,
-                      label: 'Recent',
+                      label: l10n.recentNotes,
                       count: active.length > 8 ? 8 : active.length,
                       onTap: () {},
                     ),
                     const SizedBox(height: 16),
-                    const _SidebarLabel(label: 'FOLDERS'),
-                    ..._folderEntries(active),
+                    _SidebarLabel(label: l10n.folders),
+                    ..._folderEntries(active, l10n),
                     const Spacer(),
                     if (onNewNote != null || onVoiceCapture != null)
                       Padding(
@@ -1123,7 +1145,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 child: FilledButton.icon(
                                   onPressed: onNewNote,
                                   icon: OrahAssetIcon('new-note', size: 18, color: theme.colorScheme.onPrimary),
-                                  label: const Text('New Note'),
+                                  label: Text(AppLocalizations.of(context)!.newNoteLabel),
                                   style: FilledButton.styleFrom(
                                     minimumSize: const Size.fromHeight(44),
                                     shape: RoundedRectangleBorder(
@@ -1139,7 +1161,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                                 width: 48,
                                 height: 44,
                                 child: IconButton.filledTonal(
-                                  tooltip: 'Microphone',
+                                  tooltip: AppLocalizations.of(context)!.microphoneTooltip,
                                   onPressed: onVoiceCapture,
                                   icon: OrahAssetIcon('microphone', color: theme.colorScheme.onSecondaryContainer),
                                 ),
@@ -1168,7 +1190,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'All Notes',
+                            l10n.navNotes,
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -1176,7 +1198,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            '@@ACTIVE_COUNT@@ notes',
+                            l10n.activeNotesCount(active.length),
                             style: theme.textTheme.bodySmall,
                           ),
                         ],
@@ -1185,7 +1207,7 @@ class _DesktopNotesLayout extends StatelessWidget {
                     if (loading)
                       const Expanded(child: Center(child: CircularProgressIndicator()))
                     else if (active.isEmpty)
-                      const Expanded(child: Center(child: Text('No notes yet')))
+                      Expanded(child: Center(child: Text(AppLocalizations.of(context)!.noNotesYet)))
                     else
                       Expanded(
                         child: ListView.builder(
@@ -1211,7 +1233,7 @@ class _DesktopNotesLayout extends StatelessWidget {
               child: selected == null
                   ? Center(
                       child: Text(
-                        'Select a note',
+                        l10n.selectNotePrompt,
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -1228,7 +1250,7 @@ class _DesktopNotesLayout extends StatelessWidget {
     );
   }
 
-  List<Widget> _folderEntries(List<Note> active) {
+  List<Widget> _folderEntries(List<Note> active, AppLocalizations l10n) {
     final folders = <String, int>{};
     for (final note in active) {
       final id = note.folderId;
@@ -1240,7 +1262,7 @@ class _DesktopNotesLayout extends StatelessWidget {
       return [
         _SidebarItem(
           assetIcon: 'folder',
-          label: 'Folders',
+          label: l10n.folders,
           onTap: () {},
         ),
       ];
@@ -1362,9 +1384,10 @@ class _DesktopNoteRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final body = note.isLocked
-        ? 'Locked content'
+        ? l10n.lockedContent
         : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
@@ -1382,7 +1405,7 @@ class _DesktopNoteRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
+                  note.title.trim().isEmpty ? l10n.untitledNote : note.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -1401,7 +1424,7 @@ class _DesktopNoteRow extends StatelessWidget {
                 ],
                 const SizedBox(height: 5),
                 Text(
-                  '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? 'Notes'}',
+                  '${_formatDate(context, note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
                   style: theme.textTheme.labelSmall,
                 ),
               ],
@@ -1424,6 +1447,7 @@ class _DesktopNotePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final body = note.content.trim();
     return Column(
@@ -1434,17 +1458,17 @@ class _DesktopNotePreview extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                '@@DATE@@  ·  @@FOLDER@@',
+                '${_formatDate(context, note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
                 style: theme.textTheme.bodySmall,
               ),
               const Spacer(),
               IconButton(
-                tooltip: note.isPinned ? 'Unpin' : 'Pin',
+                tooltip: note.isPinned ? AppLocalizations.of(context)!.unpinTooltip : AppLocalizations.of(context)!.pinTooltip,
                 onPressed: () {},
                 icon: const OrahAssetIcon('pin'),
               ),
               IconButton(
-                tooltip: 'Favorite',
+                tooltip: AppLocalizations.of(context)!.favoriteTooltip,
                 onPressed: () {},
                 icon: const OrahAssetIcon('star'),
               ),
@@ -1458,7 +1482,7 @@ class _DesktopNotePreview extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  note.title.trim().isEmpty ? 'Untitled note' : note.title,
+                  note.title.trim().isEmpty ? l10n.untitledNote : note.title,
                   style: theme.textTheme.displaySmall?.copyWith(
                     fontSize: 34,
                     fontWeight: FontWeight.w800,
@@ -1470,7 +1494,7 @@ class _DesktopNotePreview extends StatelessWidget {
                   _DesktopChecklistPreview(note: note)
                 else
                   SelectableText(
-                    body.isEmpty ? 'This note is empty.' : body,
+                    body.isEmpty ? l10n.desktopNoteEmpty : body,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontSize: 16,
                       height: 1.7,
@@ -1487,7 +1511,7 @@ class _DesktopNotePreview extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onEdit,
               icon: const Icon(Icons.edit_outlined),
-              label: const Text('Edit note'),
+              label: Text(AppLocalizations.of(context)!.editNoteLabel),
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -1533,13 +1557,14 @@ class _NoteText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          note.isLocked ? 'Private note' : (note.title.isEmpty ? 'Untitled note' : note.title),
+          note.isLocked ? l10n.privateNote : (note.title.isEmpty ? l10n.untitledNote : note.title),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleSmall?.copyWith(
@@ -1548,10 +1573,10 @@ class _NoteText extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         if (note.isLocked) ...[
-          Text('Locked content', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(AppLocalizations.of(context)!.lockedContent, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ] else if (note.type == NoteType.checklist && note.checklistItems.isNotEmpty) ...[
           Text(
-            '${note.completedChecklistItems}/${note.checklistItems.length} completed',
+            '${note.completedChecklistItems}/${note.checklistItems.length} ${l10n.completedLabel}',
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 6),
@@ -1561,7 +1586,7 @@ class _NoteText extends StatelessWidget {
           ),
         ] else
           Text(
-            note.content.isEmpty ? 'No content' : note.content,
+            note.content.isEmpty ? l10n.noContentLabel : note.content,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodySmall?.copyWith(fontSize: 14, height: 1.35, color: const Color(0xFF5B5B66)),
@@ -1578,6 +1603,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
@@ -1598,7 +1624,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'No notes yet.',
+              AppLocalizations.of(context)!.noNotesYet,
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 22,
@@ -1608,7 +1634,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Tap the + button to capture your first thought.',
+              l10n.emptyNotesHint,
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
@@ -1623,21 +1649,17 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-String _formatRelativeTime(DateTime date) {
+String _formatRelativeTime(BuildContext context, AppLocalizations l10n, DateTime date) {
   final difference = DateTime.now().difference(date.toLocal());
-  if (difference.isNegative || difference.inMinutes < 1) return 'Just now';
-  if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
-  if (difference.inHours < 24) return '${difference.inHours}h ago';
-  if (difference.inDays < 7) return '${difference.inDays}d ago';
-  return _formatDate(date);
+  if (difference.isNegative || difference.inMinutes < 1) return l10n.justNow;
+  if (difference.inMinutes < 60) return '${difference.inMinutes} ${l10n.minutesAgoSuffix}';
+  if (difference.inHours < 24) return '${difference.inHours} ${l10n.hoursAgoSuffix}';
+  if (difference.inDays < 7) return '${difference.inDays} ${l10n.daysAgoSuffix}';
+  return _formatDate(context, date);
 }
 
-String _formatDate(DateTime date) {
-  final local = date.toLocal();
-  final month = local.month.toString().padLeft(2, '0');
-  final day = local.day.toString().padLeft(2, '0');
-
-  return '$month/$day/${local.year}';
+String _formatDate(BuildContext context, DateTime date) {
+  return MaterialLocalizations.of(context).formatShortDate(date.toLocal());
 }
 
 class _NoteCard extends StatelessWidget {
@@ -1653,12 +1675,13 @@ class _NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final title = note.isLocked
-        ? 'Private note'
-        : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
+        ? l10n.privateNote
+        : (note.title.trim().isEmpty ? l10n.untitledNote : note.title);
     final contentPreview = note.isLocked
-        ? 'Locked content'
+        ? l10n.lockedContent
         : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
     final body = contentPreview.isNotEmpty
         ? contentPreview
@@ -1738,7 +1761,7 @@ class _NoteCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      _formatRelativeTime(note.updatedAt),
+                      _formatRelativeTime(context, l10n, note.updatedAt),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelSmall?.copyWith(

@@ -65,5 +65,898 @@
   "unlock": "ロック解除",
   "useBiometrics": "生体認証を使用",
   "incorrectPin": "PINが正しくありません",
-  "biometricFallbackError": "生体認証がキャンセルされたか、利用できません。ロックを解除するにはPINを入力してください。"
+  "biometricFallbackError": "生体認証がキャンセルされたか、利用できません。ロックを解除するにはPINを入力してください。",
+  "journeyTitle": "あなたの歩み",
+  "journeyHeadline": "小さな瞬間が積み重なります。",
+  "journeySubtitle": "書く習慣や振り返りをやさしく見つめます。",
+  "dayInARow": "日連続",
+  "daysInARow": "日連続",
+  "notesSaved": "件のノートを保存",
+  "notesStayOnDevice": "ノートはこの端末に保存されます。この情報は保存済みのノートから計算されます。",
+  "moodStoryStarts": "あなたの気分の記録はここから始まります",
+  "chooseMoodToSeeDistribution": "ノートを書くときに気分を選ぶと、ここに分布が表示されます。",
+  "moodDistributionSubtitle": "記録した気持ち",
+  "notesCreatedLast7Days": "過去7日間に作成したノート",
+  "calendarSubtitle": "日ごとのノートと予定されたリマインダー",
+  "goToToday": "今日に移動",
+  "scheduleNote": "ノートを予定する",
+  "nothingOnThisDay": "この日の記録はありません",
+  "chooseAnotherDate": "別の日付を選ぶか、この日のノートを予定してください。",
+  "untitledNote": "無題のノート",
+  "scheduledLabel": "予定済み",
+  "createdLabel": "作成済み",
+  "calendarItemStatusTime": "{status} • {time}",
+  "writingRhythm": "あなたの書くリズム",
+  "historyTimeline": "履歴タイムライン",
+  "storyStartsWithNote": "あなたの物語はノートから始まります",
+  "pickHighlightedDay": "印のある日を選ぶと、その日の記録や履歴全体を確認できます。",
+  "savedDaysHighlighted": "ノートが保存された日はカレンダーで強調表示されます。",
+  "addFolderImage": "フォルダー画像を追加",
+  "changeImage": "画像を変更",
+  "removeImage": "画像を削除",
+  "folderName": "フォルダー名",
+  "folderNameHint": "例：仕事、アイデア、個人",
+  "cancel": "キャンセル",
+  "create": "作成",
+  "newFolder": "新しいフォルダー",
+  "editFolder": "フォルダーを編集",
+  "save": "保存",
+  "deleteFolderTitle": "「{folderName}」を削除しますか？",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "フォルダーは空です。",
+  "notesMovedFromFolder": "{count} 件のノートは保持され、「すべてのノート」に戻されます。",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "削除",
+  "selectedFoldersDeleteTitle": "{count} 個のフォルダーを削除しますか？",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "選択したフォルダーは空です。",
+  "deleteSelected": "選択項目を削除",
+  "cancelSelection": "選択を解除",
+  "selectedCount": "{count} 件を選択中",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "選択したフォルダーを削除",
+  "folderOptions": "フォルダーのオプション",
+  "open": "開く",
+  "rename": "名前を変更",
+  "folderNoteCount": "{count} 件のノート",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "フォルダーから削除",
+  "moveToTrash": "ゴミ箱に移動",
+  "noFoldersYet": "フォルダーはまだありません",
+  "emptyFoldersDescription": "関連するノートをまとめるにはフォルダーを作成します。",
+  "createFolder": "フォルダーを作成",
+  "noNotesInFolder": "このフォルダーにはまだノートがありません。\nノートを開き、「整理」を選んでここに追加してください。",
+  "welcomeToOrah": "Orahへようこそ",
+  "personalizeYourSpace": "名前とメールアドレスを入力して、スペースをカスタマイズしましょう。",
+  "fullName": "氏名",
+  "yourName": "名前",
+  "emailAddress": "メールアドレス",
+  "emailExample": "you@example.com",
+  "enterFullName": "氏名を入力してください。",
+  "enterValidEmail": "有効なメールアドレスを入力してください。",
+  "registerAndContinue": "登録して続行",
+  "profileStoredOnDevice": "プロフィールはこの端末に安全に保存されます。購読者リストの同期には、設定済みのニュースレターサービスが必要です。",
+  "proRestore": "復元",
+  "proHeroEyebrow": "ノートを、もっとパワフルに",
+  "proHeroHeadline": "すべてのノートを\nもっと活用。",
+  "proHeroDescription": "紙の情報を検索可能な知識に変え、必要な情報を見つけ、仕事の場所を問わずノートを持ち歩けます。",
+  "proHeroFootnote": "追加機能が必要なときにアップグレード。普段のノートは引き続きあなたのものです。",
+  "proMoreThanNotes": "ノート以上の機能",
+  "proOcrTitle": "画像内を検索できるOCR",
+  "proOcrDescription": "対応する画像や文書から文字を抽出し、再入力の手間を省けます。",
+  "proExportTitle": "必要な形式でエクスポート",
+  "proExportDescription": "PDF、Word、Excel へのプレミアム書き出しで、ORAH の外でもノートを活用できます。",
+  "proSearchTitle": "大量の情報から必要なものを見つける",
+  "proSearchDescription": "高度な検索とフィルターで、大切な情報をすばやく見つけられます。",
+  "proWorkspaceTitle": "整理されたワークスペース",
+  "proWorkspaceDescription": "お使いのバージョンで利用可能になり次第、プレミアムテンプレートや高度な生産性ツールを利用できます。",
+  "proEntitlementActive": "Pro の利用権が有効です。",
+  "proChoosePlan": "Pro プランを選択",
+  "proPricesFromPlay": "価格は地域に応じて Google Play から提供されます。",
+  "proPlanYearly": "年額",
+  "proBestValue": "お得",
+  "proPlanMonthly": "月額",
+  "proMonthlySubtitle": "毎月支払い",
+  "proOfferInstruction": "勤務先または開発者から ORAH オファーを受け取りましたか？招待に記載された Google Play のリンクまたはコードを利用し、ここに戻って「復元」をタップしてください。",
+  "proRestorePurchases": "購入を復元",
+  "proRenewalDisclosure": "Google Play で解約しない限り、定期購入は自動更新されます。確定前に表示される価格、請求期間、試用条件を確認してください。Play ストアのアカウントから定期購入を管理または解約できます。",
+  "proBestValueBadge": "お得",
+  "proLoadingPrice": "価格を読み込み中…",
+  "proUnavailable": "現在利用できません",
+  "proChooseButton": "選択",
+  "microphoneAccessNeeded": "マイクへのアクセスが必要です",
+  "microphoneAccessPermanentDenied": "音声を文字起こしするには、ORAH Notes にマイクへのアクセスを許可する必要があります。設定から有効にできます。",
+  "microphoneAccessRequest": "音声を文字起こしするには、ORAH Notes にマイクへのアクセスが必要です。アクセスを許可するか、設定から有効にしてください。",
+  "notNow": "今はしない",
+  "openSettings": "設定を開く",
+  "voiceInputUnavailableWithMessage": "音声入力を利用できません：{message}",
+  "voiceInputUnavailable": "この端末では音声入力を利用できません。",
+  "couldNotStartVoiceCapture": "音声入力を開始できませんでした：{error}",
+  "voiceTextSaved": "音声テキストをノートに保存しました。",
+  "recordingStoppedPartialSaved": "録音が停止しました。途中までのテキストを保存しました。",
+  "addTask": "タスクを追加",
+  "taskHint": "何をする必要がありますか？",
+  "add": "追加",
+  "editTask": "タスクを編集",
+  "enterVaultPin": "Vault の PIN を入力",
+  "pinDigitsLabel": "4～8 桁の PIN",
+  "vaultAuthenticationFailed": "認証に失敗しました。生体認証または Vault の PIN をお試しください。",
+  "secureYourVault": "Vault を保護",
+  "vaultSetupDescription": "このノートをロックするには、先に PIN または生体認証を設定してください。設定すると、自分だけがアクセスできます。",
+  "setUpSecurity": "セキュリティを設定",
+  "createVaultPin": "Vault の PIN を作成",
+  "confirmVaultPin": "Vault の PIN を確認",
+  "vaultPinsDoNotMatch": "PIN が一致しません。ノートはロックされませんでした。",
+  "vaultPinCreated": "Vault の PIN を作成しました。ノートを保護しています…",
+  "enterPinDigits": "4～8 桁を入力してください",
+  "addContentBeforeLock": "ノートをロックする前に内容を追加してください。",
+  "vaultAuthenticationNotCompleted": "認証が完了しませんでした。ノートはロックされませんでした。",
+  "noteLockedMovedToVault": "ノートをロックして Vault に移動しました。",
+  "noteUnlockedMovedToNotes": "ノートのロックを解除し、ノート一覧に戻しました。",
+  "continueLabel": "続行",
+  "ocrNoReadableText": "読み取れるテキストが見つかりません。",
+  "ocrTextExtracted": "画像からテキストを抽出しました。",
+  "ocrCouldNotReadImage": "この画像からテキストを読み取れませんでした。",
+  "chooseTemplate": "テンプレートを選択",
+  "replaceCurrentNote": "現在のノートを置き換えますか？",
+  "templateReplaceWarning": "このテンプレートは現在のタイトルと内容を置き換えます。",
+  "replace": "置き換える",
+  "insertLink": "リンクを挿入",
+  "insert": "挿入",
+  "couldNotAddImage": "画像を追加できませんでした：{error}",
+  "couldNotAddFiles": "ファイルを追加できませんでした：{error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "添付ファイル名を変更",
+  "preview": "プレビュー",
+  "share": "共有",
+  "details": "詳細",
+  "removeFromNote": "ノートから削除",
+  "chooseFromGallery": "ギャラリーから選択",
+  "takePhoto": "写真を撮る",
+  "attachFiles": "ファイルを添付",
+  "close": "閉じる",
+  "couldNotUnlockPrivateNote": "プライベートノートを解除できませんでした：{error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "エクスポート",
+  "removeFavorite": "お気に入りから削除",
+  "addToFavorites": "お気に入りに追加",
+  "addImage": "画像を追加",
+  "template": "テンプレート",
+  "setReminder": "リマインダーを設定",
+  "reminderAt": "リマインダー：{date}",
+  "clearReminder": "リマインダーを解除",
+  "noteColor": "ノートの色",
+  "unarchive": "アーカイブ解除",
+  "archive": "アーカイブ",
+  "back": "戻る",
+  "remove": "削除",
+  "retry": "再試行",
+  "titleHint": "タイトル",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "ノートカードを共有できませんでした：{error}",
+  "couldNotRenameAttachment": "添付ファイル名を変更できませんでした：{error}",
+  "attachmentDetailsFormat": "サイズ：{size}\n更新日時：{modified}",
+  "authenticationFailedNoteNotDeleted": "認証に失敗しました。ノートは削除されていません。",
+  "privateNote": "プライベートノート",
+  "thisNoteIsPrivate": "このノートは非公開です",
+  "unlockPrivateNoteHint": "生体認証またはPINでロックを解除して表示してください。",
+  "exitZenMode": "Zenモードを終了",
+  "exportAsCard": "カードとしてエクスポート",
+  "scanTextFromImage": "画像からテキストをスキャン",
+  "folderAndTags": "フォルダーとタグ",
+  "lockNote": "ノートをロック",
+  "unlockAndMoveToNotes": "ロック解除してノートに移動",
+  "stopAndSave": "停止して保存",
+  "startWritingHint": "書き始める...",
+  "howAreYouFeeling": "今の気分は？",
+  "checklistEmpty": "チェックリストは空です",
+  "addFirstTask": "最初のタスクを追加",
+  "moveUp": "上へ移動",
+  "moveDown": "下へ移動",
+  "deleteTask": "タスクを削除",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "ロックを解除しています…",
+  "unlockNote": "ノートのロックを解除",
+  "zenMode": "集中モード",
+  "edit": "編集",
+  "pinNote": "ピン留め",
+  "unpinNote": "ピン留めを解除",
+  "bold": "太字",
+  "italic": "斜体",
+  "strikethrough": "取り消し線",
+  "heading": "見出し",
+  "bullets": "箇条書き",
+  "numberedList": "番号付きリスト",
+  "quote": "引用",
+  "linkLabel": "リンク",
+  "addImageOrFile": "画像またはファイルを追加",
+  "stopVoiceInput": "音声入力を停止",
+  "voiceInput": "音声入力",
+  "stopAndSaveVoiceInput": "音声入力を停止して保存",
+  "tapMicToSpeak": "マイクをタップしてノートを音声入力",
+  "voiceNote": "音声ノート",
+  "preparing": "準備中…",
+  "saving": "保存中…",
+  "unsavedChanges": "未保存の変更",
+  "saved": "保存しました",
+  "recordingVoiceInput": "録音中 • {duration}",
+  "savingVoiceText": "音声テキストを保存中…",
+  "preparingMicrophone": "マイクを準備中…",
+  "textNote": "テキストノート",
+  "checklistType": "チェックリスト",
+  "templateMeetingNotes": "会議メモ",
+  "templateAgenda": "議題",
+  "templateDecisions": "決定事項",
+  "templateActionItems": "アクション項目",
+  "templateDailyPlan": "1日の計画",
+  "templateTopPriority": "最優先事項",
+  "templateImportant": "重要",
+  "templateIfTimeAllows": "時間があれば",
+  "templateShoppingList": "買い物リスト",
+  "templateMilk": "牛乳",
+  "templateVegetables": "野菜",
+  "templateHousehold": "日用品",
+  "templateTravelPlan": "旅行計画",
+  "templateDates": "日付",
+  "templateBookings": "予約",
+  "templatePlacesToVisit": "訪問先",
+  "orahNoteCard": "Orahノートカード",
+  "sharedFromOrah": "Orahから共有",
+  "noteCardCaptureError": "ノートカードを取得できませんでした。",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "こんにちは、{name}",
+  "welcomeBack": "おかえりなさい",
+  "friend": "友だち",
+  "voiceGreeting": "こんにちは、{name}",
+  "voicePreviewGreeting": "こんにちは、Orah Notesです",
+  "speakMyNameAtStartup": "起動時に名前を読み上げる",
+  "voiceGreetingEnabledDescription": "アプリを開くと、選択した言語でOrahが挨拶します。",
+  "voiceGreetingDisabledDescription": "起動時の挨拶はオフになります。",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "アーカイブ解除",
+  "archiveNote": "アーカイブ",
+  "duplicateNote": "ノートを複製",
+  "navNotes": "ノート",
+  "navFolders": "フォルダ",
+  "navFavorites": "お気に入り",
+  "navArchivedNotes": "アーカイブ済みノート",
+  "navDailyReflection": "毎日の振り返り",
+  "navVoiceCapture": "音声入力",
+  "navChecklists": "チェックリスト",
+  "navAppearance": "外観",
+  "navSearch": "検索",
+  "offlineAccess": "オフラインアクセス",
+  "backupExport": "バックアップとエクスポート",
+  "recentlyUpdated": "最近更新",
+  "recentlyCreated": "最近作成",
+  "titleAZ": "タイトル A–Z",
+  "noNotesYet": "まだノートがありません",
+  "vaultLocked": "保管庫 / ロックされたノート",
+  "vaultLockedDesc": "プライベートな暗号化ノートを開く",
+  "privacyPledge": "プライバシーへの約束",
+  "privacyPledgeDesc": "クラウドを使わない方針を読む",
+  "backupExportDesc": "ローカルバックアップと持ち運べるデータ",
+  "vaultResetTitle": "Vault PINを忘れましたか？リセット",
+  "vaultResetDesc": "復元できません。リセットすると以前の保管庫は完全に失われます。",
+  "pinBiometric": "PINと生体認証による保護",
+  "androidFeaturesDesc": "ウィジェット、ショートカット、共有",
+  "archivedNotesTitle": "アーカイブ済みノート",
+  "archivedNotesDesc": "アーカイブしたノートを開く、または復元",
+  "trashTitle": "ゴミ箱",
+  "trashDesc": "ノートを復元または完全に削除",
+  "orahFeaturesTitle": "Orahの機能",
+  "orahFeaturesDesc": "Orahでできることを見る",
+  "aboutOrahTitle": "Orahについて",
+  "aboutOrahDesc": "製品情報とプライバシー方針",
+  "cancelLabel": "キャンセル",
+  "resetVaultQuestion": "保管庫をリセットしますか？",
+  "deleteVaultConfirm": "古い保管庫を削除して新規作成",
+  "themeLabel": "テーマ",
+  "themeSystem": "システム",
+  "themeLight": "ライト",
+  "themeDark": "ダーク",
+  "portableBackup": "Backup portatile",
+  "createBackup": "Crea backup",
+  "restoreBackup": "Ripristina backup",
+  "storageMaintenance": "Manutenzione archiviazione",
+  "cleanOrphanAttachments": "Pulisci allegati orfani",
+  "vaultAutoLock": "Blocco automatico cassaforte",
+  "neverLabel": "Mai",
+  "dailyReflectionReminder": "Promemoria riflessione quotidiana",
+  "reminderTime": "Ora promemoria",
+  "backupExportTitle": "Backup ed esportazione",
+  "vaultResetSuccess": "La vecchia cassaforte è stata eliminata. Aprila per creare un nuovo PIN.",
+  "vaultResetFailed": "Ripristino della cassaforte non riuscito: {error}",
+  "backupRestoredCount": "Ripristinate correttamente {count} note.",
+  "backupError": "Errore di backup: {error}",
+  "unusedFilesFound": "Trovati {count} file inutilizzati",
+  "removedOrphanAttachments": "Rimossi {count} allegati orfani.",
+  "showDailyInspiration": "Mostra l’ispirazione quotidiana nella schermata Home",
+  "showDailyInspirationDesc": "Mostra uno spunto di riflessione sopra le note.",
+  "reminderUpdateFailed": "Impossibile aggiornare il promemoria della riflessione quotidiana: {error}",
+  "reminderScheduleFailed": "Impossibile programmare la riflessione quotidiana: {error}",
+  "orahFeaturesSemantics": "Funzioni di Orah",
+  "vaultTooltip": "Cassaforte / Note bloccate",
+  "calendarHistoryTooltip": "Calendario e cronologia",
+  "statisticsTooltip": "Statistiche e approfondimenti",
+  "appearanceTooltip": "Aspetto",
+  "appearanceSemantics": "Impostazioni aspetto",
+  "searchFiltersTooltip": "Filtri di ricerca",
+  "hideDailyInspiration": "Nascondi ispirazione quotidiana",
+  "sortNotesTooltip": "Ordina note",
+  "listView": "Vista elenco",
+  "gridView": "Vista griglia",
+  "searchLabel": "Cerca",
+  "newNoteLabel": "Nuova nota",
+  "microphoneTooltip": "Microfono",
+  "unpinTooltip": "Rimuovi fissaggio",
+  "pinTooltip": "Fissa",
+  "favoriteTooltip": "Preferito",
+  "editNoteLabel": "Modifica nota",
+  "lockedContent": "Contenuto bloccato",
+  "portableBackupDesc": "Note, cartelle e allegati in un unico pacchetto .nova.",
+  "vaultAutoLockDesc": "Richiedi autenticazione quando l’app è in background",
+  "searchClear": "クリア",
+  "favoritesOnly": "お気に入りのみ",
+  "pinnedOnly": "ピン留めのみ",
+  "folderLabel": "フォルダ",
+  "allFolders": "すべてのフォルダ",
+  "archivedLabel": "アーカイブ済み",
+  "noteTypeLabel": "ノートの種類",
+  "allTypes": "すべての種類",
+  "typeText": "テキスト",
+  "typeChecklist": "チェックリスト",
+  "typeVoice": "音声",
+  "typeImage": "画像",
+  "typeDrawing": "描画",
+  "applyFilters": "フィルターを適用",
+  "filtersTooltip": "フィルター",
+  "openOrahPro": "ORAH Proを開く",
+  "searchScreenTitle": "検索",
+  "searchFiltersTitle": "検索フィルター",
+  "homeTagline": "思いついたら、書いて、残そう。",
+  "homeSubtitle": "メモ、計画、振り返りのための落ち着いた空間。",
+  "tapToBeginNote": "タップしてメモを開始",
+  "selectNotePrompt": "メモを選択",
+  "desktopNoteEmpty": "このメモは空です。",
+  "noContentLabel": "コンテンツなし",
+  "emptyNotesHint": "＋ボタンをタップして最初のアイデアを記録しましょう。",
+  "justNow": "たった今",
+  "minutesAgoSuffix": "分前",
+  "hoursAgoSuffix": "時間前",
+  "daysAgoSuffix": "日前",
+  "hideOrahFeatures": "Orahの機能を隠す",
+  "showOrahFeatures": "Orahの機能を表示",
+  "activeNotesCount": "メモ{count}件",
+  "completedLabel": "完了",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count} 件完了",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title}（コピー）",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "感謝",
+  "reflectionCategoryMindfulness": "マインドフルネス",
+  "reflectionCategoryPersonalGrowth": "自己成長",
+  "reflectionCategoryRelationships": "人間関係",
+  "reflectionCategorySelfCompassion": "セルフ・コンパッション",
+  "reflectionCategoryClarity": "明晰さ",
+  "reflectionCategoryPossibility": "可能性",
+  "reflectionCategoryDailyReview": "一日の振り返り",
+  "reflectionCategoryPurposeValues": "目的と価値観",
+  "reflectionCategoryResilience": "回復力",
+  "reflectionCategoryCreativityCuriosity": "創造性と好奇心",
+  "reflectionCategoryRestRenewal": "休息と心身の回復",
+  "reflectionWriteHint": "思いついたことを自由に書いてください…",
+  "reflectionSaveError": "振り返りを保存できませんでした：{error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "完全に削除しますか？",
+  "trashDeletePermanentlyMessage": "このメモは完全に削除されます。",
+  "trashEmptyTitle": "ゴミ箱を空にしますか？",
+  "trashEmptyMessage": "メモ {count} 件を完全に削除しますか？",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "ゴミ箱を空にする",
+  "trashNoNotesTitle": "まだメモはありません。",
+  "trashPrivateNote": "プライベートメモ",
+  "trashLockedNote": "ロックされたメモ",
+  "trashChecklist": "チェックリスト",
+  "trashNote": "メモ",
+  "trashDeletePermanentlyAction": "完全に削除",
+  "favoritesEmptyTitle": "お気に入りはまだありません",
+  "favoritesEmptyDescription": "大切なメモに星を付けると、ここに表示されます。",
+  "favoritesNoContent": "内容なし",
+  "archivedRestoreMessage": "メモをメモ一覧に復元しました。",
+  "archivedRefreshTooltip": "アーカイブ済みメモを更新",
+  "archivedEmptyTitle": "アーカイブ済みメモはありません",
+  "archivedEmptyDescription": "アーカイブしたメモがここに表示されます。開くか、メモ一覧に戻せます。",
+  "privacyPledgeHeadline": "プライバシーへの約束",
+  "privacyPledgeIntro": "考えは個人的なものです。Orahはメモを非公開に保ち、自分で管理できるよう設計されています。",
+  "privacyLocalTitle": "完全ローカル",
+  "privacyLocalDescription": "メモはこのデバイスにのみ保存されます。",
+  "privacyCloudTitle": "クラウド不使用",
+  "privacyCloudDescription": "Orahにはメモ同期サーバーがありません。共有またはエクスポートしない限り、メモは端末内に保存されます。",
+  "privacyAiTitle": "AI不使用",
+  "privacyAiDescription": "Orahはメモをスキャン・閲覧したり、メモを使ってAIを学習させたりしません。",
+  "privacyVaultTitle": "暗号化された保管庫",
+  "privacyVaultDescription": "保管庫内の機密メモはAES-256-GCM暗号化で保護されます。",
+  "privacySharingDisclosure": "共有、エクスポート、端末サービス、OS機能を使うと、選択に応じて情報がアプリ外へ送信される場合があります。",
+  "gotIt": "了解しました",
+  "aboutFast": "高速",
+  "aboutFastDescription": "すぐに記録できるよう設計されています。",
+  "aboutOfflineFirst": "オフライン優先",
+  "aboutOfflineFirstDescription": "アカウントなしでメモを利用できます。",
+  "aboutPrivate": "プライベート",
+  "aboutPrivateDescription": "ローカルデータと任意の端末保護。",
+  "aboutSummary": "Orahは邪魔をせず、開く・記録する・整理する・見つけることに集中できます。",
+  "developerSignatureLabel": "Abhinav Bajpai — 開発者署名",
+  "aboutFeedback": "機能の提案、フィードバック、ご意見はこちら：",
+  "aboutCopyright": "著作権 © 2026 Abhinav Bajpai. 無断転載を禁じます。",
+  "aboutLegalNotice": "Orahのアプリコード、オリジナルブランド、アートワーク、製品アセットはAbhinav Bajpaiが所有します。サードパーティ製コンポーネントは各ライセンスに従います。",
+  "voiceLanguageTitle": "音声入力の言語",
+  "voiceLanguageDescription": "話す言語を選択します。アプリの表示言語とは異なっていてもかまいません。",
+  "voiceLanguageSystemDefault": "端末の既定の言語を使用",
+  "voiceLanguageNoLocales": "この端末の音声認識サービスでは利用可能な言語がありません。",
+  "securityCreatePin": "PINを作成",
+  "securityConfirmPin": "PINを確認",
+  "securityPinMismatch": "PINが一致しません。",
+  "securityPinCreated": "PINを作成しました。アプリロックが有効です。",
+  "securityPinActionFailed": "PINを更新できませんでした：{error}",
+  "securityEnterCurrentPin": "現在のPINを入力",
+  "securityPinDisabled": "PINとアプリロックを無効にしました。",
+  "securityBiometricNotCompleted": "生体認証が完了しませんでした。",
+  "securityPinDigitsHint": "4～8桁",
+  "securityEnterDigits": "4～8桁を入力してください",
+  "securityAppLock": "アプリロック",
+  "securityRequirePin": "ORAHのロック時にPINを要求する",
+  "securityCreatePinToProtect": "ORAHを保護するPINを作成",
+  "securityChangePin": "PINを変更",
+  "securityReplacePinSubtitle": "現在のORAH PINを変更します",
+  "securityRemovePin": "PINを削除",
+  "securityTurnOffPinProtection": "PIN保護を無効にする",
+  "securityBiometricUnlock": "生体認証でロック解除",
+  "securityUseBiometrics": "指紋認証または端末の生体認証を使用",
+  "securityLocalFirstPrivacy": "端末内保存を優先するプライバシー",
+  "securityLocalFirstDescription": "ORAHでは、メモにアカウントやクラウド同期は必要ありません。",
+  "securityStorageNote": "セキュリティに関する注意：PIN認証情報はAndroid/iOSの安全なストレージに保存されます。機密性の高いメモの内容は端末内に残ります。ORAHがコンテンツのエンドツーエンド暗号化をうたう前に、完全に暗号化されたVaultストレージを追加します。",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PINは復元できません。忘れるとVaultを復元できません。",
+  "vaultPinDigitsHint": "4～8桁のVault PIN",
+  "vaultConfirmPin": "PINを確認",
+  "vaultCancel": "キャンセル",
+  "vaultPinsMismatch": "PINが一致しません。",
+  "vaultPinDigitsError": "Vault PINは4～8桁である必要があります。",
+  "vaultIncorrectPin": "Vault PINが正しくありません。",
+  "vaultVerifyCurrentPin": "現在のVault PINを確認",
+  "vaultIncorrectCurrentPin": "現在のVault PINが正しくありません。",
+  "vaultCreateNewPin": "新しいVault PINを作成",
+  "vaultPinChanged": "Vault PINを変更しました。",
+  "vaultNewFolder": "新しいVaultフォルダー",
+  "vaultFolderName": "フォルダー名",
+  "vaultCreate": "作成",
+  "vaultRenameFolder": "Vaultフォルダー名を変更",
+  "vaultSave": "保存",
+  "vaultDelete": "削除",
+  "vaultLockedTitle": "Vault／ロックしたメモ",
+  "vaultChangePin": "Vault PINを変更",
+  "vaultTrustBadge": "高い安全性のVault",
+  "vaultCreatePrivateNote": "プライベートメモを作成",
+  "vaultAllFolders": "すべてのフォルダー",
+  "vaultFolderOptions": "Vaultフォルダーのオプション",
+  "vaultRename": "名前を変更",
+  "vaultNewFolderAction": "新しいフォルダー",
+  "vaultEmptyTitle": "Vaultは空です",
+  "vaultEmptyDescription": "エディターでメモをロックするか、プライベートメモを作成してください。",
+  "vaultMoveToFolder": "フォルダーに移動",
+  "vaultUnfiled": "未分類",
+  "vaultJustNow": "たった今",
+  "vaultMinutesAgoSuffix": "分前",
+  "vaultHoursAgoSuffix": "時間前",
+  "vaultDaysAgoSuffix": "日前",
+  "vaultDeleteFolderTitle": "{folderName}を削除しますか？",
+  "vaultFolderEmpty": "このフォルダーは空です。",
+  "vaultDeleteFolderWithNotes": "よろしいですか？プライベートメモ{count}件を未分類に移動します。",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "メモをエクスポート",
+  "exportSheetDescription": "以下の利用可能な形式から1つだけ選択してください。",
+  "exportDocuments": "ドキュメント",
+  "exportData": "データ",
+  "exportPlannedSection": "予定 / 近日公開",
+  "exportPlannedDescription": "これらの形式は今後のOrahアップデートで対応予定です。",
+  "sendAsEmailAttachment": "メールの添付ファイルとして送信",
+  "emailAttachmentDescription": "PDFを作成し、システムの共有画面を開きます",
+  "exportAllAvailable": "利用可能なすべての形式をエクスポート",
+  "exportComingSoon": "近日公開",
+  "plannedExportFormats": "今後対応予定のエクスポート形式",
+  "plannedExportFormatsDescription": "これらの形式は今後のOrahアップデートで対応予定で、現在はエクスポートできません。",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "印刷用文書",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "編集可能なMicrosoft Word文書",
+  "exportFormatText": "プレーンテキスト",
+  "exportDescriptionText": "高い互換性",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "持ち運び可能なMarkdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "チェックリストは行に変換されます",
+  "organizationPickerTitle": "メモを整理",
+  "organizationDone": "完了",
+  "organizationNoFolder": "フォルダーなし",
+  "organizationAddTagHint": "タグを追加",
+  "organizationAddTag": "追加",
+  "organizationNoTags": "タグはまだありません。",
+  "exportFailed": "エクスポートに失敗しました：{error}",
+  "exportEmailAttachmentFailed": "メール添付に失敗しました：{error}",
+  "exportAllFailed": "すべてのエクスポートに失敗しました：{error}",
+  "exportCategoryEbooks": "電子書籍",
+  "exportCategoryAcademic": "学術",
+  "exportCategoryPresentation": "プレゼンテーション",
+  "exportCategorySpeechAudio": "音声／オーディオ",
+  "exportCategorySubtitles": "字幕",
+  "exportCategoryEmail": "メール",
+  "exportCategoryCodeLiterate": "コード／技術文書",
+  "exportCategoryArchive": "アーカイブ",
+  "exportCategoryDatabase": "データベース",
+  "exportCategoryClipboard": "クリップボード",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "フォルダー",
+  "organizationTagsLabel": "タグ",
+  "plannedExportRichText": "リッチテキスト (.rtf)",
+  "plannedExportRichTextDescription": "複数プラットフォーム対応のリッチテキスト",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "LibreOfficeのオープン標準",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "ウェブページ、メール、ブログ",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "多くの電子書籍リーダー",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "旧型Kindle",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "新しいKindle",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "一般的な電子書籍形式",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "研究論文や数式を含む文書",
+  "plannedExportLatexPdf": "LaTeXからのPDF (.pdf)",
+  "plannedExportLatexPdfDescription": "最終版の学術論文",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "参考文献管理",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "表とデータ分析",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "開発者、API、構造化データ",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "構造化文書",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "設定と読みやすいデータ",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "タブ区切りの表",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "プレゼンテーション",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "音声読み上げ",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "音声読み上げ",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "動画字幕",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "ウェブ／動画字幕",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "メールメッセージ形式",
+  "plannedExportHtmlEmail": "HTMLメール",
+  "plannedExportHtmlEmailDescription": "送信可能なHTMLメール",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "コード文書",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "圧縮エクスポートパッケージ",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "圧縮エクスポートパッケージ",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "データベースエクスポート",
+  "plannedExportRichClipboard": "リッチテキストクリップボード",
+  "plannedExportRichClipboardDescription": "リッチテキストのクリップボード形式",
+  "plannedExportHtmlClipboard": "HTMLクリップボード",
+  "plannedExportHtmlClipboardDescription": "クリップボードのHTML形式",
+  "plannedExportPlainClipboard": "プレーンテキストクリップボード",
+  "plannedExportPlainClipboardDescription": "プレーンテキストのクリップボード形式",
+  "exportShareSubject": "ORAH — エクスポート: {title}",
+  "exportShareBody": "ORAHからエクスポート",
+  "emailAttachmentSubject": "ORAH — 添付: {title}",
+  "emailAttachmentBody": "ORAHから添付",
+  "exportAllShareSubject": "ORAH — {title} — エクスポート一式",
+  "exportAllShareBody": "ORAHから現在利用可能なすべての形式でエクスポートしました",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count}分",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "ORAH ウィジェットを追加",
+  "androidWidgetSetupBody": "Android のホーム画面で空いている場所を長押しし、ウィジェットを選択して ORAH を探し、ホーム画面にドラッグします。",
+  "androidQuickShortcutDialogTitle": "クイックノートのショートカット",
+  "androidQuickShortcutDialogBody": "Android のホーム画面で ORAH のアイコンを長押しします。ショートカットメニューから「新しいメモ」または「新しいチェックリスト」を選びます。",
+  "androidShortcutNewNote": "新しいメモ",
+  "androidShortcutNewChecklist": "新しいチェックリスト",
+  "androidShortcutSearch": "検索",
+  "androidShareUnavailable": "この端末では ORAH への共有を利用できません。",
+  "androidFeatureHeading": "Android 版 ORAH",
+  "androidFeatureIntro": "Android の標準機能との連携により、すばやい記録、共有、ホーム画面からのアクセスができます。",
+  "androidWidgetTitle": "ホーム画面ウィジェット",
+  "androidWidgetDescription": "ホーム画面からメモやチェックリストを作成したり、検索を開いたりできます。",
+  "androidQuickCaptureTitle": "クイックノートのショートカット",
+  "androidQuickCaptureDescription": "ORAH を直接開いてすぐに記録できます。",
+  "androidShareTitle": "ORAH に共有",
+  "androidShareDescription": "対応するテキストやコンテンツを ORAH の新しいメモに送信します。",
+  "androidRemindersTitle": "リマインダー",
+  "androidRemindersDescription": "バックエンドなしでメモやチェックリストのリマインダーを作成できます。",
+  "androidLocalIntegrationsNote": "これらは端末内で動作する Android 機能で、バックエンドは不要です。",
+  "androidDone": "完了",
+  "androidGotIt": "了解",
+  "captureTitle": "記録",
+  "captureDescription": "記録する内容を選択してください。",
+  "quickNote": "クイックノート",
+  "startTypingImmediately": "すぐに入力を開始",
+  "quickChecklist": "クイックチェックリスト",
+  "captureTasksWithoutSetup": "設定せずにタスクを記録",
+  "dailyChecklistTooltip": "毎日のチェックリスト",
+  "quickCaptureHint": "タップして入力 • 長押しでチェックリストとオプション",
+  "quickCaptureTooltip": "クイック記録。長押しでチェックリストとオプションを表示します。",
+  "filtersActive": "フィルター適用中",
+  "searchResultsCount": "検索結果：{count}",
+  "advancedSearchProFeature": "高度な検索はORAH Proの機能です",
+  "noNotesFound": "ノートが見つかりません",
+  "searchFilterHint": "通常のキーワード検索は無料です。フィルターと演算子を使うにはORAH Proを開いてください。",
+  "searchEmptyHint": "別の単語を試すか、フィルターを解除してください。",
+  "voicePreferences": "音声設定",
+  "dailyReflectionSchedule": "毎日の振り返りスケジュール",
+  "versionLabel": "バージョン {version}",
+  "vaultResetWarning": "VaultのPINは復元できません。リセットするとVault内のすべてのノートと暗号化キーが完全に削除されます。通常のノートとフォルダーは変更されません。",
+  "portableBackupShareText": "Orahポータブルバックアップ",
+  "storageAttachmentCount": "添付ファイル {count} 件 • {size}",
+  "dailyReflectionTimePicker": "毎日の振り返り時刻を選択",
+  "scheduleLoading": "スケジュールを読み込み中…",
+  "scheduleEnabledAt": "有効 • 毎日 {time}",
+  "scheduleDisabled": "無効 • 毎日の振り返りリマインダーを受け取るには有効にしてください",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "featureVoiceCaptureDescription": "音声入力で素早く考えを記録できます。",
+  "featureChecklistDescription": "メモを実行可能なチェックリストに変換し、完了状況を追跡します。",
+  "featureShareExportTitle": "共有とエクスポート",
+  "featureShareExportDescription": "ノートを共有し、持ち運びやすい形式で内容をエクスポートします。",
+  "notificationDailyReflectionTitle": "毎日の振り返りの時間です",
+  "notificationDailyReflectionBody": "心に浮かんでいることを書き留める静かな時間を取りましょう。",
+  "notificationDailyReflectionChannel": "毎日の振り返り",
+  "notificationDailyReflectionChannelDescription": "立ち止まって振り返るためのやさしい毎日の通知",
+  "notificationReminderChannel": "Orahリマインダー",
+  "notificationReminderChannelDescription": "ノートとタスクのリマインダー",
+  "notificationDoneAction": "完了",
+  "notificationSnooze10Action": "10分後に再通知",
+  "notificationSnooze60Action": "1時間後に再通知",
+  "notificationReminderTitle": "ORAHリマインダー",
+  "genericTryAgain": "もう一度お試しください。",
+  "registrationFailed": "登録を完了できませんでした。もう一度お試しください。"
 }

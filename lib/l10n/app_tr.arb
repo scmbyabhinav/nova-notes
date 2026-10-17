@@ -65,5 +65,898 @@
   "unlock": "Kilidi aç",
   "useBiometrics": "Biyometrik doğrulamayı kullan",
   "incorrectPin": "PIN yanlış",
-  "biometricFallbackError": "Biyometrik doğrulama iptal edildi veya kullanılamıyor. Kilidi açmak için PIN'inizi girin."
+  "biometricFallbackError": "Biyometrik doğrulama iptal edildi veya kullanılamıyor. Kilidi açmak için PIN'inizi girin.",
+  "journeyTitle": "Yolculuğunuz",
+  "journeyHeadline": "Küçük anlar birikir.",
+  "journeySubtitle": "Yazma alışkanlıklarınıza ve düşüncelerinize nazik bir bakış.",
+  "dayInARow": "gün üst üste",
+  "daysInARow": "gün üst üste",
+  "notesSaved": "not kaydedildi",
+  "notesStayOnDevice": "Notlarınız bu cihazda kalır. Bu bilgiler kaydettiğiniz notlardan hesaplanır.",
+  "moodStoryStarts": "Duygu hikâyeniz burada başlıyor",
+  "chooseMoodToSeeDistribution": "Bir not yazarken ruh hâli seçin; dağılımı burada görün.",
+  "moodDistributionSubtitle": "Kaydettiğiniz duygular",
+  "notesCreatedLast7Days": "Son 7 günde oluşturulan notlar",
+  "calendarSubtitle": "Güne göre notlar ve planlanmış hatırlatıcılar",
+  "goToToday": "Bugüne git",
+  "scheduleNote": "Not planla",
+  "nothingOnThisDay": "Bu gün için bir şey yok",
+  "chooseAnotherDate": "Başka bir tarih seçin veya bu gün için not planlayın.",
+  "untitledNote": "Başlıksız not",
+  "scheduledLabel": "Planlandı",
+  "createdLabel": "Oluşturuldu",
+  "calendarItemStatusTime": "{status} • {time}",
+  "writingRhythm": "Yazma ritminiz",
+  "historyTimeline": "Geçmiş zaman çizelgesi",
+  "storyStartsWithNote": "Hikâyeniz bir notla başlar",
+  "pickHighlightedDay": "Bir anı yeniden görmek veya tüm geçmişe göz atmak için işaretli bir gün seçin.",
+  "savedDaysHighlighted": "Kaydedilmiş notların bulunduğu günler takvimde vurgulanır.",
+  "addFolderImage": "Klasör resmi ekle",
+  "changeImage": "Resmi değiştir",
+  "removeImage": "Resmi kaldır",
+  "folderName": "Klasör adı",
+  "folderNameHint": "ör. İş, Fikirler, Kişisel",
+  "cancel": "İptal",
+  "create": "Oluştur",
+  "newFolder": "Yeni klasör",
+  "editFolder": "Klasörü düzenle",
+  "save": "Kaydet",
+  "deleteFolderTitle": "{folderName} silinsin mi?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "Klasör boş.",
+  "notesMovedFromFolder": "{count} not saklanacak ve Tüm Notlar'a geri taşınacak.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "Sil",
+  "selectedFoldersDeleteTitle": "{count} klasör silinsin mi?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "Seçilen klasörler boş.",
+  "deleteSelected": "Seçilenleri sil",
+  "cancelSelection": "Seçimi iptal et",
+  "selectedCount": "{count} seçildi",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "Seçilen klasörleri sil",
+  "folderOptions": "Klasör seçenekleri",
+  "open": "Aç",
+  "rename": "Yeniden adlandır",
+  "folderNoteCount": "{count} not",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "Klasörden kaldır",
+  "moveToTrash": "Çöp kutusuna taşı",
+  "noFoldersYet": "Henüz klasör yok",
+  "emptyFoldersDescription": "İlgili notları bir arada tutmak için klasörler oluşturun.",
+  "createFolder": "Klasör oluştur",
+  "noNotesInFolder": "Bu klasörde henüz not yok.\nBir not açın ve buraya eklemek için Düzenle'yi seçin.",
+  "welcomeToOrah": "Orah'a hoş geldiniz",
+  "personalizeYourSpace": "Alanınızı kişiselleştirin. Başlamak için adınızı ve e-posta adresinizi girin.",
+  "fullName": "Ad soyad",
+  "yourName": "Adınız",
+  "emailAddress": "E-posta adresi",
+  "emailExample": "siz@ornek.com",
+  "enterFullName": "Lütfen adınızı ve soyadınızı girin.",
+  "enterValidEmail": "Geçerli bir e-posta adresi girin.",
+  "registerAndContinue": "Kaydol ve devam et",
+  "profileStoredOnDevice": "Profiliniz bu cihazda güvenle saklanır. Abone listesi eşitlemesi için yapılandırılmış bir bülten hizmeti gerekir.",
+  "proRestore": "Geri yükle",
+  "proHeroEyebrow": "NOTLARINIZ, DAHA GÜÇLÜ",
+  "proHeroHeadline": "Her nottan\ndaha fazla verim alın.",
+  "proHeroDescription": "Kâğıt üzerindeki bilgileri aranabilir bilgiye dönüştürün, ihtiyacınız olan ayrıntıları bulun ve notlarınızı işinizin sizi götürdüğü her yere taşıyın.",
+  "proHeroFootnote": "Ek özelliklere ihtiyaç duyduğunuzda yükseltin. Günlük notlarınız size ait kalır.",
+  "proMoreThanNotes": "Notlardan daha fazlası",
+  "proOcrTitle": "Görsellerde arama sağlayan OCR",
+  "proOcrDescription": "Yeniden yazmak yerine desteklenen görsel ve belgelerden metin çıkarın.",
+  "proExportTitle": "İhtiyacınız olan biçimde dışa aktarın",
+  "proExportDescription": "PDF, Word ve Excel'e premium dışa aktarma ile notlarınızı ORAH dışında da kullanın.",
+  "proSearchTitle": "Aradığınız ayrıntıyı kolayca bulun",
+  "proSearchDescription": "Önemli ayrıntılara daha hızlı ulaşmak için gelişmiş arama ve filtreleri kullanın.",
+  "proWorkspaceTitle": "Daha düzenli bir çalışma alanı",
+  "proWorkspaceDescription": "Sürümünüzde kullanıma sunuldukça premium şablonları ve gelişmiş üretkenlik araçlarını açın.",
+  "proEntitlementActive": "Pro erişiminiz etkin.",
+  "proChoosePlan": "Pro planınızı seçin",
+  "proPricesFromPlay": "Bölgenizin fiyatları Google Play tarafından sağlanır.",
+  "proPlanYearly": "Yıllık",
+  "proBestValue": "En iyi fiyat",
+  "proPlanMonthly": "Aylık",
+  "proMonthlySubtitle": "Aydan aya ödeme",
+  "proOfferInstruction": "İşvereninizden veya geliştiriciden ORAH teklifiniz mi var? Davetiyedeki Google Play bağlantısı ya da koduyla kullanın, ardından buraya dönüp Geri yükle'ye dokunun.",
+  "proRestorePurchases": "Satın alımları geri yükle",
+  "proRenewalDisclosure": "Google Play'de iptal edilmezse abonelikler otomatik yenilenir. Onaylamadan önce gösterilen fiyatı, faturalandırma dönemini ve deneme koşullarını inceleyin. Aboneliğinizi Play Store hesabınızdan yönetebilir veya iptal edebilirsiniz.",
+  "proBestValueBadge": "EN İYİ FİYAT",
+  "proLoadingPrice": "Fiyat yükleniyor…",
+  "proUnavailable": "Şu anda kullanılamıyor",
+  "proChooseButton": "Seç",
+  "microphoneAccessNeeded": "Mikrofon izni gerekli",
+  "microphoneAccessPermanentDenied": "Sesinizi yazıya dönüştürmek için ORAH Notes mikrofon erişimine ihtiyaç duyar. Bu izni Ayarlar'dan açabilirsiniz.",
+  "microphoneAccessRequest": "Sesinizi yazıya dönüştürmek için ORAH Notes mikrofon erişimine ihtiyaç duyar. Lütfen izin verin veya Ayarlar'dan etkinleştirin.",
+  "notNow": "Şimdi değil",
+  "openSettings": "Ayarları aç",
+  "voiceInputUnavailableWithMessage": "Ses girişi kullanılamıyor: {message}",
+  "voiceInputUnavailable": "Bu cihazda ses girişi kullanılamıyor.",
+  "couldNotStartVoiceCapture": "Ses kaydı başlatılamadı: {error}",
+  "voiceTextSaved": "Ses metni nota kaydedildi.",
+  "recordingStoppedPartialSaved": "Kayıt durdu. Kısmi metin kaydedildi.",
+  "addTask": "Görev ekle",
+  "taskHint": "Ne yapılması gerekiyor?",
+  "add": "Ekle",
+  "editTask": "Görevi düzenle",
+  "enterVaultPin": "Vault PIN'ini girin",
+  "pinDigitsLabel": "4–8 haneli PIN",
+  "vaultAuthenticationFailed": "Kimlik doğrulama başarısız. Biyometriyi veya Vault PIN'inizi deneyin.",
+  "secureYourVault": "Vault'unuzu güvene alın",
+  "vaultSetupDescription": "Bu notu kilitlemek için önce bir PIN veya biyometrik kimlik doğrulama ayarlamalısınız. Böylece nota yalnızca siz erişebilirsiniz.",
+  "setUpSecurity": "Güvenliği ayarla",
+  "createVaultPin": "Vault PIN'i oluştur",
+  "confirmVaultPin": "Vault PIN'ini onayla",
+  "vaultPinsDoNotMatch": "PIN'ler eşleşmiyor. Not kilitlenmedi.",
+  "vaultPinCreated": "Vault PIN'i oluşturuldu. Not şimdi güvene alınıyor…",
+  "enterPinDigits": "4–8 haneli sayı girin",
+  "addContentBeforeLock": "Bu notu kilitlemeden önce içerik ekleyin.",
+  "vaultAuthenticationNotCompleted": "Kimlik doğrulama tamamlanmadı. Not kilitlenmedi.",
+  "noteLockedMovedToVault": "Not kilitlendi ve Vault'a taşındı.",
+  "noteUnlockedMovedToNotes": "Notun kilidi açıldı ve notlarınıza geri taşındı.",
+  "continueLabel": "Devam",
+  "ocrNoReadableText": "Okunabilir metin bulunamadı.",
+  "ocrTextExtracted": "Görselden metin çıkarıldı.",
+  "ocrCouldNotReadImage": "Bu görseldeki metin okunamadı.",
+  "chooseTemplate": "Şablon seç",
+  "replaceCurrentNote": "Mevcut not değiştirilsin mi?",
+  "templateReplaceWarning": "Bu şablon mevcut başlığı ve içeriği değiştirir.",
+  "replace": "Değiştir",
+  "insertLink": "Bağlantı ekle",
+  "insert": "Ekle",
+  "couldNotAddImage": "Görsel eklenemedi: {error}",
+  "couldNotAddFiles": "Dosyalar eklenemedi: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "Ekin adını değiştir",
+  "preview": "Önizleme",
+  "share": "Paylaş",
+  "details": "Ayrıntılar",
+  "removeFromNote": "Notdan kaldır",
+  "chooseFromGallery": "Galeriden seç",
+  "takePhoto": "Fotoğraf çek",
+  "attachFiles": "Dosya ekle",
+  "close": "Kapat",
+  "couldNotUnlockPrivateNote": "Özel notun kilidi açılamadı: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "Dışa aktar",
+  "removeFavorite": "Favorilerden kaldır",
+  "addToFavorites": "Favorilere ekle",
+  "addImage": "Görsel ekle",
+  "template": "Şablon",
+  "setReminder": "Hatırlatıcı ayarla",
+  "reminderAt": "Hatırlatıcı: {date}",
+  "clearReminder": "Hatırlatıcıyı temizle",
+  "noteColor": "Not rengi",
+  "unarchive": "Arşivden çıkar",
+  "archive": "Arşivle",
+  "back": "Geri",
+  "remove": "Kaldır",
+  "retry": "Yeniden dene",
+  "titleHint": "Başlık",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "Not kartı paylaşılamadı: {error}",
+  "couldNotRenameAttachment": "Ekin adı değiştirilemedi: {error}",
+  "attachmentDetailsFormat": "Boyut: {size}\nDeğiştirilme: {modified}",
+  "authenticationFailedNoteNotDeleted": "Kimlik doğrulama başarısız. Not silinmedi.",
+  "privateNote": "Özel not",
+  "thisNoteIsPrivate": "Bu not özeldir",
+  "unlockPrivateNoteHint": "Görüntülemek için biyometri veya PIN ile kilidi açın.",
+  "exitZenMode": "Zen Modundan çık",
+  "exportAsCard": "Kart olarak dışa aktar",
+  "scanTextFromImage": "Görselden metin tara",
+  "folderAndTags": "Klasörler ve etiketler",
+  "lockNote": "Notu kilitle",
+  "unlockAndMoveToNotes": "Kilidi aç ve Notlar'a taşı",
+  "stopAndSave": "Durdur ve kaydet",
+  "startWritingHint": "Yazmaya başlayın...",
+  "howAreYouFeeling": "Nasıl hissediyorsunuz?",
+  "checklistEmpty": "Kontrol listeniz boş",
+  "addFirstTask": "İlk görevi ekle",
+  "moveUp": "Yukarı taşı",
+  "moveDown": "Aşağı taşı",
+  "deleteTask": "Görevi sil",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "Kilit açılıyor…",
+  "unlockNote": "Notun kilidini aç",
+  "zenMode": "Odak modu",
+  "edit": "Düzenle",
+  "pinNote": "Sabitle",
+  "unpinNote": "Sabitlemeyi kaldır",
+  "bold": "Kalın",
+  "italic": "İtalik",
+  "strikethrough": "Üstü çizili",
+  "heading": "Başlık",
+  "bullets": "Madde işaretleri",
+  "numberedList": "Numaralı liste",
+  "quote": "Alıntı",
+  "linkLabel": "Bağlantı",
+  "addImageOrFile": "Görsel veya dosya ekle",
+  "stopVoiceInput": "Sesli girişi durdur",
+  "voiceInput": "Sesli giriş",
+  "stopAndSaveVoiceInput": "Sesli girişi durdur ve kaydet",
+  "tapMicToSpeak": "Notunuzu dikte etmek için mikrofona dokunun",
+  "voiceNote": "Sesli not",
+  "preparing": "Hazırlanıyor…",
+  "saving": "Kaydediliyor…",
+  "unsavedChanges": "Kaydedilmemiş değişiklikler",
+  "saved": "Kaydedildi",
+  "recordingVoiceInput": "Kaydediliyor • {duration}",
+  "savingVoiceText": "Ses metni kaydediliyor…",
+  "preparingMicrophone": "Mikrofon hazırlanıyor…",
+  "textNote": "Metin notu",
+  "checklistType": "Kontrol listesi",
+  "templateMeetingNotes": "Toplantı notları",
+  "templateAgenda": "Gündem",
+  "templateDecisions": "Kararlar",
+  "templateActionItems": "Yapılacak işler",
+  "templateDailyPlan": "Günlük plan",
+  "templateTopPriority": "En yüksek öncelik",
+  "templateImportant": "Önemli",
+  "templateIfTimeAllows": "Zaman kalırsa",
+  "templateShoppingList": "Alışveriş listesi",
+  "templateMilk": "Süt",
+  "templateVegetables": "Sebzeler",
+  "templateHousehold": "Ev ihtiyaçları",
+  "templateTravelPlan": "Seyahat planı",
+  "templateDates": "Tarihler",
+  "templateBookings": "Rezervasyonlar",
+  "templatePlacesToVisit": "Ziyaret edilecek yerler",
+  "orahNoteCard": "Orah not kartı",
+  "sharedFromOrah": "Orah üzerinden paylaşıldı",
+  "noteCardCaptureError": "Not kartı yakalanamadı.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "Merhaba, {name}",
+  "welcomeBack": "TEKRAR HOŞ GELDİN",
+  "friend": "Arkadaş",
+  "voiceGreeting": "Merhaba, {name}",
+  "voicePreviewGreeting": "Merhaba, bu Orah Notes",
+  "speakMyNameAtStartup": "Başlangıçta adımı söyle",
+  "voiceGreetingEnabledDescription": "Orah açıldığında seçtiğin dilde seni karşılar.",
+  "voiceGreetingDisabledDescription": "Karşılama sessiz kalır.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "Arşivden çıkar",
+  "archiveNote": "Arşivle",
+  "duplicateNote": "Notu çoğalt",
+  "navNotes": "Notlar",
+  "navFolders": "Klasörler",
+  "navFavorites": "Favoriler",
+  "navArchivedNotes": "Arşivlenmiş notlar",
+  "navDailyReflection": "Günlük düşünce",
+  "navVoiceCapture": "Sesle yakalama",
+  "navChecklists": "Kontrol listeleri",
+  "navAppearance": "Görünüm",
+  "navSearch": "Ara",
+  "offlineAccess": "Çevrimdışı erişim",
+  "backupExport": "Yedekleme ve dışa aktarma",
+  "recentlyUpdated": "Son güncellenen",
+  "recentlyCreated": "Son oluşturulan",
+  "titleAZ": "Başlık A–Z",
+  "noNotesYet": "Henüz not yok",
+  "vaultLocked": "Kasa / Kilitli notlar",
+  "vaultLockedDesc": "Özel, şifrelenmiş notlarınızı açın",
+  "privacyPledge": "Gizlilik taahhüdü",
+  "privacyPledgeDesc": "Bulut kullanmama sözümüzü okuyun",
+  "backupExportDesc": "Yerel yedekleme ve taşınabilir veriler",
+  "vaultResetTitle": "PIN'i mi unuttunuz? Kasayı sıfırlayın",
+  "vaultResetDesc": "Kurtarma mümkün değil. Sıfırlama eski kasayı kalıcı olarak siler.",
+  "pinBiometric": "PIN ve biyometrik koruma",
+  "androidFeaturesDesc": "Widget'lar, kısayollar ve paylaşım",
+  "archivedNotesTitle": "Arşivlenmiş notlar",
+  "archivedNotesDesc": "Arşivlenen notları açın veya geri yükleyin",
+  "trashTitle": "Çöp kutusu",
+  "trashDesc": "Notları geri yükleyin veya kalıcı olarak silin",
+  "orahFeaturesTitle": "Orah özellikleri",
+  "orahFeaturesDesc": "Orah'ın yapabileceklerini keşfedin",
+  "aboutOrahTitle": "Orah hakkında",
+  "aboutOrahDesc": "Ürün bilgileri ve gizlilik yaklaşımı",
+  "cancelLabel": "İptal",
+  "resetVaultQuestion": "Kasa sıfırlansın mı?",
+  "deleteVaultConfirm": "Eski kasayı sil ve yenisini oluştur",
+  "themeLabel": "Tema",
+  "themeSystem": "Sistem",
+  "themeLight": "Açık",
+  "themeDark": "Koyu",
+  "portableBackup": "Backup portátil",
+  "createBackup": "Criar backup",
+  "restoreBackup": "Restaurar backup",
+  "storageMaintenance": "Manutenção do armazenamento",
+  "cleanOrphanAttachments": "Limpar anexos órfãos",
+  "vaultAutoLock": "Bloqueio automático do cofre",
+  "neverLabel": "Nunca",
+  "dailyReflectionReminder": "Lembrete de reflexão diária",
+  "reminderTime": "Horário do lembrete",
+  "backupExportTitle": "Backup e exportação",
+  "vaultResetSuccess": "O cofre antigo foi excluído. Abra o cofre para criar um novo PIN.",
+  "vaultResetFailed": "Falha ao redefinir o cofre: {error}",
+  "backupRestoredCount": "{count} notas restauradas com sucesso.",
+  "backupError": "Erro no backup: {error}",
+  "unusedFilesFound": "{count} arquivos não utilizados encontrados",
+  "removedOrphanAttachments": "{count} anexos órfãos removidos.",
+  "showDailyInspiration": "Mostrar inspiração diária na tela inicial",
+  "showDailyInspirationDesc": "Exibir uma reflexão diária acima das notas.",
+  "reminderUpdateFailed": "Não foi possível atualizar o lembrete de reflexão diária: {error}",
+  "reminderScheduleFailed": "Não foi possível agendar a reflexão diária: {error}",
+  "orahFeaturesSemantics": "Recursos do Orah",
+  "vaultTooltip": "Cofre / Notas bloqueadas",
+  "calendarHistoryTooltip": "Calendário e histórico",
+  "statisticsTooltip": "Estatísticas e insights",
+  "appearanceTooltip": "Aparência",
+  "appearanceSemantics": "Configurações de aparência",
+  "searchFiltersTooltip": "Filtros de pesquisa",
+  "hideDailyInspiration": "Ocultar inspiração diária",
+  "sortNotesTooltip": "Ordenar notas",
+  "listView": "Vista de lista",
+  "gridView": "Vista em grade",
+  "searchLabel": "Pesquisar",
+  "newNoteLabel": "Nova nota",
+  "microphoneTooltip": "Microfone",
+  "unpinTooltip": "Desafixar",
+  "pinTooltip": "Fixar",
+  "favoriteTooltip": "Favorito",
+  "editNoteLabel": "Editar nota",
+  "lockedContent": "Conteúdo bloqueado",
+  "portableBackupDesc": "Notas, pastas e arquivos anexados em um pacote .nova.",
+  "vaultAutoLockDesc": "Exigir autenticação quando o app ficar em segundo plano",
+  "searchClear": "Temizle",
+  "favoritesOnly": "Yalnızca favoriler",
+  "pinnedOnly": "Yalnızca sabitlenenler",
+  "folderLabel": "Klasör",
+  "allFolders": "Tüm klasörler",
+  "archivedLabel": "Arşivlendi",
+  "noteTypeLabel": "Not türü",
+  "allTypes": "Tüm türler",
+  "typeText": "Metin",
+  "typeChecklist": "Kontrol listesi",
+  "typeVoice": "Ses",
+  "typeImage": "Görsel",
+  "typeDrawing": "Çizim",
+  "applyFilters": "Filtreleri uygula",
+  "filtersTooltip": "Filtreler",
+  "openOrahPro": "ORAH Pro'yu aç",
+  "searchScreenTitle": "Ara",
+  "searchFiltersTitle": "Arama filtreleri",
+  "homeTagline": "Düşün. Yaz. Sakla.",
+  "homeSubtitle": "Notlar, planlar ve düşünceler için sakin bir alan.",
+  "tapToBeginNote": "Not başlatmak için dokun",
+  "selectNotePrompt": "Bir not seçin",
+  "desktopNoteEmpty": "Bu not boş.",
+  "noContentLabel": "İçerik yok",
+  "emptyNotesHint": "İlk düşüncenizi kaydetmek için + düğmesine dokunun.",
+  "justNow": "Az önce",
+  "minutesAgoSuffix": "dk önce",
+  "hoursAgoSuffix": "sa önce",
+  "daysAgoSuffix": "gün önce",
+  "hideOrahFeatures": "Orah özelliklerini gizle",
+  "showOrahFeatures": "Orah özelliklerini göster",
+  "activeNotesCount": "{count} not",
+  "completedLabel": "tamamlandı",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count} tamamlandı",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (Kopya)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "Şükran",
+  "reflectionCategoryMindfulness": "Bilinçli farkındalık",
+  "reflectionCategoryPersonalGrowth": "Kişisel gelişim",
+  "reflectionCategoryRelationships": "İlişkiler",
+  "reflectionCategorySelfCompassion": "Öz şefkat",
+  "reflectionCategoryClarity": "Netlik",
+  "reflectionCategoryPossibility": "Olasılıklar",
+  "reflectionCategoryDailyReview": "Günlük değerlendirme",
+  "reflectionCategoryPurposeValues": "Amaç ve değerler",
+  "reflectionCategoryResilience": "Dayanıklılık",
+  "reflectionCategoryCreativityCuriosity": "Yaratıcılık ve merak",
+  "reflectionCategoryRestRenewal": "Dinlenme ve yenilenme",
+  "reflectionWriteHint": "Aklınıza gelenleri yazın…",
+  "reflectionSaveError": "Yansıma kaydedilemedi: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "Kalıcı olarak silinsin mi?",
+  "trashDeletePermanentlyMessage": "Bu not kalıcı olarak kaldırılacak.",
+  "trashEmptyTitle": "Çöp kutusu boşaltılsın mı?",
+  "trashEmptyMessage": "{count} not kalıcı olarak silinsin mi?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Çöp kutusunu boşalt",
+  "trashNoNotesTitle": "Henüz not yok.",
+  "trashPrivateNote": "Özel not",
+  "trashLockedNote": "Kilitli not",
+  "trashChecklist": "Kontrol listesi",
+  "trashNote": "Not",
+  "trashDeletePermanentlyAction": "Kalıcı olarak sil",
+  "favoritesEmptyTitle": "Henüz favori yok",
+  "favoritesEmptyDescription": "Önemli notları yıldızlayın; burada görünürler.",
+  "favoritesNoContent": "İçerik yok",
+  "archivedRestoreMessage": "Not, notlarınıza geri yüklendi.",
+  "archivedRefreshTooltip": "Arşivlenmiş notları yenile",
+  "archivedEmptyTitle": "Arşivlenmiş not yok",
+  "archivedEmptyDescription": "Arşivlediğiniz notlar burada görünür. Açabilir veya ana not listenize geri yükleyebilirsiniz.",
+  "privacyPledgeHeadline": "Gizlilik Taahhüdümüz",
+  "privacyPledgeIntro": "Düşünceleriniz kişiseldir. Orah, notlarınızı gizli ve kontrolünüz altında tutmak için tasarlanmıştır.",
+  "privacyLocalTitle": "%100 yerel",
+  "privacyLocalDescription": "Notlarınız yalnızca bu cihazda saklanır.",
+  "privacyCloudTitle": "Bulut yok",
+  "privacyCloudDescription": "Orah'ın not senkronizasyon sunucusu yoktur. Paylaşmayı veya dışa aktarmayı seçmediğiniz sürece notlar cihazınızda kalır.",
+  "privacyAiTitle": "Yapay zekâ yok",
+  "privacyAiDescription": "Orah notlarınızı taramaz, okumaz veya notlarınızla yapay zekâ eğitmez.",
+  "privacyVaultTitle": "Şifrelenmiş kasa",
+  "privacyVaultDescription": "Kasadaki hassas notlar AES-256-GCM şifrelemesiyle korunur.",
+  "privacySharingDisclosure": "Paylaşım, dışa aktarma, cihaz hizmetleri ve işletim sistemi özellikleri, kullanmayı seçtiğinizde bilgileri uygulama dışına gönderebilir.",
+  "gotIt": "Anladım",
+  "aboutFast": "Hızlı",
+  "aboutFastDescription": "Anında not almak için tasarlandı.",
+  "aboutOfflineFirst": "Önce çevrimdışı",
+  "aboutOfflineFirstDescription": "Notlarınız hesap olmadan çalışır.",
+  "aboutPrivate": "Özel",
+  "aboutPrivateDescription": "İsteğe bağlı cihaz korumasıyla yerel veriler.",
+  "aboutSummary": "Orah sade kalır: açın, kaydedin, düzenleyin, bulun.",
+  "developerSignatureLabel": "Abhinav Bajpai — geliştirici imzası",
+  "aboutFeedback": "Özellik önerileri, geri bildirim veya fikirler için:",
+  "aboutCopyright": "Telif hakkı © 2026 Abhinav Bajpai. Tüm hakları saklıdır.",
+  "aboutLegalNotice": "Orah uygulama kodu, özgün marka, çizimler ve ürün varlıkları Abhinav Bajpai'ye aittir. Üçüncü taraf bileşenler kendi lisanslarına tabidir.",
+  "voiceLanguageTitle": "Konuşma dili",
+  "voiceLanguageDescription": "Konuşacağınız dili seçin. Bu, uygulama dilinden farklı olabilir.",
+  "voiceLanguageSystemDefault": "Cihaz varsayılanını kullan",
+  "voiceLanguageNoLocales": "Bu cihazın konuşma tanıma hizmetinde kullanılabilir dil yok.",
+  "securityCreatePin": "PIN oluştur",
+  "securityConfirmPin": "PIN'i doğrula",
+  "securityPinMismatch": "PIN'ler eşleşmiyor.",
+  "securityPinCreated": "PIN oluşturuldu. Uygulama kilidi açık.",
+  "securityPinActionFailed": "PIN güncellenemedi: {error}",
+  "securityEnterCurrentPin": "Mevcut PIN'i gir",
+  "securityPinDisabled": "PIN ve uygulama kilidi devre dışı bırakıldı.",
+  "securityBiometricNotCompleted": "Biyometrik doğrulama tamamlanmadı.",
+  "securityPinDigitsHint": "4–8 rakam",
+  "securityEnterDigits": "4–8 rakam girin",
+  "securityAppLock": "Uygulama kilidi",
+  "securityRequirePin": "ORAH kilitliyken PIN iste",
+  "securityCreatePinToProtect": "ORAH'ı korumak için PIN oluştur",
+  "securityChangePin": "PIN'i değiştir",
+  "securityReplacePinSubtitle": "Mevcut ORAH PIN'ini değiştir",
+  "securityRemovePin": "PIN'i kaldır",
+  "securityTurnOffPinProtection": "PIN korumasını kapat",
+  "securityBiometricUnlock": "Biyometrik kilit açma",
+  "securityUseBiometrics": "Parmak izi veya cihaz biyometrisini kullan",
+  "securityLocalFirstPrivacy": "Yerel depolama öncelikli gizlilik",
+  "securityLocalFirstDescription": "ORAH, notlarınız için hesap veya bulut eşitlemesi gerektirmez.",
+  "securityStorageNote": "Güvenlik notu: PIN kimlik bilgileri Android/iOS güvenli depolama alanında tutulur. Hassas not içeriği cihazda kalır. ORAH, içerik için uçtan uca şifreleme iddiasında bulunmadan önce tamamen şifrelenmiş kasa depolaması eklenecektir.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN kurtarılamaz. Unutursanız kasa geri getirilemez.",
+  "vaultPinDigitsHint": "4–8 haneli kasa PIN'i",
+  "vaultConfirmPin": "PIN'i doğrula",
+  "vaultCancel": "İptal",
+  "vaultPinsMismatch": "PIN'ler eşleşmiyor.",
+  "vaultPinDigitsError": "Kasa PIN'i 4–8 rakamdan oluşmalıdır.",
+  "vaultIncorrectPin": "Kasa PIN'i yanlış.",
+  "vaultVerifyCurrentPin": "Mevcut kasa PIN'ini doğrula",
+  "vaultIncorrectCurrentPin": "Mevcut kasa PIN'i yanlış.",
+  "vaultCreateNewPin": "Yeni kasa PIN'i oluştur",
+  "vaultPinChanged": "Kasa PIN'i değiştirildi.",
+  "vaultNewFolder": "Yeni kasa klasörü",
+  "vaultFolderName": "Klasör adı",
+  "vaultCreate": "Oluştur",
+  "vaultRenameFolder": "Kasa klasörünü yeniden adlandır",
+  "vaultSave": "Kaydet",
+  "vaultDelete": "Sil",
+  "vaultLockedTitle": "Kasa / Kilitli Notlar",
+  "vaultChangePin": "Kasa PIN'ini değiştir",
+  "vaultTrustBadge": "Yüksek güvenlikli kasa",
+  "vaultCreatePrivateNote": "Özel not oluştur",
+  "vaultAllFolders": "Tüm klasörler",
+  "vaultFolderOptions": "Kasa klasörü seçenekleri",
+  "vaultRename": "Yeniden adlandır",
+  "vaultNewFolderAction": "Yeni klasör",
+  "vaultEmptyTitle": "Kasanız boş",
+  "vaultEmptyDescription": "Düzenleyicide bir notu kilitleyin veya özel not oluşturun.",
+  "vaultMoveToFolder": "Klasöre taşı",
+  "vaultUnfiled": "Dosyalanmamış",
+  "vaultJustNow": "Şimdi",
+  "vaultMinutesAgoSuffix": "dk önce",
+  "vaultHoursAgoSuffix": "sa önce",
+  "vaultDaysAgoSuffix": "gün önce",
+  "vaultDeleteFolderTitle": "{folderName} silinsin mi?",
+  "vaultFolderEmpty": "Bu klasör boş.",
+  "vaultDeleteFolderWithNotes": "Emin misiniz? {count} özel not Dosyalanmamış bölümüne taşınacak.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "Notu dışa aktar",
+  "exportSheetDescription": "Aşağıdaki kullanılabilir biçimlerden yalnızca birini seçin.",
+  "exportDocuments": "Belgeler",
+  "exportData": "Veriler",
+  "exportPlannedSection": "Planlandı / Yakında",
+  "exportPlannedDescription": "Bu biçimler gelecekteki Orah güncellemeleri için planlanmıştır.",
+  "sendAsEmailAttachment": "E-posta eki olarak gönder",
+  "emailAttachmentDescription": "PDF oluşturur ve sistem paylaşım menüsünü açar",
+  "exportAllAvailable": "Kullanılabilir tüm biçimleri dışa aktar",
+  "exportComingSoon": "Yakında",
+  "plannedExportFormats": "Planlanan dışa aktarma biçimleri",
+  "plannedExportFormatsDescription": "Bu biçimler gelecekteki Orah güncellemeleri için planlandı ve henüz dışa aktarılamıyor.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Yazdırılabilir belge",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Düzenlenebilir Microsoft Word belgesi",
+  "exportFormatText": "Düz metin",
+  "exportDescriptionText": "Maksimum uyumluluk",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Taşınabilir Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Kontrol listeleri satırlara dönüşür",
+  "organizationPickerTitle": "Notu düzenle",
+  "organizationDone": "Bitti",
+  "organizationNoFolder": "Klasör yok",
+  "organizationAddTagHint": "Etiket ekle",
+  "organizationAddTag": "Ekle",
+  "organizationNoTags": "Henüz etiket yok.",
+  "exportFailed": "Dışa aktarma başarısız: {error}",
+  "exportEmailAttachmentFailed": "E-posta eki başarısız: {error}",
+  "exportAllFailed": "Tüm dışa aktarma işlemleri başarısız: {error}",
+  "exportCategoryEbooks": "E-kitaplar",
+  "exportCategoryAcademic": "Akademik",
+  "exportCategoryPresentation": "Sunum",
+  "exportCategorySpeechAudio": "Konuşma / ses",
+  "exportCategorySubtitles": "Altyazılar",
+  "exportCategoryEmail": "E-posta",
+  "exportCategoryCodeLiterate": "Kod / teknik belgeler",
+  "exportCategoryArchive": "Arşiv",
+  "exportCategoryDatabase": "E-posta",
+  "exportCategoryClipboard": "Pano",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "Klasör",
+  "organizationTagsLabel": "Etiketler",
+  "plannedExportRichText": "Zengin metin (.rtf)",
+  "plannedExportRichTextDescription": "Platformlar arası zengin metin",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "LibreOffice açık standardı",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "Web sayfaları, e-posta ve bloglar",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "Çoğu e-kitap okuyucu",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "Eski Kindle cihazları",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "Yeni Kindle cihazları",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "Yaygın e-kitap biçimi",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "Araştırma makaleleri ve matematik belgeleri",
+  "plannedExportLatexPdf": "LaTeX'ten PDF (.pdf)",
+  "plannedExportLatexPdfDescription": "Son akademik makaleler",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "Kaynakça yönetimi",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "Tablolar ve veri analizi",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "Geliştiriciler, API'ler ve yapılandırılmış veri",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "Yapılandırılmış belgeler",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "Yapılandırma ve okunabilir veri",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "Sekmeyle ayrılmış tablolar",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "Sunumlar",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "Metinden konuşmaya ses",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "Metinden konuşmaya ses",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "Video altyazıları",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "Web/video altyazıları",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "E-posta mesaj biçimi",
+  "plannedExportHtmlEmail": "HTML e-posta",
+  "plannedExportHtmlEmailDescription": "Gönderilmeye hazır HTML e-posta",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "Kod belgeleri",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "Sıkıştırılmış dışa aktarma paketi",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "Sıkıştırılmış dışa aktarma paketi",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "Veritabanı dışa aktarımı",
+  "plannedExportRichClipboard": "Zengin metin panosu",
+  "plannedExportRichClipboardDescription": "Zengin metin pano biçimi",
+  "plannedExportHtmlClipboard": "HTML panosu",
+  "plannedExportHtmlClipboardDescription": "Pano HTML biçimi",
+  "plannedExportPlainClipboard": "Düz metin panosu",
+  "plannedExportPlainClipboardDescription": "Pano düz metin biçimi",
+  "exportShareSubject": "ORAH — Dışa aktarma: {title}",
+  "exportShareBody": "ORAH'dan dışa aktarıldı",
+  "emailAttachmentSubject": "ORAH — E-posta eki: {title}",
+  "emailAttachmentBody": "ORAH'dan ek",
+  "exportAllShareSubject": "ORAH — {title} — dışa aktarma paketi",
+  "exportAllShareBody": "ORAH'dan şu anda kullanılabilen tüm biçimlerde dışa aktarıldı",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} dk",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "ORAH widget'ını ekle",
+  "androidWidgetSetupBody": "Android ana ekranında boş bir alana uzun basın, Widget'lar'ı seçin, ORAH'ı bulun ve widget'ı ana ekrana sürükleyin.",
+  "androidQuickShortcutDialogTitle": "Hızlı Not kısayolu",
+  "androidQuickShortcutDialogBody": "Android ana ekranında ORAH uygulama simgesine uzun basın. Kısayol menüsünden Yeni not veya Yeni kontrol listesi'ni seçin.",
+  "androidShortcutNewNote": "Yeni not",
+  "androidShortcutNewChecklist": "Yeni kontrol listesi",
+  "androidShortcutSearch": "Ara",
+  "androidShareUnavailable": "Bu cihazda ORAH ile paylaşım kullanılamıyor.",
+  "androidFeatureHeading": "Android'de ORAH",
+  "androidFeatureIntro": "ORAH, yerel Android entegrasyonlarıyla hızlı kayıt, paylaşım ve ana ekrandan erişim sunar.",
+  "androidWidgetTitle": "Ana ekran widget'ı",
+  "androidWidgetDescription": "Ana ekrandan not veya kontrol listesi oluşturun ya da aramayı açın.",
+  "androidQuickCaptureTitle": "Hızlı Not kısayolu",
+  "androidQuickCaptureDescription": "Anında kayıt için ORAH'ı doğrudan açın.",
+  "androidShareTitle": "ORAH ile paylaş",
+  "androidShareDescription": "Desteklenen metin ve içerikleri yeni bir ORAH notuna gönderin.",
+  "androidRemindersTitle": "Hatırlatıcılar",
+  "androidRemindersDescription": "Arka uç olmadan not ve kontrol listesi hatırlatıcıları oluşturun.",
+  "androidLocalIntegrationsNote": "Bu entegrasyonlar yerel Android özellikleridir ve arka uç gerektirmez.",
+  "androidDone": "Bitti",
+  "androidGotIt": "Anladım",
+  "captureTitle": "Kaydet",
+  "captureDescription": "Neyi kaydetmek istediğinizi seçin.",
+  "quickNote": "Hızlı not",
+  "startTypingImmediately": "Hemen yazmaya başlayın",
+  "quickChecklist": "Hızlı kontrol listesi",
+  "captureTasksWithoutSetup": "Kurulum yapmadan görevleri kaydedin",
+  "dailyChecklistTooltip": "Günlük kontrol listesi",
+  "quickCaptureHint": "Yazmak için dokunun • Liste ve seçenekler için basılı tutun",
+  "quickCaptureTooltip": "Hızlı kayıt. Liste ve seçenekler için basılı tutun.",
+  "filtersActive": "Filtreler etkin",
+  "searchResultsCount": "Sonuçlar: {count}",
+  "advancedSearchProFeature": "Gelişmiş arama ORAH Pro özelliğidir",
+  "noNotesFound": "Not bulunamadı",
+  "searchFilterHint": "Ücretsiz olarak normal anahtar kelimeleri kullanın veya filtreleri ve operatörleri açmak için ORAH Pro'yu açın.",
+  "searchEmptyHint": "Başka bir kelime deneyin veya bir filtreyi kaldırın.",
+  "voicePreferences": "Ses tercihleri",
+  "dailyReflectionSchedule": "Günlük düşünme zamanlaması",
+  "versionLabel": "Sürüm {version}",
+  "vaultResetWarning": "Vault PIN'i kurtarılamaz. Sıfırlama, tüm Vault notlarını ve şifreleme anahtarını kalıcı olarak siler. Normal notlarınız ve klasörleriniz değişmeden kalır.",
+  "portableBackupShareText": "Orah taşınabilir yedeği",
+  "storageAttachmentCount": "{count} ek • {size}",
+  "dailyReflectionTimePicker": "Günlük düşünme saatini seçin",
+  "scheduleLoading": "Zamanlama yükleniyor…",
+  "scheduleEnabledAt": "Etkin • Her gün {time}",
+  "scheduleDisabled": "Devre dışı • Günlük hatırlatıcı almak için etkinleştirin",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "featureVoiceCaptureDescription": "Sesle not oluşturarak düşüncelerinizi hızla kaydedin.",
+  "featureChecklistDescription": "Notları tamamlanma takibi olan uygulanabilir kontrol listelerine dönüştürün.",
+  "featureShareExportTitle": "Paylaş ve dışa aktar",
+  "featureShareExportDescription": "Notları paylaşın ve içeriğinizi taşınabilir biçimlerde dışa aktarın.",
+  "notificationDailyReflectionTitle": "Günlük düşünme zamanı",
+  "notificationDailyReflectionBody": "Aklınızdan geçenleri yazmak için sakin bir an ayırın.",
+  "notificationDailyReflectionChannel": "Günlük düşünme",
+  "notificationDailyReflectionChannelDescription": "Durup düşünmek için nazik bir günlük hatırlatma",
+  "notificationReminderChannel": "Orah hatırlatıcıları",
+  "notificationReminderChannelDescription": "Notlar ve görevler için hatırlatıcılar",
+  "notificationDoneAction": "Tamamlandı",
+  "notificationSnooze10Action": "10 dk ertele",
+  "notificationSnooze60Action": "1 saat ertele",
+  "notificationReminderTitle": "ORAH hatırlatıcısı",
+  "genericTryAgain": "Lütfen tekrar deneyin.",
+  "registrationFailed": "Kayıt tamamlanamadı. Lütfen tekrar deneyin."
 }

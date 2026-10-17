@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/note.dart';
 import '../services/streak_service.dart';
 
@@ -22,6 +23,7 @@ class StatisticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final activeNotes = notes.where((note) => !note.isTrashed).toList();
     final streak = const StreakService().calculateCurrentStreak(activeNotes);
     final counts = <String, int>{
@@ -45,24 +47,24 @@ class StatisticsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.light ? const Color(0xFFF8FAFC) : theme.colorScheme.surface,
-      appBar: AppBar(title: const Text('Your Journey')),
+      appBar: AppBar(title: Text(l10n.journeyTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
           children: [
-            Text('Small moments add up.', style: theme.textTheme.titleLarge?.copyWith(color: StatisticsScreen.indigo, fontWeight: FontWeight.w800)),
+            Text(l10n.journeyHeadline, style: theme.textTheme.titleLarge?.copyWith(color: StatisticsScreen.indigo, fontWeight: FontWeight.w800)),
             const SizedBox(height: 5),
-            Text('A gentle look at your writing habits and reflections.', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(l10n.journeySubtitle, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 20),
             Row(children: [
-              Expanded(child: _MetricCard(label: 'Current Streak', value: '$streak', detail: streak == 1 ? 'day in a row' : 'days in a row', icon: Icons.local_fire_department_rounded, accent: const Color(0xFFEA580C))),
+              Expanded(child: _MetricCard(label: l10n.currentStreak, value: '$streak', detail: streak == 1 ? l10n.dayInARow : l10n.daysInARow, icon: Icons.local_fire_department_rounded, accent: const Color(0xFFEA580C), valueColor: StatisticsScreen.indigo)),
               const SizedBox(width: 12),
-              Expanded(child: _MetricCard(label: 'Total Notes', value: '${activeNotes.length}', detail: 'notes saved', icon: Icons.description_rounded, accent: StatisticsScreen.emerald)),
+              Expanded(child: _MetricCard(label: l10n.totalNotes, value: '${activeNotes.length}', detail: l10n.notesSaved, icon: Icons.description_rounded, accent: StatisticsScreen.emerald, valueColor: StatisticsScreen.emerald)),
             ]),
             const SizedBox(height: 22),
             _SectionCard(
-              title: 'Mood Distribution',
-              subtitle: 'The feelings you have captured',
+              title: l10n.moodDistribution,
+              subtitle: l10n.moodDistributionSubtitle,
               child: moodTotal == 0
                   ? const _EmptyMoodState()
                   : Column(children: [
@@ -88,14 +90,14 @@ class StatisticsScreen extends StatelessWidget {
                       Wrap(spacing: 14, runSpacing: 10, children: [
                         for (final entry in counts.entries)
                           if (entry.value > 0)
-                            _MoodLegend(emoji: moods[entry.key]!.$2, label: moods[entry.key]!.$1, count: entry.value, color: moods[entry.key]!.$3),
+                            _MoodLegend(emoji: moods[entry.key]!.$2, label: _moodLabel(l10n, entry.key), count: entry.value, color: moods[entry.key]!.$3),
                       ]),
                     ]),
             ),
             const SizedBox(height: 16),
             _SectionCard(
-              title: 'Weekly Activity',
-              subtitle: 'Notes created over the last 7 days',
+              title: l10n.weeklyActivity,
+              subtitle: l10n.notesCreatedLast7Days,
               child: SizedBox(
                 height: 220,
                 child: BarChart(BarChartData(
@@ -151,7 +153,7 @@ class StatisticsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Text('Your notes stay on this device. These insights are calculated from your saved notes.', textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(l10n.notesStayOnDevice, textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
           ],
         ),
       ),
@@ -160,10 +162,11 @@ class StatisticsScreen extends StatelessWidget {
 }
 
 class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.label, required this.value, required this.detail, required this.icon, required this.accent});
+  const _MetricCard({required this.label, required this.value, required this.detail, required this.icon, required this.accent, required this.valueColor});
   final String label, value, detail;
   final IconData icon;
   final Color accent;
+  final Color valueColor;
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +186,7 @@ class _MetricCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(label, style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600)),
           const SizedBox(height: 3),
-          Text(value, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: label == 'Current Streak' ? StatisticsScreen.indigo : StatisticsScreen.emerald)),
+          Text(value, style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800, color: valueColor)),
           Text(detail, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ]),
       ),
@@ -242,6 +245,7 @@ class _EmptyMoodState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -249,10 +253,19 @@ class _EmptyMoodState extends StatelessWidget {
       child: Column(children: [
         const Text('🌱', style: TextStyle(fontSize: 34)),
         const SizedBox(height: 8),
-        Text('Your mood story starts here', textAlign: TextAlign.center, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+        Text(l10n.moodStoryStarts, textAlign: TextAlign.center, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
         const SizedBox(height: 5),
-        Text('Choose a mood when you write a note. Your distribution will appear here.', textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        Text(l10n.chooseMoodToSeeDistribution, textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       ]),
     );
   }
 }
+
+String _moodLabel(AppLocalizations l10n, String mood) => switch (mood) {
+  'happy' => l10n.moodHappy,
+  'neutral' => l10n.moodNeutral,
+  'sad' => l10n.moodSad,
+  'angry' => l10n.moodAngry,
+  'thoughtful' => l10n.moodThoughtful,
+  _ => mood,
+};

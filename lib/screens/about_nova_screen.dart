@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_logo.dart';
 
@@ -8,9 +9,10 @@ class AboutNovaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('About Orah')),
+      appBar: AppBar(title: Text(l10n.aboutOrahTitle)),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
@@ -29,35 +31,35 @@ class AboutNovaScreen extends StatelessWidget {
           const OrahWordmark(fontSize: 38, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
-            'Think it. Write it. Keep it.',
+            l10n.homeTagline,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge,
           ),
           const SizedBox(height: 28),
           Card(
             child: Column(
-              children: const [
+              children: [
                 ListTile(
                   leading: Icon(Icons.bolt_outlined),
-                  title: Text('Fast'),
-                  subtitle: Text('Designed for instant capture.'),
+                  title: Text(l10n.aboutFast),
+                  subtitle: Text(l10n.aboutFastDescription),
                 ),
                 ListTile(
                   leading: Icon(Icons.cloud_off_outlined),
-                  title: Text('Offline-first'),
-                  subtitle: Text('Your notes work without an account.'),
+                  title: Text(l10n.aboutOfflineFirst),
+                  subtitle: Text(l10n.aboutOfflineFirstDescription),
                 ),
                 ListTile(
                   leading: Icon(Icons.lock_outline),
-                  title: Text('Private'),
-                  subtitle: Text('Local data with optional device protection.'),
+                  title: Text(l10n.aboutPrivate),
+                  subtitle: Text(l10n.aboutPrivateDescription),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            'Orah is built to stay out of the way: open, capture, organize, find.',
+            l10n.aboutSummary,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
@@ -88,7 +90,7 @@ class AboutNovaScreen extends StatelessWidget {
                         fit: BoxFit.contain,
                         alignment: Alignment.center,
                         filterQuality: FilterQuality.high,
-                        semanticLabel: 'Abhinav Bajpai — Developer signature',
+                        semanticLabel: l10n.developerSignatureLabel,
                         errorBuilder: (context, error, stackTrace) => const Center(
                           child: Text(
                             'Abhinav Bajpai',
@@ -115,7 +117,7 @@ class AboutNovaScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'For feature suggestions, feedback, or ideas:',
+                    l10n.aboutFeedback,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
@@ -136,7 +138,7 @@ class AboutNovaScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Copyright © 2026 Abhinav Bajpai. All rights reserved.',
+            l10n.aboutCopyright,
             textAlign: TextAlign.center,
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
@@ -144,7 +146,7 @@ class AboutNovaScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Orah application code, original branding, artwork and product assets are owned by Abhinav Bajpai. Third-party components remain subject to their respective licenses.',
+            l10n.aboutLegalNotice,
             textAlign: TextAlign.center,
             style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,

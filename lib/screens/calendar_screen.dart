@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../data/repositories/note_repository_provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/note.dart';
 import 'note_editor_screen.dart';
 
@@ -81,6 +82,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final selectedNotes = _selectedDayNotes;
     final selectedLabel = DateFormat('EEEE, d MMMM y').format(_selectedDate);
 
@@ -99,19 +101,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Calendar', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(l10n.calendar, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
                           const SizedBox(height: 4),
-                          Text('Notes by day and scheduled reminders', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                          Text(l10n.calendarSubtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         ],
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Notes',
+                      tooltip: AppLocalizations.of(context)!.navNotes,
                       onPressed: widget.onNotes,
                       icon: const Icon(Icons.note_alt_outlined),
                     ),
                     IconButton(
-                      tooltip: 'Go to today',
+                      tooltip: l10n.goToToday,
                       onPressed: () => setState(() => _selectedDate = DateUtils.dateOnly(DateTime.now())),
                       icon: const Icon(Icons.today_rounded),
                     ),
@@ -148,14 +150,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         children: [
                           Text(selectedLabel, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
                           const SizedBox(height: 3),
-                          Text('${selectedNotes.length} ${selectedNotes.length == 1 ? 'note' : 'notes'}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                          Text('${selectedNotes.length} ${l10n.notes.toLowerCase()}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         ],
                       ),
                     ),
                     FilledButton.tonalIcon(
                       onPressed: _scheduleNote,
                       icon: const Icon(Icons.alarm_add_rounded),
-                      label: const Text('Schedule note'),
+                      label: Text(l10n.scheduleNote),
                     ),
                   ],
                 ),
@@ -172,9 +174,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       children: [
                         Icon(Icons.event_note_rounded, size: 44, color: theme.colorScheme.primary),
                         const SizedBox(height: 10),
-                        Text('Nothing on this day', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                        Text(l10n.nothingOnThisDay, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                         const SizedBox(height: 5),
-                        Text('Choose another date or schedule a note for this day.', textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                        Text(l10n.chooseAnotherDate, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                       ],
                     ),
                   ),
@@ -198,8 +200,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             backgroundColor: theme.colorScheme.primaryContainer,
                             child: Icon(scheduled ? Icons.alarm_rounded : Icons.note_alt_outlined, color: theme.colorScheme.onPrimaryContainer),
                           ),
-                          title: Text(note.title.isEmpty ? 'Untitled note' : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text('${scheduled ? 'Scheduled' : 'Created'} • ${DateFormat('h:mm a').format(time)}'),
+                          title: Text(note.title.isEmpty ? l10n.untitledNote : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          subtitle: Text(
+                             l10n.calendarItemStatusTime(
+                               scheduled ? l10n.scheduledLabel : l10n.createdLabel,
+                               time,
+                             ),
+                           ),
                           trailing: const Icon(Icons.chevron_right_rounded),
                         ),
                       ),
