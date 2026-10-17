@@ -941,5 +941,9 @@
     }
   },
   "scheduleDisabled": "Deaktiviert • Aktivieren, um tägliche Erinnerungen zu erhalten",
-  "captureTitle": "Erfassen"
+  "captureTitle": "Erfassen",
+  "featureVoiceCaptureDescription": "Halte Gedanken schnell per Spracheingabe fest.",
+  "featureChecklistDescription": "Verwandle Notizen in umsetzbare Checklisten mit Fortschrittsanzeige.",
+  "featureShareExportTitle": "Teilen und exportieren",
+  "featureShareExportDescription": "Teile Notizen und exportiere Inhalte in portablen Formaten."
 }
