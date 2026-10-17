@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "Catat ide dengan cepat melalui pembuatan catatan berbasis suara.",
+  "featureChecklistDescription": "Ubah catatan menjadi daftar tugas yang dapat ditindaklanjuti dengan pelacakan penyelesaian.",
+  "featureShareExportTitle": "Bagikan & Ekspor",
+  "featureShareExportDescription": "Bagikan catatan dan ekspor konten dalam format portabel."
 }
