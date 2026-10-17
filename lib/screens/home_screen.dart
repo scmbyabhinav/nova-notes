@@ -307,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       case 'duplicate':
         final repository = await NoteRepositoryProvider.instance();
         final duplicate = note.copyWith(
-          title: '${note.title} (Copy)',
+          title: l10n.duplicateTitle(note.title),
           updatedAt: DateTime.now(),
         );
         final duplicateId = '${DateTime.now().microsecondsSinceEpoch}_copy';
@@ -929,7 +929,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                       if (recent.isNotEmpty)
                         Text(
-                          '$completed done',
+                          l10n.completedCountLabel(completed),
                           style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         ),
                       const SizedBox(width: 4),
@@ -1406,7 +1406,7 @@ class _DesktopNoteRow extends StatelessWidget {
                 ],
                 const SizedBox(height: 5),
                 Text(
-                  '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
+                  '${_formatDate(context, note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
                   style: theme.textTheme.labelSmall,
                 ),
               ],
@@ -1440,7 +1440,7 @@ class _DesktopNotePreview extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                '${_formatDate(note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
+                '${_formatDate(context, note.updatedAt)}  ·  ${note.folderId ?? l10n.notes}',
                 style: theme.textTheme.bodySmall,
               ),
               const Spacer(),
@@ -1631,21 +1631,17 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-String _formatRelativeTime(AppLocalizations l10n, DateTime date) {
+String _formatRelativeTime(BuildContext context, AppLocalizations l10n, DateTime date) {
   final difference = DateTime.now().difference(date.toLocal());
   if (difference.isNegative || difference.inMinutes < 1) return l10n.justNow;
   if (difference.inMinutes < 60) return '${difference.inMinutes} ${l10n.minutesAgoSuffix}';
   if (difference.inHours < 24) return '${difference.inHours} ${l10n.hoursAgoSuffix}';
   if (difference.inDays < 7) return '${difference.inDays} ${l10n.daysAgoSuffix}';
-  return _formatDate(date);
+  return _formatDate(context, date);
 }
 
-String _formatDate(DateTime date) {
-  final local = date.toLocal();
-  final month = local.month.toString().padLeft(2, '0');
-  final day = local.day.toString().padLeft(2, '0');
-
-  return '$month/$day/${local.year}';
+String _formatDate(BuildContext context, DateTime date) {
+  return MaterialLocalizations.of(context).formatShortDate(date.toLocal());
 }
 
 class _NoteCard extends StatelessWidget {
@@ -1747,7 +1743,7 @@ class _NoteCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      _formatRelativeTime(l10n, note.updatedAt),
+                      _formatRelativeTime(context, l10n, note.updatedAt),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelSmall?.copyWith(
