@@ -105,6 +105,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _voiceStopRequested = false;
   String _voiceBaseText = '';
   String _voiceTranscript = '';
+  String? _voiceLocaleId;
   Timer? _voiceDurationTimer;
   int _voiceElapsedSeconds = 0;
   final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
@@ -226,6 +227,47 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<void> _chooseVoiceLanguage() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final available = await _speechService.initialize(onStatus: (_) {}, onError: (_) {});
+      if (!mounted) return;
+      if (!available) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceInputUnavailable)));
+        return;
+      }
+      final locales = await _speechService.locales();
+      if (!mounted) return;
+      if (locales.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceLanguageNoLocales)));
+        return;
+      }
+      final selected = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: Text(l10n.voiceLanguageTitle),
+          children: [
+            Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 12), child: Text(l10n.voiceLanguageDescription)),
+            RadioListTile<String>(value: '', groupValue: _voiceLocaleId ?? '', title: Text(l10n.voiceLanguageSystemDefault), onChanged: (value) => Navigator.of(dialogContext).pop(value)),
+            for (final locale in locales)
+              RadioListTile<String>(value: locale.localeId, groupValue: _voiceLocaleId ?? '', title: Text(locale.name), subtitle: Text(locale.localeId), onChanged: (value) => Navigator.of(dialogContext).pop(value)),
+          ],
+        ),
+      );
+      if (!mounted || selected == null) return;
+      final preferences = await SharedPreferences.getInstance();
+      if (selected.isEmpty) {
+        await preferences.remove('orah_voice_locale_id');
+        setState(() => _voiceLocaleId = null);
+      } else {
+        await preferences.setString('orah_voice_locale_id', selected);
+        setState(() => _voiceLocaleId = selected);
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceInputUnavailableWithMessage(error.toString()))));
+    }
+  }
   Future<void> _toggleVoiceInput() async {
     if (_speechInitializing || _voiceProcessing) return;
     if (_isListening) {
@@ -281,6 +323,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         return;
       }
 
+      final voicePreferences = await SharedPreferences.getInstance();
+      _voiceLocaleId = voicePreferences.getString('orah_voice_locale_id');
       _voiceBaseText = _contentController.text;
       _voiceTranscript = '';
       _voiceStopRequested = false;
@@ -292,6 +336,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _isListening = true;
       });
       await _speechService.startListening(
+        localeId: _voiceLocaleId,
         onResult: (transcript, isFinal) {
           if (!mounted || transcript.trim().isEmpty) return;
           _voiceTranscript = transcript.trim();
@@ -1437,6 +1482,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             tooltip: _previewMode ? AppLocalizations.of(context)!.edit : AppLocalizations.of(context)!.preview,
             onPressed: () => setState(() => _previewMode = !_previewMode),
             icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
+          ),
+          IconButton(
+            tooltip: AppLocalizations.of(context)!.voiceLanguageTitle,
+            onPressed: _speechInitializing || _voiceProcessing || _isListening ? null : _chooseVoiceLanguage,
+            icon: const Icon(Icons.language_rounded),
           ),
           IconButton(
             tooltip: AppLocalizations.of(context)!.addImage,
