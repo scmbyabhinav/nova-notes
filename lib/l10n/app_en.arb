@@ -85,6 +85,14 @@
   "untitledNote": "Untitled note",
   "scheduledLabel": "Scheduled",
   "createdLabel": "Created",
+  "calendarItemStatusDate": "{status} • {date}",
+  "@calendarItemStatusDate": {
+    "description": "Status and date shown on a calendar item",
+    "placeholders": {
+      "status": { "type": "String" },
+      "date": { "type": "DateTime", "format": "yMMMd" }
+    }
+  },
   "writingRhythm": "Your writing rhythm",
   "historyTimeline": "History timeline",
   "storyStartsWithNote": "Your story starts with a note",
