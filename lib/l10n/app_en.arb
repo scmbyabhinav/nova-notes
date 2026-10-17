@@ -959,5 +959,15 @@
   "featureVoiceCaptureDescription": "Capture thoughts quickly with voice-first note creation.",
   "featureChecklistDescription": "Turn notes into actionable checklists with completion tracking.",
   "featureShareExportTitle": "Share & Export",
-  "featureShareExportDescription": "Share notes and export your content in portable formats."
+  "featureShareExportDescription": "Share notes and export your content in portable formats.",
+  "notificationDailyReflectionTitle": "Time for your Daily Reflection",
+  "notificationDailyReflectionBody": "Take a quiet moment to write down what is on your mind.",
+  "notificationDailyReflectionChannel": "Daily Reflection",
+  "notificationDailyReflectionChannelDescription": "A gentle daily prompt to pause and reflect",
+  "notificationReminderChannel": "Orah reminders",
+  "notificationReminderChannelDescription": "Reminders for notes and tasks",
+  "notificationDoneAction": "Done",
+  "notificationSnooze10Action": "Snooze 10m",
+  "notificationSnooze60Action": "Snooze 1h",
+  "notificationReminderTitle": "ORAH reminder"
 }
