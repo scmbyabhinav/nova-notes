@@ -85,7 +85,7 @@
   "untitledNote": "Unbenannte Notiz",
   "scheduledLabel": "Geplant",
   "createdLabel": "Erstellt",
-  "calendarItemStatusTime": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {time}",
   "writingRhythm": "Dein Schreibrhythmus",
   "historyTimeline": "Verlauf",
   "storyStartsWithNote": "Deine Geschichte beginnt mit einer Notiz",
