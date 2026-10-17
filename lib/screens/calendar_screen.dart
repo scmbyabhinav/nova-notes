@@ -202,7 +202,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                           title: Text(note.title.isEmpty ? l10n.untitledNote : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
                           subtitle: Text(
-                             l10n.calendarItemStatusDate(
+                             l10n.calendarItemStatusTime(
                                scheduled ? l10n.scheduledLabel : l10n.createdLabel,
                                time,
                              ),
