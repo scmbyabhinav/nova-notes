@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "音声入力の言語",
   "voiceLanguageDescription": "話す言語を選択します。アプリの表示言語とは異なっていてもかまいません。",
   "voiceLanguageSystemDefault": "端末の既定の言語を使用",
-  "voiceLanguageNoLocales": "この端末の音声認識サービスでは利用可能な言語がありません。"
+  "voiceLanguageNoLocales": "この端末の音声認識サービスでは利用可能な言語がありません。",
+  "securityCreatePin": "PINを作成",
+  "securityConfirmPin": "PINを確認",
+  "securityPinMismatch": "PINが一致しません。",
+  "securityPinCreated": "PINを作成しました。アプリロックが有効です。",
+  "securityPinActionFailed": "PINを更新できませんでした：{error}",
+  "securityEnterCurrentPin": "現在のPINを入力",
+  "securityPinDisabled": "PINとアプリロックを無効にしました。",
+  "securityBiometricNotCompleted": "生体認証が完了しませんでした。",
+  "securityPinDigitsHint": "4～8桁",
+  "securityEnterDigits": "4～8桁を入力してください",
+  "securityAppLock": "アプリロック",
+  "securityRequirePin": "ORAHのロック時にPINを要求する",
+  "securityCreatePinToProtect": "ORAHを保護するPINを作成",
+  "securityChangePin": "PINを変更",
+  "securityReplacePinSubtitle": "現在のORAH PINを変更します",
+  "securityRemovePin": "PINを削除",
+  "securityTurnOffPinProtection": "PIN保護を無効にする",
+  "securityBiometricUnlock": "生体認証でロック解除",
+  "securityUseBiometrics": "指紋認証または端末の生体認証を使用",
+  "securityLocalFirstPrivacy": "端末内保存を優先するプライバシー",
+  "securityLocalFirstDescription": "ORAHでは、メモにアカウントやクラウド同期は必要ありません。",
+  "securityStorageNote": "セキュリティに関する注意：PIN認証情報はAndroid/iOSの安全なストレージに保存されます。機密性の高いメモの内容は端末内に残ります。ORAHがコンテンツのエンドツーエンド暗号化をうたう前に、完全に暗号化されたVaultストレージを追加します。",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

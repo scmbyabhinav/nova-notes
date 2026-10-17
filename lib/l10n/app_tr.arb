@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Konuşma dili",
   "voiceLanguageDescription": "Konuşacağınız dili seçin. Bu, uygulama dilinden farklı olabilir.",
   "voiceLanguageSystemDefault": "Cihaz varsayılanını kullan",
-  "voiceLanguageNoLocales": "Bu cihazın konuşma tanıma hizmetinde kullanılabilir dil yok."
+  "voiceLanguageNoLocales": "Bu cihazın konuşma tanıma hizmetinde kullanılabilir dil yok.",
+  "securityCreatePin": "PIN oluştur",
+  "securityConfirmPin": "PIN'i doğrula",
+  "securityPinMismatch": "PIN'ler eşleşmiyor.",
+  "securityPinCreated": "PIN oluşturuldu. Uygulama kilidi açık.",
+  "securityPinActionFailed": "PIN güncellenemedi: {error}",
+  "securityEnterCurrentPin": "Mevcut PIN'i gir",
+  "securityPinDisabled": "PIN ve uygulama kilidi devre dışı bırakıldı.",
+  "securityBiometricNotCompleted": "Biyometrik doğrulama tamamlanmadı.",
+  "securityPinDigitsHint": "4–8 rakam",
+  "securityEnterDigits": "4–8 rakam girin",
+  "securityAppLock": "Uygulama kilidi",
+  "securityRequirePin": "ORAH kilitliyken PIN iste",
+  "securityCreatePinToProtect": "ORAH'ı korumak için PIN oluştur",
+  "securityChangePin": "PIN'i değiştir",
+  "securityReplacePinSubtitle": "Mevcut ORAH PIN'ini değiştir",
+  "securityRemovePin": "PIN'i kaldır",
+  "securityTurnOffPinProtection": "PIN korumasını kapat",
+  "securityBiometricUnlock": "Biyometrik kilit açma",
+  "securityUseBiometrics": "Parmak izi veya cihaz biyometrisini kullan",
+  "securityLocalFirstPrivacy": "Yerel depolama öncelikli gizlilik",
+  "securityLocalFirstDescription": "ORAH, notlarınız için hesap veya bulut eşitlemesi gerektirmez.",
+  "securityStorageNote": "Güvenlik notu: PIN kimlik bilgileri Android/iOS güvenli depolama alanında tutulur. Hassas not içeriği cihazda kalır. ORAH, içerik için uçtan uca şifreleme iddiasında bulunmadan önce tamamen şifrelenmiş kasa depolaması eklenecektir.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

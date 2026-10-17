@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Idioma da voz",
   "voiceLanguageDescription": "Escolha o idioma em que você vai falar. Ele pode ser diferente do idioma do app.",
   "voiceLanguageSystemDefault": "Usar idioma do dispositivo",
-  "voiceLanguageNoLocales": "O serviço de reconhecimento de fala deste dispositivo não oferece idiomas disponíveis."
+  "voiceLanguageNoLocales": "O serviço de reconhecimento de fala deste dispositivo não oferece idiomas disponíveis.",
+  "securityCreatePin": "Criar PIN",
+  "securityConfirmPin": "Confirmar PIN",
+  "securityPinMismatch": "Os PINs não coincidem.",
+  "securityPinCreated": "PIN criado. O bloqueio da aplicação está ativo.",
+  "securityPinActionFailed": "Não foi possível atualizar o PIN: {error}",
+  "securityEnterCurrentPin": "Introduza o PIN atual",
+  "securityPinDisabled": "PIN e bloqueio da aplicação desativados.",
+  "securityBiometricNotCompleted": "A verificação biométrica não foi concluída.",
+  "securityPinDigitsHint": "4–8 dígitos",
+  "securityEnterDigits": "Introduza 4–8 dígitos",
+  "securityAppLock": "Bloqueio da aplicação",
+  "securityRequirePin": "Pedir o PIN quando o ORAH estiver bloqueado",
+  "securityCreatePinToProtect": "Crie um PIN para proteger o ORAH",
+  "securityChangePin": "Alterar PIN",
+  "securityReplacePinSubtitle": "Substituir o PIN atual do ORAH",
+  "securityRemovePin": "Remover PIN",
+  "securityTurnOffPinProtection": "Desativar a proteção por PIN",
+  "securityBiometricUnlock": "Desbloqueio biométrico",
+  "securityUseBiometrics": "Usar impressão digital ou biometria do dispositivo",
+  "securityLocalFirstPrivacy": "Privacidade com armazenamento local",
+  "securityLocalFirstDescription": "O ORAH não exige conta nem sincronização na nuvem para as suas notas.",
+  "securityStorageNote": "Nota de segurança: as credenciais PIN são guardadas no armazenamento seguro do Android/iOS. O conteúdo sensível das notas permanece no dispositivo. O armazenamento do cofre totalmente encriptado será adicionado antes de o ORAH afirmar que o conteúdo tem encriptação ponto a ponto.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
