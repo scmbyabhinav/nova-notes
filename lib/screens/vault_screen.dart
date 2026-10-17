@@ -208,7 +208,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       if (!ok) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Incorrect Vault PIN.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.vaultIncorrectPin)),
           );
         }
         return false;
@@ -293,7 +293,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           controller: controller,
           autofocus: true,
           maxLength: 40,
-          decoration: const InputDecoration(labelText: 'Folder name'),
+          decoration: InputDecoration(labelText: l10n.vaultFolderName),
           onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
         ),
         actions: [
