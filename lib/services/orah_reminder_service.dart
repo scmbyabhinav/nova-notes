@@ -209,7 +209,7 @@ class OrahReminderService {
         channelDescription: l10n.notificationReminderChannelDescription,
         importance: Importance.high,
         priority: Priority.high,
-        actions: const [
+        actions: [
           AndroidNotificationAction(doneAction, l10n.notificationDoneAction, showsUserInterface: true),
           AndroidNotificationAction(snooze10Action, l10n.notificationSnooze10Action, showsUserInterface: true),
           AndroidNotificationAction(snooze60Action, l10n.notificationSnooze60Action, showsUserInterface: true),
