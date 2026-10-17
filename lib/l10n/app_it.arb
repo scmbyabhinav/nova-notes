@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "Cattura rapidamente i pensieri creando note tramite la voce.",
   "featureChecklistDescription": "Trasforma le note in checklist operative con monitoraggio dei completamenti.",
   "featureShareExportTitle": "Condividi ed esporta",
-  "featureShareExportDescription": "Condividi note ed esporta i contenuti in formati portatili."
+  "featureShareExportDescription": "Condividi note ed esporta i contenuti in formati portatili.",
+  "notificationDailyReflectionTitle": "È il momento della riflessione quotidiana",
+  "notificationDailyReflectionBody": "Prenditi un momento di calma per scrivere ciò che hai in mente.",
+  "notificationDailyReflectionChannel": "Riflessione quotidiana",
+  "notificationDailyReflectionChannelDescription": "Un gentile promemoria quotidiano per fermarsi e riflettere",
+  "notificationReminderChannel": "Promemoria Orah",
+  "notificationReminderChannelDescription": "Promemoria per note e attività",
+  "notificationDoneAction": "Fatto",
+  "notificationSnooze10Action": "Rinvia di 10 min",
+  "notificationSnooze60Action": "Rinvia di 1 ora",
+  "notificationReminderTitle": "Promemoria ORAH"
 }
