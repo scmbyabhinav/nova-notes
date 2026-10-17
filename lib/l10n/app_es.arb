@@ -955,5 +955,7 @@
   "notificationDoneAction": "Hecho",
   "notificationSnooze10Action": "Posponer 10 min",
   "notificationSnooze60Action": "Posponer 1 h",
-  "notificationReminderTitle": "Recordatorio de ORAH"
+  "notificationReminderTitle": "Recordatorio de ORAH",
+  "genericTryAgain": "Inténtalo de nuevo.",
+  "registrationFailed": "No se pudo completar el registro. Inténtalo de nuevo."
 }
