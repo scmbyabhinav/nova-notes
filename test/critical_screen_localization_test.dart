@@ -40,7 +40,7 @@ void main() {
       r'''(?:Text|SelectableText)\(\s*(?:const\s+)?['"]([^'"]{2,})['"]''',
     );
     final hardCodedAttributes = RegExp(
-      r'''(?:tooltip|message|hintText|labelText|helpText|semanticsLabel|label)\s*:\s*(['"])([^'"]{2,})\1''',
+      r'''(?:title|subtitle|description|tooltip|message|hintText|labelText|helpText|semanticsLabel|label)\s*:\s*(['"])([^'"]{2,})\1''',
     );
     final hardCodedSpans = RegExp(
       r'''TextSpan\(\s*text:\s*(['"])([^'"]{2,})\1''',
