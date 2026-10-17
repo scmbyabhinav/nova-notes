@@ -69,7 +69,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
       if (!mounted) return;
       await Share.shareXFiles([XFile(file.path)], subject: l10n.exportShareSubject(widget.note.title), text: l10n.exportShareBody);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exportFailed(e.toString()))));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exportFailed(l10n.genericTryAgain))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -83,7 +83,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
       if (!mounted) return;
       await Share.shareXFiles([XFile(file.path)], subject: l10n.emailAttachmentSubject(widget.note.title), text: l10n.emailAttachmentBody);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exportEmailAttachmentFailed(e.toString()))));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.exportEmailAttachmentFailed(l10n.genericTryAgain))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -209,7 +209,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.exportAllFailed(e.toString()))),
+          SnackBar(content: Text(l10n.exportAllFailed(l10n.genericTryAgain))),
         );
       }
     } finally {
