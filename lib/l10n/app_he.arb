@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "תעדו מחשבות במהירות באמצעות יצירת פתקים בקול.",
   "featureChecklistDescription": "הפכו פתקים לרשימות משימות מעשיות עם מעקב אחר השלמה.",
   "featureShareExportTitle": "שיתוף וייצוא",
-  "featureShareExportDescription": "שתפו פתקים וייצאו את התוכן בפורמטים ניידים."
+  "featureShareExportDescription": "שתפו פתקים וייצאו את התוכן בפורמטים ניידים.",
+  "notificationDailyReflectionTitle": "הגיע הזמן להרהור היומי",
+  "notificationDailyReflectionBody": "קחו רגע שקט כדי לכתוב את מה שעולה במחשבותיכם.",
+  "notificationDailyReflectionChannel": "הרהור יומי",
+  "notificationDailyReflectionChannelDescription": "תזכורת יומית עדינה לעצור ולהרהר",
+  "notificationReminderChannel": "תזכורות Orah",
+  "notificationReminderChannelDescription": "תזכורות לפתקים ולמשימות",
+  "notificationDoneAction": "בוצע",
+  "notificationSnooze10Action": "נודניק ל-10 דקות",
+  "notificationSnooze60Action": "נודניק לשעה",
+  "notificationReminderTitle": "תזכורת ORAH"
 }
