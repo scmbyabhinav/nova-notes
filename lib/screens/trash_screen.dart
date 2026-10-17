@@ -91,6 +91,7 @@ class _TrashScreenState extends State<TrashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.trashTitle),
@@ -147,7 +148,7 @@ class _TrashScreenState extends State<TrashScreen> {
                         subtitle: Text(note.isLocked ? l10n.trashLockedNote : (note.type == NoteType.checklist ? l10n.trashChecklist : l10n.trashNote)),
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) => value == 'restore' ? _restore(note) : _deleteForever(note),
-                          itemBuilder: (_) => const [
+                          itemBuilder: (_) => [
                             PopupMenuItem(value: 'restore', child: Text(l10n.proRestore)),
                             PopupMenuItem(value: 'delete', child: Text(l10n.trashDeletePermanentlyAction)),
                           ],

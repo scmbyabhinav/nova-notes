@@ -133,10 +133,10 @@ class _ArchivedNotesScreenState extends State<ArchivedNotesScreen> {
                           ? l10n.privateNote
                           : (note.title.trim().isEmpty ? l10n.untitledNote : note.title);
                       final subtitle = note.isLocked
-                          ? '${l10n.trashLockedNote} • ${l10n.updated} ${_formatDate(note.updatedAt)}'
+                          ? '${l10n.trashLockedNote} • ${l10n.recentlyUpdated} ${_formatDate(note.updatedAt)}'
                           : [
                               if (note.content.trim().isNotEmpty) note.content.trim(),
-                              '${l10n.updated} ${_formatDate(note.updatedAt)}',
+                              '${l10n.recentlyUpdated} ${_formatDate(note.updatedAt)}',
                             ].join(' • ');
                       return Card(
                         clipBehavior: Clip.antiAlias,
