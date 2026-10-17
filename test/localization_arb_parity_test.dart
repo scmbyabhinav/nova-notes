@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:orah_notes/l10n/app_localizations.dart';
 
 const _fullyTranslatedLocales = <String>{'ar', 'de', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'tr', 'zh'};
 
@@ -180,4 +182,50 @@ void main() {
           '${untranslated.join('\n')}',
     );
   });
+  testWidgets('MaterialApp resolves all 14 locales and RTL direction correctly', (tester) async {
+    const locales = <String>[
+      'en', 'hi', 'es', 'fr', 'de', 'he', 'ar',
+      'id', 'it', 'ja', 'ko', 'pt', 'tr', 'zh',
+    ];
+    for (final localeCode in locales) {
+      TextDirection? resolvedDirection;
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: Locale(localeCode),
+          supportedLocales: locales.map(Locale.new).toList(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Builder(
+            builder: (context) {
+              resolvedDirection = Directionality.of(context);
+              final l10n = AppLocalizations.of(context)!;
+              return Scaffold(
+                body: Column(
+                  children: [
+                    Text(l10n.captureDescription),
+                    Text(l10n.searchFilterHint),
+                    Text(l10n.vaultResetWarning),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final expected = await AppLocalizations.delegate.load(Locale(localeCode));
+      expect(find.text(expected.captureDescription), findsOneWidget,
+          reason: 'Capture copy did not resolve for $localeCode.');
+      expect(find.text(expected.searchFilterHint), findsOneWidget,
+          reason: 'Search copy did not resolve for $localeCode.');
+      expect(find.text(expected.vaultResetWarning), findsOneWidget,
+          reason: 'Vault warning did not resolve for $localeCode.');
+      expect(resolvedDirection,
+          (localeCode == 'ar' || localeCode == 'he')
+              ? TextDirection.rtl
+              : TextDirection.ltr,
+          reason: 'Incorrect text direction for $localeCode.');
+    }
+  });
+
 }
