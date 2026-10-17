@@ -885,5 +885,61 @@
   "androidRemindersDescription": "백엔드 없이 메모와 체크리스트 알림을 만드세요.",
   "androidLocalIntegrationsNote": "이 통합 기능은 Android 로컬 기능이며 백엔드가 필요하지 않습니다.",
   "androidDone": "완료",
-  "androidGotIt": "확인"
+  "androidGotIt": "확인",
+  "captureTitle": "기록",
+  "captureDescription": "기록할 항목을 선택하세요.",
+  "quickNote": "빠른 메모",
+  "startTypingImmediately": "바로 입력 시작",
+  "quickChecklist": "빠른 체크리스트",
+  "captureTasksWithoutSetup": "설정 없이 작업 기록",
+  "dailyChecklistTooltip": "일일 체크리스트",
+  "quickCaptureHint": "탭하여 작성 • 길게 눌러 체크리스트와 옵션 표시",
+  "quickCaptureTooltip": "빠른 기록. 길게 눌러 체크리스트와 옵션을 표시하세요.",
+  "filtersActive": "필터 적용됨",
+  "searchResultsCount": "검색 결과: {count}",
+  "advancedSearchProFeature": "고급 검색은 ORAH Pro 기능입니다",
+  "noNotesFound": "메모를 찾을 수 없습니다",
+  "searchFilterHint": "일반 키워드는 무료로 검색할 수 있습니다. 필터와 연산자를 사용하려면 ORAH Pro를 여세요.",
+  "searchEmptyHint": "다른 단어를 시도하거나 필터를 제거하세요.",
+  "voicePreferences": "음성 설정",
+  "dailyReflectionSchedule": "일일 성찰 일정",
+  "versionLabel": "버전 {version}",
+  "vaultResetWarning": "Vault PIN은 복구할 수 없습니다. 재설정하면 Vault의 모든 메모와 암호화 키가 영구 삭제됩니다. 일반 메모와 폴더는 변경되지 않습니다.",
+  "portableBackupShareText": "Orah 휴대용 백업",
+  "storageAttachmentCount": "첨부 파일 {count}개 • {size}",
+  "dailyReflectionTimePicker": "일일 성찰 시간 선택",
+  "scheduleLoading": "일정을 불러오는 중…",
+  "scheduleEnabledAt": "사용 • 매일 {time}",
+  "scheduleDisabled": "사용 안 함 • 매일 성찰 알림을 받으려면 켜세요",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
