@@ -1,11 +1,16 @@
 import 'dart:math';
 
+import '../data/reflection_prompt_translations.dart';
+
 /// A thoughtful question grouped into a theme for daily journaling.
 class ReflectionPrompt {
   const ReflectionPrompt({required this.text, required this.category});
 
   final String text;
   final String category;
+
+  String localizedText(String locale) =>
+      reflectionPromptTranslations[locale]?[text] ?? text;
 }
 
 class PromptService {

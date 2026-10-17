@@ -1,0 +1,55 @@
+name: Generate Reflection Translations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/orah-localization-screen-coverage
+    paths:
+      - 'lib/services/prompt_service.dart'
+      - 'tools/translate_reflection_prompts.py'
+      - '.github/workflows/generate-reflection-translations.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reflection-translation-generation
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/orah-localization-screen-coverage
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Generate all prompt translations
+        run: python tools/translate_reflection_prompts.py
+      - name: Commit generated translations
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/data/reflection_prompt_translations.dart
+          git diff --cached --quiet && echo "No translation changes" && exit 0
+          git commit -m "l10n: add 1,950 daily reflection translations"
+          git push origin HEAD:fix/orah-localization-screen-coverage
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install dependencies and generate localization code
+        run: |
+          flutter pub get
+          flutter gen-l10n
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: flutter test

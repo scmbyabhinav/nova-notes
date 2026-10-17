@@ -52,7 +52,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
     final note = Note(
       id: '${created.microsecondsSinceEpoch}_reflection',
       title: l10n.dailyReflection,
-      content: '${l10n.reflectionPrompt}: ${_prompt.text}\n\n$response',
+      content: '${l10n.reflectionPrompt}: ${_prompt.localizedText(Localizations.localeOf(context).languageCode)}\n\n$response',
       type: NoteType.text,
       createdAt: created,
       updatedAt: created,
@@ -125,7 +125,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            _prompt.text,
+            _prompt.localizedText(Localizations.localeOf(context).languageCode),
             key: const ValueKey('reflection_prompt_text'),
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,

@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       MaterialPageRoute(
         builder: (_) => NoteEditorScreen(
           repository: repository,
-          initialTitle: prompt.text,
+          initialTitle: prompt.localizedText(Localizations.localeOf(context).languageCode),
           initialContent: '',
         ),
       ),
@@ -806,7 +806,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      prompt.text,
+                                      prompt.localizedText(Localizations.localeOf(context).languageCode),
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.lora(
