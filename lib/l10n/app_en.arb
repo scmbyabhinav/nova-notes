@@ -782,5 +782,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "organizationFolderLabel": "Folder",
+  "organizationTagsLabel": "Tags"
 }

@@ -768,5 +768,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "organizationFolderLabel": "Klasör",
+  "organizationTagsLabel": "Etiketler"
 }

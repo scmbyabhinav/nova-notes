@@ -75,7 +75,7 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
         children: [
           Text(
-            'Folder',
+            l10n.organizationFolderLabel,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -104,7 +104,7 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Tags',
+            l10n.organizationTagsLabel,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -117,7 +117,7 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
                   controller: _tagController,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addTag(),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: l10n.organizationAddTagHint,
                     prefixText: '# ',
                   ),

@@ -768,5 +768,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "organizationFolderLabel": "文件夹",
+  "organizationTagsLabel": "标签"
 }

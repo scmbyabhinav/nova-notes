@@ -768,5 +768,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "organizationFolderLabel": "Pasta",
+  "organizationTagsLabel": "Etiquetas"
 }

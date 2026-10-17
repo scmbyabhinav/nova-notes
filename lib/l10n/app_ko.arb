@@ -768,5 +768,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "organizationFolderLabel": "폴더",
+  "organizationTagsLabel": "태그"
 }
