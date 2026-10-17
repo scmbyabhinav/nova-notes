@@ -85,7 +85,7 @@
   "untitledNote": "Catatan tanpa judul",
   "scheduledLabel": "Terjadwal",
   "createdLabel": "Dibuat",
-  "calendarItemStatusTime": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {time}",
   "writingRhythm": "Ritme menulis Anda",
   "historyTimeline": "Linimasa riwayat",
   "storyStartsWithNote": "Kisah Anda dimulai dengan sebuah catatan",
