@@ -940,5 +940,6 @@
       }
     }
   },
-  "scheduleDisabled": "Désactivé • Activez pour recevoir un rappel quotidien"
+  "scheduleDisabled": "Désactivé • Activez pour recevoir un rappel quotidien",
+  "captureTitle": "Capturer"
 }
