@@ -48,8 +48,8 @@ class _TrashScreenState extends State<TrashScreen> {
         title: Text(l10n.trashDeletePermanentlyTitle),
         content: Text(l10n.trashDeletePermanentlyMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.delete)),
         ],
       ),
     );
@@ -74,7 +74,7 @@ class _TrashScreenState extends State<TrashScreen> {
         content: Text(l10n.trashEmptyMessage(_notes.length)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Empty Trash')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.trashEmptyAction)),
         ],
       ),
     );
