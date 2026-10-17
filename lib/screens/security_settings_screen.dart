@@ -66,7 +66,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
       });
       _message(l10n.securityPinCreated);
     } catch (e) {
-      _message(l10n.securityPinActionFailed(e.toString().replaceFirst('FormatException: ', '')));
+      _message(l10n.securityPinActionFailed(l10n.genericTryAgain));
     }
   }
 
