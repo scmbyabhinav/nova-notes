@@ -85,7 +85,7 @@
   "untitledNote": "बिना शीर्षक का नोट",
   "scheduledLabel": "शेड्यूल किया गया",
   "createdLabel": "बनाया गया",
-  "calendarItemStatusTime": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {time}",
   "writingRhythm": "आपकी लेखन लय",
   "historyTimeline": "इतिहास समयरेखा",
   "storyStartsWithNote": "आपकी कहानी एक नोट से शुरू होती है",
