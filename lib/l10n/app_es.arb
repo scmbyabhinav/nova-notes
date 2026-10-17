@@ -85,7 +85,7 @@
   "untitledNote": "Nota sin título",
   "scheduledLabel": "Programada",
   "createdLabel": "Creada",
-  "calendarItemStatusTime": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {time}",
   "writingRhythm": "Tu ritmo de escritura",
   "historyTimeline": "Cronología del historial",
   "storyStartsWithNote": "Tu historia empieza con una nota",
