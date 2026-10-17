@@ -955,5 +955,7 @@
   "notificationDoneAction": "Concluído",
   "notificationSnooze10Action": "Adiar 10 min",
   "notificationSnooze60Action": "Adiar 1 h",
-  "notificationReminderTitle": "Lembrete ORAH"
+  "notificationReminderTitle": "Lembrete ORAH",
+  "genericTryAgain": "Tente novamente.",
+  "registrationFailed": "Não foi possível concluir o registo. Tente novamente."
 }
