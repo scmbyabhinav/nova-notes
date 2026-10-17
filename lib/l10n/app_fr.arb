@@ -955,5 +955,7 @@
   "notificationDoneAction": "Terminé",
   "notificationSnooze10Action": "Reporter de 10 min",
   "notificationSnooze60Action": "Reporter d’1 h",
-  "notificationReminderTitle": "Rappel ORAH"
+  "notificationReminderTitle": "Rappel ORAH",
+  "genericTryAgain": "Veuillez réessayer.",
+  "registrationFailed": "L’inscription n’a pas pu aboutir. Veuillez réessayer."
 }
