@@ -885,5 +885,60 @@
   "androidRemindersDescription": "Crea recordatorios para notas y listas sin necesidad de un backend.",
   "androidLocalIntegrationsNote": "Estas integraciones son funciones locales de Android y no necesitan un backend.",
   "androidDone": "Hecho",
-  "androidGotIt": "Entendido"
+  "androidGotIt": "Entendido",
+  "captureDescription": "Elige qué quieres capturar.",
+  "quickNote": "Nota rápida",
+  "startTypingImmediately": "Empieza a escribir de inmediato",
+  "quickChecklist": "Lista rápida",
+  "captureTasksWithoutSetup": "Anota tareas sin configurar nada",
+  "dailyChecklistTooltip": "Lista diaria",
+  "quickCaptureHint": "Toca para escribir • Mantén pulsado para ver la lista y opciones",
+  "quickCaptureTooltip": "Captura rápida. Mantén pulsado para ver la lista y opciones.",
+  "filtersActive": "Filtros activos",
+  "searchResultsCount": "Resultados: {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "La búsqueda avanzada es una función de ORAH Pro",
+  "noNotesFound": "No se encontraron notas",
+  "searchFilterHint": "Usa palabras normales gratis o abre ORAH Pro para desbloquear filtros y operadores.",
+  "searchEmptyHint": "Prueba otra palabra o elimina un filtro.",
+  "voicePreferences": "Preferencias de voz",
+  "dailyReflectionSchedule": "Horario de reflexión diaria",
+  "versionLabel": "Versión {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "No se puede recuperar el PIN de Vault. Al restablecerlo se eliminarán permanentemente todas las notas de Vault y su clave de cifrado. Tus notas y carpetas normales no cambiarán.",
+  "portableBackupShareText": "Copia de seguridad portátil de Orah",
+  "storageAttachmentCount": "{count} archivos adjuntos • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "Elige la hora de la reflexión diaria",
+  "scheduleLoading": "Cargando horario…",
+  "scheduleEnabledAt": "Activado • Todos los días a las {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "Desactivado • Actívalo para recibir un recordatorio diario"
 }
