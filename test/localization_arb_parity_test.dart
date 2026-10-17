@@ -59,13 +59,13 @@ const _localeNeutralKeys = <String, Set<String>>{
   'zh': {'emailExample'},
   // PIN is a standard technical abbreviation; these short labels are approved.
   'de': {'pin', 'details', 'moodNeutral'},
-  'es': {'pin', 'total', 'moodNeutral', 'templateAgenda'},
+  'es': {'pin', 'total', 'moodNeutral', 'templateAgenda', 'vaultAutoLockDuration'},
   'id': {'pin', 'total', 'templateAgenda', 'exportData'},
-  'it': {'pin'},
-  'pt': {'pin', 'total'},
+  'it': {'pin', 'exportCategoryDatabase', 'vaultAutoLockDuration'},
+  'pt': {'pin', 'total', 'vaultAutoLockDuration'},
   'tr': {'pin'},
   // These French interface labels are accepted as conventional wording.
-  'fr': {'total', 'notes', 'templateImportant', 'templateDates', 'trashNote', 'exportDocuments'},
+  'fr': {'total', 'notes', 'templateImportant', 'templateDates', 'trashNote', 'exportDocuments', 'vaultAutoLockDuration'},
 };
 
 void main() {
