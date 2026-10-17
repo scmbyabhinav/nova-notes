@@ -133,7 +133,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     child: Text(l10n.exportPlannedDescription, style: TextStyle(fontSize: 12)),
                   ),
                   for (final category in _plannedCategories(l10n))
-                    _plannedSection(category, l10n)
+                    _plannedSection(category, l10n),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.email_outlined),
@@ -264,7 +264,7 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
             Text(l10n.plannedExportFormatsDescription),
             const SizedBox(height: 12),
             for (final category in _plannedCategories(l10n))
-              _plannedSection(category),
+              _plannedSection(category, l10n),
           ],
         ),
       ),
