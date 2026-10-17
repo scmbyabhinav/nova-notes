@@ -53,6 +53,7 @@ void main() {
               !isDynamicOnly(value) &&
               value.toLowerCase() != 'orah' &&
               value.toLowerCase() != 'orah pro' &&
+              value != '🌱' &&
               value != 'Abhinav Bajpai' &&
               value != 'vajpaiabhinav@gmail.com')
           .toList();
