@@ -11,7 +11,7 @@ void main() {
       'lib/screens/favorites_screen.dart',
       'lib/screens/archived_notes_screen.dart',
     ];
-    final hardCodedText = RegExp(r"Text\(\s*(?:const\s+)?['\"]([^'\"]{2,})['\"]");
+    final hardCodedText = RegExp(r"""Text\(\s*(?:const\s+)?['"]([^'"]{2,})['"]""");
     for (final path in screens) {
       final source = File(path).readAsStringSync();
       final matches = hardCodedText.allMatches(source).map((match) => match.group(1)!).where((value) =>
