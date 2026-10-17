@@ -10,6 +10,14 @@ import 'package:orah_notes/services/speech_to_text_service.dart';
 
 class _FakeVoiceSpeechService implements VoiceSpeechService {
   SpeechResultCallback? _onResult;
+  String? lastLocaleId;
+
+  @override
+  Future<List<SpeechLocaleOption>> locales() async => const [
+        SpeechLocaleOption(localeId: 'en_US', name: 'English (United States)'),
+        SpeechLocaleOption(localeId: 'hi_IN', name: 'Hindi (India)'),
+        SpeechLocaleOption(localeId: 'ar_SA', name: 'Arabic (Saudi Arabia)'),
+      ];
   bool _listening = false;
 
   @override
@@ -25,8 +33,10 @@ class _FakeVoiceSpeechService implements VoiceSpeechService {
 
   @override
   Future<void> startListening({
+    String? localeId,
     required SpeechResultCallback onResult,
   }) async {
+    lastLocaleId = localeId;
     _onResult = onResult;
     _listening = true;
   }
@@ -117,6 +127,18 @@ void main() {
       notes.single.content,
       'Existing note\nremember the supplier tomorrow',
     );
+  });
+
+  testWidgets('selected voice language is passed to speech recognition', (tester) async {
+    final state = await _pumpEditor(tester);
+    await tester.tap(find.byTooltip('Voice language'));
+    await tester.pumpAndSettle();
+    expect(find.text('Hindi (India)'), findsOneWidget);
+    await tester.tap(find.text('Hindi (India)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Voice input'));
+    await tester.pumpAndSettle();
+    expect(state.speech.lastLocaleId, 'hi_IN');
   });
 
   testWidgets('voice input does not change the note type', (tester) async {
