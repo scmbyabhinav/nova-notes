@@ -75,11 +75,11 @@ void main() {
       expect(find.byTooltip(l10n.quickCaptureTooltip), findsOneWidget,
           reason: 'Quick Capture tooltip did not localize for $code.');
 
-      final directions = tester.widgetList<Directionality>(
-        find.byType(Directionality),
+      final appDirection = Directionality.of(
+        tester.element(find.byType(OrahWordmark)),
       );
       expect(
-        directions.first.textDirection,
+        appDirection,
         (code == 'ar' || code == 'he')
             ? TextDirection.rtl
             : TextDirection.ltr,
