@@ -885,5 +885,61 @@
   "androidRemindersDescription": "バックエンドなしでメモやチェックリストのリマインダーを作成できます。",
   "androidLocalIntegrationsNote": "これらは端末内で動作する Android 機能で、バックエンドは不要です。",
   "androidDone": "完了",
-  "androidGotIt": "了解"
+  "androidGotIt": "了解",
+  "captureTitle": "記録",
+  "captureDescription": "記録する内容を選択してください。",
+  "quickNote": "クイックノート",
+  "startTypingImmediately": "すぐに入力を開始",
+  "quickChecklist": "クイックチェックリスト",
+  "captureTasksWithoutSetup": "設定せずにタスクを記録",
+  "dailyChecklistTooltip": "毎日のチェックリスト",
+  "quickCaptureHint": "タップして入力 • 長押しでチェックリストとオプション",
+  "quickCaptureTooltip": "クイック記録。長押しでチェックリストとオプションを表示します。",
+  "filtersActive": "フィルター適用中",
+  "searchResultsCount": "検索結果：{count}",
+  "advancedSearchProFeature": "高度な検索はORAH Proの機能です",
+  "noNotesFound": "ノートが見つかりません",
+  "searchFilterHint": "通常のキーワード検索は無料です。フィルターと演算子を使うにはORAH Proを開いてください。",
+  "searchEmptyHint": "別の単語を試すか、フィルターを解除してください。",
+  "voicePreferences": "音声設定",
+  "dailyReflectionSchedule": "毎日の振り返りスケジュール",
+  "versionLabel": "バージョン {version}",
+  "vaultResetWarning": "VaultのPINは復元できません。リセットするとVault内のすべてのノートと暗号化キーが完全に削除されます。通常のノートとフォルダーは変更されません。",
+  "portableBackupShareText": "Orahポータブルバックアップ",
+  "storageAttachmentCount": "添付ファイル {count} 件 • {size}",
+  "dailyReflectionTimePicker": "毎日の振り返り時刻を選択",
+  "scheduleLoading": "スケジュールを読み込み中…",
+  "scheduleEnabledAt": "有効 • 毎日 {time}",
+  "scheduleDisabled": "無効 • 毎日の振り返りリマインダーを受け取るには有効にしてください",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
