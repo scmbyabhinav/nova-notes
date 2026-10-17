@@ -10,6 +10,12 @@ typedef SpeechStatusCallback = void Function(String status);
 
 typedef SpeechErrorCallback = void Function(String message);
 
+class SpeechLocaleOption {
+  const SpeechLocaleOption({required this.localeId, required this.name});
+  final String localeId;
+  final String name;
+}
+
 abstract interface class VoiceSpeechService {
   bool get isListening;
 
@@ -18,7 +24,10 @@ abstract interface class VoiceSpeechService {
     required SpeechErrorCallback onError,
   });
 
+  Future<List<SpeechLocaleOption>> locales();
+
   Future<void> startListening({
+    String? localeId,
     required SpeechResultCallback onResult,
   });
 
@@ -51,10 +60,18 @@ class SpeechToTextService implements VoiceSpeechService {
   }
 
   @override
+  Future<List<SpeechLocaleOption>> locales() async {
+    final available = await _speechToText.locales();
+    return available.map((locale) => SpeechLocaleOption(localeId: locale.localeId, name: locale.name)).toList(growable: false);
+  }
+
+  @override
   Future<void> startListening({
+    String? localeId,
     required SpeechResultCallback onResult,
   }) async {
     await _speechToText.listen(
+      localeId: localeId,
       onDevice: true,
       onResult: (SpeechRecognitionResult result) {
         onResult(result.recognizedWords, result.finalResult);
