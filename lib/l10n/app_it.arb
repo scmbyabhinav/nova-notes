@@ -955,5 +955,7 @@
   "notificationDoneAction": "Fatto",
   "notificationSnooze10Action": "Rinvia di 10 min",
   "notificationSnooze60Action": "Rinvia di 1 ora",
-  "notificationReminderTitle": "Promemoria ORAH"
+  "notificationReminderTitle": "Promemoria ORAH",
+  "genericTryAgain": "Riprova.",
+  "registrationFailed": "Impossibile completare la registrazione. Riprova."
 }
