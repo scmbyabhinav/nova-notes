@@ -34,7 +34,7 @@ const _localeNeutralKeys = <String, Set<String>>{
   'pt': {'pin', 'total'},
   'tr': {'pin'},
   // These French interface labels are accepted as conventional wording.
-  'fr': {'total', 'notes', 'templateImportant', 'templateDates'},
+  'fr': {'total', 'notes', 'templateImportant', 'templateDates', 'trashNote'},
 };
 
 void main() {
