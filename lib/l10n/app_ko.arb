@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "음성으로 빠르게 생각을 메모로 기록하세요.",
   "featureChecklistDescription": "메모를 실행 가능한 체크리스트로 바꾸고 완료 상태를 추적하세요.",
   "featureShareExportTitle": "공유 및 내보내기",
-  "featureShareExportDescription": "메모를 공유하고 콘텐츠를 휴대 가능한 형식으로 내보내세요."
+  "featureShareExportDescription": "메모를 공유하고 콘텐츠를 휴대 가능한 형식으로 내보내세요.",
+  "notificationDailyReflectionTitle": "일일 성찰 시간입니다",
+  "notificationDailyReflectionBody": "마음속 생각을 적을 수 있도록 잠시 조용한 시간을 가져보세요.",
+  "notificationDailyReflectionChannel": "일일 성찰",
+  "notificationDailyReflectionChannelDescription": "잠시 멈추어 성찰하도록 돕는 부드러운 일일 알림",
+  "notificationReminderChannel": "Orah 알림",
+  "notificationReminderChannelDescription": "메모 및 작업 알림",
+  "notificationDoneAction": "완료",
+  "notificationSnooze10Action": "10분 후 다시 알림",
+  "notificationSnooze60Action": "1시간 후 다시 알림",
+  "notificationReminderTitle": "ORAH 알림"
 }
