@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../data/repositories/note_repository.dart';
 import '../models/note.dart';
 import '../services/prompt_service.dart';
@@ -49,12 +51,12 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
     final created = DateTime.now();
     final note = Note(
       id: '${created.microsecondsSinceEpoch}_reflection',
-      title: 'Daily Reflection',
-      content: 'Prompt: ${_prompt.text}\n\n$response',
+      title: l10n.dailyReflection,
+      content: '${l10n.reflectionPrompt}: ${_prompt.text}\n\n$response',
       type: NoteType.text,
       createdAt: created,
       updatedAt: created,
-      tags: const ['Reflection'],
+      tags: [l10n.reflectionPrompt],
     );
 
     try {
@@ -65,22 +67,41 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
       if (!mounted) return;
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save reflection: $e')),
+        SnackBar(content: Text(l10n.reflectionSaveError(e))),
       );
+    }
+  }
+
+  String _localizedReflectionCategory(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Gratitude': return l10n.reflectionCategoryGratitude;
+      case 'Mindfulness': return l10n.reflectionCategoryMindfulness;
+      case 'Personal Growth': return l10n.reflectionCategoryPersonalGrowth;
+      case 'Relationships': return l10n.reflectionCategoryRelationships;
+      case 'Self-Compassion': return l10n.reflectionCategorySelfCompassion;
+      case 'Clarity': return l10n.reflectionCategoryClarity;
+      case 'Possibility': return l10n.reflectionCategoryPossibility;
+      case 'Daily Review': return l10n.reflectionCategoryDailyReview;
+      case 'Purpose & Values': return l10n.reflectionCategoryPurposeValues;
+      case 'Resilience': return l10n.reflectionCategoryResilience;
+      case 'Creativity & Curiosity': return l10n.reflectionCategoryCreativityCuriosity;
+      case 'Rest & Renewal': return l10n.reflectionCategoryRestRenewal;
+      default: return category;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daily Reflection'),
+        title: Text(l10n.dailyReflection),
         actions: [
           TextButton.icon(
             onPressed: _saving ? null : _newPrompt,
             icon: const Icon(Icons.shuffle_rounded),
-            label: const Text('New prompt'),
+            label: Text(l10n.newPrompt),
           ),
           const SizedBox(width: 8),
         ],
@@ -95,7 +116,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            _prompt.category.toUpperCase(),
+            ${_localizedReflectionCategory(l10n, _prompt.category).toUpperCase()},
             style: theme.textTheme.labelMedium?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.w800,
@@ -118,7 +139,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
             maxLines: 14,
             textCapitalization: TextCapitalization.sentences,
             decoration: const InputDecoration(
-              hintText: 'Write whatever comes to mind…',
+              hintText: l10n.reflectionWriteHint,
               border: OutlineInputBorder(),
               alignLabelWithHint: true,
             ),
@@ -127,7 +148,7 @@ class _ReflectionPromptScreenState extends State<ReflectionPromptScreen> {
           FilledButton.icon(
             onPressed: _saving ? null : _submit,
             icon: const Icon(Icons.check_rounded),
-            label: Text(_saving ? 'Saving…' : 'Save reflection'),
+            label: Text(_saving ? l10n.saving : l10n.saveReflection),
           ),
         ],
       ),

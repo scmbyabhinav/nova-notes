@@ -455,6 +455,24 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
   }
 
+  String _localizedReflectionCategory(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Gratitude': return l10n.reflectionCategoryGratitude;
+      case 'Mindfulness': return l10n.reflectionCategoryMindfulness;
+      case 'Personal Growth': return l10n.reflectionCategoryPersonalGrowth;
+      case 'Relationships': return l10n.reflectionCategoryRelationships;
+      case 'Self-Compassion': return l10n.reflectionCategorySelfCompassion;
+      case 'Clarity': return l10n.reflectionCategoryClarity;
+      case 'Possibility': return l10n.reflectionCategoryPossibility;
+      case 'Daily Review': return l10n.reflectionCategoryDailyReview;
+      case 'Purpose & Values': return l10n.reflectionCategoryPurposeValues;
+      case 'Resilience': return l10n.reflectionCategoryResilience;
+      case 'Creativity & Curiosity': return l10n.reflectionCategoryCreativityCuriosity;
+      case 'Rest & Renewal': return l10n.reflectionCategoryRestRenewal;
+      default: return category;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -779,7 +797,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${l10n.dailyInspiration.toUpperCase()}  •  ${prompt.category.toUpperCase()}',
+                                      '${l10n.dailyInspiration.toUpperCase()}  •  ${_localizedReflectionCategory(l10n, prompt.category).toUpperCase()}',
                                       style: theme.textTheme.labelSmall?.copyWith(
                                         color: theme.colorScheme.primary,
                                         fontWeight: FontWeight.w800,
