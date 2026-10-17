@@ -229,6 +229,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _chooseVoiceLanguage() async {
     final l10n = AppLocalizations.of(context)!;
+    final savedPreferences = await SharedPreferences.getInstance();
+    _voiceLocaleId = savedPreferences.getString('orah_voice_locale_id');
     try {
       final available = await _speechService.initialize(onStatus: (_) {}, onError: (_) {});
       if (!mounted) return;
