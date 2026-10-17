@@ -718,5 +718,15 @@
   "exportAllAvailable": "ייצוא כל הפורמטים הזמינים",
   "exportComingSoon": "בקרוב",
   "plannedExportFormats": "פורמטי ייצוא מתוכננים",
-  "plannedExportFormatsDescription": "הפורמטים האלה מתוכננים לעדכונים עתידיים של Orah ואינם זמינים לייצוא עדיין."
+  "plannedExportFormatsDescription": "הפורמטים האלה מתוכננים לעדכונים עתידיים של Orah ואינם זמינים לייצוא עדיין.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "מסמך להדפסה",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "מסמך Microsoft Word הניתן לעריכה",
+  "exportFormatText": "טקסט פשוט",
+  "exportDescriptionText": "תאימות מרבית",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown נייד",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "רשימות הופכות לשורות"
 }

@@ -718,5 +718,15 @@
   "exportAllAvailable": "Exporter tous les formats disponibles",
   "exportComingSoon": "Bientôt disponible",
   "plannedExportFormats": "Formats d’exportation prévus",
-  "plannedExportFormatsDescription": "Ces formats sont prévus dans de futures mises à jour d’Orah et ne sont pas encore exportables."
+  "plannedExportFormatsDescription": "Ces formats sont prévus dans de futures mises à jour d’Orah et ne sont pas encore exportables.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Document imprimable",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Document Microsoft Word modifiable",
+  "exportFormatText": "Texte brut",
+  "exportDescriptionText": "Compatibilité maximale",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown portable",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Les listes deviennent des lignes"
 }

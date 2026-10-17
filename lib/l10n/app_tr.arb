@@ -712,11 +712,21 @@
   "exportDocuments": "Belgeler",
   "exportData": "Veriler",
   "exportPlannedSection": "Planlandı / Yakında",
-  "exportPlannedDescription": "Bu biçimlerin gelecekteki Orah güncellemelerine eklenmesi planlanıyor.",
+  "exportPlannedDescription": "Bu biçimler gelecekteki Orah güncellemeleri için planlanmıştır.",
   "sendAsEmailAttachment": "E-posta eki olarak gönder",
   "emailAttachmentDescription": "PDF oluşturur ve sistem paylaşım menüsünü açar",
   "exportAllAvailable": "Kullanılabilir tüm biçimleri dışa aktar",
   "exportComingSoon": "Yakında",
   "plannedExportFormats": "Planlanan dışa aktarma biçimleri",
-  "plannedExportFormatsDescription": "Bu biçimler gelecekteki Orah güncellemeleri için planlandı ve henüz dışa aktarılamıyor."
+  "plannedExportFormatsDescription": "Bu biçimler gelecekteki Orah güncellemeleri için planlandı ve henüz dışa aktarılamıyor.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Yazdırılabilir belge",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Düzenlenebilir Microsoft Word belgesi",
+  "exportFormatText": "Düz metin",
+  "exportDescriptionText": "Maksimum uyumluluk",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Taşınabilir Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Kontrol listeleri satırlara dönüşür"
 }

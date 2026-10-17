@@ -718,5 +718,15 @@
   "exportAllAvailable": "사용 가능한 모든 형식 내보내기",
   "exportComingSoon": "곧 제공",
   "plannedExportFormats": "예정된 내보내기 형식",
-  "plannedExportFormatsDescription": "이 형식은 향후 Orah 업데이트에서 제공될 예정이며 현재는 내보낼 수 없습니다."
+  "plannedExportFormatsDescription": "이 형식은 향후 Orah 업데이트에서 제공될 예정이며 현재는 내보낼 수 없습니다.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "인쇄용 문서",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "편집 가능한 Microsoft Word 문서",
+  "exportFormatText": "일반 텍스트",
+  "exportDescriptionText": "최대 호환성",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "휴대용 Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "체크리스트는 행으로 변환됩니다"
 }

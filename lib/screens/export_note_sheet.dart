@@ -5,6 +5,7 @@ import '../services/universal_export_service.dart';
 import '../services/orah_feature_gate.dart';
 import '../services/orah_premium_gate.dart';
 import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 class ExportNoteSheet extends StatefulWidget {
   const ExportNoteSheet({super.key, required this.note});
@@ -19,11 +20,11 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
   NovaExportFormat _selected = NovaExportFormat.pdf;
 
   static const _options = <_ExportOption>[
-    _ExportOption(NovaExportFormat.pdf, Icons.picture_as_pdf_outlined, 'PDF (.pdf)', 'Printable document', 'Documents', true),
-    _ExportOption(NovaExportFormat.word, Icons.description_outlined, 'Word (.docx)', 'Editable Microsoft Word document', 'Documents', false),
-    _ExportOption(NovaExportFormat.text, Icons.text_snippet_outlined, 'Plain Text (.txt)', 'Maximum compatibility', 'Documents', false),
-    _ExportOption(NovaExportFormat.markdown, Icons.code_outlined, 'Markdown (.md)', 'Portable Markdown', 'Documents', false),
-    _ExportOption(NovaExportFormat.excel, Icons.table_chart_outlined, 'Excel (.xlsx)', 'Spreadsheet; checklists become rows', 'Data', true),
+    _ExportOption(NovaExportFormat.pdf, Icons.picture_as_pdf_outlined, l10n.exportFormatPdf, l10n.exportDescriptionPdf, 'Documents', true),
+    _ExportOption(NovaExportFormat.word, Icons.description_outlined, l10n.exportFormatWord, l10n.exportDescriptionWord, 'Documents', false),
+    _ExportOption(NovaExportFormat.text, Icons.text_snippet_outlined, l10n.exportFormatText, l10n.exportDescriptionText, 'Documents', false),
+    _ExportOption(NovaExportFormat.markdown, Icons.code_outlined, l10n.exportFormatMarkdown, l10n.exportDescriptionMarkdown, 'Documents', false),
+    _ExportOption(NovaExportFormat.excel, Icons.table_chart_outlined, l10n.exportFormatExcel, l10n.exportDescriptionExcel, 'Data', true),
   ];
 
   static const _planned = <_PlannedExport>[

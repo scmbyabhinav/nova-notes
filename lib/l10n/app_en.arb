@@ -732,5 +732,15 @@
   "exportAllAvailable": "Export All Available Formats",
   "exportComingSoon": "Coming Soon",
   "plannedExportFormats": "Planned Export Formats",
-  "plannedExportFormatsDescription": "These formats are planned for future Orah updates and are not exported yet."
+  "plannedExportFormatsDescription": "These formats are planned for future Orah updates and are not exported yet.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Printable document",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Editable Microsoft Word document",
+  "exportFormatText": "Plain Text (.txt)",
+  "exportDescriptionText": "Maximum compatibility",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Portable Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Spreadsheet; checklists become rows"
 }

@@ -718,5 +718,15 @@
   "exportAllAvailable": "Alle verfügbaren Formate exportieren",
   "exportComingSoon": "Demnächst",
   "plannedExportFormats": "Geplante Exportformate",
-  "plannedExportFormatsDescription": "Diese Formate sind für zukünftige Orah-Updates geplant und können noch nicht exportiert werden."
+  "plannedExportFormatsDescription": "Diese Formate sind für zukünftige Orah-Updates geplant und können noch nicht exportiert werden.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Druckbares Dokument",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Bearbeitbares Microsoft-Word-Dokument",
+  "exportFormatText": "Einfacher Text",
+  "exportDescriptionText": "Maximale Kompatibilität",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Portables Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Checklisten werden zu Zeilen"
 }

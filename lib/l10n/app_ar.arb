@@ -712,11 +712,21 @@
   "exportDocuments": "المستندات",
   "exportData": "البيانات",
   "exportPlannedSection": "مخطط / قريبًا",
-  "exportPlannedDescription": "هذه التنسيقات مخطط إضافتها في تحديثات Orah المستقبلية.",
+  "exportPlannedDescription": "هذه التنسيقات مخطط لها في تحديثات Orah المستقبلية.",
   "sendAsEmailAttachment": "إرسال كمرفق بريد إلكتروني",
   "emailAttachmentDescription": "ينشئ ملف PDF ويفتح نافذة المشاركة في النظام",
   "exportAllAvailable": "تصدير جميع التنسيقات المتاحة",
   "exportComingSoon": "قريبًا",
   "plannedExportFormats": "تنسيقات التصدير المخطط لها",
-  "plannedExportFormatsDescription": "هذه التنسيقات مخطط إضافتها في تحديثات Orah المستقبلية ولم تُتح للتصدير بعد."
+  "plannedExportFormatsDescription": "هذه التنسيقات مخطط إضافتها في تحديثات Orah المستقبلية ولم تُتح للتصدير بعد.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "مستند قابل للطباعة",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "مستند Microsoft Word قابل للتحرير",
+  "exportFormatText": "نص عادي",
+  "exportDescriptionText": "أقصى توافق",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown قابل للنقل",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "تتحول قوائم التحقق إلى صفوف"
 }

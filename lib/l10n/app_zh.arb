@@ -718,5 +718,15 @@
   "exportAllAvailable": "导出所有可用格式",
   "exportComingSoon": "即将推出",
   "plannedExportFormats": "计划中的导出格式",
-  "plannedExportFormatsDescription": "这些格式计划在未来的 Orah 更新中提供，目前尚不能导出。"
+  "plannedExportFormatsDescription": "这些格式计划在未来的 Orah 更新中提供，目前尚不能导出。",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "可打印文档",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "可编辑的 Microsoft Word 文档",
+  "exportFormatText": "纯文本",
+  "exportDescriptionText": "最大兼容性",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "便携式 Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "清单将转换为行"
 }

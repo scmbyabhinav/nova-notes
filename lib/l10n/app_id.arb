@@ -718,5 +718,15 @@
   "exportAllAvailable": "Ekspor semua format yang tersedia",
   "exportComingSoon": "Segera hadir",
   "plannedExportFormats": "Format ekspor yang direncanakan",
-  "plannedExportFormatsDescription": "Format ini direncanakan untuk pembaruan Orah mendatang dan belum dapat diekspor."
+  "plannedExportFormatsDescription": "Format ini direncanakan untuk pembaruan Orah mendatang dan belum dapat diekspor.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Dokumen yang dapat dicetak",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Dokumen Microsoft Word yang dapat diedit",
+  "exportFormatText": "Teks biasa",
+  "exportDescriptionText": "Kompatibilitas maksimum",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown portabel",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Daftar periksa menjadi baris"
 }

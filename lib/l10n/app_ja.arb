@@ -718,5 +718,15 @@
   "exportAllAvailable": "利用可能なすべての形式をエクスポート",
   "exportComingSoon": "近日公開",
   "plannedExportFormats": "今後対応予定のエクスポート形式",
-  "plannedExportFormatsDescription": "これらの形式は今後のOrahアップデートで対応予定で、現在はエクスポートできません。"
+  "plannedExportFormatsDescription": "これらの形式は今後のOrahアップデートで対応予定で、現在はエクスポートできません。",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "印刷用文書",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "編集可能なMicrosoft Word文書",
+  "exportFormatText": "プレーンテキスト",
+  "exportDescriptionText": "高い互換性",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "持ち運び可能なMarkdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "チェックリストは行に変換されます"
 }
