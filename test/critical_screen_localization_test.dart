@@ -6,6 +6,7 @@ void main() {
   test('critical utility screens do not regress to hard-coded UI copy', () {
     const screens = <String>[
       'lib/screens/trash_screen.dart',
+      'lib/screens/security_settings_screen.dart',
       'lib/screens/privacy_pledge_screen.dart',
       'lib/screens/about_nova_screen.dart',
       'lib/screens/favorites_screen.dart',

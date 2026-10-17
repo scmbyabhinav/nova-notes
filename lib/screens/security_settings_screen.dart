@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../core/widgets/orah_asset_icon.dart';
+import '../l10n/app_localizations.dart';
 
 import '../core/services/nova_security_service.dart';
 
@@ -44,13 +45,14 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
   }
 
   Future<void> _setPin() async {
-    final first = await _pinDialog('Create PIN');
+    final l10n = AppLocalizations.of(context)!;
+    final first = await _pinDialog(l10n.securityCreatePin);
     if (first == null) return;
-    final second = await _pinDialog('Confirm PIN');
+    final second = await _pinDialog(l10n.securityConfirmPin);
     if (second == null) return;
 
     if (first != second) {
-      _message('PINs do not match.');
+      _message(l10n.securityPinMismatch);
       return;
     }
 
@@ -62,17 +64,18 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
         _hasPin = true;
         _appLock = true;
       });
-      _message('PIN created. App lock is on.');
+      _message(l10n.securityPinCreated);
     } catch (e) {
-      _message(e.toString().replaceFirst('FormatException: ', ''));
+      _message(l10n.securityPinActionFailed(e.toString().replaceFirst('FormatException: ', '')));
     }
   }
 
   Future<void> _removePin() async {
-    final pin = await _pinDialog('Enter current PIN');
+    final l10n = AppLocalizations.of(context)!;
+    final pin = await _pinDialog(l10n.securityEnterCurrentPin);
     if (pin == null) return;
     if (!await _security.verifyPin(pin)) {
-      _message('Incorrect PIN.');
+      _message(l10n.incorrectPin);
       return;
     }
     await _security.removePin();
@@ -82,7 +85,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
       _appLock = false;
       _biometric = false;
     });
-    _message('PIN and app lock disabled.');
+    _message(l10n.securityPinDisabled);
   }
 
   Future<void> _toggleAppLock(bool value) async {
@@ -97,6 +100,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
   }
 
   Future<void> _toggleBiometric(bool value) async {
+    final l10n = AppLocalizations.of(context)!;
     if (!value) {
       await _security.setBiometricEnabled(false);
       if (mounted) setState(() => _biometric = false);
@@ -110,7 +114,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
 
     final ok = await _security.authenticateBiometric();
     if (!ok) {
-      _message('Biometric verification was not completed.');
+      _message(l10n.securityBiometricNotCompleted);
       return;
     }
     await _security.setBiometricEnabled(true);
@@ -120,6 +124,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
   Future<String?> _pinDialog(String title) async {
     final controller = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final l10n = AppLocalizations.of(context)!;
 
     return showDialog<String>(
       context: context,
@@ -133,13 +138,13 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
             keyboardType: TextInputType.number,
             obscureText: true,
             maxLength: 8,
-            decoration: const InputDecoration(
-              labelText: 'PIN',
-              hintText: '4–8 digits',
+            decoration: InputDecoration(
+              labelText: l10n.pin,
+              hintText: l10n.securityPinDigitsHint,
             ),
             validator: (value) {
               if (value == null || !RegExp(r'^\d{4,8}$').hasMatch(value)) {
-                return 'Enter 4–8 digits';
+                return l10n.securityEnterDigits;
               }
               return null;
             },
@@ -148,7 +153,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -156,7 +161,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                 Navigator.pop(context, controller.text);
               }
             },
-            child: const Text('Continue'),
+            child: Text(l10n.continueLabel),
           ),
         ],
       ),
@@ -170,6 +175,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_loading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -177,17 +183,17 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Security & Privacy')),
+      appBar: AppBar(title: Text(l10n.securityAndPrivacy)),
       body: ListView(
         children: [
           const SizedBox(height: 12),
           SwitchListTile.adaptive(
             secondary: const Icon(Icons.lock_outline),
-            title: const Text('App lock'),
+            title: Text(l10n.securityAppLock),
             subtitle: Text(
               _hasPin
-                  ? 'Require your PIN when ORAH is locked'
-                  : 'Create a PIN to protect ORAH',
+                  ? l10n.securityRequirePin
+                  : l10n.securityCreatePinToProtect,
             ),
             value: _appLock,
             onChanged: _toggleAppLock,
@@ -195,43 +201,36 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
           if (_hasPin)
             ListTile(
               leading: const Icon(Icons.password_outlined),
-              title: const Text('Change PIN'),
-              subtitle: const Text('Replace your current ORAH PIN'),
+              title: Text(l10n.securityChangePin),
+              subtitle: Text(l10n.securityReplacePinSubtitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: _setPin,
             ),
           if (_hasPin)
             ListTile(
               leading: const OrahAssetIcon('trash'),
-              title: const Text('Remove PIN'),
-              subtitle: const Text('Turn off PIN protection'),
+              title: Text(l10n.securityRemovePin),
+              subtitle: Text(l10n.securityTurnOffPinProtection),
               trailing: const Icon(Icons.chevron_right),
               onTap: _removePin,
             ),
           if (_biometricAvailable)
             SwitchListTile.adaptive(
               secondary: const Icon(Icons.fingerprint),
-              title: const Text('Biometric unlock'),
-              subtitle: const Text('Use fingerprint or device biometrics'),
+              title: Text(l10n.securityBiometricUnlock),
+              subtitle: Text(l10n.securityUseBiometrics),
               value: _biometric,
               onChanged: _toggleBiometric,
             ),
           const Divider(height: 28),
-          const ListTile(
-            leading: Icon(Icons.privacy_tip_outlined),
-            title: Text('Local-first privacy'),
-            subtitle: Text(
-              'ORAH does not require an account or cloud sync for your notes.',
-            ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: Text(l10n.securityLocalFirstPrivacy),
+            subtitle: Text(l10n.securityLocalFirstDescription),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 4, 20, 24),
-            child: Text(
-              'Security note: PIN credentials are stored in Android/iOS '
-              'secure storage. Sensitive note content remains local. '
-              'Full encrypted note-vault storage will be added before '
-              'ORAH claims end-to-end encrypted content.',
-            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            child: Text(l10n.securityStorageNote),
           ),
         ],
       ),

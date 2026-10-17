@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "语音语言",
   "voiceLanguageDescription": "选择你要说的语言。它可以与应用界面语言不同。",
   "voiceLanguageSystemDefault": "使用设备默认语言",
-  "voiceLanguageNoLocales": "此设备的语音识别服务没有提供可用语言。"
+  "voiceLanguageNoLocales": "此设备的语音识别服务没有提供可用语言。",
+  "securityCreatePin": "创建 PIN",
+  "securityConfirmPin": "确认 PIN",
+  "securityPinMismatch": "两次 PIN 不一致。",
+  "securityPinCreated": "PIN 已创建，应用锁已开启。",
+  "securityPinActionFailed": "无法更新 PIN：{error}",
+  "securityEnterCurrentPin": "输入当前 PIN",
+  "securityPinDisabled": "PIN 和应用锁已关闭。",
+  "securityBiometricNotCompleted": "生物识别验证未完成。",
+  "securityPinDigitsHint": "4–8 位数字",
+  "securityEnterDigits": "请输入 4–8 位数字",
+  "securityAppLock": "应用锁",
+  "securityRequirePin": "ORAH 锁定时要求输入 PIN",
+  "securityCreatePinToProtect": "创建 PIN 以保护 ORAH",
+  "securityChangePin": "更改 PIN",
+  "securityReplacePinSubtitle": "替换当前 ORAH PIN",
+  "securityRemovePin": "移除 PIN",
+  "securityTurnOffPinProtection": "关闭 PIN 保护",
+  "securityBiometricUnlock": "生物识别解锁",
+  "securityUseBiometrics": "使用指纹或设备生物识别",
+  "securityLocalFirstPrivacy": "本地优先的隐私保护",
+  "securityLocalFirstDescription": "ORAH 无需账户或云同步即可保存你的笔记。",
+  "securityStorageNote": "安全提示：PIN 凭据存储在 Android/iOS 安全存储中。敏感笔记内容保留在设备本地。在 ORAH 声称内容具有端到端加密之前，我们会加入完全加密的保险库存储。",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

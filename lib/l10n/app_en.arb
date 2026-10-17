@@ -639,5 +639,34 @@
   "voiceLanguageTitle": "Voice language",
   "voiceLanguageDescription": "Choose the language you will speak. This can differ from the app language.",
   "voiceLanguageSystemDefault": "Use device default",
-  "voiceLanguageNoLocales": "No speech languages are available from this device's recognition service."
+  "voiceLanguageNoLocales": "No speech languages are available from this device's recognition service.",
+  "securityCreatePin": "Create PIN",
+  "securityConfirmPin": "Confirm PIN",
+  "securityPinMismatch": "PINs do not match.",
+  "securityPinCreated": "PIN created. App lock is on.",
+  "securityPinActionFailed": "Could not update PIN: {error}",
+  "securityEnterCurrentPin": "Enter current PIN",
+  "securityPinDisabled": "PIN and app lock disabled.",
+  "securityBiometricNotCompleted": "Biometric verification was not completed.",
+  "securityPinDigitsHint": "4–8 digits",
+  "securityEnterDigits": "Enter 4–8 digits",
+  "securityAppLock": "App lock",
+  "securityRequirePin": "Require your PIN when ORAH is locked",
+  "securityCreatePinToProtect": "Create a PIN to protect ORAH",
+  "securityChangePin": "Change PIN",
+  "securityReplacePinSubtitle": "Replace your current ORAH PIN",
+  "securityRemovePin": "Remove PIN",
+  "securityTurnOffPinProtection": "Turn off PIN protection",
+  "securityBiometricUnlock": "Biometric unlock",
+  "securityUseBiometrics": "Use fingerprint or device biometrics",
+  "securityLocalFirstPrivacy": "Local-first privacy",
+  "securityLocalFirstDescription": "ORAH does not require an account or cloud sync for your notes.",
+  "securityStorageNote": "Security note: PIN credentials are stored in Android/iOS secure storage. Sensitive note content remains local. Full encrypted note-vault storage will be added before ORAH claims end-to-end encrypted content.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
