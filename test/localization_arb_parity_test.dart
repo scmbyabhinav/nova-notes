@@ -192,7 +192,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           locale: Locale(localeCode),
-          supportedLocales: locales.map(Locale.new).toList(),
+          supportedLocales: locales.map((code) => Locale(code)).toList(),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Builder(
             builder: (context) {
