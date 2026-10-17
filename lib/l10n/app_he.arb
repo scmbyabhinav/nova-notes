@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "Markdown נייד",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "רשימות הופכות לשורות"
+  "exportDescriptionExcel": "רשימות הופכות לשורות",
+  "organizationPickerTitle": "ארגון הפתק",
+  "organizationDone": "סיום",
+  "organizationNoFolder": "ללא תיקייה",
+  "organizationAddTagHint": "הוספת תגית",
+  "organizationAddTag": "הוספה",
+  "organizationNoTags": "עדיין אין תגיות.",
+  "exportFailed": "הייצוא נכשל: {error}",
+  "exportEmailAttachmentFailed": "צירוף הקובץ למייל נכשל: {error}",
+  "exportAllFailed": "ייצוא הכול נכשל: {error}",
+  "exportCategoryEbooks": "ספרים אלקטרוניים",
+  "exportCategoryAcademic": "אקדמי",
+  "exportCategoryPresentation": "מצגת",
+  "exportCategorySpeechAudio": "דיבור / שמע",
+  "exportCategorySubtitles": "כתוביות",
+  "exportCategoryEmail": "דוא״ל",
+  "exportCategoryCodeLiterate": "קוד / מסמכים טכניים",
+  "exportCategoryArchive": "ארכיון",
+  "exportCategoryDatabase": "מסד נתונים",
+  "exportCategoryClipboard": "לוח גזירים",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

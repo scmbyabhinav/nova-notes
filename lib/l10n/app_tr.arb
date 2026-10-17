@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "Taşınabilir Markdown",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "Kontrol listeleri satırlara dönüşür"
+  "exportDescriptionExcel": "Kontrol listeleri satırlara dönüşür",
+  "organizationPickerTitle": "Notu düzenle",
+  "organizationDone": "Bitti",
+  "organizationNoFolder": "Klasör yok",
+  "organizationAddTagHint": "Etiket ekle",
+  "organizationAddTag": "Ekle",
+  "organizationNoTags": "Henüz etiket yok.",
+  "exportFailed": "Dışa aktarma başarısız: {error}",
+  "exportEmailAttachmentFailed": "E-posta eki başarısız: {error}",
+  "exportAllFailed": "Tüm dışa aktarma işlemleri başarısız: {error}",
+  "exportCategoryEbooks": "E-kitaplar",
+  "exportCategoryAcademic": "Akademik",
+  "exportCategoryPresentation": "Sunum",
+  "exportCategorySpeechAudio": "Konuşma / ses",
+  "exportCategorySubtitles": "Altyazılar",
+  "exportCategoryEmail": "E-posta",
+  "exportCategoryCodeLiterate": "Kod / teknik belgeler",
+  "exportCategoryArchive": "Arşiv",
+  "exportCategoryDatabase": "Veritabanı",
+  "exportCategoryClipboard": "Pano",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

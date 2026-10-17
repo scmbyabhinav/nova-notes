@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "Markdown portabel",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "Daftar periksa menjadi baris"
+  "exportDescriptionExcel": "Daftar periksa menjadi baris",
+  "organizationPickerTitle": "Atur catatan",
+  "organizationDone": "Selesai",
+  "organizationNoFolder": "Tanpa folder",
+  "organizationAddTagHint": "Tambahkan tag",
+  "organizationAddTag": "Tambah",
+  "organizationNoTags": "Belum ada tag.",
+  "exportFailed": "Ekspor gagal: {error}",
+  "exportEmailAttachmentFailed": "Lampiran email gagal: {error}",
+  "exportAllFailed": "Ekspor semua gagal: {error}",
+  "exportCategoryEbooks": "E-book",
+  "exportCategoryAcademic": "Akademik",
+  "exportCategoryPresentation": "Presentasi",
+  "exportCategorySpeechAudio": "Ucapan / audio",
+  "exportCategorySubtitles": "Subtitle",
+  "exportCategoryEmail": "Email",
+  "exportCategoryCodeLiterate": "Kode / dokumen teknis",
+  "exportCategoryArchive": "Arsip",
+  "exportCategoryDatabase": "Basis data",
+  "exportCategoryClipboard": "Papan klip",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

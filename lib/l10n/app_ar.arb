@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "Markdown قابل للنقل",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "تتحول قوائم التحقق إلى صفوف"
+  "exportDescriptionExcel": "تتحول قوائم التحقق إلى صفوف",
+  "organizationPickerTitle": "تنظيم الملاحظة",
+  "organizationDone": "تم",
+  "organizationNoFolder": "لا يوجد مجلد",
+  "organizationAddTagHint": "إضافة وسم",
+  "organizationAddTag": "إضافة",
+  "organizationNoTags": "لا توجد وسوم بعد.",
+  "exportFailed": "فشل التصدير: {error}",
+  "exportEmailAttachmentFailed": "فشل إرفاق البريد الإلكتروني: {error}",
+  "exportAllFailed": "فشل تصدير الكل: {error}",
+  "exportCategoryEbooks": "كتب إلكترونية",
+  "exportCategoryAcademic": "أكاديمي",
+  "exportCategoryPresentation": "عرض تقديمي",
+  "exportCategorySpeechAudio": "الكلام / الصوت",
+  "exportCategorySubtitles": "ترجمات مصاحبة",
+  "exportCategoryEmail": "البريد الإلكتروني",
+  "exportCategoryCodeLiterate": "الرمز / المستندات البرمجية",
+  "exportCategoryArchive": "أرشيف",
+  "exportCategoryDatabase": "قاعدة بيانات",
+  "exportCategoryClipboard": "الحافظة",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

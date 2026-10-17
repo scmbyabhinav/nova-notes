@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "便携式 Markdown",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "清单将转换为行"
+  "exportDescriptionExcel": "清单将转换为行",
+  "organizationPickerTitle": "整理笔记",
+  "organizationDone": "完成",
+  "organizationNoFolder": "无文件夹",
+  "organizationAddTagHint": "添加标签",
+  "organizationAddTag": "添加",
+  "organizationNoTags": "还没有标签。",
+  "exportFailed": "导出失败：{error}",
+  "exportEmailAttachmentFailed": "邮件附件失败：{error}",
+  "exportAllFailed": "全部导出失败：{error}",
+  "exportCategoryEbooks": "电子书",
+  "exportCategoryAcademic": "学术",
+  "exportCategoryPresentation": "演示文稿",
+  "exportCategorySpeechAudio": "语音 / 音频",
+  "exportCategorySubtitles": "字幕",
+  "exportCategoryEmail": "电子邮件",
+  "exportCategoryCodeLiterate": "代码 / 技术文档",
+  "exportCategoryArchive": "存档",
+  "exportCategoryDatabase": "数据库",
+  "exportCategoryClipboard": "剪贴板",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

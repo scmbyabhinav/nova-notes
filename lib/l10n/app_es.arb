@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "Markdown portátil",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "Las listas se convierten en filas"
+  "exportDescriptionExcel": "Las listas se convierten en filas",
+  "organizationPickerTitle": "Organizar nota",
+  "organizationDone": "Listo",
+  "organizationNoFolder": "Sin carpeta",
+  "organizationAddTagHint": "Añadir etiqueta",
+  "organizationAddTag": "Añadir",
+  "organizationNoTags": "Aún no hay etiquetas.",
+  "exportFailed": "Error al exportar: {error}",
+  "exportEmailAttachmentFailed": "Error al adjuntar al correo: {error}",
+  "exportAllFailed": "Error al exportar todo: {error}",
+  "exportCategoryEbooks": "Libros electrónicos",
+  "exportCategoryAcademic": "Académico",
+  "exportCategoryPresentation": "Presentación",
+  "exportCategorySpeechAudio": "Voz / audio",
+  "exportCategorySubtitles": "Subtítulos",
+  "exportCategoryEmail": "Correo electrónico",
+  "exportCategoryCodeLiterate": "Código / documentos técnicos",
+  "exportCategoryArchive": "Archivo",
+  "exportCategoryDatabase": "Base de datos",
+  "exportCategoryClipboard": "Portapapeles",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

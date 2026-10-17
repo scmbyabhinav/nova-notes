@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "휴대용 Markdown",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "체크리스트는 행으로 변환됩니다"
+  "exportDescriptionExcel": "체크리스트는 행으로 변환됩니다",
+  "organizationPickerTitle": "메모 정리",
+  "organizationDone": "완료",
+  "organizationNoFolder": "폴더 없음",
+  "organizationAddTagHint": "태그 추가",
+  "organizationAddTag": "추가",
+  "organizationNoTags": "태그가 없습니다.",
+  "exportFailed": "내보내기에 실패했습니다: {error}",
+  "exportEmailAttachmentFailed": "이메일 첨부에 실패했습니다: {error}",
+  "exportAllFailed": "모두 내보내기에 실패했습니다: {error}",
+  "exportCategoryEbooks": "전자책",
+  "exportCategoryAcademic": "학술",
+  "exportCategoryPresentation": "프레젠테이션",
+  "exportCategorySpeechAudio": "음성 / 오디오",
+  "exportCategorySubtitles": "자막",
+  "exportCategoryEmail": "이메일",
+  "exportCategoryCodeLiterate": "코드 / 기술 문서",
+  "exportCategoryArchive": "보관",
+  "exportCategoryDatabase": "데이터베이스",
+  "exportCategoryClipboard": "클립보드",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

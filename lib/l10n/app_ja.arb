@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "持ち運び可能なMarkdown",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "チェックリストは行に変換されます"
+  "exportDescriptionExcel": "チェックリストは行に変換されます",
+  "organizationPickerTitle": "メモを整理",
+  "organizationDone": "完了",
+  "organizationNoFolder": "フォルダーなし",
+  "organizationAddTagHint": "タグを追加",
+  "organizationAddTag": "追加",
+  "organizationNoTags": "タグはまだありません。",
+  "exportFailed": "エクスポートに失敗しました：{error}",
+  "exportEmailAttachmentFailed": "メール添付に失敗しました：{error}",
+  "exportAllFailed": "すべてのエクスポートに失敗しました：{error}",
+  "exportCategoryEbooks": "電子書籍",
+  "exportCategoryAcademic": "学術",
+  "exportCategoryPresentation": "プレゼンテーション",
+  "exportCategorySpeechAudio": "音声／オーディオ",
+  "exportCategorySubtitles": "字幕",
+  "exportCategoryEmail": "メール",
+  "exportCategoryCodeLiterate": "コード／技術文書",
+  "exportCategoryArchive": "アーカイブ",
+  "exportCategoryDatabase": "データベース",
+  "exportCategoryClipboard": "クリップボード",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

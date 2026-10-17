@@ -728,5 +728,45 @@
   "exportFormatMarkdown": "Markdown (.md)",
   "exportDescriptionMarkdown": "Markdown portatile",
   "exportFormatExcel": "Excel (.xlsx)",
-  "exportDescriptionExcel": "Le checklist diventano righe"
+  "exportDescriptionExcel": "Le checklist diventano righe",
+  "organizationPickerTitle": "Organizza nota",
+  "organizationDone": "Fatto",
+  "organizationNoFolder": "Nessuna cartella",
+  "organizationAddTagHint": "Aggiungi tag",
+  "organizationAddTag": "Aggiungi",
+  "organizationNoTags": "Ancora nessun tag.",
+  "exportFailed": "Esportazione non riuscita: {error}",
+  "exportEmailAttachmentFailed": "Invio dell’allegato email non riuscito: {error}",
+  "exportAllFailed": "Esportazione completa non riuscita: {error}",
+  "exportCategoryEbooks": "E-book",
+  "exportCategoryAcademic": "Accademico",
+  "exportCategoryPresentation": "Presentazione",
+  "exportCategorySpeechAudio": "Voce / audio",
+  "exportCategorySubtitles": "Sottotitoli",
+  "exportCategoryEmail": "Email",
+  "exportCategoryCodeLiterate": "Codice / documenti tecnici",
+  "exportCategoryArchive": "Archivio",
+  "exportCategoryDatabase": "Database",
+  "exportCategoryClipboard": "Appunti",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
