@@ -885,5 +885,61 @@
   "androidRemindersDescription": "צרו תזכורות להערות ולרשימות משימות ללא שרת backend.",
   "androidLocalIntegrationsNote": "אלה תכונות Android מקומיות שאינן דורשות שרת backend.",
   "androidDone": "בוצע",
-  "androidGotIt": "הבנתי"
+  "androidGotIt": "הבנתי",
+  "captureTitle": "לכידה",
+  "captureDescription": "בחרו מה ברצונכם ללכוד.",
+  "quickNote": "פתק מהיר",
+  "startTypingImmediately": "התחילו לכתוב מיד",
+  "quickChecklist": "רשימת משימות מהירה",
+  "captureTasksWithoutSetup": "תעדו משימות ללא הגדרה",
+  "dailyChecklistTooltip": "רשימת משימות יומית",
+  "quickCaptureHint": "הקישו כדי לכתוב • לחצו לחיצה ארוכה לרשימה ולאפשרויות",
+  "quickCaptureTooltip": "לכידה מהירה. לחצו לחיצה ארוכה לרשימה ולאפשרויות.",
+  "filtersActive": "המסננים פעילים",
+  "searchResultsCount": "תוצאות: {count}",
+  "advancedSearchProFeature": "חיפוש מתקדם הוא תכונה של ORAH Pro",
+  "noNotesFound": "לא נמצאו פתקים",
+  "searchFilterHint": "השתמשו במילות חיפוש רגילות בחינם, או פתחו את ORAH Pro כדי לפתוח מסננים ואופרטורים.",
+  "searchEmptyHint": "נסו מילה אחרת או הסירו מסנן.",
+  "voicePreferences": "העדפות קול",
+  "dailyReflectionSchedule": "לוח זמנים להרהור יומי",
+  "versionLabel": "גרסה {version}",
+  "vaultResetWarning": "לא ניתן לשחזר את קוד ה-PIN של הכספת. איפוס ימחק לצמיתות את כל הפתקים בכספת ואת מפתח ההצפנה שלה. הפתקים והתיקיות הרגילים יישארו ללא שינוי.",
+  "portableBackupShareText": "גיבוי נייד של Orah",
+  "storageAttachmentCount": "{count} קבצים מצורפים • {size}",
+  "dailyReflectionTimePicker": "בחירת שעת ההרהור היומי",
+  "scheduleLoading": "טוען לוח זמנים…",
+  "scheduleEnabledAt": "מופעל • בכל יום בשעה {time}",
+  "scheduleDisabled": "מושבת • הפעילו לקבלת תזכורת יומית",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
