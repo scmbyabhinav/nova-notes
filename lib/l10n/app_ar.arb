@@ -955,5 +955,7 @@
   "notificationDoneAction": "تم",
   "notificationSnooze10Action": "تأجيل 10 دقائق",
   "notificationSnooze60Action": "تأجيل ساعة",
-  "notificationReminderTitle": "تذكير ORAH"
+  "notificationReminderTitle": "تذكير ORAH",
+  "genericTryAgain": "يرجى المحاولة مرة أخرى.",
+  "registrationFailed": "تعذّر إكمال التسجيل. يرجى المحاولة مرة أخرى."
 }
