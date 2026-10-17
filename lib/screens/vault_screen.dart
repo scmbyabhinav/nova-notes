@@ -250,7 +250,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.vaultCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
@@ -533,7 +533,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                               child: ListTile(
                                 leading: Icon(Icons.security_rounded, color: Theme.of(context).colorScheme.primary),
                                 title: Text(note.title.isEmpty ? l10n.privateNote : note.title),
-                                subtitle: Text('${folder?.name ?? l10n.vaultUnfiled} · Updated ${_relativeTime(note.updatedAt)}'),
+                                subtitle: Text('${folder?.name ?? l10n.vaultUnfiled} · ${AppLocalizations.of(context)!.recentlyUpdated} ${_relativeTime(note.updatedAt)}'),
                                 trailing: PopupMenuButton<String>(
                                   tooltip: l10n.vaultMoveToFolder,
                                   onSelected: (folderId) => _assignFolder(note, folderId == '__unfiled__' ? null : folderId),
