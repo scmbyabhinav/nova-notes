@@ -57,7 +57,8 @@ void main() {
               value.toLowerCase() != 'orah pro' &&
               value != '🌱' &&
               value != 'Abhinav Bajpai' &&
-              value != 'vajpaiabhinav@gmail.com')
+              value != 'vajpaiabhinav@gmail.com' &&
+              value != r'${scheduled ? l10n.scheduledLabel : l10n.createdLabel} • ${DateFormat(')
           .toList();
       expect(textMatches, isEmpty,
           reason: '$path contains hard-coded UI text: ' + textMatches.toString());
