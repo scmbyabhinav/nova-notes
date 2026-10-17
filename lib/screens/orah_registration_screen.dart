@@ -43,7 +43,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
       widget.onRegistered(profile);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = error.toString().replaceFirst('Bad state: ', '').replaceFirst('Invalid argument(s): ', ''));
+      setState(() => _error = AppLocalizations.of(context)!.registrationFailed);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
