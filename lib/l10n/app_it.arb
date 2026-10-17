@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Lingua vocale",
   "voiceLanguageDescription": "Scegli la lingua in cui parlerai. Può essere diversa da quella dell'app.",
   "voiceLanguageSystemDefault": "Usa lingua del dispositivo",
-  "voiceLanguageNoLocales": "Il servizio di riconoscimento vocale del dispositivo non offre lingue disponibili."
+  "voiceLanguageNoLocales": "Il servizio di riconoscimento vocale del dispositivo non offre lingue disponibili.",
+  "securityCreatePin": "Crea PIN",
+  "securityConfirmPin": "Conferma PIN",
+  "securityPinMismatch": "I PIN non corrispondono.",
+  "securityPinCreated": "PIN creato. Il blocco dell’app è attivo.",
+  "securityPinActionFailed": "Impossibile aggiornare il PIN: {error}",
+  "securityEnterCurrentPin": "Inserisci il PIN attuale",
+  "securityPinDisabled": "PIN e blocco dell’app disattivati.",
+  "securityBiometricNotCompleted": "La verifica biometrica non è stata completata.",
+  "securityPinDigitsHint": "Da 4 a 8 cifre",
+  "securityEnterDigits": "Inserisci da 4 a 8 cifre",
+  "securityAppLock": "Blocco dell’app",
+  "securityRequirePin": "Richiedi il PIN quando ORAH è bloccata",
+  "securityCreatePinToProtect": "Crea un PIN per proteggere ORAH",
+  "securityChangePin": "Modifica PIN",
+  "securityReplacePinSubtitle": "Sostituisci il PIN ORAH attuale",
+  "securityRemovePin": "Rimuovi PIN",
+  "securityTurnOffPinProtection": "Disattiva la protezione PIN",
+  "securityBiometricUnlock": "Sblocco biometrico",
+  "securityUseBiometrics": "Usa l’impronta digitale o i dati biometrici del dispositivo",
+  "securityLocalFirstPrivacy": "Privacy con archiviazione locale",
+  "securityLocalFirstDescription": "ORAH non richiede un account né la sincronizzazione cloud per le tue note.",
+  "securityStorageNote": "Nota di sicurezza: le credenziali PIN sono archiviate nello spazio sicuro di Android/iOS. I contenuti sensibili delle note restano sul dispositivo. L’archiviazione del Vault completamente crittografata sarà aggiunta prima che ORAH dichiari la crittografia end-to-end dei contenuti.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

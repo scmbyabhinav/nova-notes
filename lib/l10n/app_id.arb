@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Bahasa suara",
   "voiceLanguageDescription": "Pilih bahasa yang akan Anda gunakan untuk berbicara. Bahasa ini bisa berbeda dari bahasa aplikasi.",
   "voiceLanguageSystemDefault": "Gunakan bahasa perangkat",
-  "voiceLanguageNoLocales": "Tidak ada bahasa yang tersedia dari layanan pengenalan suara perangkat ini."
+  "voiceLanguageNoLocales": "Tidak ada bahasa yang tersedia dari layanan pengenalan suara perangkat ini.",
+  "securityCreatePin": "Buat PIN",
+  "securityConfirmPin": "Konfirmasi PIN",
+  "securityPinMismatch": "PIN tidak cocok.",
+  "securityPinCreated": "PIN dibuat. Kunci aplikasi aktif.",
+  "securityPinActionFailed": "PIN tidak dapat diperbarui: {error}",
+  "securityEnterCurrentPin": "Masukkan PIN saat ini",
+  "securityPinDisabled": "PIN dan kunci aplikasi dinonaktifkan.",
+  "securityBiometricNotCompleted": "Verifikasi biometrik belum selesai.",
+  "securityPinDigitsHint": "4–8 digit",
+  "securityEnterDigits": "Masukkan 4–8 digit",
+  "securityAppLock": "Kunci aplikasi",
+  "securityRequirePin": "Minta PIN saat ORAH terkunci",
+  "securityCreatePinToProtect": "Buat PIN untuk melindungi ORAH",
+  "securityChangePin": "Ubah PIN",
+  "securityReplacePinSubtitle": "Ganti PIN ORAH saat ini",
+  "securityRemovePin": "Hapus PIN",
+  "securityTurnOffPinProtection": "Matikan perlindungan PIN",
+  "securityBiometricUnlock": "Buka kunci dengan biometrik",
+  "securityUseBiometrics": "Gunakan sidik jari atau biometrik perangkat",
+  "securityLocalFirstPrivacy": "Privasi dengan penyimpanan lokal",
+  "securityLocalFirstDescription": "ORAH tidak memerlukan akun atau sinkronisasi cloud untuk catatan Anda.",
+  "securityStorageNote": "Catatan keamanan: kredensial PIN disimpan di penyimpanan aman Android/iOS. Isi catatan sensitif tetap berada di perangkat. Penyimpanan brankas yang sepenuhnya terenkripsi akan ditambahkan sebelum ORAH mengklaim bahwa konten dienkripsi secara menyeluruh.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

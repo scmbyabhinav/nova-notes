@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "बोलने की भाषा",
   "voiceLanguageDescription": "आप जिस भाषा में बोलेंगे उसे चुनें। यह ऐप की भाषा से अलग हो सकती है।",
   "voiceLanguageSystemDefault": "डिवाइस की डिफ़ॉल्ट भाषा",
-  "voiceLanguageNoLocales": "इस डिवाइस की वाक् पहचान सेवा में कोई भाषा उपलब्ध नहीं है।"
+  "voiceLanguageNoLocales": "इस डिवाइस की वाक् पहचान सेवा में कोई भाषा उपलब्ध नहीं है।",
+  "securityCreatePin": "PIN बनाएँ",
+  "securityConfirmPin": "PIN की पुष्टि करें",
+  "securityPinMismatch": "दोनों PIN मेल नहीं खाते।",
+  "securityPinCreated": "PIN बन गया है। ऐप लॉक चालू है।",
+  "securityPinActionFailed": "PIN अपडेट नहीं हो सका: {error}",
+  "securityEnterCurrentPin": "मौजूदा PIN दर्ज करें",
+  "securityPinDisabled": "PIN और ऐप लॉक बंद कर दिए गए हैं।",
+  "securityBiometricNotCompleted": "बायोमेट्रिक सत्यापन पूरा नहीं हुआ।",
+  "securityPinDigitsHint": "4–8 अंक",
+  "securityEnterDigits": "4–8 अंक दर्ज करें",
+  "securityAppLock": "ऐप लॉक",
+  "securityRequirePin": "ORAH लॉक होने पर PIN माँगें",
+  "securityCreatePinToProtect": "ORAH की सुरक्षा के लिए PIN बनाएँ",
+  "securityChangePin": "PIN बदलें",
+  "securityReplacePinSubtitle": "अपना मौजूदा ORAH PIN बदलें",
+  "securityRemovePin": "PIN हटाएँ",
+  "securityTurnOffPinProtection": "PIN सुरक्षा बंद करें",
+  "securityBiometricUnlock": "बायोमेट्रिक अनलॉक",
+  "securityUseBiometrics": "फ़िंगरप्रिंट या डिवाइस बायोमेट्रिक्स इस्तेमाल करें",
+  "securityLocalFirstPrivacy": "स्थानीय स्टोरेज को प्राथमिकता देने वाली गोपनीयता",
+  "securityLocalFirstDescription": "आपके नोट्स के लिए ORAH को खाते या क्लाउड सिंक की आवश्यकता नहीं है।",
+  "securityStorageNote": "सुरक्षा सूचना: PIN प्रमाण-पत्र Android/iOS के सुरक्षित स्टोरेज में रखे जाते हैं। संवेदनशील नोट की सामग्री डिवाइस पर ही रहती है। ORAH द्वारा सामग्री को एंड-टू-एंड एन्क्रिप्टेड बताने से पहले पूरी तरह एन्क्रिप्टेड वॉल्ट स्टोरेज जोड़ी जाएगी।",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

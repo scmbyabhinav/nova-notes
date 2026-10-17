@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "שפת דיבור",
   "voiceLanguageDescription": "בחרו את השפה שבה תדברו. היא יכולה להיות שונה משפת האפליקציה.",
   "voiceLanguageSystemDefault": "שימוש בשפת המכשיר",
-  "voiceLanguageNoLocales": "שירות זיהוי הדיבור במכשיר אינו מציע שפות זמינות."
+  "voiceLanguageNoLocales": "שירות זיהוי הדיבור במכשיר אינו מציע שפות זמינות.",
+  "securityCreatePin": "יצירת קוד PIN",
+  "securityConfirmPin": "אישור קוד PIN",
+  "securityPinMismatch": "קודי ה‑PIN אינם תואמים.",
+  "securityPinCreated": "קוד ה‑PIN נוצר. נעילת האפליקציה מופעלת.",
+  "securityPinActionFailed": "לא ניתן לעדכן את קוד ה‑PIN: {error}",
+  "securityEnterCurrentPin": "הזנת קוד ה‑PIN הנוכחי",
+  "securityPinDisabled": "קוד ה‑PIN ונעילת האפליקציה הושבתו.",
+  "securityBiometricNotCompleted": "האימות הביומטרי לא הושלם.",
+  "securityPinDigitsHint": "4–8 ספרות",
+  "securityEnterDigits": "יש להזין 4–8 ספרות",
+  "securityAppLock": "נעילת האפליקציה",
+  "securityRequirePin": "דרישת קוד PIN כאשר ORAH נעולה",
+  "securityCreatePinToProtect": "יצירת קוד PIN להגנה על ORAH",
+  "securityChangePin": "שינוי קוד PIN",
+  "securityReplacePinSubtitle": "החלפת קוד ה‑PIN הנוכחי של ORAH",
+  "securityRemovePin": "הסרת קוד PIN",
+  "securityTurnOffPinProtection": "כיבוי ההגנה באמצעות PIN",
+  "securityBiometricUnlock": "פתיחה באמצעות זיהוי ביומטרי",
+  "securityUseBiometrics": "שימוש בטביעת אצבע או בזיהוי הביומטרי של המכשיר",
+  "securityLocalFirstPrivacy": "פרטיות עם עדיפות לאחסון מקומי",
+  "securityLocalFirstDescription": "ORAH אינה דורשת חשבון או סנכרון בענן עבור ההערות שלך.",
+  "securityStorageNote": "הערת אבטחה: פרטי ה‑PIN נשמרים באחסון המאובטח של Android/iOS. תוכן רגיש של הערות נשאר במכשיר. אחסון מוצפן מלא לכספת יתווסף לפני ש‑ORAH תטען שהתוכן מוצפן מקצה לקצה.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
