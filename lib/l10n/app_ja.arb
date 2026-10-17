@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "音声入力で素早く考えを記録できます。",
+  "featureChecklistDescription": "メモを実行可能なチェックリストに変換し、完了状況を追跡します。",
+  "featureShareExportTitle": "共有とエクスポート",
+  "featureShareExportDescription": "ノートを共有し、持ち運びやすい形式で内容をエクスポートします。"
 }
