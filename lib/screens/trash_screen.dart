@@ -73,7 +73,7 @@ class _TrashScreenState extends State<TrashScreen> {
         title: Text(l10n.trashEmptyTitle),
         content: Text(l10n.trashEmptyMessage(_notes.length)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
           FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.trashEmptyAction)),
         ],
       ),
