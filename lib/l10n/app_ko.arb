@@ -85,7 +85,7 @@
   "untitledNote": "제목 없는 노트",
   "scheduledLabel": "예약됨",
   "createdLabel": "작성됨",
-  "calendarItemStatusDate": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {date}",
   "writingRhythm": "글쓰기 리듬",
   "historyTimeline": "기록 타임라인",
   "storyStartsWithNote": "노트 하나로 이야기가 시작됩니다",
