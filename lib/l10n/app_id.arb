@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "Catat ide dengan cepat melalui pembuatan catatan berbasis suara.",
   "featureChecklistDescription": "Ubah catatan menjadi daftar tugas yang dapat ditindaklanjuti dengan pelacakan penyelesaian.",
   "featureShareExportTitle": "Bagikan & Ekspor",
-  "featureShareExportDescription": "Bagikan catatan dan ekspor konten dalam format portabel."
+  "featureShareExportDescription": "Bagikan catatan dan ekspor konten dalam format portabel.",
+  "notificationDailyReflectionTitle": "Waktunya refleksi harian",
+  "notificationDailyReflectionBody": "Luangkan waktu sejenak untuk menuliskan apa yang ada di pikiran Anda.",
+  "notificationDailyReflectionChannel": "Refleksi harian",
+  "notificationDailyReflectionChannelDescription": "Pengingat harian yang lembut untuk berhenti sejenak dan merenung",
+  "notificationReminderChannel": "Pengingat Orah",
+  "notificationReminderChannelDescription": "Pengingat untuk catatan dan tugas",
+  "notificationDoneAction": "Selesai",
+  "notificationSnooze10Action": "Tunda 10 mnt",
+  "notificationSnooze60Action": "Tunda 1 jam",
+  "notificationReminderTitle": "Pengingat ORAH"
 }
