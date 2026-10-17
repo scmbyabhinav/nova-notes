@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/widgets/orah_asset_icon.dart';
+import '../l10n/app_localizations.dart';
 
 import '../models/folder.dart';
 
@@ -59,13 +60,14 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Organize note'),
+        title: Text(l10n.organizationPickerTitle),
         actions: [
           TextButton(
             onPressed: _done,
-            child: const Text('Done'),
+            child: Text(l10n.organizationDone),
           ),
         ],
       ),
@@ -85,7 +87,7 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
                 RadioListTile<String?>(
                   value: null,
                   groupValue: _folderId,
-                  title: const Text('No folder'),
+                  title: Text(l10n.organizationNoFolder),
                   onChanged: (value) => setState(() => _folderId = value),
                 ),
                 ...widget.folders.map(
@@ -116,7 +118,7 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addTag(),
                   decoration: const InputDecoration(
-                    hintText: 'Add a tag',
+                    hintText: l10n.organizationAddTagHint,
                     prefixText: '# ',
                   ),
                 ),
@@ -124,13 +126,13 @@ class _OrganizationPickerScreenState extends State<OrganizationPickerScreen> {
               const SizedBox(width: 8),
               FilledButton(
                 onPressed: _addTag,
-                child: const Text('Add'),
+                child: Text(l10n.organizationAddTag),
               ),
             ],
           ),
           const SizedBox(height: 12),
           if (_tags.isEmpty)
-            const Text('No tags yet.')
+            Text(l10n.organizationNoTags)
           else
             Wrap(
               spacing: 8,

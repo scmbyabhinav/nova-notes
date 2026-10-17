@@ -7,6 +7,7 @@ void main() {
     const screens = <String>[
       'lib/screens/trash_screen.dart',
       'lib/screens/security_settings_screen.dart',
+      'lib/screens/organization_picker_screen.dart',
       'lib/screens/vault_screen.dart',
       'lib/screens/export_note_sheet.dart',
       'lib/screens/privacy_pledge_screen.dart',
