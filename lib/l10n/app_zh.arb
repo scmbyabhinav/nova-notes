@@ -85,7 +85,7 @@
   "untitledNote": "无标题笔记",
   "scheduledLabel": "已安排",
   "createdLabel": "已创建",
-  "calendarItemStatusTime": "{status} • {date}",
+  "calendarItemStatusTime": "{status} • {time}",
   "writingRhythm": "你的写作节奏",
   "historyTimeline": "历史时间线",
   "storyStartsWithNote": "你的故事从一条笔记开始",
