@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Spracheingabe",
   "voiceLanguageDescription": "Wähle die Sprache, in der du sprichst. Sie kann von der App-Sprache abweichen.",
   "voiceLanguageSystemDefault": "Gerätesprache verwenden",
-  "voiceLanguageNoLocales": "Der Spracherkennungsdienst dieses Geräts bietet keine Sprachen an."
+  "voiceLanguageNoLocales": "Der Spracherkennungsdienst dieses Geräts bietet keine Sprachen an.",
+  "securityCreatePin": "PIN erstellen",
+  "securityConfirmPin": "PIN bestätigen",
+  "securityPinMismatch": "Die PINs stimmen nicht überein.",
+  "securityPinCreated": "PIN erstellt. App-Sperre ist aktiviert.",
+  "securityPinActionFailed": "PIN konnte nicht aktualisiert werden: {error}",
+  "securityEnterCurrentPin": "Aktuelle PIN eingeben",
+  "securityPinDisabled": "PIN und App-Sperre deaktiviert.",
+  "securityBiometricNotCompleted": "Die biometrische Prüfung wurde nicht abgeschlossen.",
+  "securityPinDigitsHint": "4–8 Ziffern",
+  "securityEnterDigits": "4–8 Ziffern eingeben",
+  "securityAppLock": "App-Sperre",
+  "securityRequirePin": "PIN verlangen, wenn ORAH gesperrt ist",
+  "securityCreatePinToProtect": "PIN zum Schutz von ORAH erstellen",
+  "securityChangePin": "PIN ändern",
+  "securityReplacePinSubtitle": "Aktuelle ORAH-PIN ersetzen",
+  "securityRemovePin": "PIN entfernen",
+  "securityTurnOffPinProtection": "PIN-Schutz deaktivieren",
+  "securityBiometricUnlock": "Biometrisch entsperren",
+  "securityUseBiometrics": "Fingerabdruck oder Gerätebiometrie verwenden",
+  "securityLocalFirstPrivacy": "Datenschutz mit lokaler Speicherung",
+  "securityLocalFirstDescription": "ORAH benötigt für deine Notizen weder ein Konto noch eine Cloud-Synchronisierung.",
+  "securityStorageNote": "Sicherheitshinweis: PIN-Zugangsdaten werden im sicheren Speicher von Android/iOS abgelegt. Vertrauliche Notizinhalte bleiben lokal. Ein vollständig verschlüsselter Tresorspeicher wird ergänzt, bevor ORAH eine Ende-zu-Ende-Verschlüsselung der Inhalte beansprucht.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

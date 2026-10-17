@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "لغة التحدث",
   "voiceLanguageDescription": "اختر اللغة التي ستتحدث بها. يمكن أن تختلف عن لغة التطبيق.",
   "voiceLanguageSystemDefault": "استخدام لغة الجهاز",
-  "voiceLanguageNoLocales": "لا تتوفر لغات للتعرف على الكلام من خدمة الجهاز."
+  "voiceLanguageNoLocales": "لا تتوفر لغات للتعرف على الكلام من خدمة الجهاز.",
+  "securityCreatePin": "إنشاء رمز PIN",
+  "securityConfirmPin": "تأكيد رمز PIN",
+  "securityPinMismatch": "رمزا PIN غير متطابقين.",
+  "securityPinCreated": "تم إنشاء رمز PIN وتفعيل قفل التطبيق.",
+  "securityPinActionFailed": "تعذّر تحديث رمز PIN: {error}",
+  "securityEnterCurrentPin": "أدخل رمز PIN الحالي",
+  "securityPinDisabled": "تم تعطيل رمز PIN وقفل التطبيق.",
+  "securityBiometricNotCompleted": "لم يكتمل التحقق البيومتري.",
+  "securityPinDigitsHint": "من 4 إلى 8 أرقام",
+  "securityEnterDigits": "أدخل من 4 إلى 8 أرقام",
+  "securityAppLock": "قفل التطبيق",
+  "securityRequirePin": "طلب رمز PIN عند قفل ORAH",
+  "securityCreatePinToProtect": "أنشئ رمز PIN لحماية ORAH",
+  "securityChangePin": "تغيير رمز PIN",
+  "securityReplacePinSubtitle": "استبدال رمز PIN الحالي لـ ORAH",
+  "securityRemovePin": "إزالة رمز PIN",
+  "securityTurnOffPinProtection": "إيقاف الحماية برمز PIN",
+  "securityBiometricUnlock": "فتح القفل بالقياسات الحيوية",
+  "securityUseBiometrics": "استخدم بصمة الإصبع أو القياسات الحيوية للجهاز",
+  "securityLocalFirstPrivacy": "الخصوصية مع التخزين المحلي أولاً",
+  "securityLocalFirstDescription": "لا يتطلب ORAH حساباً أو مزامنة سحابية لملاحظاتك.",
+  "securityStorageNote": "ملاحظة أمنية: تُخزَّن بيانات اعتماد PIN في مساحة التخزين الآمنة في Android/iOS. يبقى محتوى الملاحظات الحساسة على جهازك. ستُضاف مساحة تخزين مشفّرة بالكامل للخزنة قبل أن يصف ORAH محتواه بأنه مشفّر من طرف إلى طرف.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

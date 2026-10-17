@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Idioma de voz",
   "voiceLanguageDescription": "Elige el idioma en el que hablarás. Puede ser distinto del idioma de la app.",
   "voiceLanguageSystemDefault": "Usar idioma del dispositivo",
-  "voiceLanguageNoLocales": "El servicio de reconocimiento de este dispositivo no ofrece idiomas disponibles."
+  "voiceLanguageNoLocales": "El servicio de reconocimiento de este dispositivo no ofrece idiomas disponibles.",
+  "securityCreatePin": "Crear PIN",
+  "securityConfirmPin": "Confirmar PIN",
+  "securityPinMismatch": "Los PIN no coinciden.",
+  "securityPinCreated": "PIN creado. El bloqueo de la aplicación está activado.",
+  "securityPinActionFailed": "No se pudo actualizar el PIN: {error}",
+  "securityEnterCurrentPin": "Introduce el PIN actual",
+  "securityPinDisabled": "PIN y bloqueo de la aplicación desactivados.",
+  "securityBiometricNotCompleted": "No se completó la verificación biométrica.",
+  "securityPinDigitsHint": "De 4 a 8 dígitos",
+  "securityEnterDigits": "Introduce de 4 a 8 dígitos",
+  "securityAppLock": "Bloqueo de la aplicación",
+  "securityRequirePin": "Solicitar tu PIN cuando ORAH esté bloqueado",
+  "securityCreatePinToProtect": "Crea un PIN para proteger ORAH",
+  "securityChangePin": "Cambiar PIN",
+  "securityReplacePinSubtitle": "Sustituir tu PIN actual de ORAH",
+  "securityRemovePin": "Eliminar PIN",
+  "securityTurnOffPinProtection": "Desactivar la protección por PIN",
+  "securityBiometricUnlock": "Desbloqueo biométrico",
+  "securityUseBiometrics": "Usar huella dactilar o biometría del dispositivo",
+  "securityLocalFirstPrivacy": "Privacidad con almacenamiento local",
+  "securityLocalFirstDescription": "ORAH no necesita una cuenta ni sincronización en la nube para tus notas.",
+  "securityStorageNote": "Nota de seguridad: las credenciales del PIN se guardan en el almacenamiento seguro de Android/iOS. El contenido sensible de las notas permanece en el dispositivo. Se añadirá almacenamiento cifrado completo para la bóveda antes de que ORAH afirme que el contenido está cifrado de extremo a extremo.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

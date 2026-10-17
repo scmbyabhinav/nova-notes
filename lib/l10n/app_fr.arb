@@ -625,5 +625,34 @@
   "voiceLanguageTitle": "Langue vocale",
   "voiceLanguageDescription": "Choisissez la langue parlée. Elle peut être différente de la langue de l’application.",
   "voiceLanguageSystemDefault": "Utiliser la langue de l’appareil",
-  "voiceLanguageNoLocales": "Le service de reconnaissance de cet appareil ne propose aucune langue."
+  "voiceLanguageNoLocales": "Le service de reconnaissance de cet appareil ne propose aucune langue.",
+  "securityCreatePin": "Créer un code PIN",
+  "securityConfirmPin": "Confirmer le code PIN",
+  "securityPinMismatch": "Les codes PIN ne correspondent pas.",
+  "securityPinCreated": "Code PIN créé. Le verrouillage de l’application est activé.",
+  "securityPinActionFailed": "Impossible de modifier le code PIN : {error}",
+  "securityEnterCurrentPin": "Saisir le code PIN actuel",
+  "securityPinDisabled": "Code PIN et verrouillage de l’application désactivés.",
+  "securityBiometricNotCompleted": "La vérification biométrique n’a pas abouti.",
+  "securityPinDigitsHint": "4 à 8 chiffres",
+  "securityEnterDigits": "Saisissez 4 à 8 chiffres",
+  "securityAppLock": "Verrouillage de l’application",
+  "securityRequirePin": "Demander votre code PIN lorsque ORAH est verrouillé",
+  "securityCreatePinToProtect": "Créer un code PIN pour protéger ORAH",
+  "securityChangePin": "Modifier le code PIN",
+  "securityReplacePinSubtitle": "Remplacer votre code PIN ORAH actuel",
+  "securityRemovePin": "Supprimer le code PIN",
+  "securityTurnOffPinProtection": "Désactiver la protection par code PIN",
+  "securityBiometricUnlock": "Déverrouillage biométrique",
+  "securityUseBiometrics": "Utiliser l’empreinte digitale ou la biométrie de l’appareil",
+  "securityLocalFirstPrivacy": "Confidentialité privilégiant le stockage local",
+  "securityLocalFirstDescription": "ORAH n’exige ni compte ni synchronisation cloud pour vos notes.",
+  "securityStorageNote": "Note de sécurité : les identifiants PIN sont stockés dans l’espace sécurisé d’Android/iOS. Le contenu sensible des notes reste local. Un stockage de coffre entièrement chiffré sera ajouté avant qu’ORAH ne revendique un chiffrement de bout en bout du contenu.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
