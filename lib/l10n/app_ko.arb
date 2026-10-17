@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "감사",
+  "reflectionCategoryMindfulness": "마음챙김",
+  "reflectionCategoryPersonalGrowth": "개인적 성장",
+  "reflectionCategoryRelationships": "관계",
+  "reflectionCategorySelfCompassion": "자기 연민",
+  "reflectionCategoryClarity": "명확성",
+  "reflectionCategoryPossibility": "가능성",
+  "reflectionCategoryDailyReview": "하루 돌아보기",
+  "reflectionCategoryPurposeValues": "목적과 가치",
+  "reflectionCategoryResilience": "회복탄력성",
+  "reflectionCategoryCreativityCuriosity": "창의성과 호기심",
+  "reflectionCategoryRestRenewal": "휴식과 재충전",
+  "reflectionWriteHint": "떠오르는 생각을 자유롭게 적어 보세요…",
+  "reflectionSaveError": "성찰을 저장할 수 없습니다: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }

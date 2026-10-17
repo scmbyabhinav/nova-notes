@@ -550,5 +550,27 @@
         "type": "String"
       }
     }
+  },
+  "reflectionCategoryGratitude": "感謝",
+  "reflectionCategoryMindfulness": "マインドフルネス",
+  "reflectionCategoryPersonalGrowth": "自己成長",
+  "reflectionCategoryRelationships": "人間関係",
+  "reflectionCategorySelfCompassion": "セルフ・コンパッション",
+  "reflectionCategoryClarity": "明晰さ",
+  "reflectionCategoryPossibility": "可能性",
+  "reflectionCategoryDailyReview": "一日の振り返り",
+  "reflectionCategoryPurposeValues": "目的と価値観",
+  "reflectionCategoryResilience": "回復力",
+  "reflectionCategoryCreativityCuriosity": "創造性と好奇心",
+  "reflectionCategoryRestRenewal": "休息と焕新",
+  "reflectionWriteHint": "思いついたことを自由に書いてください…",
+  "reflectionSaveError": "振り返りを保存できませんでした：{error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
   }
 }
