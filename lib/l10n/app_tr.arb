@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "Sesle not oluşturarak düşüncelerinizi hızla kaydedin.",
+  "featureChecklistDescription": "Notları tamamlanma takibi olan uygulanabilir kontrol listelerine dönüştürün.",
+  "featureShareExportTitle": "Paylaş ve dışa aktar",
+  "featureShareExportDescription": "Notları paylaşın ve içeriğinizi taşınabilir biçimlerde dışa aktarın."
 }
