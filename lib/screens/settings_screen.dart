@@ -272,7 +272,7 @@ class SettingsScreen extends StatelessWidget {
             Expanded(child: Text(AppLocalizations.of(context)!.resetVaultQuestion)),
           ],
         ),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
             AppLocalizations.of(context)!.vaultResetWarning,
           ),
