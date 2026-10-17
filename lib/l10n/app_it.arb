@@ -743,10 +743,10 @@
   "exportCategoryPresentation": "Presentazione",
   "exportCategorySpeechAudio": "Voce / audio",
   "exportCategorySubtitles": "Sottotitoli",
-  "exportCategoryEmail": "Email",
+  "exportCategoryEmail": "E-mail",
   "exportCategoryCodeLiterate": "Codice / documenti tecnici",
   "exportCategoryArchive": "Archivio",
-  "exportCategoryDatabase": "Email",
+  "exportCategoryDatabase": "Database",
   "exportCategoryClipboard": "Appunti",
   "@exportFailed": {
     "placeholders": {
