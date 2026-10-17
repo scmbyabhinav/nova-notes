@@ -969,5 +969,7 @@
   "notificationDoneAction": "Done",
   "notificationSnooze10Action": "Snooze 10m",
   "notificationSnooze60Action": "Snooze 1h",
-  "notificationReminderTitle": "ORAH reminder"
+  "notificationReminderTitle": "ORAH reminder",
+  "genericTryAgain": "Please try again.",
+  "registrationFailed": "Could not complete registration. Please try again."
 }
