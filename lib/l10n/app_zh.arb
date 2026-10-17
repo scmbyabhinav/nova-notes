@@ -941,5 +941,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "featureVoiceCaptureDescription": "通过语音优先创建笔记，快速记录想法。",
+  "featureChecklistDescription": "将笔记转换为可执行清单，并跟踪完成情况。",
+  "featureShareExportTitle": "分享与导出",
+  "featureShareExportDescription": "分享笔记，并以便携格式导出内容。"
 }
