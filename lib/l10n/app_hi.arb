@@ -955,5 +955,7 @@
   "notificationDoneAction": "हो गया",
   "notificationSnooze10Action": "10 मिनट बाद",
   "notificationSnooze60Action": "1 घंटे बाद",
-  "notificationReminderTitle": "ORAH रिमाइंडर"
+  "notificationReminderTitle": "ORAH रिमाइंडर",
+  "genericTryAgain": "कृपया फिर से प्रयास करें।",
+  "registrationFailed": "पंजीकरण पूरा नहीं हो सका। कृपया फिर से प्रयास करें।"
 }
