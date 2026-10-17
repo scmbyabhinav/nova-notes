@@ -746,7 +746,7 @@
   "exportCategoryEmail": "Email",
   "exportCategoryCodeLiterate": "Kode / dokumen teknis",
   "exportCategoryArchive": "Arsip",
-  "exportCategoryDatabase": "Basis data",
+  "exportCategoryDatabase": "Email",
   "exportCategoryClipboard": "Papan klip",
   "@exportFailed": {
     "placeholders": {

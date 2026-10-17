@@ -746,7 +746,7 @@
   "exportCategoryEmail": "البريد الإلكتروني",
   "exportCategoryCodeLiterate": "الرمز / المستندات البرمجية",
   "exportCategoryArchive": "أرشيف",
-  "exportCategoryDatabase": "قاعدة بيانات",
+  "exportCategoryDatabase": "Email",
   "exportCategoryClipboard": "الحافظة",
   "@exportFailed": {
     "placeholders": {
@@ -770,7 +770,7 @@
     }
   },
   "organizationFolderLabel": "مجلد",
-  "organizationTagsLabel": "الوسوم",
+  "organizationTagsLabel": "Tag",
   "plannedExportRichText": "Rich Text (.rtf)",
   "plannedExportRichTextDescription": "Texte enrichi multiplateforme",
   "plannedExportOpenDocument": "OpenDocument (.odt)",
@@ -813,7 +813,7 @@
   "plannedExportVttDescription": "ترجمات الويب والفيديو",
   "plannedExportEml": "Email (.eml)",
   "plannedExportEmlDescription": "تنسيق رسالة بريد إلكتروني",
-  "plannedExportHtmlEmail": "Email HTML",
+  "plannedExportHtmlEmail": "HTML Email",
   "plannedExportHtmlEmailDescription": "بريد HTML جاهز للإرسال",
   "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
   "plannedExportJupyterDescription": "مستندات البرمجة",

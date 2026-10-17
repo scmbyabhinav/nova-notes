@@ -746,7 +746,7 @@
   "exportCategoryEmail": "メール",
   "exportCategoryCodeLiterate": "コード／技術文書",
   "exportCategoryArchive": "アーカイブ",
-  "exportCategoryDatabase": "データベース",
+  "exportCategoryDatabase": "メール",
   "exportCategoryClipboard": "クリップボード",
   "@exportFailed": {
     "placeholders": {

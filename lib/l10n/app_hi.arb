@@ -746,7 +746,7 @@
   "exportCategoryEmail": "ईमेल",
   "exportCategoryCodeLiterate": "कोड / तकनीकी दस्तावेज़",
   "exportCategoryArchive": "संग्रह",
-  "exportCategoryDatabase": "डेटाबेस",
+  "exportCategoryDatabase": "ईमेल",
   "exportCategoryClipboard": "क्लिपबोर्ड",
   "@exportFailed": {
     "placeholders": {

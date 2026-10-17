@@ -746,7 +746,7 @@
   "exportCategoryEmail": "이메일",
   "exportCategoryCodeLiterate": "코드 / 기술 문서",
   "exportCategoryArchive": "보관",
-  "exportCategoryDatabase": "데이터베이스",
+  "exportCategoryDatabase": "이메일",
   "exportCategoryClipboard": "클립보드",
   "@exportFailed": {
     "placeholders": {

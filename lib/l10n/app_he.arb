@@ -746,7 +746,7 @@
   "exportCategoryEmail": "דוא״ל",
   "exportCategoryCodeLiterate": "קוד / מסמכים טכניים",
   "exportCategoryArchive": "ארכיון",
-  "exportCategoryDatabase": "מסד נתונים",
+  "exportCategoryDatabase": "דוא״ל",
   "exportCategoryClipboard": "לוח גזירים",
   "@exportFailed": {
     "placeholders": {
@@ -813,7 +813,7 @@
   "plannedExportVttDescription": "כתוביות לאינטרנט ולווידאו",
   "plannedExportEml": "Email (.eml)",
   "plannedExportEmlDescription": "פורמט הודעת דוא״ל",
-  "plannedExportHtmlEmail": "HTML Email",
+  "plannedExportHtmlEmail": "דוא״ל HTML",
   "plannedExportHtmlEmailDescription": "דוא״ל HTML מוכן לשליחה",
   "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
   "plannedExportJupyterDescription": "מסמכי קוד",

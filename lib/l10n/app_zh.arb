@@ -746,7 +746,7 @@
   "exportCategoryEmail": "电子邮件",
   "exportCategoryCodeLiterate": "代码 / 技术文档",
   "exportCategoryArchive": "存档",
-  "exportCategoryDatabase": "数据库",
+  "exportCategoryDatabase": "电子邮件",
   "exportCategoryClipboard": "剪贴板",
   "@exportFailed": {
     "placeholders": {

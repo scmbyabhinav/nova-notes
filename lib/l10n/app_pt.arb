@@ -746,7 +746,7 @@
   "exportCategoryEmail": "E-mail",
   "exportCategoryCodeLiterate": "Código / documentos técnicos",
   "exportCategoryArchive": "Arquivo",
-  "exportCategoryDatabase": "Base de dados",
+  "exportCategoryDatabase": "E-mail",
   "exportCategoryClipboard": "Área de transferência",
   "@exportFailed": {
     "placeholders": {

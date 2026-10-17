@@ -746,7 +746,7 @@
   "exportCategoryEmail": "E-posta",
   "exportCategoryCodeLiterate": "Kod / teknik belgeler",
   "exportCategoryArchive": "Arşiv",
-  "exportCategoryDatabase": "Veritabanı",
+  "exportCategoryDatabase": "E-posta",
   "exportCategoryClipboard": "Pano",
   "@exportFailed": {
     "placeholders": {
