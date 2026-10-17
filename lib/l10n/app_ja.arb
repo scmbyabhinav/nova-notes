@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "音声入力で素早く考えを記録できます。",
   "featureChecklistDescription": "メモを実行可能なチェックリストに変換し、完了状況を追跡します。",
   "featureShareExportTitle": "共有とエクスポート",
-  "featureShareExportDescription": "ノートを共有し、持ち運びやすい形式で内容をエクスポートします。"
+  "featureShareExportDescription": "ノートを共有し、持ち運びやすい形式で内容をエクスポートします。",
+  "notificationDailyReflectionTitle": "毎日の振り返りの時間です",
+  "notificationDailyReflectionBody": "心に浮かんでいることを書き留める静かな時間を取りましょう。",
+  "notificationDailyReflectionChannel": "毎日の振り返り",
+  "notificationDailyReflectionChannelDescription": "立ち止まって振り返るためのやさしい毎日の通知",
+  "notificationReminderChannel": "Orahリマインダー",
+  "notificationReminderChannelDescription": "ノートとタスクのリマインダー",
+  "notificationDoneAction": "完了",
+  "notificationSnooze10Action": "10分後に再通知",
+  "notificationSnooze60Action": "1時間後に再通知",
+  "notificationReminderTitle": "ORAHリマインダー"
 }
