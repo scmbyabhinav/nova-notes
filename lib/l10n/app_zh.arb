@@ -945,5 +945,15 @@
   "featureVoiceCaptureDescription": "通过语音优先创建笔记，快速记录想法。",
   "featureChecklistDescription": "将笔记转换为可执行清单，并跟踪完成情况。",
   "featureShareExportTitle": "分享与导出",
-  "featureShareExportDescription": "分享笔记，并以便携格式导出内容。"
+  "featureShareExportDescription": "分享笔记，并以便携格式导出内容。",
+  "notificationDailyReflectionTitle": "每日反思时间到了",
+  "notificationDailyReflectionBody": "留出片刻安静时间，写下此刻的想法。",
+  "notificationDailyReflectionChannel": "每日反思",
+  "notificationDailyReflectionChannelDescription": "温和提醒您每天暂停片刻并进行反思",
+  "notificationReminderChannel": "Orah 提醒",
+  "notificationReminderChannelDescription": "笔记和任务提醒",
+  "notificationDoneAction": "完成",
+  "notificationSnooze10Action": "延后 10 分钟",
+  "notificationSnooze60Action": "延后 1 小时",
+  "notificationReminderTitle": "ORAH 提醒"
 }
