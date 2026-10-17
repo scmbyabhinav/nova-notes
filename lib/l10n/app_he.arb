@@ -955,5 +955,7 @@
   "notificationDoneAction": "בוצע",
   "notificationSnooze10Action": "נודניק ל-10 דקות",
   "notificationSnooze60Action": "נודניק לשעה",
-  "notificationReminderTitle": "תזכורת ORAH"
+  "notificationReminderTitle": "תזכורת ORAH",
+  "genericTryAgain": "נסו שוב.",
+  "registrationFailed": "לא ניתן להשלים את ההרשמה. נסו שוב."
 }
