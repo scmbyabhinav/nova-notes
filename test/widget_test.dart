@@ -205,6 +205,11 @@ void main() {
 
 class _FakeSpeechService implements VoiceSpeechService {
   int startCount = 0;
+
+  @override
+  Future<List<SpeechLocaleOption>> locales() async => const [
+        SpeechLocaleOption(localeId: 'en_US', name: 'English (United States)'),
+      ];
   bool _isListening = false;
 
   @override
@@ -218,6 +223,7 @@ class _FakeSpeechService implements VoiceSpeechService {
 
   @override
   Future<void> startListening({
+    String? localeId,
     required SpeechResultCallback onResult,
   }) async {
     startCount++;
