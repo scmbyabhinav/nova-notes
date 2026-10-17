@@ -885,5 +885,60 @@
   "androidRemindersDescription": "Créez des rappels pour les notes et les listes sans serveur distant.",
   "androidLocalIntegrationsNote": "Ces intégrations sont des fonctions Android locales qui ne nécessitent aucun serveur distant.",
   "androidDone": "Terminé",
-  "androidGotIt": "Compris"
+  "androidGotIt": "Compris",
+  "captureDescription": "Choisissez ce que vous souhaitez capturer.",
+  "quickNote": "Note rapide",
+  "startTypingImmediately": "Commencez à écrire immédiatement",
+  "quickChecklist": "Liste rapide",
+  "captureTasksWithoutSetup": "Notez des tâches sans configuration",
+  "dailyChecklistTooltip": "Liste quotidienne",
+  "quickCaptureHint": "Touchez pour écrire • Maintenez appuyé pour les options",
+  "quickCaptureTooltip": "Capture rapide. Maintenez appuyé pour afficher la liste et les options.",
+  "filtersActive": "Filtres actifs",
+  "searchResultsCount": "Résultats : {count}",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "advancedSearchProFeature": "La recherche avancée est une fonction ORAH Pro",
+  "noNotesFound": "Aucune note trouvée",
+  "searchFilterHint": "Utilisez gratuitement des mots-clés simples ou ouvrez ORAH Pro pour débloquer les filtres et opérateurs.",
+  "searchEmptyHint": "Essayez un autre mot ou supprimez un filtre.",
+  "voicePreferences": "Préférences vocales",
+  "dailyReflectionSchedule": "Programme de réflexion quotidienne",
+  "versionLabel": "Version {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultResetWarning": "Le code PIN du Vault ne peut pas être récupéré. La réinitialisation supprimera définitivement toutes les notes du Vault et sa clé de chiffrement. Vos notes et dossiers habituels resteront inchangés.",
+  "portableBackupShareText": "Sauvegarde portable Orah",
+  "storageAttachmentCount": "{count} pièces jointes • {size}",
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyReflectionTimePicker": "Choisir l’heure de réflexion quotidienne",
+  "scheduleLoading": "Chargement du programme…",
+  "scheduleEnabledAt": "Activé • Tous les jours à {time}",
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleDisabled": "Désactivé • Activez pour recevoir un rappel quotidien"
 }
