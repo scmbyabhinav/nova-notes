@@ -112,23 +112,23 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 4, top: 4, bottom: 4),
-                    child: Text('Documents', style: TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.exportDocuments, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
                   for (final option in _options.where((o) => o.category == 'Documents'))
                     _formatTile(option),
                   const Padding(
                     padding: EdgeInsets.only(left: 4, top: 10, bottom: 4),
-                    child: Text('Data', style: TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.exportData, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
                   for (final option in _options.where((o) => o.category == 'Data'))
                     _formatTile(option),
                   const Padding(
                     padding: EdgeInsets.only(left: 4, top: 14, bottom: 4),
-                    child: Text('Planned / Coming Soon', style: TextStyle(fontWeight: FontWeight.w800)),
+                    child: Text(l10n.exportPlannedSection, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 4, bottom: 8),
-                    child: Text('These formats are planned for future Orah updates.', style: TextStyle(fontSize: 12)),
+                    child: Text(l10n.exportPlannedDescription, style: TextStyle(fontSize: 12)),
                   ),
                   for (final category in _plannedCategories)
                     _plannedSection(category),
