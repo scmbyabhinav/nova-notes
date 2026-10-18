@@ -156,7 +156,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, l10n.integrationsTitle),
           Card(
             child: ListTile(
               leading: const Icon(Icons.hub_outlined),
