@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "1 घंटे बाद",
   "notificationReminderTitle": "ORAH रिमाइंडर",
   "genericTryAgain": "कृपया फिर से प्रयास करें।",
-  "registrationFailed": "पंजीकरण पूरा नहीं हो सका। कृपया फिर से प्रयास करें।"
+  "registrationFailed": "पंजीकरण पूरा नहीं हो सका। कृपया फिर से प्रयास करें।",
+  "shareNote": "नोट साझा करें",
+  "shareNoteDescription": "अपने डिवाइस के किसी ऐप से यह नोट साझा करें।",
+  "shareAsFile": "फ़ाइल के रूप में निर्यात और साझा करें",
+  "shareText": "टेक्स्ट साझा करें",
+  "shareEmail": "ईमेल",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "इस डिवाइस पर साझा करने का यह विकल्प उपलब्ध नहीं है।",
+  "shareError": "नोट साझा नहीं हो सका। कृपया फिर कोशिश करें।",
+  "shareReady": "आपका नोट साझा करने के लिए तैयार है।",
+  "sharingOptions": "साझा करें और निर्यात करें",
+  "sharingPrivacy": "जब तक आप साझा करने के लिए ऐप नहीं चुनते, आपका नोट इसी डिवाइस पर रहता है।"
 }
