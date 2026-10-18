@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "נודניק לשעה",
   "notificationReminderTitle": "תזכורת ORAH",
   "genericTryAgain": "נסו שוב.",
-  "registrationFailed": "לא ניתן להשלים את ההרשמה. נסו שוב."
+  "registrationFailed": "לא ניתן להשלים את ההרשמה. נסו שוב.",
+  "shareNote": "שיתוף פתק",
+  "shareNoteDescription": "שתפו את הפתק באמצעות אפליקציה במכשיר.",
+  "shareAsFile": "ייצוא ושיתוף כקובץ",
+  "shareText": "שיתוף טקסט",
+  "shareEmail": "דוא״ל",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "אפשרות השיתוף הזו אינה זמינה במכשיר הזה.",
+  "shareError": "לא ניתן לשתף את הפתק. נסו שוב.",
+  "shareReady": "הפתק מוכן לשיתוף.",
+  "sharingOptions": "שיתוף וייצוא",
+  "sharingPrivacy": "הפתק נשאר במכשיר עד שתבחרו אפליקציה לשיתוף."
 }
