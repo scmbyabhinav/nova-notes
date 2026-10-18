@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "1시간 후 다시 알림",
   "notificationReminderTitle": "ORAH 알림",
   "genericTryAgain": "다시 시도해 주세요.",
-  "registrationFailed": "등록을 완료할 수 없습니다. 다시 시도해 주세요."
+  "registrationFailed": "등록을 완료할 수 없습니다. 다시 시도해 주세요.",
+  "shareNote": "노트 공유",
+  "shareNoteDescription": "기기의 앱을 사용하여 이 노트를 공유하세요.",
+  "shareAsFile": "파일로 내보내고 공유",
+  "shareText": "텍스트 공유",
+  "shareEmail": "이메일",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "이 기기에서는 이 공유 옵션을 사용할 수 없습니다.",
+  "shareError": "노트를 공유할 수 없습니다. 다시 시도하세요.",
+  "shareReady": "노트를 공유할 준비가 되었습니다.",
+  "sharingOptions": "공유 및 내보내기",
+  "sharingPrivacy": "공유할 앱을 선택하기 전까지 노트는 이 기기에 남아 있습니다."
 }
