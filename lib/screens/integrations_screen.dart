@@ -11,32 +11,32 @@ class IntegrationsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final providers = <_IntegrationProvider>[
       _IntegrationProvider(
-        name: l10n.integrationsGoogleDrive,
+        name: 'Google Drive',
         category: l10n.integrationsCloudFiles,
         icon: Icons.add_to_drive_outlined,
       ),
       _IntegrationProvider(
-        name: l10n.integrationsGmail,
+        name: 'Gmail',
         category: l10n.integrationsScheduledMessages,
         icon: Icons.mail_outline_rounded,
       ),
       _IntegrationProvider(
-        name: l10n.integrationsOutlook,
+        name: 'Outlook',
         category: l10n.integrationsScheduledMessages,
-        icon: Icons.outlook_rounded,
+        icon: Icons.mail_outline_rounded,
       ),
       _IntegrationProvider(
-        name: l10n.integrationsTeams,
+        name: 'Microsoft Teams',
         category: l10n.integrationsScheduledMessages,
         icon: Icons.groups_2_outlined,
       ),
       _IntegrationProvider(
-        name: l10n.integrationsWhatsApp,
+        name: 'WhatsApp',
         category: l10n.integrationsScheduledMessages,
         icon: Icons.chat_bubble_outline_rounded,
       ),
       _IntegrationProvider(
-        name: l10n.integrationsOneDrive,
+        name: 'OneDrive',
         category: l10n.integrationsCloudFiles,
         icon: Icons.cloud_outlined,
       ),
