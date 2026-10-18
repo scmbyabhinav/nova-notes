@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "Posponer 1 h",
   "notificationReminderTitle": "Recordatorio de ORAH",
   "genericTryAgain": "Inténtalo de nuevo.",
-  "registrationFailed": "No se pudo completar el registro. Inténtalo de nuevo."
+  "registrationFailed": "No se pudo completar el registro. Inténtalo de nuevo.",
+  "shareNote": "Compartir nota",
+  "shareNoteDescription": "Comparte esta nota con una aplicación de tu dispositivo.",
+  "shareAsFile": "Exportar y compartir como archivo",
+  "shareText": "Compartir texto",
+  "shareEmail": "Correo electrónico",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "Esta opción para compartir no está disponible en este dispositivo.",
+  "shareError": "No se pudo compartir la nota. Inténtalo de nuevo.",
+  "shareReady": "Tu nota está lista para compartir.",
+  "sharingOptions": "Compartir y exportar",
+  "sharingPrivacy": "Tu nota permanece en este dispositivo hasta que elijas una aplicación para compartirla."
 }
