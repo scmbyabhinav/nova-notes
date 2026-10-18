@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "1 saat ertele",
   "notificationReminderTitle": "ORAH hatırlatıcısı",
   "genericTryAgain": "Lütfen tekrar deneyin.",
-  "registrationFailed": "Kayıt tamamlanamadı. Lütfen tekrar deneyin."
+  "registrationFailed": "Kayıt tamamlanamadı. Lütfen tekrar deneyin.",
+  "shareNote": "Notu paylaş",
+  "shareNoteDescription": "Bu notu cihazınızdaki bir uygulamayla paylaşın.",
+  "shareAsFile": "Dosya olarak dışa aktar ve paylaş",
+  "shareText": "Metni paylaş",
+  "shareEmail": "E-posta",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "Bu paylaşım seçeneği bu cihazda kullanılamıyor.",
+  "shareError": "Bu not paylaşılamadı. Tekrar deneyin.",
+  "shareReady": "Notunuz paylaşılmaya hazır.",
+  "sharingOptions": "Paylaşım ve dışa aktarma",
+  "sharingPrivacy": "Paylaşmak için bir uygulama seçene kadar notunuz bu cihazda kalır."
 }
