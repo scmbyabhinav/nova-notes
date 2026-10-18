@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/note.dart';
 import '../services/universal_export_service.dart';
 import '../services/orah_feature_gate.dart';
@@ -75,6 +76,80 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
     }
   }
 
+  String _noteShareText(AppLocalizations l10n) {
+    final title = widget.note.title.trim();
+    final content = widget.note.content.trim();
+    final parts = <String>[];
+    if (title.isNotEmpty) parts.add(title);
+    if (content.isNotEmpty) parts.add(content);
+    if (parts.isEmpty) parts.add(l10n.untitledNote);
+    return parts.join('\n\n');
+  }
+
+  Future<void> _shareNoteText() async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await Share.share(
+        _noteShareText(l10n),
+        subject: l10n.exportShareSubject(widget.note.title),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.exportFailed(l10n.genericTryAgain))),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareViaWhatsApp() async {
+    final l10n = AppLocalizations.of(context)!;
+    final uri = Uri.https('wa.me', '/', <String, String>{
+      'text': _noteShareText(l10n),
+    });
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.whatsAppUnavailable)),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.whatsAppUnavailable)),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportToGoogleDrive() async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _busy = true);
+    try {
+      // The Android share sheet lets the user choose Google Drive (if installed)
+      // and select the destination folder. ORAH does not access Drive directly.
+      final file = await const UniversalExportService().export(
+        widget.note,
+        NovaExportFormat.pdf,
+      );
+      if (!mounted) return;
+      await Share.shareXFiles(
+        <XFile>[XFile(file.path)],
+        subject: l10n.exportShareSubject(widget.note.title),
+        text: l10n.googleDriveExportBody,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.exportFailed(l10n.genericTryAgain))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _sendAsEmailAttachment() async {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _busy = true);
@@ -141,6 +216,30 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     subtitle: Text(l10n.emailAttachmentDescription),
                     enabled: !_busy,
                     onTap: _sendAsEmailAttachment,
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.text_snippet_outlined),
+                    title: Text(l10n.shareNoteText),
+                    subtitle: Text(l10n.shareNoteTextDescription),
+                    enabled: !_busy,
+                    onTap: _shareNoteText,
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.chat_outlined),
+                    title: Text(l10n.shareViaWhatsApp),
+                    subtitle: Text(l10n.whatsAppShareDescription),
+                    enabled: !_busy,
+                    onTap: _shareViaWhatsApp,
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.add_to_drive_outlined),
+                    title: Text(l10n.googleDriveExport),
+                    subtitle: Text(l10n.googleDriveExportDescription),
+                    enabled: !_busy,
+                    onTap: _exportToGoogleDrive,
                   ),
                   const Divider(),
                   Center(
