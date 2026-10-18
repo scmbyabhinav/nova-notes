@@ -1,38 +1,32 @@
-# ORAH Connect — free-first implementation notes
+# ORAH Share & Export — strict ₹0 integration policy
 
-## Current implementation status
+## Decision
 
-- Google Drive: native Google account sign-in foundation is added in `lib/services/orah_google_connect_service.dart`. The Connect screen can connect/disconnect a Google account and restore an existing session.
-- Drive access uses only `drive.file`, not broad access to every file in the user's Drive. The service can list files that Google makes available under that scope.
-- Gmail, OneDrive, and Outlook remain not connected. They must not be presented as working until their OAuth and API paths are implemented and tested.
-- Google access tokens are requested from the sign-in SDK when needed and are not copied into preferences or source code.
-- No paid middleware or AI service is introduced.
+ORAH will not implement direct Google Drive, Gmail, OneDrive, or Outlook API connections in this increment. The project owner requires no billing account, no paid API, and no risk of unexpected integration-service charges.
 
-## Google Cloud setup required before testing on a device
+## Implementation
 
-Google OAuth requires a one-time developer-console setup; the API itself has a free quota. Do not commit OAuth client secrets, access tokens, refresh tokens, or `google-services.json` unless the project intentionally uses and safely manages that Firebase configuration.
+- Reuse the existing `share_plus` package for native Android sharing.
+- Reuse the existing `file_picker` package for user-initiated local file selection where needed.
+- Keep note creation, editing, searching, and storage local-first and available offline.
+- Users can choose an installed cloud-storage or email app from Android's share sheet when that app supports the shared content.
+- Use the existing note editor's Share and Export actions to share actual note content or exported files. This screen is informational; it does not connect accounts or claim background sync.
+- Do not request Google or Microsoft OAuth permissions, call Drive/Gmail/Graph APIs, store cloud tokens, or add cloud middleware.
 
-1. Open Google Cloud Console and create/select a project for ORAH.
-2. Configure the OAuth consent screen. While testing, set the app to **Testing** and add your own Google account as a test user.
-3. Enable **Google Drive API**.
-4. Register an **Android OAuth client** using the generated Android application ID `com.orah.orah_notes`.
-5. Add the SHA-1 certificate fingerprint for the debug build you are testing. Add the production/Play signing fingerprint separately before release.
-6. Build and run the app. In Settings → Connected apps, tap **Connect** on Google Drive and complete Google's account/consent flow.
+## Cost and privacy guardrails
 
-The repository CI generates the Android host project during the workflow, so Android files may not exist in the checked-in source tree. The current workflow uses `flutter create --platforms=android --org com.orah --project-name orah_notes`.
+- Do not enable Google Drive API or create OAuth credentials for this implementation.
+- Do not configure a billing account for integrations.
+- Do not add paid SDKs, hosted integration services, background sync, or API usage.
+- Native sharing hands content to an app the user chooses. ORAH cannot guarantee that a third-party app is installed, free, or completes an upload; any action in that app is controlled by the user and provider.
+- Do not claim that sharing is the same as cloud backup or automatic sync.
 
-## Scope and privacy decisions
+## Validation checklist
 
-- Current Google scope: `email` plus `https://www.googleapis.com/auth/drive.file`.
-- `drive.file` is deliberately narrower than full Drive access. It is appropriate for files the user opens/creates with ORAH or explicitly selects for ORAH; it does **not** mean ORAH can browse every file in the account.
-- Gmail permissions are not requested by this first increment. Gmail read scopes can trigger additional Google verification requirements, so add them only when the Gmail feature and its review requirements are ready.
-- Never put OAuth client secrets in the Flutter app. Native public-client OAuth IDs are not secrets, but must match the registered package/signing fingerprint.
-- If the user disconnects, ORAH signs out of this app; it does not delete cloud files.
-
-## Next implementation increments
-
-1. Validate this Google sign-in increment with CI and a real test device.
-2. Add a user-visible Drive file list and open/share flow, with loading/error/empty states.
-3. Implement Microsoft OAuth for OneDrive using a registered Microsoft Entra app and the minimum Graph permissions.
-4. Add Gmail, then Outlook, only after scopes, verification, and privacy disclosures are reviewed.
-5. Keep the 14-locale ARB parity test green for every new visible string.
+1. Confirm `google_sign_in` is removed from `pubspec.yaml` and there are no references to the Google connection service.
+2. Run `flutter pub get`, `flutter analyze`, and the complete Flutter test suite.
+3. Build the debug APK using the existing GitHub Actions workflow.
+4. On an Android device, open a note and test Share, Send as email attachment, and each currently supported export format.
+5. Test importing a local file with the existing file picker where that flow is exposed.
+6. Confirm all 14 ARB locale files remain structurally valid and localization generation passes.
+7. Keep this PR in draft and unmerged until CI is green and the native sharing flow has been manually verified.
