@@ -89,8 +89,13 @@
   "@calendarItemStatusTime": {
     "description": "Status and time shown on a calendar item",
     "placeholders": {
-      "status": { "type": "String" },
-      "time": { "type": "DateTime", "format": "jm" }
+      "status": {
+        "type": "String"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "jm"
+      }
     }
   },
   "writingRhythm": "Your writing rhythm",
@@ -979,5 +984,17 @@
   "notificationSnooze60Action": "Snooze 1h",
   "notificationReminderTitle": "ORAH reminder",
   "genericTryAgain": "Please try again.",
-  "registrationFailed": "Could not complete registration. Please try again."
+  "registrationFailed": "Could not complete registration. Please try again.",
+  "shareNote": "Share note",
+  "shareNoteDescription": "Share this note using an app on your device.",
+  "shareAsFile": "Export and share as a file",
+  "shareText": "Share text",
+  "shareEmail": "Email",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "This sharing option is not available on this device.",
+  "shareError": "Could not share this note. Please try again.",
+  "shareReady": "Your note is ready to share.",
+  "sharingOptions": "Share & Export",
+  "sharingPrivacy": "Your note stays on this device until you choose an app to share it."
 }
