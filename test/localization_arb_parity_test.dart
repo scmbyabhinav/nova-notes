@@ -48,6 +48,9 @@ const _languageNeutralKeys = <String>{
   'plannedExportZip',
   'plannedExport7z',
   'plannedExportSqlite',
+  // Provider/product names remain canonical across locales.
+  'shareGoogleDrive',
+  'shareWhatsApp',
 };
 
 // Locale-specific exceptions for conventional examples and technical labels.
