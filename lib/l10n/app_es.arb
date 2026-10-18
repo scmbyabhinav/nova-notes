@@ -973,22 +973,10 @@
   "sharingPrivacy": "Tu nota permanece en este dispositivo hasta que elijas una aplicación para compartirla.",
   "integrationsTitle": "Aplicaciones conectadas",
   "integrationsSubtitle": "Prepara el uso compartido de notas y archivos entre tus servicios.",
-  "integrationsGoogleDrive": "Google Drive",
-  "integrationsGmail": "Gmail",
-  "integrationsOutlook": "Outlook",
-  "integrationsTeams": "Microsoft Teams",
-  "integrationsWhatsApp": "WhatsApp",
-  "integrationsOneDrive": "OneDrive",
   "integrationsNotConnected": "No conectado",
   "integrationsSetupPending": "La conexión aún no está configurada.",
   "integrationsSecurityNote": "Las cuentas solo se conectarán cuando estén configurados el inicio de sesión seguro y la revisión de permisos.",
   "integrationsComingNext": "El siguiente paso es configurar las integraciones.",
   "integrationsCloudFiles": "Archivos y copias de seguridad en la nube",
-  "integrationsScheduledMessages": "Correos y mensajes programados",
-  "integrationsProviderGoogle": "Guarda o exporta archivos seleccionados a Google Drive.",
-  "integrationsProviderGmail": "Prepara correos desde notas, con destinatarios y archivos adjuntos.",
-  "integrationsProviderOutlook": "Prepara correos de Outlook y flujos de Microsoft 365.",
-  "integrationsProviderTeams": "Prepara mensajes para chats y canales compatibles de Teams.",
-  "integrationsProviderWhatsApp": "Comparte notas mediante las opciones compatibles de WhatsApp.",
-  "integrationsProviderOneDrive": "Guarda o exporta archivos seleccionados a Microsoft OneDrive."
+  "integrationsScheduledMessages": "Correos y mensajes programados"
 }
