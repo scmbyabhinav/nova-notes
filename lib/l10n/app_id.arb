@@ -65,5 +65,898 @@
   "unlock": "Buka kunci",
   "useBiometrics": "Gunakan biometrik",
   "incorrectPin": "PIN salah",
-  "biometricFallbackError": "Autentikasi biometrik dibatalkan atau tidak tersedia. Masukkan PIN untuk membuka kunci."
+  "biometricFallbackError": "Autentikasi biometrik dibatalkan atau tidak tersedia. Masukkan PIN untuk membuka kunci.",
+  "journeyTitle": "Perjalanan Anda",
+  "journeyHeadline": "Momen kecil akan bertambah.",
+  "journeySubtitle": "Sekilas tentang kebiasaan menulis dan refleksi Anda.",
+  "dayInARow": "hari berturut-turut",
+  "daysInARow": "hari berturut-turut",
+  "notesSaved": "catatan tersimpan",
+  "notesStayOnDevice": "Catatan Anda tetap di perangkat ini. Wawasan ini dihitung dari catatan yang tersimpan.",
+  "moodStoryStarts": "Kisah suasana hati Anda dimulai di sini",
+  "chooseMoodToSeeDistribution": "Pilih suasana hati saat menulis catatan agar distribusinya muncul di sini.",
+  "moodDistributionSubtitle": "Perasaan yang telah Anda catat",
+  "notesCreatedLast7Days": "Catatan yang dibuat dalam 7 hari terakhir",
+  "calendarSubtitle": "Catatan per hari dan pengingat terjadwal",
+  "goToToday": "Ke hari ini",
+  "scheduleNote": "Jadwalkan catatan",
+  "nothingOnThisDay": "Tidak ada apa pun pada hari ini",
+  "chooseAnotherDate": "Pilih tanggal lain atau jadwalkan catatan untuk hari ini.",
+  "untitledNote": "Catatan tanpa judul",
+  "scheduledLabel": "Terjadwal",
+  "createdLabel": "Dibuat",
+  "calendarItemStatusTime": "{status} pukul {time}",
+  "writingRhythm": "Ritme menulis Anda",
+  "historyTimeline": "Linimasa riwayat",
+  "storyStartsWithNote": "Kisah Anda dimulai dengan sebuah catatan",
+  "pickHighlightedDay": "Pilih hari yang ditandai untuk mengingat kembali momen atau melihat seluruh riwayat.",
+  "savedDaysHighlighted": "Hari dengan catatan tersimpan akan ditandai di kalender.",
+  "addFolderImage": "Tambahkan gambar folder",
+  "changeImage": "Ubah gambar",
+  "removeImage": "Hapus gambar",
+  "folderName": "Nama folder",
+  "folderNameHint": "mis. Kerja, Ide, Pribadi",
+  "cancel": "Batal",
+  "create": "Buat",
+  "newFolder": "Folder baru",
+  "editFolder": "Ubah folder",
+  "save": "Simpan",
+  "deleteFolderTitle": "Hapus {folderName}?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "Folder kosong.",
+  "notesMovedFromFolder": "{count} catatan akan tetap disimpan dan dipindahkan kembali ke Semua Catatan.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "Hapus",
+  "selectedFoldersDeleteTitle": "Hapus {count} folder?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "Folder yang dipilih kosong.",
+  "deleteSelected": "Hapus pilihan",
+  "cancelSelection": "Batalkan pilihan",
+  "selectedCount": "{count} dipilih",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "Hapus folder yang dipilih",
+  "folderOptions": "Opsi folder",
+  "open": "Buka",
+  "rename": "Ganti nama",
+  "folderNoteCount": "{count} catatan",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "Hapus dari folder",
+  "moveToTrash": "Pindahkan ke Sampah",
+  "noFoldersYet": "Belum ada folder",
+  "emptyFoldersDescription": "Buat folder untuk mengelompokkan catatan yang berkaitan.",
+  "createFolder": "Buat folder",
+  "noNotesInFolder": "Belum ada catatan di folder ini.\nBuka catatan dan pilih Atur untuk menambahkannya di sini.",
+  "welcomeToOrah": "Selamat datang di Orah",
+  "personalizeYourSpace": "Personalisasi ruang Anda. Masukkan nama dan email untuk memulai.",
+  "fullName": "Nama lengkap",
+  "yourName": "Nama Anda",
+  "emailAddress": "Alamat email",
+  "emailExample": "anda@contoh.com",
+  "enterFullName": "Masukkan nama lengkap Anda.",
+  "enterValidEmail": "Masukkan alamat email yang valid.",
+  "registerAndContinue": "Daftar & lanjutkan",
+  "profileStoredOnDevice": "Profil Anda disimpan dengan aman di perangkat ini. Sinkronisasi daftar pelanggan memerlukan layanan buletin yang dikonfigurasi.",
+  "proRestore": "Pulihkan",
+  "proHeroEyebrow": "CATATAN ANDA, LEBIH BERTENAGA",
+  "proHeroHeadline": "Buat setiap catatan\nlebih bermanfaat.",
+  "proHeroDescription": "Ubah kertas menjadi informasi yang dapat dicari, temukan detail yang dibutuhkan, dan bawa catatan ke mana pun Anda bekerja.",
+  "proHeroFootnote": "Tingkatkan saat membutuhkan fitur tambahan. Catatan harian Anda tetap milik Anda.",
+  "proMoreThanNotes": "Lebih dari sekadar catatan",
+  "proOcrTitle": "OCR untuk mencari teks dalam gambar",
+  "proOcrDescription": "Ekstrak teks dari gambar dan dokumen yang didukung tanpa perlu mengetik ulang.",
+  "proExportTitle": "Ekspor dalam format yang Anda butuhkan",
+  "proExportDescription": "Gunakan catatan di luar ORAH dengan ekspor premium ke PDF, Word, dan Excel.",
+  "proSearchTitle": "Temukan detail penting dengan mudah",
+  "proSearchDescription": "Gunakan pencarian lanjutan dan filter untuk menemukan detail penting dengan lebih cepat.",
+  "proWorkspaceTitle": "Ruang kerja yang lebih teratur",
+  "proWorkspaceDescription": "Buka template premium dan alat produktivitas lanjutan saat tersedia di versi aplikasi Anda.",
+  "proEntitlementActive": "Akses Pro Anda aktif.",
+  "proChoosePlan": "Pilih paket Pro Anda",
+  "proPricesFromPlay": "Harga untuk wilayah Anda disediakan oleh Google Play.",
+  "proPlanYearly": "Tahunan",
+  "proBestValue": "Nilai terbaik",
+  "proPlanMonthly": "Bulanan",
+  "proMonthlySubtitle": "Bayar setiap bulan",
+  "proOfferInstruction": "Punya penawaran ORAH dari perusahaan atau pengembang? Tukarkan melalui tautan atau kode penawaran Google Play pada undangan, lalu kembali ke sini dan ketuk Pulihkan.",
+  "proRestorePurchases": "Pulihkan pembelian",
+  "proRenewalDisclosure": "Langganan diperpanjang otomatis kecuali dibatalkan di Google Play. Periksa harga, periode penagihan, dan ketentuan uji coba yang ditampilkan sebelum mengonfirmasi. Anda dapat mengelola atau membatalkan langganan melalui akun Play Store.",
+  "proBestValueBadge": "NILAI TERBAIK",
+  "proLoadingPrice": "Memuat harga…",
+  "proUnavailable": "Saat ini tidak tersedia",
+  "proChooseButton": "Pilih",
+  "microphoneAccessNeeded": "Izin mikrofon diperlukan",
+  "microphoneAccessPermanentDenied": "ORAH Notes memerlukan akses mikrofon untuk mengubah suara Anda menjadi teks. Anda dapat mengaktifkannya di Setelan.",
+  "microphoneAccessRequest": "ORAH Notes memerlukan akses mikrofon untuk mengubah suara Anda menjadi teks. Izinkan akses atau aktifkan di Setelan.",
+  "notNow": "Nanti saja",
+  "openSettings": "Buka Setelan",
+  "voiceInputUnavailableWithMessage": "Input suara tidak tersedia: {message}",
+  "voiceInputUnavailable": "Input suara tidak tersedia di perangkat ini.",
+  "couldNotStartVoiceCapture": "Tidak dapat memulai perekaman suara: {error}",
+  "voiceTextSaved": "Teks suara disimpan ke catatan.",
+  "recordingStoppedPartialSaved": "Perekaman berhenti. Teks sementara telah disimpan.",
+  "addTask": "Tambah tugas",
+  "taskHint": "Apa yang perlu dilakukan?",
+  "add": "Tambah",
+  "editTask": "Edit tugas",
+  "enterVaultPin": "Masukkan PIN Vault",
+  "pinDigitsLabel": "PIN 4–8 digit",
+  "vaultAuthenticationFailed": "Autentikasi gagal. Coba biometrik atau PIN Vault Anda.",
+  "secureYourVault": "Amankan Vault Anda",
+  "vaultSetupDescription": "Untuk mengunci catatan ini, siapkan PIN atau autentikasi biometrik terlebih dahulu. Dengan begitu, hanya Anda yang dapat mengaksesnya.",
+  "setUpSecurity": "Siapkan keamanan",
+  "createVaultPin": "Buat PIN Vault",
+  "confirmVaultPin": "Konfirmasi PIN Vault",
+  "vaultPinsDoNotMatch": "PIN tidak cocok. Catatan tidak dikunci.",
+  "vaultPinCreated": "PIN Vault dibuat. Catatan sedang diamankan…",
+  "enterPinDigits": "Masukkan 4–8 digit",
+  "addContentBeforeLock": "Tambahkan konten sebelum mengunci catatan ini.",
+  "vaultAuthenticationNotCompleted": "Autentikasi belum selesai. Catatan tidak dikunci.",
+  "noteLockedMovedToVault": "Catatan dikunci dan dipindahkan ke Vault.",
+  "noteUnlockedMovedToNotes": "Catatan dibuka dan dikembalikan ke daftar catatan Anda.",
+  "continueLabel": "Lanjutkan",
+  "ocrNoReadableText": "Teks yang dapat dibaca tidak ditemukan.",
+  "ocrTextExtracted": "Teks berhasil diekstrak dari gambar.",
+  "ocrCouldNotReadImage": "Tidak dapat membaca teks dari gambar tersebut.",
+  "chooseTemplate": "Pilih template",
+  "replaceCurrentNote": "Ganti catatan saat ini?",
+  "templateReplaceWarning": "Template ini akan mengganti judul dan isi saat ini.",
+  "replace": "Ganti",
+  "insertLink": "Sisipkan tautan",
+  "insert": "Sisipkan",
+  "couldNotAddImage": "Tidak dapat menambahkan gambar: {error}",
+  "couldNotAddFiles": "Tidak dapat menambahkan file: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "Ganti nama lampiran",
+  "preview": "Pratinjau",
+  "share": "Bagikan",
+  "details": "Detail",
+  "removeFromNote": "Hapus dari catatan",
+  "chooseFromGallery": "Pilih dari galeri",
+  "takePhoto": "Ambil foto",
+  "attachFiles": "Lampirkan file",
+  "close": "Tutup",
+  "couldNotUnlockPrivateNote": "Catatan pribadi tidak dapat dibuka: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "Ekspor",
+  "removeFavorite": "Hapus dari favorit",
+  "addToFavorites": "Tambahkan ke favorit",
+  "addImage": "Tambah gambar",
+  "template": "Templat",
+  "setReminder": "Atur pengingat",
+  "reminderAt": "Pengingat: {date}",
+  "clearReminder": "Hapus pengingat",
+  "noteColor": "Warna catatan",
+  "unarchive": "Batalkan arsip",
+  "archive": "Arsipkan",
+  "back": "Kembali",
+  "remove": "Hapus",
+  "retry": "Coba lagi",
+  "titleHint": "Judul",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "Kartu catatan tidak dapat dibagikan: {error}",
+  "couldNotRenameAttachment": "Lampiran tidak dapat diganti namanya: {error}",
+  "attachmentDetailsFormat": "Ukuran: {size}\nDiubah: {modified}",
+  "authenticationFailedNoteNotDeleted": "Autentikasi gagal. Catatan tidak dihapus.",
+  "privateNote": "Catatan pribadi",
+  "thisNoteIsPrivate": "Catatan ini bersifat pribadi",
+  "unlockPrivateNoteHint": "Buka dengan biometrik atau PIN untuk melihatnya.",
+  "exitZenMode": "Keluar dari Mode Zen",
+  "exportAsCard": "Ekspor sebagai kartu",
+  "scanTextFromImage": "Pindai teks dari gambar",
+  "folderAndTags": "Folder & tag",
+  "lockNote": "Kunci catatan",
+  "unlockAndMoveToNotes": "Buka kunci dan pindahkan ke Catatan",
+  "stopAndSave": "Hentikan & Simpan",
+  "startWritingHint": "Mulai menulis...",
+  "howAreYouFeeling": "Bagaimana perasaan Anda?",
+  "checklistEmpty": "Daftar periksa Anda kosong",
+  "addFirstTask": "Tambah tugas pertama",
+  "moveUp": "Pindahkan ke atas",
+  "moveDown": "Pindahkan ke bawah",
+  "deleteTask": "Hapus tugas",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "Membuka kunci…",
+  "unlockNote": "Buka kunci catatan",
+  "zenMode": "Mode Fokus",
+  "edit": "Ubah",
+  "pinNote": "Sematkan",
+  "unpinNote": "Lepas sematan",
+  "bold": "Tebal",
+  "italic": "Miring",
+  "strikethrough": "Coret",
+  "heading": "Judul",
+  "bullets": "Poin",
+  "numberedList": "Daftar bernomor",
+  "quote": "Kutipan",
+  "linkLabel": "Tautan",
+  "addImageOrFile": "Tambahkan gambar atau file",
+  "stopVoiceInput": "Hentikan input suara",
+  "voiceInput": "Input suara",
+  "stopAndSaveVoiceInput": "Hentikan dan simpan input suara",
+  "tapMicToSpeak": "Ketuk mikrofon untuk mendiktekan catatan",
+  "voiceNote": "Catatan suara",
+  "preparing": "Menyiapkan…",
+  "saving": "Menyimpan…",
+  "unsavedChanges": "Perubahan belum disimpan",
+  "saved": "Tersimpan",
+  "recordingVoiceInput": "Merekam • {duration}",
+  "savingVoiceText": "Menyimpan teks suara…",
+  "preparingMicrophone": "Menyiapkan mikrofon…",
+  "textNote": "Catatan teks",
+  "checklistType": "Daftar periksa",
+  "templateMeetingNotes": "Catatan rapat",
+  "templateAgenda": "Agenda",
+  "templateDecisions": "Keputusan",
+  "templateActionItems": "Tindakan",
+  "templateDailyPlan": "Rencana harian",
+  "templateTopPriority": "Prioritas utama",
+  "templateImportant": "Penting",
+  "templateIfTimeAllows": "Jika ada waktu",
+  "templateShoppingList": "Daftar belanja",
+  "templateMilk": "Susu",
+  "templateVegetables": "Sayuran",
+  "templateHousehold": "Keperluan rumah",
+  "templateTravelPlan": "Rencana perjalanan",
+  "templateDates": "Tanggal",
+  "templateBookings": "Pemesanan",
+  "templatePlacesToVisit": "Tempat untuk dikunjungi",
+  "orahNoteCard": "Kartu catatan Orah",
+  "sharedFromOrah": "Dibagikan dari Orah",
+  "noteCardCaptureError": "Kartu catatan tidak dapat diambil.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "Halo, {name}",
+  "welcomeBack": "SELAMAT DATANG KEMBALI",
+  "friend": "Teman",
+  "voiceGreeting": "Halo, {name}",
+  "voicePreviewGreeting": "Halo, ini Orah Notes",
+  "speakMyNameAtStartup": "Ucapkan nama saya saat memulai",
+  "voiceGreetingEnabledDescription": "Orah akan menyapa dalam bahasa yang dipilih saat dibuka.",
+  "voiceGreetingDisabledDescription": "Sapaan akan tetap senyap.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "Keluarkan dari arsip",
+  "archiveNote": "Arsipkan",
+  "duplicateNote": "Duplikatkan catatan",
+  "navNotes": "Catatan",
+  "navFolders": "Folder",
+  "navFavorites": "Favorit",
+  "navArchivedNotes": "Catatan yang diarsipkan",
+  "navDailyReflection": "Refleksi harian",
+  "navVoiceCapture": "Rekam suara",
+  "navChecklists": "Daftar periksa",
+  "navAppearance": "Tampilan",
+  "navSearch": "Cari",
+  "offlineAccess": "Akses offline",
+  "backupExport": "Cadangkan & Ekspor",
+  "recentlyUpdated": "Baru diperbarui",
+  "recentlyCreated": "Baru dibuat",
+  "titleAZ": "Judul A–Z",
+  "noNotesYet": "Belum ada catatan",
+  "vaultLocked": "Brankas / Catatan Terkunci",
+  "vaultLockedDesc": "Buka catatan pribadi terenkripsi Anda",
+  "privacyPledge": "Janji Privasi",
+  "privacyPledgeDesc": "Baca janji kami tanpa cloud",
+  "backupExportDesc": "Cadangan lokal dan data portabel",
+  "vaultResetTitle": "Lupa PIN brankas? Atur ulang brankas",
+  "vaultResetDesc": "Pemulihan tidak tersedia. Pengaturan ulang akan menghapus brankas lama secara permanen.",
+  "pinBiometric": "Perlindungan PIN dan biometrik",
+  "androidFeaturesDesc": "Widget, pintasan, dan berbagi",
+  "archivedNotesTitle": "Catatan yang diarsipkan",
+  "archivedNotesDesc": "Buka atau pulihkan catatan yang diarsipkan",
+  "trashTitle": "Sampah",
+  "trashDesc": "Pulihkan atau hapus catatan secara permanen",
+  "orahFeaturesTitle": "Fitur Orah",
+  "orahFeaturesDesc": "Jelajahi kemampuan Orah",
+  "aboutOrahTitle": "Tentang Orah",
+  "aboutOrahDesc": "Informasi produk dan pendekatan privasi",
+  "cancelLabel": "Batal",
+  "resetVaultQuestion": "Atur ulang brankas?",
+  "deleteVaultConfirm": "Hapus brankas lama & buat baru",
+  "themeLabel": "Tema",
+  "themeSystem": "Sistem",
+  "themeLight": "Terang",
+  "themeDark": "Gelap",
+  "portableBackup": "Cadangan portabel",
+  "createBackup": "Buat cadangan",
+  "restoreBackup": "Pulihkan cadangan",
+  "storageMaintenance": "Pemeliharaan penyimpanan",
+  "cleanOrphanAttachments": "Bersihkan lampiran tanpa catatan",
+  "vaultAutoLock": "Kunci otomatis brankas",
+  "neverLabel": "Tidak pernah",
+  "dailyReflectionReminder": "Pengingat Refleksi Harian",
+  "reminderTime": "Waktu pengingat",
+  "backupExportTitle": "Cadangkan & Ekspor",
+  "vaultResetSuccess": "Brankas lama dihapus. Buka Brankas untuk membuat PIN baru.",
+  "vaultResetFailed": "Gagal mengatur ulang brankas: {error}",
+  "backupRestoredCount": "Berhasil memulihkan {count} catatan.",
+  "backupError": "Kesalahan pencadangan: {error}",
+  "unusedFilesFound": "Ditemukan {count} file yang tidak digunakan",
+  "removedOrphanAttachments": "Menghapus {count} lampiran yang tidak memiliki catatan.",
+  "showDailyInspiration": "Tampilkan Inspirasi Harian di Layar Beranda",
+  "showDailyInspirationDesc": "Tampilkan pertanyaan refleksi harian di atas catatan Anda.",
+  "reminderUpdateFailed": "Tidak dapat memperbarui pengingat Refleksi Harian: {error}",
+  "reminderScheduleFailed": "Tidak dapat menjadwalkan Refleksi Harian: {error}",
+  "orahFeaturesSemantics": "Fitur Orah",
+  "vaultTooltip": "Brankas / Catatan Terkunci",
+  "calendarHistoryTooltip": "Kalender & riwayat",
+  "statisticsTooltip": "Statistik & wawasan",
+  "appearanceTooltip": "Tampilan",
+  "appearanceSemantics": "Pengaturan tampilan",
+  "searchFiltersTooltip": "Filter pencarian",
+  "hideDailyInspiration": "Sembunyikan inspirasi harian",
+  "sortNotesTooltip": "Urutkan catatan",
+  "listView": "Tampilan daftar",
+  "gridView": "Tampilan kisi",
+  "searchLabel": "Cari",
+  "newNoteLabel": "Catatan Baru",
+  "microphoneTooltip": "Mikrofon",
+  "unpinTooltip": "Lepas sematan",
+  "pinTooltip": "Sematkan",
+  "favoriteTooltip": "Favorit",
+  "editNoteLabel": "Edit catatan",
+  "lockedContent": "Konten terkunci",
+  "portableBackupDesc": "Catatan, folder, dan file lampiran dalam satu paket .nova.",
+  "vaultAutoLockDesc": "Minta autentikasi setelah aplikasi berada di latar belakang",
+  "searchClear": "Hapus",
+  "favoritesOnly": "Hanya favorit",
+  "pinnedOnly": "Hanya disematkan",
+  "folderLabel": "Map",
+  "allFolders": "Semua folder",
+  "archivedLabel": "Diarsipkan",
+  "noteTypeLabel": "Jenis catatan",
+  "allTypes": "Semua jenis",
+  "typeText": "Teks",
+  "typeChecklist": "Daftar periksa",
+  "typeVoice": "Suara",
+  "typeImage": "Gambar",
+  "typeDrawing": "Gambar",
+  "applyFilters": "Terapkan filter",
+  "filtersTooltip": "Filter",
+  "openOrahPro": "Buka ORAH Pro",
+  "searchScreenTitle": "Cari",
+  "searchFiltersTitle": "Filter pencarian",
+  "homeTagline": "Pikirkan. Tulis. Simpan.",
+  "homeSubtitle": "Ruang tenang untuk catatan, rencana, dan refleksi.",
+  "tapToBeginNote": "Ketuk untuk mulai mencatat",
+  "selectNotePrompt": "Pilih catatan",
+  "desktopNoteEmpty": "Catatan ini kosong.",
+  "noContentLabel": "Tidak ada konten",
+  "emptyNotesHint": "Ketuk tombol + untuk menyimpan pemikiran pertama Anda.",
+  "justNow": "Baru saja",
+  "minutesAgoSuffix": "mnt lalu",
+  "hoursAgoSuffix": "jam lalu",
+  "daysAgoSuffix": "hari lalu",
+  "hideOrahFeatures": "Sembunyikan fitur Orah",
+  "showOrahFeatures": "Tampilkan fitur Orah",
+  "activeNotesCount": "{count} catatan",
+  "completedLabel": "selesai",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count} selesai",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (Salinan)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "Rasa syukur",
+  "reflectionCategoryMindfulness": "Kesadaran penuh",
+  "reflectionCategoryPersonalGrowth": "Pertumbuhan pribadi",
+  "reflectionCategoryRelationships": "Hubungan",
+  "reflectionCategorySelfCompassion": "Belas kasih pada diri",
+  "reflectionCategoryClarity": "Kejelasan",
+  "reflectionCategoryPossibility": "Kemungkinan",
+  "reflectionCategoryDailyReview": "Tinjauan harian",
+  "reflectionCategoryPurposeValues": "Tujuan & nilai",
+  "reflectionCategoryResilience": "Ketahanan",
+  "reflectionCategoryCreativityCuriosity": "Kreativitas & rasa ingin tahu",
+  "reflectionCategoryRestRenewal": "Istirahat & pemulihan",
+  "reflectionWriteHint": "Tuliskan apa pun yang terlintas di pikiran…",
+  "reflectionSaveError": "Refleksi tidak dapat disimpan: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "Hapus permanen?",
+  "trashDeletePermanentlyMessage": "Catatan ini akan dihapus secara permanen.",
+  "trashEmptyTitle": "Kosongkan Sampah?",
+  "trashEmptyMessage": "Hapus {count} catatan secara permanen?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "Kosongkan Sampah",
+  "trashNoNotesTitle": "Belum ada catatan.",
+  "trashPrivateNote": "Catatan pribadi",
+  "trashLockedNote": "Catatan terkunci",
+  "trashChecklist": "Daftar periksa",
+  "trashNote": "Catatan",
+  "trashDeletePermanentlyAction": "Hapus permanen",
+  "favoritesEmptyTitle": "Belum ada favorit",
+  "favoritesEmptyDescription": "Beri bintang pada catatan penting agar muncul di sini.",
+  "favoritesNoContent": "Tidak ada konten",
+  "archivedRestoreMessage": "Catatan dipulihkan ke daftar catatan.",
+  "archivedRefreshTooltip": "Muat ulang catatan arsip",
+  "archivedEmptyTitle": "Tidak ada catatan arsip",
+  "archivedEmptyDescription": "Catatan yang diarsipkan akan muncul di sini. Anda dapat membukanya atau memulihkannya ke daftar utama.",
+  "privacyPledgeHeadline": "Komitmen Privasi Kami",
+  "privacyPledgeIntro": "Pikiran Anda bersifat pribadi. Orah dirancang agar catatan tetap pribadi dan berada dalam kendali Anda.",
+  "privacyLocalTitle": "Sepenuhnya lokal",
+  "privacyLocalDescription": "Catatan Anda hanya disimpan di perangkat ini.",
+  "privacyCloudTitle": "Tanpa cloud",
+  "privacyCloudDescription": "Orah tidak memiliki server sinkronisasi catatan. Catatan tetap di perangkat kecuali Anda memilih untuk membagikan atau mengekspornya.",
+  "privacyAiTitle": "Tanpa AI",
+  "privacyAiDescription": "Orah tidak memindai atau membaca catatan Anda maupun melatih AI menggunakan catatan tersebut.",
+  "privacyVaultTitle": "Brankas terenkripsi",
+  "privacyVaultDescription": "Catatan sensitif di brankas dilindungi dengan enkripsi AES-256-GCM.",
+  "privacySharingDisclosure": "Berbagi, ekspor, layanan perangkat, dan fitur sistem operasi dapat mengirim informasi ke luar aplikasi saat Anda memilih untuk menggunakannya.",
+  "gotIt": "Mengerti",
+  "aboutFast": "Cepat",
+  "aboutFastDescription": "Dirancang untuk mencatat dengan cepat.",
+  "aboutOfflineFirst": "Utamakan offline",
+  "aboutOfflineFirstDescription": "Catatan Anda berfungsi tanpa akun.",
+  "aboutPrivate": "Pribadi",
+  "aboutPrivateDescription": "Data lokal dengan perlindungan perangkat opsional.",
+  "aboutSummary": "Orah dirancang agar praktis: buka, catat, atur, temukan.",
+  "developerSignatureLabel": "Abhinav Bajpai — tanda tangan pengembang",
+  "aboutFeedback": "Untuk saran fitur, masukan, atau ide:",
+  "aboutCopyright": "Hak cipta © 2026 Abhinav Bajpai. Hak cipta dilindungi.",
+  "aboutLegalNotice": "Kode aplikasi, merek asli, karya seni, dan aset produk Orah dimiliki oleh Abhinav Bajpai. Komponen pihak ketiga tunduk pada lisensi masing-masing.",
+  "voiceLanguageTitle": "Bahasa suara",
+  "voiceLanguageDescription": "Pilih bahasa yang akan Anda gunakan untuk berbicara. Bahasa ini bisa berbeda dari bahasa aplikasi.",
+  "voiceLanguageSystemDefault": "Gunakan bahasa perangkat",
+  "voiceLanguageNoLocales": "Tidak ada bahasa yang tersedia dari layanan pengenalan suara perangkat ini.",
+  "securityCreatePin": "Buat PIN",
+  "securityConfirmPin": "Konfirmasi PIN",
+  "securityPinMismatch": "PIN tidak cocok.",
+  "securityPinCreated": "PIN dibuat. Kunci aplikasi aktif.",
+  "securityPinActionFailed": "PIN tidak dapat diperbarui: {error}",
+  "securityEnterCurrentPin": "Masukkan PIN saat ini",
+  "securityPinDisabled": "PIN dan kunci aplikasi dinonaktifkan.",
+  "securityBiometricNotCompleted": "Verifikasi biometrik belum selesai.",
+  "securityPinDigitsHint": "4–8 digit",
+  "securityEnterDigits": "Masukkan 4–8 digit",
+  "securityAppLock": "Kunci aplikasi",
+  "securityRequirePin": "Minta PIN saat ORAH terkunci",
+  "securityCreatePinToProtect": "Buat PIN untuk melindungi ORAH",
+  "securityChangePin": "Ubah PIN",
+  "securityReplacePinSubtitle": "Ganti PIN ORAH saat ini",
+  "securityRemovePin": "Hapus PIN",
+  "securityTurnOffPinProtection": "Matikan perlindungan PIN",
+  "securityBiometricUnlock": "Buka kunci dengan biometrik",
+  "securityUseBiometrics": "Gunakan sidik jari atau biometrik perangkat",
+  "securityLocalFirstPrivacy": "Privasi dengan penyimpanan lokal",
+  "securityLocalFirstDescription": "ORAH tidak memerlukan akun atau sinkronisasi cloud untuk catatan Anda.",
+  "securityStorageNote": "Catatan keamanan: kredensial PIN disimpan di penyimpanan aman Android/iOS. Isi catatan sensitif tetap berada di perangkat. Penyimpanan brankas yang sepenuhnya terenkripsi akan ditambahkan sebelum ORAH mengklaim bahwa konten dienkripsi secara menyeluruh.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN tidak dapat dipulihkan. Jika lupa, Vault tidak dapat dipulihkan.",
+  "vaultPinDigitsHint": "PIN Vault 4–8 digit",
+  "vaultConfirmPin": "Konfirmasi PIN",
+  "vaultCancel": "Batal",
+  "vaultPinsMismatch": "PIN tidak cocok.",
+  "vaultPinDigitsError": "PIN Vault harus terdiri dari 4–8 digit.",
+  "vaultIncorrectPin": "PIN Vault salah.",
+  "vaultVerifyCurrentPin": "Verifikasi PIN Vault saat ini",
+  "vaultIncorrectCurrentPin": "PIN Vault saat ini salah.",
+  "vaultCreateNewPin": "Buat PIN Vault baru",
+  "vaultPinChanged": "PIN Vault diubah.",
+  "vaultNewFolder": "Folder Vault baru",
+  "vaultFolderName": "Nama folder",
+  "vaultCreate": "Buat",
+  "vaultRenameFolder": "Ganti nama folder Vault",
+  "vaultSave": "Simpan",
+  "vaultDelete": "Hapus",
+  "vaultLockedTitle": "Vault / Catatan Terkunci",
+  "vaultChangePin": "Ubah PIN Vault",
+  "vaultTrustBadge": "Vault berkeamanan tinggi",
+  "vaultCreatePrivateNote": "Buat catatan pribadi",
+  "vaultAllFolders": "Semua folder",
+  "vaultFolderOptions": "Opsi folder Vault",
+  "vaultRename": "Ganti nama",
+  "vaultNewFolderAction": "Folder baru",
+  "vaultEmptyTitle": "Vault Anda kosong",
+  "vaultEmptyDescription": "Kunci catatan dari editor atau buat catatan pribadi.",
+  "vaultMoveToFolder": "Pindahkan ke folder",
+  "vaultUnfiled": "Tanpa folder",
+  "vaultJustNow": "Baru saja",
+  "vaultMinutesAgoSuffix": "mnt lalu",
+  "vaultHoursAgoSuffix": "jam lalu",
+  "vaultDaysAgoSuffix": "hari lalu",
+  "vaultDeleteFolderTitle": "Hapus {folderName}?",
+  "vaultFolderEmpty": "Folder ini kosong.",
+  "vaultDeleteFolderWithNotes": "Yakin? {count} catatan pribadi akan dipindahkan ke Tanpa folder.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "Ekspor catatan",
+  "exportSheetDescription": "Pilih tepat satu format yang tersedia di bawah ini.",
+  "exportDocuments": "Dokumen",
+  "exportData": "Data",
+  "exportPlannedSection": "Direncanakan / Segera hadir",
+  "exportPlannedDescription": "Format ini direncanakan untuk pembaruan Orah mendatang.",
+  "sendAsEmailAttachment": "Kirim sebagai lampiran email",
+  "emailAttachmentDescription": "Membuat PDF dan membuka menu berbagi sistem",
+  "exportAllAvailable": "Ekspor semua format yang tersedia",
+  "exportComingSoon": "Segera hadir",
+  "plannedExportFormats": "Format ekspor yang direncanakan",
+  "plannedExportFormatsDescription": "Format ini direncanakan untuk pembaruan Orah mendatang dan belum dapat diekspor.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "Dokumen yang dapat dicetak",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "Dokumen Microsoft Word yang dapat diedit",
+  "exportFormatText": "Teks biasa",
+  "exportDescriptionText": "Kompatibilitas maksimum",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown portabel",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "Daftar periksa menjadi baris",
+  "organizationPickerTitle": "Atur catatan",
+  "organizationDone": "Selesai",
+  "organizationNoFolder": "Tanpa folder",
+  "organizationAddTagHint": "Tambahkan tag",
+  "organizationAddTag": "Tambah",
+  "organizationNoTags": "Belum ada tag.",
+  "exportFailed": "Ekspor gagal: {error}",
+  "exportEmailAttachmentFailed": "Lampiran email gagal: {error}",
+  "exportAllFailed": "Ekspor semua gagal: {error}",
+  "exportCategoryEbooks": "E-book",
+  "exportCategoryAcademic": "Akademik",
+  "exportCategoryPresentation": "Presentasi",
+  "exportCategorySpeechAudio": "Ucapan / audio",
+  "exportCategorySubtitles": "Subtitle",
+  "exportCategoryEmail": "Surat elektronik",
+  "exportCategoryCodeLiterate": "Kode / dokumen teknis",
+  "exportCategoryArchive": "Arsip",
+  "exportCategoryDatabase": "Basis data",
+  "exportCategoryClipboard": "Papan klip",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "Direktori",
+  "organizationTagsLabel": "Tag",
+  "plannedExportRichText": "Teks kaya (.rtf)",
+  "plannedExportRichTextDescription": "Teks kaya lintas platform",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "Standar terbuka LibreOffice",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "Halaman web, email, dan blog",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "Sebagian besar pembaca ebook",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "Kindle lama",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "Kindle modern",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "Format ebook populer",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "Makalah penelitian dan dokumen matematika",
+  "plannedExportLatexPdf": "PDF dari LaTeX (.pdf)",
+  "plannedExportLatexPdfDescription": "Makalah akademik final",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "Pengelolaan referensi",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "Tabel dan analisis data",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "Pengembang, API, dan data terstruktur",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "Dokumen terstruktur",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "Konfigurasi dan data yang mudah dibaca",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "Tabel dipisahkan tab",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "Presentasi",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "Audio teks-ke-ucapan",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "Audio teks-ke-ucapan",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "Subtitle video",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "Subtitle web/video",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "Format pesan email",
+  "plannedExportHtmlEmail": "Email HTML",
+  "plannedExportHtmlEmailDescription": "Email HTML siap dikirim",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "Dokumen kode",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "Paket ekspor terkompresi",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "Paket ekspor terkompresi",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "Ekspor basis data",
+  "plannedExportRichClipboard": "Clipboard teks kaya",
+  "plannedExportRichClipboardDescription": "Format clipboard teks kaya",
+  "plannedExportHtmlClipboard": "Clipboard HTML",
+  "plannedExportHtmlClipboardDescription": "Format HTML clipboard",
+  "plannedExportPlainClipboard": "Clipboard teks biasa",
+  "plannedExportPlainClipboardDescription": "Format clipboard teks biasa",
+  "exportShareSubject": "ORAH — Ekspor: {title}",
+  "exportShareBody": "Diekspor dari ORAH",
+  "emailAttachmentSubject": "ORAH — Lampiran: {title}",
+  "emailAttachmentBody": "Lampiran dari ORAH",
+  "exportAllShareSubject": "ORAH — {title} — paket ekspor",
+  "exportAllShareBody": "Diekspor dari ORAH dalam semua format yang tersedia",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} mnt",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "Tambahkan widget ORAH",
+  "androidWidgetSetupBody": "Di layar utama Android, tekan lama area kosong, pilih Widget, cari ORAH, lalu seret widget ORAH ke layar utama.",
+  "androidQuickShortcutDialogTitle": "Pintasan Catatan Cepat",
+  "androidQuickShortcutDialogBody": "Tekan lama ikon aplikasi ORAH di layar utama Android. Pilih Catatan baru atau Daftar periksa baru dari menu pintasan.",
+  "androidShortcutNewNote": "Catatan baru",
+  "androidShortcutNewChecklist": "Daftar periksa baru",
+  "androidShortcutSearch": "Cari",
+  "androidShareUnavailable": "Berbagi ke ORAH tidak tersedia di perangkat ini.",
+  "androidFeatureHeading": "ORAH di Android",
+  "androidFeatureIntro": "ORAH menyediakan pencatatan cepat, berbagi, dan akses layar utama melalui integrasi Android bawaan.",
+  "androidWidgetTitle": "Widget layar utama",
+  "androidWidgetDescription": "Buat catatan, daftar periksa, atau buka pencarian dari layar utama.",
+  "androidQuickCaptureTitle": "Pintasan Catatan Cepat",
+  "androidQuickCaptureDescription": "Buka ORAH langsung untuk mencatat dengan cepat.",
+  "androidShareTitle": "Bagikan ke ORAH",
+  "androidShareDescription": "Kirim teks dan konten yang didukung ke catatan ORAH baru.",
+  "androidRemindersTitle": "Pengingat",
+  "androidRemindersDescription": "Buat pengingat catatan dan daftar periksa tanpa backend.",
+  "androidLocalIntegrationsNote": "Integrasi ini adalah fitur Android lokal dan tidak memerlukan backend.",
+  "androidDone": "Selesai",
+  "androidGotIt": "Mengerti",
+  "captureTitle": "Catat",
+  "captureDescription": "Pilih apa yang ingin Anda catat.",
+  "quickNote": "Catatan cepat",
+  "startTypingImmediately": "Mulai mengetik sekarang",
+  "quickChecklist": "Daftar tugas cepat",
+  "captureTasksWithoutSetup": "Catat tugas tanpa pengaturan",
+  "dailyChecklistTooltip": "Daftar tugas harian",
+  "quickCaptureHint": "Ketuk untuk menulis • Tekan lama untuk daftar dan opsi",
+  "quickCaptureTooltip": "Catatan cepat. Tekan lama untuk daftar dan opsi.",
+  "filtersActive": "Filter aktif",
+  "searchResultsCount": "Hasil: {count}",
+  "advancedSearchProFeature": "Pencarian lanjutan adalah fitur ORAH Pro",
+  "noNotesFound": "Catatan tidak ditemukan",
+  "searchFilterHint": "Gunakan kata kunci biasa secara gratis, atau buka ORAH Pro untuk membuka filter dan operator.",
+  "searchEmptyHint": "Coba kata lain atau hapus filter.",
+  "voicePreferences": "Preferensi suara",
+  "dailyReflectionSchedule": "Jadwal refleksi harian",
+  "versionLabel": "Versi {version}",
+  "vaultResetWarning": "PIN Vault tidak dapat dipulihkan. Mengatur ulang akan menghapus semua catatan Vault dan kunci enkripsinya secara permanen. Catatan dan folder biasa Anda tidak akan berubah.",
+  "portableBackupShareText": "Cadangan portabel Orah",
+  "storageAttachmentCount": "{count} lampiran • {size}",
+  "dailyReflectionTimePicker": "Pilih waktu refleksi harian",
+  "scheduleLoading": "Memuat jadwal…",
+  "scheduleEnabledAt": "Aktif • Setiap hari pukul {time}",
+  "scheduleDisabled": "Nonaktif • Aktifkan untuk menerima pengingat refleksi harian",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "featureVoiceCaptureDescription": "Catat ide dengan cepat melalui pembuatan catatan berbasis suara.",
+  "featureChecklistDescription": "Ubah catatan menjadi daftar tugas yang dapat ditindaklanjuti dengan pelacakan penyelesaian.",
+  "featureShareExportTitle": "Bagikan & Ekspor",
+  "featureShareExportDescription": "Bagikan catatan dan ekspor konten dalam format portabel.",
+  "notificationDailyReflectionTitle": "Waktunya refleksi harian",
+  "notificationDailyReflectionBody": "Luangkan waktu sejenak untuk menuliskan apa yang ada di pikiran Anda.",
+  "notificationDailyReflectionChannel": "Refleksi harian",
+  "notificationDailyReflectionChannelDescription": "Pengingat harian yang lembut untuk berhenti sejenak dan merenung",
+  "notificationReminderChannel": "Pengingat Orah",
+  "notificationReminderChannelDescription": "Pengingat untuk catatan dan tugas",
+  "notificationDoneAction": "Selesai",
+  "notificationSnooze10Action": "Tunda 10 mnt",
+  "notificationSnooze60Action": "Tunda 1 jam",
+  "notificationReminderTitle": "Pengingat ORAH",
+  "genericTryAgain": "Silakan coba lagi.",
+  "registrationFailed": "Pendaftaran tidak dapat diselesaikan. Silakan coba lagi."
 }

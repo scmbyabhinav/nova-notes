@@ -136,31 +136,26 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<void> saveNote(Note note) async {
+  Future<void> saveNote(Note note) => _serializeMutation(() async {
+    if (note.id.trim().isEmpty) throw const FormatException('Note ID cannot be empty.');
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
-
-    if (note.id.trim().isEmpty) throw const FormatException('Note ID cannot be empty.');
     if (index == -1) {
       notes.add(note);
     } else {
       notes[index] = note;
     }
-
     await _write(notes);
-    // Publish the persisted snapshot, not the pre-write working list. This
-    // guarantees every subscriber receives exactly what is now on disk.
     _publish(await getNotes());
-  }
+  });
 
   @override
-  Future<void> deleteNote(String id) async {
+  Future<void> deleteNote(String id) => _serializeMutation(() async {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
-    _publish(notes);
-  }
-
+    _publish(await getNotes());
+  });
   @override
   Future<List<Note>> searchNotes(String query) => search(query);
 
@@ -231,6 +226,21 @@ class LocalNoteRepository implements NoteRepository {
     return ranked.map((item) => item.note).toList();
   }
 
+  // Serialize read-modify-write operations so overlapping autosaves cannot
+  // replace a newer snapshot with a stale list.
+  Future<void> _mutationQueue = Future<void>.value();
+
+  Future<T> _serializeMutation<T>(Future<T> Function() operation) {
+    final completer = Completer<T>();
+    _mutationQueue = _mutationQueue.then((_) async {
+      try {
+        completer.complete(await operation());
+      } catch (error, stackTrace) {
+        completer.completeError(error, stackTrace);
+      }
+    });
+    return completer.future;
+  }
   Future<void> _write(List<Note> notes) async {
     final ordinary = <Map<String, dynamic>>[];
     final vault = <Map<String, dynamic>>[];

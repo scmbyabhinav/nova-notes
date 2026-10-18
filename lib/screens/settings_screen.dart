@@ -69,32 +69,32 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               leading: const OrahAssetIcon('settings'),
               title: Text(l10n.appearance),
-              subtitle: Text(_appearanceLabel()),
+              subtitle: Text(_appearanceLabel(context)),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showAppearance(context),
             ),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Voice Preferences'),
+          _sectionHeader(theme, l10n.voicePreferences),
           const Card(
             child: _VoiceGreetingSettingTile(),
           ),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Daily inspiration'),
+          _sectionHeader(theme, l10n.dailyInspiration),
           const Card(
             child: _DailyInspirationSettingTile(),
           ),
           const SizedBox(height: 16),
           const SizedBox(height: 16),
-          _sectionHeader(theme, 'Daily Reflection schedule'),
+          _sectionHeader(theme, l10n.dailyReflectionSchedule),
           const Card(child: _DailyReflectionScheduleSettingTile()),
           _sectionHeader(theme, l10n.securityAndPrivacy),
           const Card(child: _VaultAutoLockSettingTile()),
           Card(
             child: ListTile(
               leading: const Icon(Icons.lock_outline_rounded),
-              title: const Text('Vault / Locked Notes'),
-              subtitle: const Text('Open your private, encrypted notes'),
+              title: Text(l10n.vaultLocked),
+              subtitle: Text(l10n.vaultLockedDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const VaultScreen()),
@@ -104,8 +104,8 @@ class SettingsScreen extends StatelessWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.warning_amber_rounded),
-              title: const Text('Forgot Vault PIN? Reset Vault'),
-              subtitle: const Text('No recovery is possible. Resetting permanently loses the old Vault.'),
+              title: Text(AppLocalizations.of(context)!.vaultResetTitle),
+              subtitle: Text(AppLocalizations.of(context)!.vaultResetDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showVaultResetWarning(context),
             ),
@@ -114,7 +114,7 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.shield_outlined),
               title: Text(l10n.securityAndPrivacy),
-              subtitle: const Text('PIN and biometric protection'),
+              subtitle: Text(AppLocalizations.of(context)!.pinBiometric),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -129,8 +129,8 @@ class SettingsScreen extends StatelessWidget {
                 Icons.privacy_tip_outlined,
                 color: theme.colorScheme.primary,
               ),
-              title: const Text('Privacy Pledge'),
-              subtitle: const Text('Read our zero-cloud promise'),
+              title: Text(l10n.privacyPledge),
+              subtitle: Text(l10n.privacyPledgeDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -145,7 +145,7 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.android_outlined),
               title: Text(l10n.androidFeatures),
-              subtitle: const Text('Widgets, shortcuts and sharing'),
+              subtitle: Text(AppLocalizations.of(context)!.androidFeaturesDesc),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -161,24 +161,24 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const OrahAssetIcon('folder'),
-                  title: const Text('Backup & Export'),
-                  subtitle: const Text('Local backup and portable data'),
+                  title: Text(AppLocalizations.of(context)!.backupExportTitle),
+                  subtitle: Text(l10n.backupExportDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showBackup(context),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.archive_outlined),
-                  title: const Text('Archived Notes'),
-                  subtitle: const Text('Open or restore notes you have archived'),
+                  title: Text(AppLocalizations.of(context)!.archivedNotesTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.archivedNotesDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const OrahAssetIcon('trash'),
-                  title: const Text('Trash'),
-                  subtitle: const Text('Restore or permanently delete notes'),
+                  title: Text(AppLocalizations.of(context)!.trashTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.trashDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const TrashScreen()),
@@ -194,8 +194,8 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.auto_awesome_outlined),
-                  title: const Text('Orah Features'),
-                  subtitle: const Text('Explore what Orah can do'),
+                  title: Text(AppLocalizations.of(context)!.orahFeaturesTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.orahFeaturesDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
@@ -204,8 +204,8 @@ class SettingsScreen extends StatelessWidget {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
-                  title: const Text('About Orah'),
-                  subtitle: const Text('Product information and privacy approach'),
+                  title: Text(AppLocalizations.of(context)!.aboutOrahTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.aboutOrahDesc),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const AboutNovaScreen()),
@@ -218,7 +218,7 @@ class SettingsScreen extends StatelessWidget {
           const OrahWordmark(fontSize: 28, textAlign: TextAlign.center),
           const SizedBox(height: 4),
           Text(
-            'Version 1.0.0',
+            l10n.versionLabel('1.0.2'),
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -226,7 +226,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Think it. Write it. Keep it.',
+            l10n.homeTagline,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -250,11 +250,12 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  String _appearanceLabel() {
+  String _appearanceLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final mode = switch (themeController.mode) {
-      ThemeMode.system => 'System theme',
-      ThemeMode.light => 'Light theme',
-      ThemeMode.dark => 'Dark theme',
+      ThemeMode.system => l10n.themeSystem,
+      ThemeMode.light => l10n.themeLight,
+      ThemeMode.dark => l10n.themeDark,
     };
     return '$mode • ' + Color(themeController.accent).value.toRadixString(16).toUpperCase();
   }
@@ -264,26 +265,26 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded),
+            const Icon(Icons.warning_amber_rounded),
             SizedBox(width: 10),
-            Expanded(child: Text('Reset Vault?')),
+            Expanded(child: Text(AppLocalizations.of(context)!.resetVaultQuestion)),
           ],
         ),
-        content: const SingleChildScrollView(
+        content: SingleChildScrollView(
           child: Text(
-            'There is NO recovery for a forgotten Vault PIN. Orah cannot bypass, recover, or reset the existing Vault while preserving its protected contents.\\n\\nIf you continue, the current Vault records and Vault encryption key will be permanently destroyed. A new Vault PIN can then be created. Your normal Notes, Folders, and other app data will not be reset.',
+            AppLocalizations.of(context)!.vaultResetWarning,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancelLabel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Delete Old Vault & Create New'),
+            child: Text(AppLocalizations.of(context)!.deleteVaultConfirm),
           ),
         ],
       ),
@@ -298,12 +299,12 @@ class SettingsScreen extends StatelessWidget {
       await NovaSecurityService().resetVault();
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Old Vault deleted. Open Vault to create a new PIN.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultResetSuccess)),
       );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vault reset failed: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultResetFailed(AppLocalizations.of(context)!.genericTryAgain))),
       );
     }
   }
@@ -314,9 +315,9 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (sheet) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const ListTile(title: Text('Theme')),
+          ListTile(title: Text(AppLocalizations.of(context)!.themeLabel)),
           for (final value in ThemeMode.values)
-            RadioListTile<ThemeMode>(value: value, groupValue: themeController.mode, title: Text(switch (value) { ThemeMode.system => 'System', ThemeMode.light => 'Light', ThemeMode.dark => 'Dark' }), onChanged: (v) => Navigator.pop(sheet, v)),
+            RadioListTile<ThemeMode>(value: value, groupValue: themeController.mode, title: Text(switch (value) { ThemeMode.system => AppLocalizations.of(context)!.themeSystem, ThemeMode.light => AppLocalizations.of(context)!.themeLight, ThemeMode.dark => AppLocalizations.of(context)!.themeDark }), onChanged: (v) => Navigator.pop(sheet, v)),
         ]),
       ),
     );
@@ -339,18 +340,18 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const ListTile(
-            title: Text('Portable Backup'),
-            subtitle: Text('Notes, folders and attached files in one .nova package.'),
+          ListTile(
+            title: Text(AppLocalizations.of(context)!.portableBackup),
+            subtitle: Text(AppLocalizations.of(context)!.portableBackupDesc),
           ),
           ListTile(
             leading: const OrahAssetIcon('share'),
-            title: const Text('Create backup'),
+            title: Text(AppLocalizations.of(context)!.createBackup),
             onTap: () => Navigator.pop(context, 'create'),
           ),
           ListTile(
             leading: const Icon(Icons.restore_rounded),
-            title: const Text('Restore backup'),
+            title: Text(AppLocalizations.of(context)!.restoreBackup),
             onTap: () => Navigator.pop(context, 'restore'),
           ),
         ]),
@@ -362,7 +363,7 @@ class SettingsScreen extends StatelessWidget {
       final service = NovaBackupService(prefs);
       if (action == 'create') {
         final file = await service.createBackup();
-        await Share.shareXFiles([XFile(file.path)], text: 'Orah portable backup');
+        await Share.shareXFiles([XFile(file.path)], text: AppLocalizations.of(context)!.portableBackupShareText);
       } else {
         final result = await FilePicker.pickFiles(
           type: FileType.custom,
@@ -373,14 +374,14 @@ class SettingsScreen extends StatelessWidget {
         final count = await service.restoreBackup(File(path));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Restored $count notes successfully.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.backupRestoredCount(count))),
           );
         }
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup error: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.backupError(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -400,14 +401,14 @@ class SettingsScreen extends StatelessWidget {
       showDragHandle: true,
       builder: (context) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(title: const Text('Storage maintenance'), subtitle: Text('${attachmentFiles.length} attachments • ${_formatBytes(bytes)}')),
-          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: const Text('Clean orphan attachments'), subtitle: Text('$orphanCount unused files found'), onTap: () => Navigator.pop(context, 'clean')),
+          ListTile(title: Text(AppLocalizations.of(context)!.storageMaintenance), subtitle: Text(AppLocalizations.of(context)!.storageAttachmentCount(attachmentFiles.length, _formatBytes(bytes)))),
+          ListTile(leading: const Icon(Icons.cleaning_services_outlined), title: Text(AppLocalizations.of(context)!.cleanOrphanAttachments), subtitle: Text(AppLocalizations.of(context)!.unusedFilesFound(orphanCount)), onTap: () => Navigator.pop(context, 'clean')),
         ]),
       ),
     );
     if (!context.mounted || action != 'clean') return;
     final removed = await service.removeOrphans(referenced);
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removed $removed orphan attachment${removed == 1 ? '' : 's'}.')));
+    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removedOrphanAttachments(removed))));
   }
 
   String _formatBytes(int bytes) {
@@ -451,16 +452,16 @@ class _VaultAutoLockSettingTileState extends State<_VaultAutoLockSettingTile> {
   @override
   Widget build(BuildContext context) => ListTile(
     leading: const Icon(Icons.timer_outlined),
-    title: const Text('Vault auto-lock'),
-    subtitle: const Text('Require authentication after the app is in the background'),
+    title: Text(AppLocalizations.of(context)!.vaultAutoLock),
+    subtitle: Text(AppLocalizations.of(context)!.vaultAutoLockDesc),
     trailing: _loading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : DropdownButton<int>(
       value: _minutes,
       onChanged: _setMinutes,
-      items: const [
-        DropdownMenuItem(value: 1, child: Text('1 min')),
-        DropdownMenuItem(value: 5, child: Text('5 min')),
-        DropdownMenuItem(value: 10, child: Text('10 min')),
-        DropdownMenuItem(value: 0, child: Text('Never')),
+      items: [
+        DropdownMenuItem(value: 1, child: Text(AppLocalizations.of(context)!.vaultAutoLockDuration(1))),
+        DropdownMenuItem(value: 5, child: Text(AppLocalizations.of(context)!.vaultAutoLockDuration(5))),
+        DropdownMenuItem(value: 10, child: Text(AppLocalizations.of(context)!.vaultAutoLockDuration(10))),
+        DropdownMenuItem(value: 0, child: Text(AppLocalizations.of(context)!.neverLabel)),
       ],
     ),
   );
@@ -497,10 +498,10 @@ class _VoiceGreetingSettingTileState extends State<_VoiceGreetingSettingTile> {
         final enabled = snapshot.data ?? true;
         return SwitchListTile(
           secondary: const Icon(Icons.record_voice_over_rounded),
-          title: const Text('Speak my name at startup'),
+          title: Text(AppLocalizations.of(context)!.speakMyNameAtStartup),
           subtitle: Text(enabled
-              ? 'Orah will say “Hello, your name” when it opens.'
-              : 'The greeting stays silent.'),
+              ? AppLocalizations.of(context)!.voiceGreetingEnabledDescription
+              : AppLocalizations.of(context)!.voiceGreetingDisabledDescription),
           value: enabled,
           onChanged: snapshot.connectionState == ConnectionState.waiting ? null : _setEnabled,
         );
@@ -548,8 +549,8 @@ class _DailyInspirationSettingTileState
   Widget build(BuildContext context) {
     return SwitchListTile(
       secondary: const Icon(Icons.auto_awesome_outlined),
-      title: const Text('Show Daily Inspiration on Home Screen'),
-      subtitle: const Text('Display a daily reflection prompt above your notes.'),
+      title: Text(AppLocalizations.of(context)!.showDailyInspiration),
+      subtitle: Text(AppLocalizations.of(context)!.showDailyInspirationDesc),
       value: _showDailyInspiration,
       onChanged: _loading ? null : _setVisible,
     );
@@ -591,12 +592,8 @@ class _DailyReflectionScheduleSettingTileState
 
   TimeOfDay get _time => TimeOfDay(hour: _hour, minute: _minute);
 
-  String get _formattedTime {
-    final hour = _hour % 12 == 0 ? 12 : _hour % 12;
-    final minute = _minute.toString().padLeft(2, '0');
-    final period = _hour >= 12 ? 'PM' : 'AM';
-    return '$hour:$minute $period';
-  }
+  String _formattedTime(BuildContext context) =>
+      MaterialLocalizations.of(context).formatTimeOfDay(_time);
 
   Future<void> _setEnabled(bool value) async {
     try {
@@ -612,7 +609,7 @@ class _DailyReflectionScheduleSettingTileState
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not update Daily Reflection reminder: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.reminderUpdateFailed(AppLocalizations.of(context)!.genericTryAgain))),
       );
     }
   }
@@ -621,7 +618,7 @@ class _DailyReflectionScheduleSettingTileState
     final selected = await showTimePicker(
       context: context,
       initialTime: _time,
-      helpText: 'Choose daily reflection time',
+      helpText: AppLocalizations.of(context)!.dailyReflectionTimePicker,
     );
     if (selected == null) return;
 
@@ -634,7 +631,7 @@ class _DailyReflectionScheduleSettingTileState
       } catch (error) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not schedule Daily Reflection: $error')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.reminderScheduleFailed(AppLocalizations.of(context)!.genericTryAgain))),
           );
         }
       }
@@ -652,20 +649,20 @@ class _DailyReflectionScheduleSettingTileState
       children: [
         SwitchListTile(
           secondary: const Icon(Icons.notifications_active_outlined),
-          title: const Text('Daily Reflection reminder'),
+          title: Text(AppLocalizations.of(context)!.dailyReflectionReminder),
           subtitle: Text(_loading
-              ? 'Loading schedule…'
+              ? AppLocalizations.of(context)!.scheduleLoading
               : _enabled
-                  ? 'Enabled • Every day at $_formattedTime'
-                  : 'Disabled • Turn on to receive a daily reflection reminder'),
+                  ? AppLocalizations.of(context)!.scheduleEnabledAt(_formattedTime(context))
+                  : AppLocalizations.of(context)!.scheduleDisabled),
           value: _enabled,
           onChanged: _loading ? null : _setEnabled,
         ),
         const Divider(height: 1),
         ListTile(
           leading: const Icon(Icons.schedule_rounded),
-          title: const Text('Reminder time'),
-          subtitle: Text(_formattedTime),
+          title: Text(AppLocalizations.of(context)!.reminderTime),
+          subtitle: Text(_formattedTime(context)),
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: _loading ? null : _pickTime,
         ),

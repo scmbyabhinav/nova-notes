@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../l10n/app_localizations.dart';
 
 class WelcomeSplashScreen extends StatefulWidget {
   const WelcomeSplashScreen({
@@ -28,7 +29,7 @@ class _WelcomeSplashScreenState extends State<WelcomeSplashScreen>
   void initState() {
     super.initState();
     final trimmedName = widget.userName.trim();
-    _greetingName = trimmedName.isEmpty ? 'Friend' : trimmedName.split(RegExp(r'\s+')).first;
+    _greetingName = trimmedName.isEmpty ? '' : trimmedName.split(RegExp(r'\s+')).first;
     _breathingController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -101,7 +102,7 @@ class _WelcomeSplashScreenState extends State<WelcomeSplashScreen>
                   ),
                   const SizedBox(height: 38),
                   Text(
-                    'WELCOME BACK',
+                    AppLocalizations.of(context)!.welcomeBack,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -119,7 +120,9 @@ class _WelcomeSplashScreenState extends State<WelcomeSplashScreen>
                       child: child,
                     ),
                     child: Text(
-                      'Hello, $_greetingName',
+                      _greetingName.isEmpty
+                          ? AppLocalizations.of(context)!.helloUser(AppLocalizations.of(context)!.friend)
+                          : AppLocalizations.of(context)!.helloUser(_greetingName),
                       textAlign: TextAlign.center,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 30,

@@ -65,5 +65,898 @@
   "unlock": "잠금 해제",
   "useBiometrics": "생체 인증 사용",
   "incorrectPin": "PIN이 올바르지 않습니다",
-  "biometricFallbackError": "생체 인증이 취소되었거나 사용할 수 없습니다. 잠금을 해제하려면 PIN을 입력하세요."
+  "biometricFallbackError": "생체 인증이 취소되었거나 사용할 수 없습니다. 잠금을 해제하려면 PIN을 입력하세요.",
+  "journeyTitle": "나의 여정",
+  "journeyHeadline": "작은 순간들이 모입니다.",
+  "journeySubtitle": "글쓰기 습관과 성찰을 부드럽게 살펴봅니다.",
+  "dayInARow": "일 연속",
+  "daysInARow": "일 연속",
+  "notesSaved": "개의 노트 저장됨",
+  "notesStayOnDevice": "노트는 이 기기에 저장됩니다. 이 통계는 저장된 노트를 바탕으로 계산됩니다.",
+  "moodStoryStarts": "기분 기록이 여기서 시작됩니다",
+  "chooseMoodToSeeDistribution": "노트를 작성할 때 기분을 선택하면 여기에 분포가 표시됩니다.",
+  "moodDistributionSubtitle": "기록한 감정",
+  "notesCreatedLast7Days": "지난 7일 동안 작성한 노트",
+  "calendarSubtitle": "날짜별 노트 및 예약된 알림",
+  "goToToday": "오늘로 이동",
+  "scheduleNote": "노트 예약",
+  "nothingOnThisDay": "이 날짜에는 항목이 없습니다",
+  "chooseAnotherDate": "다른 날짜를 선택하거나 이 날짜에 노트를 예약하세요.",
+  "untitledNote": "제목 없는 노트",
+  "scheduledLabel": "예약됨",
+  "createdLabel": "작성됨",
+  "calendarItemStatusTime": "{status} · {time}",
+  "writingRhythm": "글쓰기 리듬",
+  "historyTimeline": "기록 타임라인",
+  "storyStartsWithNote": "노트 하나로 이야기가 시작됩니다",
+  "pickHighlightedDay": "표시된 날짜를 선택해 그날의 기록이나 전체 기록을 살펴보세요.",
+  "savedDaysHighlighted": "노트가 저장된 날짜는 달력에 강조 표시됩니다.",
+  "addFolderImage": "폴더 이미지 추가",
+  "changeImage": "이미지 변경",
+  "removeImage": "이미지 삭제",
+  "folderName": "폴더 이름",
+  "folderNameHint": "예: 업무, 아이디어, 개인",
+  "cancel": "취소",
+  "create": "만들기",
+  "newFolder": "새 폴더",
+  "editFolder": "폴더 수정",
+  "save": "저장",
+  "deleteFolderTitle": "{folderName}을(를) 삭제할까요?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "폴더가 비어 있습니다.",
+  "notesMovedFromFolder": "노트 {count}개는 유지되며 모든 노트로 다시 이동됩니다.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "삭제",
+  "selectedFoldersDeleteTitle": "폴더 {count}개를 삭제할까요?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "선택한 폴더가 비어 있습니다.",
+  "deleteSelected": "선택 항목 삭제",
+  "cancelSelection": "선택 취소",
+  "selectedCount": "{count}개 선택됨",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "선택한 폴더 삭제",
+  "folderOptions": "폴더 옵션",
+  "open": "열기",
+  "rename": "이름 변경",
+  "folderNoteCount": "노트 {count}개",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "폴더에서 제거",
+  "moveToTrash": "휴지통으로 이동",
+  "noFoldersYet": "아직 폴더가 없습니다",
+  "emptyFoldersDescription": "관련 노트를 함께 정리할 폴더를 만드세요.",
+  "createFolder": "폴더 만들기",
+  "noNotesInFolder": "이 폴더에는 아직 노트가 없습니다.\n노트를 열고 정리를 선택해 여기에 추가하세요.",
+  "welcomeToOrah": "Orah에 오신 것을 환영합니다",
+  "personalizeYourSpace": "이름과 이메일을 입력해 나만의 공간을 설정하세요.",
+  "fullName": "이름",
+  "yourName": "이름을 입력하세요",
+  "emailAddress": "이메일 주소",
+  "emailExample": "you@example.com",
+  "enterFullName": "이름을 입력해 주세요.",
+  "enterValidEmail": "올바른 이메일 주소를 입력해 주세요.",
+  "registerAndContinue": "등록하고 계속하기",
+  "profileStoredOnDevice": "프로필은 이 기기에 안전하게 저장됩니다. 구독자 목록 동기화에는 뉴스레터 서비스 설정이 필요합니다.",
+  "proRestore": "복원",
+  "proHeroEyebrow": "더 강력해진 노트",
+  "proHeroHeadline": "모든 노트를\n더 유용하게.",
+  "proHeroDescription": "종이 정보를 검색 가능한 지식으로 바꾸고 필요한 세부 정보를 찾아 업무가 어디로 이어지든 노트를 활용하세요.",
+  "proHeroFootnote": "추가 기능이 필요할 때 업그레이드하세요. 일상적인 노트는 계속 여러분의 것입니다.",
+  "proMoreThanNotes": "노트 그 이상",
+  "proOcrTitle": "이미지에서 검색하는 OCR",
+  "proOcrDescription": "다시 입력할 필요 없이 지원되는 이미지와 문서에서 텍스트를 추출하세요.",
+  "proExportTitle": "원하는 형식으로 내보내기",
+  "proExportDescription": "PDF, Word, Excel 프리미엄 내보내기로 ORAH 밖에서도 노트를 활용하세요.",
+  "proSearchTitle": "수많은 정보 속에서 필요한 내용 찾기",
+  "proSearchDescription": "고급 검색과 필터로 중요한 세부 정보를 더 빠르게 찾으세요.",
+  "proWorkspaceTitle": "더 체계적인 작업 공간",
+  "proWorkspaceDescription": "사용 중인 버전에서 제공되면 프리미엄 템플릿과 고급 생산성 도구를 이용하세요.",
+  "proEntitlementActive": "Pro 이용 권한이 활성화되어 있습니다.",
+  "proChoosePlan": "Pro 요금제 선택",
+  "proPricesFromPlay": "가격은 지역에 따라 Google Play에서 제공합니다.",
+  "proPlanYearly": "연간",
+  "proBestValue": "가성비 최고",
+  "proPlanMonthly": "월간",
+  "proMonthlySubtitle": "매월 결제",
+  "proOfferInstruction": "회사 또는 개발자의 ORAH 혜택이 있나요? 초대장에 제공된 Google Play 링크나 코드로 혜택을 사용한 뒤 여기로 돌아와 복원을 누르세요.",
+  "proRestorePurchases": "구매 복원",
+  "proRenewalDisclosure": "Google Play에서 취소하지 않으면 구독이 자동 갱신됩니다. 확인 전에 표시된 가격, 결제 기간 및 체험 조건을 검토하세요. Play 스토어 계정에서 구독을 관리하거나 취소할 수 있습니다.",
+  "proBestValueBadge": "최고 혜택",
+  "proLoadingPrice": "가격 불러오는 중…",
+  "proUnavailable": "현재 사용할 수 없음",
+  "proChooseButton": "선택",
+  "microphoneAccessNeeded": "마이크 권한 필요",
+  "microphoneAccessPermanentDenied": "음성을 텍스트로 변환하려면 ORAH Notes에 마이크 권한이 필요합니다. 설정에서 권한을 켤 수 있습니다.",
+  "microphoneAccessRequest": "음성을 텍스트로 변환하려면 ORAH Notes에 마이크 권한이 필요합니다. 권한을 허용하거나 설정에서 켜세요.",
+  "notNow": "나중에",
+  "openSettings": "설정 열기",
+  "voiceInputUnavailableWithMessage": "음성 입력을 사용할 수 없음: {message}",
+  "voiceInputUnavailable": "이 기기에서는 음성 입력을 사용할 수 없습니다.",
+  "couldNotStartVoiceCapture": "음성 녹음을 시작할 수 없음: {error}",
+  "voiceTextSaved": "음성 텍스트를 노트에 저장했습니다.",
+  "recordingStoppedPartialSaved": "녹음이 중지되었습니다. 일부 텍스트를 저장했습니다.",
+  "addTask": "작업 추가",
+  "taskHint": "무엇을 해야 하나요?",
+  "add": "추가",
+  "editTask": "작업 수정",
+  "enterVaultPin": "Vault PIN 입력",
+  "pinDigitsLabel": "4~8자리 PIN",
+  "vaultAuthenticationFailed": "인증에 실패했습니다. 생체 인증 또는 Vault PIN을 사용해 보세요.",
+  "secureYourVault": "Vault 보안 설정",
+  "vaultSetupDescription": "이 노트를 잠그려면 먼저 PIN 또는 생체 인증을 설정해야 합니다. 이렇게 하면 본인만 노트에 접근할 수 있습니다.",
+  "setUpSecurity": "보안 설정",
+  "createVaultPin": "Vault PIN 만들기",
+  "confirmVaultPin": "Vault PIN 확인",
+  "vaultPinsDoNotMatch": "PIN이 일치하지 않습니다. 노트가 잠기지 않았습니다.",
+  "vaultPinCreated": "Vault PIN이 생성되었습니다. 노트를 보호하는 중…",
+  "enterPinDigits": "4~8자리 숫자를 입력하세요",
+  "addContentBeforeLock": "노트를 잠그기 전에 내용을 추가하세요.",
+  "vaultAuthenticationNotCompleted": "인증이 완료되지 않았습니다. 노트가 잠기지 않았습니다.",
+  "noteLockedMovedToVault": "노트를 잠그고 Vault로 이동했습니다.",
+  "noteUnlockedMovedToNotes": "노트 잠금을 해제하고 노트 목록으로 이동했습니다.",
+  "continueLabel": "계속",
+  "ocrNoReadableText": "읽을 수 있는 텍스트를 찾지 못했습니다.",
+  "ocrTextExtracted": "이미지에서 텍스트를 추출했습니다.",
+  "ocrCouldNotReadImage": "이미지에서 텍스트를 읽을 수 없습니다.",
+  "chooseTemplate": "템플릿 선택",
+  "replaceCurrentNote": "현재 노트를 바꾸시겠어요?",
+  "templateReplaceWarning": "이 템플릿은 현재 제목과 내용을 바꿉니다.",
+  "replace": "바꾸기",
+  "insertLink": "링크 삽입",
+  "insert": "삽입",
+  "couldNotAddImage": "이미지를 추가할 수 없음: {error}",
+  "couldNotAddFiles": "파일을 추가할 수 없음: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "첨부 파일 이름 변경",
+  "preview": "미리보기",
+  "share": "공유",
+  "details": "세부정보",
+  "removeFromNote": "노트에서 제거",
+  "chooseFromGallery": "갤러리에서 선택",
+  "takePhoto": "사진 촬영",
+  "attachFiles": "파일 첨부",
+  "close": "닫기",
+  "couldNotUnlockPrivateNote": "비공개 노트를 잠금 해제할 수 없음: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "내보내기",
+  "removeFavorite": "즐겨찾기에서 제거",
+  "addToFavorites": "즐겨찾기에 추가",
+  "addImage": "이미지 추가",
+  "template": "템플릿",
+  "setReminder": "알림 설정",
+  "reminderAt": "알림: {date}",
+  "clearReminder": "알림 지우기",
+  "noteColor": "노트 색상",
+  "unarchive": "보관 취소",
+  "archive": "보관",
+  "back": "뒤로",
+  "remove": "제거",
+  "retry": "다시 시도",
+  "titleHint": "제목",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "노트 카드를 공유할 수 없음: {error}",
+  "couldNotRenameAttachment": "첨부 파일 이름을 변경할 수 없음: {error}",
+  "attachmentDetailsFormat": "크기: {size}\n수정됨: {modified}",
+  "authenticationFailedNoteNotDeleted": "인증 실패. 노트는 삭제되지 않았습니다.",
+  "privateNote": "비공개 노트",
+  "thisNoteIsPrivate": "이 노트는 비공개입니다",
+  "unlockPrivateNoteHint": "생체 인증 또는 PIN으로 잠금을 해제해 확인하세요.",
+  "exitZenMode": "젠 모드 종료",
+  "exportAsCard": "카드로 내보내기",
+  "scanTextFromImage": "이미지에서 텍스트 스캔",
+  "folderAndTags": "폴더 및 태그",
+  "lockNote": "노트 잠금",
+  "unlockAndMoveToNotes": "잠금 해제 후 노트로 이동",
+  "stopAndSave": "중지 및 저장",
+  "startWritingHint": "작성 시작...",
+  "howAreYouFeeling": "기분이 어떠세요?",
+  "checklistEmpty": "체크리스트가 비어 있습니다",
+  "addFirstTask": "첫 작업 추가",
+  "moveUp": "위로 이동",
+  "moveDown": "아래로 이동",
+  "deleteTask": "작업 삭제",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "잠금 해제 중…",
+  "unlockNote": "노트 잠금 해제",
+  "zenMode": "집중 모드",
+  "edit": "편집",
+  "pinNote": "고정",
+  "unpinNote": "고정 해제",
+  "bold": "굵게",
+  "italic": "기울임꼴",
+  "strikethrough": "취소선",
+  "heading": "제목",
+  "bullets": "글머리 기호",
+  "numberedList": "번호 매기기 목록",
+  "quote": "인용",
+  "linkLabel": "링크",
+  "addImageOrFile": "이미지 또는 파일 추가",
+  "stopVoiceInput": "음성 입력 중지",
+  "voiceInput": "음성 입력",
+  "stopAndSaveVoiceInput": "음성 입력 중지 및 저장",
+  "tapMicToSpeak": "마이크를 눌러 노트를 말하세요",
+  "voiceNote": "음성 노트",
+  "preparing": "준비 중…",
+  "saving": "저장 중…",
+  "unsavedChanges": "저장되지 않은 변경 사항",
+  "saved": "저장됨",
+  "recordingVoiceInput": "녹음 중 • {duration}",
+  "savingVoiceText": "음성 텍스트 저장 중…",
+  "preparingMicrophone": "마이크 준비 중…",
+  "textNote": "텍스트 노트",
+  "checklistType": "체크리스트",
+  "templateMeetingNotes": "회의 메모",
+  "templateAgenda": "안건",
+  "templateDecisions": "결정 사항",
+  "templateActionItems": "실행 항목",
+  "templateDailyPlan": "일일 계획",
+  "templateTopPriority": "최우선 순위",
+  "templateImportant": "중요",
+  "templateIfTimeAllows": "시간이 남으면",
+  "templateShoppingList": "쇼핑 목록",
+  "templateMilk": "우유",
+  "templateVegetables": "채소",
+  "templateHousehold": "생활용품",
+  "templateTravelPlan": "여행 계획",
+  "templateDates": "날짜",
+  "templateBookings": "예약",
+  "templatePlacesToVisit": "방문할 장소",
+  "orahNoteCard": "Orah 노트 카드",
+  "sharedFromOrah": "Orah에서 공유됨",
+  "noteCardCaptureError": "노트 카드를 캡처할 수 없습니다.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "안녕하세요, {name}",
+  "welcomeBack": "다시 오신 것을 환영합니다",
+  "friend": "친구",
+  "voiceGreeting": "안녕하세요, {name}",
+  "voicePreviewGreeting": "안녕하세요, Orah Notes입니다",
+  "speakMyNameAtStartup": "시작할 때 내 이름 말하기",
+  "voiceGreetingEnabledDescription": "앱을 열면 선택한 언어로 Orah가 인사합니다.",
+  "voiceGreetingDisabledDescription": "인사 음성이 꺼집니다.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "보관 취소",
+  "archiveNote": "보관",
+  "duplicateNote": "메모 복제",
+  "navNotes": "메모",
+  "navFolders": "폴더",
+  "navFavorites": "즐겨찾기",
+  "navArchivedNotes": "보관된 메모",
+  "navDailyReflection": "일일 성찰",
+  "navVoiceCapture": "음성 입력",
+  "navChecklists": "체크리스트",
+  "navAppearance": "화면 모양",
+  "navSearch": "검색",
+  "offlineAccess": "오프라인 액세스",
+  "backupExport": "백업 및 내보내기",
+  "recentlyUpdated": "최근 업데이트",
+  "recentlyCreated": "최근 생성",
+  "titleAZ": "제목 A–Z",
+  "noNotesYet": "아직 메모가 없습니다",
+  "vaultLocked": "보관함 / 잠긴 메모",
+  "vaultLockedDesc": "비공개 암호화 메모 열기",
+  "privacyPledge": "개인정보 보호 약속",
+  "privacyPledgeDesc": "클라우드를 사용하지 않는다는 약속 읽기",
+  "backupExportDesc": "로컬 백업 및 이동 가능한 데이터",
+  "vaultResetTitle": "보관함 PIN을 잊으셨나요? 재설정",
+  "vaultResetDesc": "복구할 수 없습니다. 재설정하면 이전 보관함이 영구 삭제됩니다.",
+  "pinBiometric": "PIN 및 생체 인증 보호",
+  "androidFeaturesDesc": "위젯, 바로가기 및 공유",
+  "archivedNotesTitle": "보관된 메모",
+  "archivedNotesDesc": "보관된 메모 열기 또는 복원",
+  "trashTitle": "휴지통",
+  "trashDesc": "메모 복원 또는 영구 삭제",
+  "orahFeaturesTitle": "Orah 기능",
+  "orahFeaturesDesc": "Orah의 기능 살펴보기",
+  "aboutOrahTitle": "Orah 정보",
+  "aboutOrahDesc": "제품 정보 및 개인정보 보호 방식",
+  "cancelLabel": "취소",
+  "resetVaultQuestion": "보관함을 재설정할까요?",
+  "deleteVaultConfirm": "이전 보관함 삭제 후 새로 만들기",
+  "themeLabel": "테마",
+  "themeSystem": "시스템",
+  "themeLight": "라이트",
+  "themeDark": "다크",
+  "portableBackup": "ポータブルバックアップ",
+  "createBackup": "バックアップを作成",
+  "restoreBackup": "バックアップを復元",
+  "storageMaintenance": "ストレージのメンテナンス",
+  "cleanOrphanAttachments": "孤立した添付ファイルを削除",
+  "vaultAutoLock": "保管庫の自動ロック",
+  "neverLabel": "しない",
+  "dailyReflectionReminder": "毎日の振り返りリマインダー",
+  "reminderTime": "リマインダー時刻",
+  "backupExportTitle": "バックアップとエクスポート",
+  "vaultResetSuccess": "古い保管庫を削除しました。保管庫を開いて新しいPINを作成してください。",
+  "vaultResetFailed": "保管庫のリセットに失敗しました：{error}",
+  "backupRestoredCount": "{count} 件のノートを復元しました。",
+  "backupError": "バックアップエラー：{error}",
+  "unusedFilesFound": "未使用のファイルが {count} 個見つかりました",
+  "removedOrphanAttachments": "孤立した添付ファイルを {count} 個削除しました。",
+  "showDailyInspiration": "ホーム画面に毎日のインスピレーションを表示",
+  "showDailyInspirationDesc": "ノートの上に毎日の振り返りを表示。",
+  "reminderUpdateFailed": "毎日の振り返りリマインダーを更新できませんでした：{error}",
+  "reminderScheduleFailed": "毎日の振り返りをスケジュールできませんでした：{error}",
+  "orahFeaturesSemantics": "Orahの機能",
+  "vaultTooltip": "保管庫 / ロックされたノート",
+  "calendarHistoryTooltip": "カレンダーと履歴",
+  "statisticsTooltip": "統計と分析",
+  "appearanceTooltip": "外観",
+  "appearanceSemantics": "外観設定",
+  "searchFiltersTooltip": "検索フィルター",
+  "hideDailyInspiration": "毎日のインスピレーションを非表示",
+  "sortNotesTooltip": "ノートを並べ替え",
+  "listView": "リスト表示",
+  "gridView": "グリッド表示",
+  "searchLabel": "検索",
+  "newNoteLabel": "新しいノート",
+  "microphoneTooltip": "マイク",
+  "unpinTooltip": "固定を解除",
+  "pinTooltip": "固定",
+  "favoriteTooltip": "お気に入り",
+  "editNoteLabel": "ノートを編集",
+  "lockedContent": "ロックされたコンテンツ",
+  "portableBackupDesc": "ノート、フォルダ、添付ファイルを1つの.novaパッケージに。",
+  "vaultAutoLockDesc": "アプリがバックグラウンドに移動した後に認証を要求",
+  "searchClear": "지우기",
+  "favoritesOnly": "즐겨찾기만",
+  "pinnedOnly": "고정 항目만",
+  "folderLabel": "폴더",
+  "allFolders": "모든 폴더",
+  "archivedLabel": "보관됨",
+  "noteTypeLabel": "메모 유형",
+  "allTypes": "모든 유형",
+  "typeText": "텍스트",
+  "typeChecklist": "체크리스트",
+  "typeVoice": "음성",
+  "typeImage": "이미지",
+  "typeDrawing": "그림",
+  "applyFilters": "필터 적용",
+  "filtersTooltip": "필터",
+  "openOrahPro": "ORAH Pro 열기",
+  "searchScreenTitle": "검색",
+  "searchFiltersTitle": "검색 필터",
+  "homeTagline": "생각하고, 쓰고, 간직하세요.",
+  "homeSubtitle": "메모, 계획, 성찰을 위한 차분한 공간.",
+  "tapToBeginNote": "탭하여 메모 시작",
+  "selectNotePrompt": "메모 선택",
+  "desktopNoteEmpty": "이 메모는 비어 있습니다.",
+  "noContentLabel": "콘텐츠 없음",
+  "emptyNotesHint": "+ 버튼을 눌러 첫 번째 생각을 기록하세요.",
+  "justNow": "방금",
+  "minutesAgoSuffix": "분 전",
+  "hoursAgoSuffix": "시간 전",
+  "daysAgoSuffix": "일 전",
+  "hideOrahFeatures": "Orah 기능 숨기기",
+  "showOrahFeatures": "Orah 기능 표시",
+  "activeNotesCount": "메모 {count}개",
+  "completedLabel": "완료",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count}개 완료",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (복사본)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "감사",
+  "reflectionCategoryMindfulness": "마음챙김",
+  "reflectionCategoryPersonalGrowth": "개인적 성장",
+  "reflectionCategoryRelationships": "관계",
+  "reflectionCategorySelfCompassion": "자기 연민",
+  "reflectionCategoryClarity": "명확성",
+  "reflectionCategoryPossibility": "가능성",
+  "reflectionCategoryDailyReview": "하루 돌아보기",
+  "reflectionCategoryPurposeValues": "목적과 가치",
+  "reflectionCategoryResilience": "회복탄력성",
+  "reflectionCategoryCreativityCuriosity": "창의성과 호기심",
+  "reflectionCategoryRestRenewal": "휴식과 재충전",
+  "reflectionWriteHint": "떠오르는 생각을 자유롭게 적어 보세요…",
+  "reflectionSaveError": "성찰을 저장할 수 없습니다: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "영구 삭제할까요?",
+  "trashDeletePermanentlyMessage": "이 메모는 영구적으로 삭제됩니다.",
+  "trashEmptyTitle": "휴지통을 비울까요?",
+  "trashEmptyMessage": "메모 {count}개를 영구 삭제할까요?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "휴지통 비우기",
+  "trashNoNotesTitle": "아직 메모가 없습니다.",
+  "trashPrivateNote": "비공개 메모",
+  "trashLockedNote": "잠긴 메모",
+  "trashChecklist": "체크리스트",
+  "trashNote": "메모",
+  "trashDeletePermanentlyAction": "영구 삭제",
+  "favoritesEmptyTitle": "즐겨찾기가 없습니다",
+  "favoritesEmptyDescription": "중요한 메모에 별표를 표시하면 여기에 나타납니다.",
+  "favoritesNoContent": "내용 없음",
+  "archivedRestoreMessage": "메모가 메모 목록으로 복원되었습니다.",
+  "archivedRefreshTooltip": "보관된 메모 새로고침",
+  "archivedEmptyTitle": "보관된 메모가 없습니다",
+  "archivedEmptyDescription": "보관한 메모가 여기에 표시됩니다. 열거나 기본 메모 목록으로 복원할 수 있습니다.",
+  "privacyPledgeHeadline": "개인정보 보호 약속",
+  "privacyPledgeIntro": "생각은 개인적인 것입니다. Orah는 메모를 비공개로 유지하고 사용자가 직접 관리하도록 설계되었습니다.",
+  "privacyLocalTitle": "100% 로컬",
+  "privacyLocalDescription": "메모는 이 기기에만 저장됩니다.",
+  "privacyCloudTitle": "클라우드 없음",
+  "privacyCloudDescription": "Orah에는 메모 동기화 서버가 없습니다. 공유하거나 내보내지 않는 한 메모는 기기에 남습니다.",
+  "privacyAiTitle": "AI 사용 안 함",
+  "privacyAiDescription": "Orah는 메모를 스캔하거나 읽지 않으며 메모로 AI를 학습시키지 않습니다.",
+  "privacyVaultTitle": "암호화된 보관함",
+  "privacyVaultDescription": "보관함의 민감한 메모는 AES-256-GCM 암호화로 보호됩니다.",
+  "privacySharingDisclosure": "공유, 내보내기, 기기 서비스 및 운영체제 기능을 사용하면 선택에 따라 정보가 앱 외부로 전송될 수 있습니다.",
+  "gotIt": "알겠습니다",
+  "aboutFast": "빠름",
+  "aboutFastDescription": "즉시 기록하도록 설계되었습니다.",
+  "aboutOfflineFirst": "오프라인 우선",
+  "aboutOfflineFirstDescription": "계정 없이도 메모를 사용할 수 있습니다.",
+  "aboutPrivate": "비공개",
+  "aboutPrivateDescription": "로컬 데이터와 선택적 기기 보호.",
+  "aboutSummary": "Orah는 방해 없이 열고, 기록하고, 정리하고, 찾도록 설계되었습니다.",
+  "developerSignatureLabel": "Abhinav Bajpai — 개발자 서명",
+  "aboutFeedback": "기능 제안, 피드백 또는 아이디어 문의:",
+  "aboutCopyright": "저작권 © 2026 Abhinav Bajpai. 모든 권리 보유.",
+  "aboutLegalNotice": "Orah 앱 코드, 오리지널 브랜딩, 아트워크 및 제품 자산은 Abhinav Bajpai의 소유입니다. 타사 구성 요소는 각 라이선스를 따릅니다.",
+  "voiceLanguageTitle": "음성 입력 언어",
+  "voiceLanguageDescription": "말할 언어를 선택하세요. 앱 표시 언어와 달라도 됩니다.",
+  "voiceLanguageSystemDefault": "기기 기본 언어 사용",
+  "voiceLanguageNoLocales": "이 기기의 음성 인식 서비스에서 사용할 수 있는 언어가 없습니다.",
+  "securityCreatePin": "PIN 만들기",
+  "securityConfirmPin": "PIN 확인",
+  "securityPinMismatch": "PIN이 일치하지 않습니다.",
+  "securityPinCreated": "PIN이 생성되었습니다. 앱 잠금이 켜졌습니다.",
+  "securityPinActionFailed": "PIN을 업데이트할 수 없습니다: {error}",
+  "securityEnterCurrentPin": "현재 PIN 입력",
+  "securityPinDisabled": "PIN 및 앱 잠금이 해제되었습니다.",
+  "securityBiometricNotCompleted": "생체 인증이 완료되지 않았습니다.",
+  "securityPinDigitsHint": "4~8자리",
+  "securityEnterDigits": "4~8자리를 입력하세요",
+  "securityAppLock": "앱 잠금",
+  "securityRequirePin": "ORAH가 잠겼을 때 PIN 요구",
+  "securityCreatePinToProtect": "ORAH 보호를 위한 PIN 만들기",
+  "securityChangePin": "PIN 변경",
+  "securityReplacePinSubtitle": "현재 ORAH PIN 교체",
+  "securityRemovePin": "PIN 제거",
+  "securityTurnOffPinProtection": "PIN 보호 끄기",
+  "securityBiometricUnlock": "생체 인증으로 잠금 해제",
+  "securityUseBiometrics": "지문 또는 기기 생체 인증 사용",
+  "securityLocalFirstPrivacy": "로컬 저장 우선 개인정보 보호",
+  "securityLocalFirstDescription": "ORAH는 메모에 계정이나 클라우드 동기화를 요구하지 않습니다.",
+  "securityStorageNote": "보안 안내: PIN 자격 증명은 Android/iOS 보안 저장소에 보관됩니다. 민감한 메모 내용은 기기에 남습니다. ORAH가 콘텐츠의 종단 간 암호화를 주장하기 전에 완전히 암호화된 보관함 저장소를 추가할 예정입니다.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN은 복구할 수 없습니다. 잊어버리면 보관함을 복구할 수 없습니다.",
+  "vaultPinDigitsHint": "4~8자리 보관함 PIN",
+  "vaultConfirmPin": "PIN 확인",
+  "vaultCancel": "취소",
+  "vaultPinsMismatch": "PIN이 일치하지 않습니다.",
+  "vaultPinDigitsError": "보관함 PIN은 4~8자리여야 합니다.",
+  "vaultIncorrectPin": "보관함 PIN이 올바르지 않습니다.",
+  "vaultVerifyCurrentPin": "현재 보관함 PIN 확인",
+  "vaultIncorrectCurrentPin": "현재 보관함 PIN이 올바르지 않습니다.",
+  "vaultCreateNewPin": "새 보관함 PIN 만들기",
+  "vaultPinChanged": "보관함 PIN이 변경되었습니다.",
+  "vaultNewFolder": "새 보관함 폴더",
+  "vaultFolderName": "폴더 이름",
+  "vaultCreate": "만들기",
+  "vaultRenameFolder": "보관함 폴더 이름 변경",
+  "vaultSave": "저장",
+  "vaultDelete": "삭제",
+  "vaultLockedTitle": "보관함 / 잠긴 메모",
+  "vaultChangePin": "보관함 PIN 변경",
+  "vaultTrustBadge": "고보안 보관함",
+  "vaultCreatePrivateNote": "비공개 메모 만들기",
+  "vaultAllFolders": "모든 폴더",
+  "vaultFolderOptions": "보관함 폴더 옵션",
+  "vaultRename": "이름 변경",
+  "vaultNewFolderAction": "새 폴더",
+  "vaultEmptyTitle": "보관함이 비어 있습니다",
+  "vaultEmptyDescription": "편집기에서 메모를 잠그거나 비공개 메모를 만드세요.",
+  "vaultMoveToFolder": "폴더로 이동",
+  "vaultUnfiled": "미분류",
+  "vaultJustNow": "방금",
+  "vaultMinutesAgoSuffix": "분 전",
+  "vaultHoursAgoSuffix": "시간 전",
+  "vaultDaysAgoSuffix": "일 전",
+  "vaultDeleteFolderTitle": "{folderName}을(를) 삭제할까요?",
+  "vaultFolderEmpty": "이 폴더는 비어 있습니다.",
+  "vaultDeleteFolderWithNotes": "계속할까요? 비공개 메모 {count}개가 미분류로 이동합니다.",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "메모 내보내기",
+  "exportSheetDescription": "아래에서 사용 가능한 형식 중 하나만 선택하세요.",
+  "exportDocuments": "문서",
+  "exportData": "데이터",
+  "exportPlannedSection": "예정 / 곧 제공",
+  "exportPlannedDescription": "이 형식은 향후 Orah 업데이트에서 제공될 예정입니다.",
+  "sendAsEmailAttachment": "이메일 첨부 파일로 보내기",
+  "emailAttachmentDescription": "PDF를 만들고 시스템 공유 창을 엽니다",
+  "exportAllAvailable": "사용 가능한 모든 형식 내보내기",
+  "exportComingSoon": "곧 제공",
+  "plannedExportFormats": "예정된 내보내기 형식",
+  "plannedExportFormatsDescription": "이 형식은 향후 Orah 업데이트에서 제공될 예정이며 현재는 내보낼 수 없습니다.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "인쇄용 문서",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "편집 가능한 Microsoft Word 문서",
+  "exportFormatText": "일반 텍스트",
+  "exportDescriptionText": "최대 호환성",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "휴대용 Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "체크리스트는 행으로 변환됩니다",
+  "organizationPickerTitle": "메모 정리",
+  "organizationDone": "완료",
+  "organizationNoFolder": "폴더 없음",
+  "organizationAddTagHint": "태그 추가",
+  "organizationAddTag": "추가",
+  "organizationNoTags": "태그가 없습니다.",
+  "exportFailed": "내보내기에 실패했습니다: {error}",
+  "exportEmailAttachmentFailed": "이메일 첨부에 실패했습니다: {error}",
+  "exportAllFailed": "모두 내보내기에 실패했습니다: {error}",
+  "exportCategoryEbooks": "전자책",
+  "exportCategoryAcademic": "학술",
+  "exportCategoryPresentation": "프레젠테이션",
+  "exportCategorySpeechAudio": "음성 / 오디오",
+  "exportCategorySubtitles": "자막",
+  "exportCategoryEmail": "이메일",
+  "exportCategoryCodeLiterate": "코드 / 기술 문서",
+  "exportCategoryArchive": "보관",
+  "exportCategoryDatabase": "데이터베이스",
+  "exportCategoryClipboard": "클립보드",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "폴더",
+  "organizationTagsLabel": "태그",
+  "plannedExportRichText": "서식 있는 텍스트 (.rtf)",
+  "plannedExportRichTextDescription": "플랫폼 간 서식 있는 텍스트",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "LibreOffice 오픈 표준",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "웹 페이지, 이메일, 블로그",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "대부분의 전자책 리더",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "구형 Kindle",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "최신 Kindle",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "널리 쓰이는 전자책 형식",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "연구 논문 및 수학 문서",
+  "plannedExportLatexPdf": "LaTeX에서 PDF (.pdf)",
+  "plannedExportLatexPdfDescription": "최종 학술 논문",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "참고문헌 관리",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "표와 데이터 분석",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "개발자, API 및 구조화 데이터",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "구조화 문서",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "설정 및 읽기 쉬운 데이터",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "탭으로 구분된 표",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "프레젠테이션",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "텍스트 음성 변환 오디오",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "텍스트 음성 변환 오디오",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "비디오 자막",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "웹/비디오 자막",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "이메일 메시지 형식",
+  "plannedExportHtmlEmail": "HTML 이메일",
+  "plannedExportHtmlEmailDescription": "전송 가능한 HTML 이메일",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "코드 문서",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "압축 내보내기 묶음",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "압축 내보내기 묶음",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "데이터베이스 내보내기",
+  "plannedExportRichClipboard": "서식 있는 텍스트 클립보드",
+  "plannedExportRichClipboardDescription": "서식 있는 텍스트 클립보드 형식",
+  "plannedExportHtmlClipboard": "HTML 클립보드",
+  "plannedExportHtmlClipboardDescription": "클립보드 HTML 형식",
+  "plannedExportPlainClipboard": "일반 텍스트 클립보드",
+  "plannedExportPlainClipboardDescription": "일반 텍스트 클립보드 형식",
+  "exportShareSubject": "ORAH — 내보내기: {title}",
+  "exportShareBody": "ORAH에서 내보냄",
+  "emailAttachmentSubject": "ORAH — 첨부 파일: {title}",
+  "emailAttachmentBody": "ORAH에서 첨부",
+  "exportAllShareSubject": "ORAH — {title} — 내보내기 묶음",
+  "exportAllShareBody": "ORAH에서 현재 사용할 수 있는 모든 형식으로 내보냈습니다",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count}분",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "ORAH 위젯 추가",
+  "androidWidgetSetupBody": "Android 홈 화면에서 빈 공간을 길게 누르고 위젯을 선택한 다음 ORAH를 찾아 홈 화면으로 끌어오세요.",
+  "androidQuickShortcutDialogTitle": "빠른 메모 바로가기",
+  "androidQuickShortcutDialogBody": "Android 홈 화면에서 ORAH 앱 아이콘을 길게 누르세요. 바로가기 메뉴에서 새 메모 또는 새 체크리스트를 선택하세요.",
+  "androidShortcutNewNote": "새 메모",
+  "androidShortcutNewChecklist": "새 체크리스트",
+  "androidShortcutSearch": "검색",
+  "androidShareUnavailable": "이 기기에서는 ORAH로 공유할 수 없습니다.",
+  "androidFeatureHeading": "Android용 ORAH",
+  "androidFeatureIntro": "Android 기본 통합 기능으로 빠른 기록, 공유, 홈 화면 접근을 제공합니다.",
+  "androidWidgetTitle": "홈 화면 위젯",
+  "androidWidgetDescription": "홈 화면에서 메모나 체크리스트를 만들거나 검색을 여세요.",
+  "androidQuickCaptureTitle": "빠른 메모 바로가기",
+  "androidQuickCaptureDescription": "ORAH를 바로 열어 즉시 기록하세요.",
+  "androidShareTitle": "ORAH로 공유",
+  "androidShareDescription": "지원되는 텍스트와 콘텐츠를 새 ORAH 메모로 보냅니다.",
+  "androidRemindersTitle": "미리 알림",
+  "androidRemindersDescription": "백엔드 없이 메모와 체크리스트 알림을 만드세요.",
+  "androidLocalIntegrationsNote": "이 통합 기능은 Android 로컬 기능이며 백엔드가 필요하지 않습니다.",
+  "androidDone": "완료",
+  "androidGotIt": "확인",
+  "captureTitle": "기록",
+  "captureDescription": "기록할 항목을 선택하세요.",
+  "quickNote": "빠른 메모",
+  "startTypingImmediately": "바로 입력 시작",
+  "quickChecklist": "빠른 체크리스트",
+  "captureTasksWithoutSetup": "설정 없이 작업 기록",
+  "dailyChecklistTooltip": "일일 체크리스트",
+  "quickCaptureHint": "탭하여 작성 • 길게 눌러 체크리스트와 옵션 표시",
+  "quickCaptureTooltip": "빠른 기록. 길게 눌러 체크리스트와 옵션을 표시하세요.",
+  "filtersActive": "필터 적용됨",
+  "searchResultsCount": "검색 결과: {count}",
+  "advancedSearchProFeature": "고급 검색은 ORAH Pro 기능입니다",
+  "noNotesFound": "메모를 찾을 수 없습니다",
+  "searchFilterHint": "일반 키워드는 무료로 검색할 수 있습니다. 필터와 연산자를 사용하려면 ORAH Pro를 여세요.",
+  "searchEmptyHint": "다른 단어를 시도하거나 필터를 제거하세요.",
+  "voicePreferences": "음성 설정",
+  "dailyReflectionSchedule": "일일 성찰 일정",
+  "versionLabel": "버전 {version}",
+  "vaultResetWarning": "Vault PIN은 복구할 수 없습니다. 재설정하면 Vault의 모든 메모와 암호화 키가 영구 삭제됩니다. 일반 메모와 폴더는 변경되지 않습니다.",
+  "portableBackupShareText": "Orah 휴대용 백업",
+  "storageAttachmentCount": "첨부 파일 {count}개 • {size}",
+  "dailyReflectionTimePicker": "일일 성찰 시간 선택",
+  "scheduleLoading": "일정을 불러오는 중…",
+  "scheduleEnabledAt": "사용 • 매일 {time}",
+  "scheduleDisabled": "사용 안 함 • 매일 성찰 알림을 받으려면 켜세요",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "featureVoiceCaptureDescription": "음성으로 빠르게 생각을 메모로 기록하세요.",
+  "featureChecklistDescription": "메모를 실행 가능한 체크리스트로 바꾸고 완료 상태를 추적하세요.",
+  "featureShareExportTitle": "공유 및 내보내기",
+  "featureShareExportDescription": "메모를 공유하고 콘텐츠를 휴대 가능한 형식으로 내보내세요.",
+  "notificationDailyReflectionTitle": "일일 성찰 시간입니다",
+  "notificationDailyReflectionBody": "마음속 생각을 적을 수 있도록 잠시 조용한 시간을 가져보세요.",
+  "notificationDailyReflectionChannel": "일일 성찰",
+  "notificationDailyReflectionChannelDescription": "잠시 멈추어 성찰하도록 돕는 부드러운 일일 알림",
+  "notificationReminderChannel": "Orah 알림",
+  "notificationReminderChannelDescription": "메모 및 작업 알림",
+  "notificationDoneAction": "완료",
+  "notificationSnooze10Action": "10분 후 다시 알림",
+  "notificationSnooze60Action": "1시간 후 다시 알림",
+  "notificationReminderTitle": "ORAH 알림",
+  "genericTryAgain": "다시 시도해 주세요.",
+  "registrationFailed": "등록을 완료할 수 없습니다. 다시 시도해 주세요."
 }

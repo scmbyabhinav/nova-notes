@@ -10,6 +10,7 @@ import '../core/navigation/orah_navigation.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../screens/note_editor_screen.dart';
 import '../screens/reflection_prompt_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class OrahReminderService {
   OrahReminderService._();
@@ -20,6 +21,13 @@ class OrahReminderService {
   static const snooze60Action = 'orah_snooze_60';
   bool _initialized = false;
   String? _pendingLaunchPayload;
+
+  Future<AppLocalizations> _localizationsForDevice() async {
+    const supported = {'ar', 'de', 'en', 'es', 'fr', 'he', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'tr', 'zh'};
+    final languageCode = WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    final locale = Locale(supported.contains(languageCode) ? languageCode : 'en');
+    return AppLocalizations.delegate.load(locale);
+  }
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -144,11 +152,12 @@ class OrahReminderService {
       next = next.add(const Duration(days: 1));
     }
 
+    final l10n = await _localizationsForDevice();
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
         'orah_daily_reflection',
-        'Daily Reflection',
-        channelDescription: 'A gentle daily prompt to pause and reflect',
+        l10n.notificationDailyReflectionChannel,
+        channelDescription: l10n.notificationDailyReflectionChannelDescription,
         importance: Importance.defaultImportance,
         priority: Priority.defaultPriority,
       ),
@@ -156,8 +165,8 @@ class OrahReminderService {
 
     await _plugin.zonedSchedule(
       id: _notificationId('daily-reflection'),
-      title: 'Time for your Daily Reflection',
-      body: 'Take a quiet moment to write down what is on your mind.',
+      title: l10n.notificationDailyReflectionTitle,
+      body: l10n.notificationDailyReflectionBody,
       scheduledDate: tz.TZDateTime.from(next.toLocal(), tz.local),
       notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -192,23 +201,24 @@ class OrahReminderService {
       'noteId': payloadNoteId ?? noteId,
       if (payloadChecklistId != null) 'checklistId': payloadChecklistId,
     });
+    final l10n = await _localizationsForDevice();
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
         'orah_reminders',
-        'Orah reminders',
-        channelDescription: 'Reminders for notes and tasks',
+        l10n.notificationReminderChannel,
+        channelDescription: l10n.notificationReminderChannelDescription,
         importance: Importance.high,
         priority: Priority.high,
-        actions: const [
-          AndroidNotificationAction(doneAction, 'Done', showsUserInterface: true),
-          AndroidNotificationAction(snooze10Action, 'Snooze 10m', showsUserInterface: true),
-          AndroidNotificationAction(snooze60Action, 'Snooze 1h', showsUserInterface: true),
+        actions: [
+          AndroidNotificationAction(doneAction, l10n.notificationDoneAction, showsUserInterface: true),
+          AndroidNotificationAction(snooze10Action, l10n.notificationSnooze10Action, showsUserInterface: true),
+          AndroidNotificationAction(snooze60Action, l10n.notificationSnooze60Action, showsUserInterface: true),
         ],
       ),
     );
     await _plugin.zonedSchedule(
       id: _notificationId('note:$noteId'),
-      title: 'ORAH reminder',
+      title: l10n.notificationReminderTitle,
       body: safeTitle,
       scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
       notificationDetails: details,

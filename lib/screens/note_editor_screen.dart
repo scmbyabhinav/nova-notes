@@ -28,8 +28,8 @@ import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../services/orah_ocr_service.dart';
-import '../services/orah_entitlement_service.dart';
 import '../core/services/nova_security_service.dart';
+import '../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 class NoteEditorScreen extends StatefulWidget {
@@ -105,6 +105,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _voiceStopRequested = false;
   String _voiceBaseText = '';
   String _voiceTranscript = '';
+  String? _voiceLocaleId;
   Timer? _voiceDurationTimer;
   int _voiceElapsedSeconds = 0;
   final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
@@ -191,16 +192,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         icon: const Icon(Icons.mic_off_rounded, size: 36),
-        title: const Text('Microphone access needed'),
+        title: Text(AppLocalizations.of(dialogContext)!.microphoneAccessNeeded),
         content: Text(
           permanentlyDenied
-              ? 'Orah Notes needs microphone access to transcribe your voice. You can enable this in Settings.'
-              : 'Orah Notes needs microphone access to transcribe your voice. Please allow access, or enable it in Settings.',
+              ? AppLocalizations.of(dialogContext)!.microphoneAccessPermanentDenied
+              : AppLocalizations.of(dialogContext)!.microphoneAccessRequest,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Not now'),
+            child: Text(AppLocalizations.of(dialogContext)!.notNow),
           ),
           FilledButton.icon(
             onPressed: () async {
@@ -208,7 +209,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               await openAppSettings();
             },
             icon: const Icon(Icons.settings_outlined),
-            label: const Text('Open Settings'),
+            label: Text(AppLocalizations.of(dialogContext)!.openSettings),
           ),
         ],
       ),
@@ -226,6 +227,49 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<void> _chooseVoiceLanguage() async {
+    final l10n = AppLocalizations.of(context)!;
+    final savedPreferences = await SharedPreferences.getInstance();
+    _voiceLocaleId = savedPreferences.getString('orah_voice_locale_id');
+    try {
+      final available = await _speechService.initialize(onStatus: (_) {}, onError: (_) {});
+      if (!mounted) return;
+      if (!available) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceInputUnavailable)));
+        return;
+      }
+      final locales = await _speechService.locales();
+      if (!mounted) return;
+      if (locales.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceLanguageNoLocales)));
+        return;
+      }
+      final selected = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: Text(l10n.voiceLanguageTitle),
+          children: [
+            Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 12), child: Text(l10n.voiceLanguageDescription)),
+            RadioListTile<String>(value: '', groupValue: _voiceLocaleId ?? '', title: Text(l10n.voiceLanguageSystemDefault), onChanged: (value) => Navigator.of(dialogContext).pop(value)),
+            for (final locale in locales)
+              RadioListTile<String>(value: locale.localeId, groupValue: _voiceLocaleId ?? '', title: Text(locale.name), subtitle: Text(locale.localeId), onChanged: (value) => Navigator.of(dialogContext).pop(value)),
+          ],
+        ),
+      );
+      if (!mounted || selected == null) return;
+      final preferences = await SharedPreferences.getInstance();
+      if (selected.isEmpty) {
+        await preferences.remove('orah_voice_locale_id');
+        setState(() => _voiceLocaleId = null);
+      } else {
+        await preferences.setString('orah_voice_locale_id', selected);
+        setState(() => _voiceLocaleId = selected);
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.voiceInputUnavailableWithMessage(AppLocalizations.of(context)!.genericTryAgain))));
+    }
+  }
   Future<void> _toggleVoiceInput() async {
     if (_speechInitializing || _voiceProcessing) return;
     if (_isListening) {
@@ -265,7 +309,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               _voiceProcessing = false;
             });
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Voice input unavailable: $message')),
+              SnackBar(content: Text(AppLocalizations.of(context)!.voiceInputUnavailableWithMessage(message))),
             );
           }
         },
@@ -274,13 +318,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (!available) {
         setState(() => _speechInitializing = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Voice input is unavailable on this device.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.voiceInputUnavailable),
           ),
         );
         return;
       }
 
+      final voicePreferences = await SharedPreferences.getInstance();
+      _voiceLocaleId = voicePreferences.getString('orah_voice_locale_id');
       _voiceBaseText = _contentController.text;
       _voiceTranscript = '';
       _voiceStopRequested = false;
@@ -292,6 +338,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _isListening = true;
       });
       await _speechService.startListening(
+        localeId: _voiceLocaleId,
         onResult: (transcript, isFinal) {
           if (!mounted || transcript.trim().isEmpty) return;
           _voiceTranscript = transcript.trim();
@@ -339,7 +386,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _isListening = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not start voice capture: $error')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.couldNotStartVoiceCapture(AppLocalizations.of(context)!.genericTryAgain))),
       );
     }
   }
@@ -366,9 +413,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Voice text saved to note.'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.voiceTextSaved),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -425,9 +472,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Recording stopped. Partial text saved.'),
-          duration: Duration(seconds: 3),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.recordingStoppedPartialSaved),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -447,9 +494,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _addChecklistItem() async {
     final controller = TextEditingController();
     final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Add task'),
-      content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done, decoration: const InputDecoration(hintText: 'What needs to be done?')),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Add'))],
+      title: Text(AppLocalizations.of(context)!.addTask),
+      content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done, decoration: InputDecoration(hintText: AppLocalizations.of(context)!.taskHint)),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.add))],
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
@@ -460,8 +507,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _editChecklistItem(int index) async {
     final controller = TextEditingController(text: _checklistItems[index].text);
     final text = await showDialog<String>(context: context, builder: (context) => AlertDialog(
-      title: const Text('Edit task'), content: TextField(controller: controller, autofocus: true),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Save'))],
+      title: Text(AppLocalizations.of(context)!.editTask), content: TextField(controller: controller, autofocus: true),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)), FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.save))],
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
@@ -503,19 +550,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Enter Vault PIN'),
+        title: Text(AppLocalizations.of(dialogContext)!.enterVaultPin),
         content: TextField(
           controller: controller,
           autofocus: true,
           obscureText: true,
           keyboardType: TextInputType.number,
           maxLength: 8,
-          decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+          decoration: InputDecoration(labelText: AppLocalizations.of(dialogContext)!.pinDigitsLabel),
           onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: const Text('Unlock')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(AppLocalizations.of(dialogContext)!.cancel)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text), child: Text(AppLocalizations.of(dialogContext)!.unlock)),
         ],
       ),
     );
@@ -533,7 +580,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (mounted) {
         setState(() => _unlocking = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Authentication failed. Try biometrics or your Vault PIN.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationFailed)),
         );
       }
       return;
@@ -579,7 +626,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Private note could not be unlocked: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotUnlockPrivateNote(AppLocalizations.of(context)!.genericTryAgain))),
         );
         Navigator.of(context).pop();
       }
@@ -602,32 +649,29 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           size: 42,
           color: Theme.of(dialogContext).colorScheme.primary,
         ),
-        title: const Text('Secure Your Vault'),
-        content: const Text(
-          'To lock this note, you need to set up a PIN or Biometric authentication first. '
-          'This ensures only you can access it.',
-        ),
+        title: Text(AppLocalizations.of(dialogContext)!.secureYourVault),
+        content: Text(AppLocalizations.of(dialogContext)!.vaultSetupDescription),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(dialogContext)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Set Up Security'),
+            child: Text(AppLocalizations.of(dialogContext)!.setUpSecurity),
           ),
         ],
       ),
     );
     if (shouldSetup != true || !mounted) return false;
 
-    final first = await _requestLockSetupPin('Create Vault PIN');
+    final first = await _requestLockSetupPin(AppLocalizations.of(context)!.createVaultPin);
     if (first == null || !mounted) return false;
-    final second = await _requestLockSetupPin('Confirm Vault PIN');
+    final second = await _requestLockSetupPin(AppLocalizations.of(context)!.confirmVaultPin);
     if (second == null || !mounted) return false;
     if (first != second) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PINs do not match. Your note was not locked.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinsDoNotMatch)),
       );
       return false;
     }
@@ -638,14 +682,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       await security.setAppLockEnabled(true);
       if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vault PIN created. Securing your note now…')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.vaultPinCreated)),
       );
       // Creating and confirming this PIN is the setup action authorizing this lock.
       return true;
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceFirst('FormatException: ', ''))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.genericTryAgain)),
         );
       }
       return false;
@@ -667,10 +711,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             keyboardType: TextInputType.number,
             obscureText: true,
             maxLength: 8,
-            decoration: const InputDecoration(labelText: '4–8 digit PIN'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(dialogContext)!.pinDigitsLabel),
             validator: (value) {
               if (value == null || !RegExp(r'^\d{4,8}$').hasMatch(value)) {
-                return 'Enter 4–8 digits';
+                return AppLocalizations.of(context)!.enterPinDigits;
               }
               return null;
             },
@@ -679,7 +723,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(dialogContext)!.cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -687,7 +731,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 Navigator.of(dialogContext).pop(controller.text);
               }
             },
-            child: const Text('Continue'),
+            child: Text(AppLocalizations.of(dialogContext)!.continueLabel),
           ),
         ],
       ),
@@ -701,7 +745,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _contentController.text.trim().isEmpty &&
         _attachments.isEmpty && _checklistItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add some content before locking this note.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.addContentBeforeLock)),
       );
       return;
     }
@@ -716,7 +760,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (!setupCompleted && !await _authenticatePrivateAccess()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Authentication was not completed. Note was not locked.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.vaultAuthenticationNotCompleted)),
         );
       }
       return;
@@ -730,7 +774,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Note locked and moved to your Vault.')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.noteLockedMovedToVault)),
     );
     Navigator.of(context).pop();
   }
@@ -745,7 +789,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Note unlocked and moved back to your notes.')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.noteUnlockedMovedToNotes)),
     );
     Navigator.of(context).pop();
   }
@@ -769,7 +813,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       return;
     }
 
-    var storedTitle = title.isEmpty ? 'Untitled note' : title;
+    var storedTitle = title.isEmpty ? AppLocalizations.of(context)!.untitledNote : title;
     var storedContent = content;
     var storedTags = _tags;
     var storedChecklistItems = _checklistItems;
@@ -914,7 +958,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final text = await OrahOcrService.instance.extractText(File(picked.path));
       if (!mounted) return;
       if (text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No readable text found.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.ocrNoReadableText)));
         return;
       }
       final current = _contentController.text.trim();
@@ -923,9 +967,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         text: combined,
         selection: TextSelection.collapsed(offset: combined.length),
       );
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Text extracted from image.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.ocrTextExtracted)));
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not read text from that image.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.ocrCouldNotReadImage)));
     }
   }
 
@@ -988,19 +1032,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _clearDueDate() async { setState(() { _dueAt = null; _hasChanges = true; }); await _save(); }
 
   Future<void> _showTemplates() async {
-    final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
-    final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [const ListTile(title: Text('Choose a template')), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
+    final l10n = AppLocalizations.of(context)!;
+    final templates = <String, List<String>>{
+      l10n.templateMeetingNotes: [l10n.templateAgenda, l10n.templateDecisions, l10n.templateActionItems],
+      l10n.templateDailyPlan: [l10n.templateTopPriority, l10n.templateImportant, l10n.templateIfTimeAllows],
+      l10n.templateShoppingList: [l10n.templateMilk, l10n.templateVegetables, l10n.templateHousehold],
+      l10n.templateTravelPlan: [l10n.templateDates, l10n.templateBookings, l10n.templatePlacesToVisit],
+    };
+    final choice = await showModalBottomSheet<String>(context: context, showDragHandle: true, builder: (context) => SafeArea(child: ListView(shrinkWrap: true, children: [ListTile(title: Text(AppLocalizations.of(context)!.chooseTemplate)), for (final entry in templates.entries) ListTile(leading: const Icon(Icons.description_outlined), title: Text(entry.key), subtitle: Text(entry.value.join(' • ')), onTap: () => Navigator.pop(context, entry.key))])));
     if (choice == null || !mounted) return;
     final hasContent = _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _checklistItems.isNotEmpty;
     if (hasContent) {
       final replace = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Replace current note?'),
-          content: const Text('This template will replace the current title and content.'),
+          title: Text(AppLocalizations.of(dialogContext)!.replaceCurrentNote),
+          content: Text(AppLocalizations.of(dialogContext)!.templateReplaceWarning),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
-            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Replace')),
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(dialogContext)!.replace)),
           ],
         ),
       );
@@ -1058,7 +1108,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _insertLink() async {
-    final url = await _textDialog('Insert link', 'https://example.com');
+    final url = await _textDialog(AppLocalizations.of(context)!.insertLink, 'https://example.com');
     if (url == null || url.isEmpty) return;
     final value = _contentController.value;
     final selected = value.selection.textInside(value.text);
@@ -1082,8 +1132,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           keyboardType: TextInputType.url,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Insert')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.insert)),
         ],
       ),
     );
@@ -1107,7 +1157,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not add image: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddImage(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -1133,7 +1183,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not add files: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotAddFiles(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -1160,7 +1210,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
       final bytes = await _noteCardScreenshotController.capture(pixelRatio: 2);
       if (bytes == null || bytes.isEmpty) {
-        throw StateError('The note card could not be captured.');
+        throw StateError(AppLocalizations.of(context)!.noteCardCaptureError);
       }
 
       if (mounted) setState(() => _isCapturingNoteCard = false);
@@ -1173,14 +1223,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             name: 'orah-note-card.png',
           ),
         ],
-        subject: 'Orah note card',
-        text: 'Shared from Orah',
+        subject: AppLocalizations.of(context)!.orahNoteCard,
+        text: AppLocalizations.of(context)!.sharedFromOrah,
       );
     } catch (e) {
       if (mounted) {
         setState(() => _isCapturingNoteCard = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not share note card: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotShareNoteCard(AppLocalizations.of(context)!.genericTryAgain))),
         );
       }
     }
@@ -1197,11 +1247,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final name = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Rename attachment'),
+        title: Text(AppLocalizations.of(context)!.renameAttachmentTitle),
         content: TextField(controller: controller, autofocus: true, textInputAction: TextInputAction.done),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: const Text('Rename')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(AppLocalizations.of(context)!.rename)),
         ],
       ),
     );
@@ -1215,7 +1265,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       });
       await _save();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not rename attachment: ' + e.toString())));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.couldNotRenameAttachment(AppLocalizations.of(context)!.genericTryAgain))));
     }
   }
 
@@ -1229,8 +1279,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(p.basename(path)),
-        content: Text('Size: ' + _formatBytes(bytes) + '\nModified: ' + stat.modified.toLocal().toString()),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+        content: Text(AppLocalizations.of(context)!.attachmentDetailsFormat(_formatBytes(bytes), DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(stat.modified.toLocal()))),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close))],
       ),
     );
   }
@@ -1270,11 +1320,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       builder: (sheetContext) => SafeArea(
         child: Wrap(
           children: [
-            ListTile(leading: const Icon(Icons.visibility_outlined), title: const Text('Preview'), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
-            ListTile(leading: const OrahAssetIcon('share'), title: const Text('Share'), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
-            ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: const Text('Rename'), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
-            ListTile(leading: const Icon(Icons.info_outline), title: const Text('Details'), onTap: () { Navigator.pop(sheetContext); _showAttachmentDetails(path); }),
-            ListTile(leading: const OrahAssetIcon('trash'), title: const Text('Remove from note'), onTap: () { Navigator.pop(sheetContext); _removeAttachment(path); }),
+            ListTile(leading: const Icon(Icons.visibility_outlined), title: Text(AppLocalizations.of(sheetContext)!.preview), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
+            ListTile(leading: const OrahAssetIcon('share'), title: Text(AppLocalizations.of(sheetContext)!.share), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
+            ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: Text(AppLocalizations.of(sheetContext)!.rename), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
+            ListTile(leading: const Icon(Icons.info_outline), title: Text(AppLocalizations.of(sheetContext)!.details), onTap: () { Navigator.pop(sheetContext); _showAttachmentDetails(path); }),
+            ListTile(leading: const OrahAssetIcon('trash'), title: Text(AppLocalizations.of(sheetContext)!.removeFromNote), onTap: () { Navigator.pop(sheetContext); _removeAttachment(path); }),
           ],
         ),
       ),
@@ -1291,7 +1341,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
+              title: Text(AppLocalizations.of(sheetContext)!.chooseFromGallery),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _addImage(ImageSource.gallery);
@@ -1299,7 +1349,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
+              title: Text(AppLocalizations.of(sheetContext)!.takePhoto),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _addImage(ImageSource.camera);
@@ -1307,7 +1357,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.attach_file_rounded),
-              title: const Text('Attach files'),
+              title: Text(AppLocalizations.of(sheetContext)!.attachFiles),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _addFiles();
@@ -1323,7 +1373,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (_isLocked && !await _authenticatePrivateAccess()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Authentication failed. Note was not deleted.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.authenticationFailedNoteNotDeleted)),
         );
       }
       return;
@@ -1354,15 +1404,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final theme = Theme.of(context);
     if (_isLocked && !_privateUnlocked) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Private note')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.privateNote)),
         body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.security_rounded, size: 56),
           const SizedBox(height: 16),
-          Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+          Text(AppLocalizations.of(context)!.thisNoteIsPrivate, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          const Text('Unlock with your biometric or PIN to view it.', textAlign: TextAlign.center),
+          Text(AppLocalizations.of(context)!.unlockPrivateNoteHint, textAlign: TextAlign.center),
           const SizedBox(height: 20),
-          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? 'Unlocking…' : 'Unlock note')),
+          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? AppLocalizations.of(context)!.unlocking : AppLocalizations.of(context)!.unlockNote)),
         ]))),
       );
     }
@@ -1377,13 +1427,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: _isZenMode
           ? FloatingActionButton.small(
-              tooltip: 'Exit Zen Mode',
+              tooltip: AppLocalizations.of(context)!.exitZenMode,
               onPressed: () => setState(() => _isZenMode = false),
               child: const Icon(Icons.center_focus_strong),
             )
           : Tooltip(
         key: _voiceHintKey,
-        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
+        message: _isListening ? AppLocalizations.of(context)!.stopAndSaveVoiceInput : AppLocalizations.of(context)!.tapMicToSpeak,
         triggerMode: TooltipTriggerMode.manual,
         child: FloatingActionButton.extended(
           onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
@@ -1402,13 +1452,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           label: Text(
             _isListening
                 ? _formatVoiceDuration()
-                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
+                : (_speechInitializing || _voiceProcessing ? AppLocalizations.of(context)!.preparing : AppLocalizations.of(context)!.voiceNote),
           ),
         ),
       ),
       appBar: _isZenMode ? null : AppBar(
         leading: IconButton(
-          tooltip: 'Back',
+          tooltip: AppLocalizations.of(context)!.back,
           onPressed: _close,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
@@ -1416,8 +1466,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           duration: const Duration(milliseconds: 150),
           child: Text(
             _saving
-                ? 'Saving…'
-                : (_hasChanges ? 'Unsaved changes' : 'Saved'),
+                ? AppLocalizations.of(context)!.saving
+                : (_hasChanges ? AppLocalizations.of(context)!.unsavedChanges : AppLocalizations.of(context)!.saved),
             key: ValueKey('$_saving-$_hasChanges'),
             style: theme.textTheme.labelLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -1426,22 +1476,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
+            tooltip: _isZenMode ? AppLocalizations.of(context)!.exitZenMode : AppLocalizations.of(context)!.zenMode,
             onPressed: () => setState(() => _isZenMode = !_isZenMode),
             icon: const Icon(Icons.center_focus_strong),
           ),
           IconButton(
-            tooltip: _previewMode ? 'Edit' : 'Preview',
+            tooltip: _previewMode ? AppLocalizations.of(context)!.edit : AppLocalizations.of(context)!.preview,
             onPressed: () => setState(() => _previewMode = !_previewMode),
             icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
           ),
           IconButton(
-            tooltip: 'Add Image',
+            tooltip: AppLocalizations.of(context)!.voiceLanguageTitle,
+            onPressed: _speechInitializing || _voiceProcessing || _isListening ? null : _chooseVoiceLanguage,
+            icon: const Icon(Icons.language_rounded),
+          ),
+          IconButton(
+            tooltip: AppLocalizations.of(context)!.addImage,
             onPressed: () => _addImage(ImageSource.gallery),
             icon: const Icon(Icons.image_outlined),
           ),
           IconButton(
-            tooltip: _isPinned ? 'Unpin' : 'Pin',
+            tooltip: _isPinned ? AppLocalizations.of(context)!.unpinNote : AppLocalizations.of(context)!.pinNote,
             onPressed: () => _setFlag(pinned: !_isPinned),
             icon: const OrahAssetIcon('pin'),
           ),
@@ -1470,7 +1525,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     builder: (_) => ExportNoteSheet(
                       note: Note(
                         id: _noteId,
-                        title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
+                        title: _titleController.text.trim().isEmpty ? AppLocalizations.of(context)!.untitledNote : _titleController.text.trim(),
                         content: _contentController.text,
                         type: _noteType,
                         attachments: _attachments,
@@ -1510,20 +1565,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'share_card',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(Icons.image_outlined),
-                  title: Text('Export as Card'),
+                  title: Text(AppLocalizations.of(context)!.exportAsCard),
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'export',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: OrahAssetIcon('share'),
-                  title: Text('Export'),
+                  title: Text(AppLocalizations.of(context)!.exportLabel),
                 ),
               ),
               PopupMenuItem(
@@ -1532,25 +1587,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   contentPadding: EdgeInsets.zero,
                   leading: const OrahAssetIcon('star'),
                   title: Text(
-                    _isFavorite ? 'Remove favorite' : 'Add to favorites',
+                    _isFavorite ? AppLocalizations.of(context)!.removeFavorite : AppLocalizations.of(context)!.addToFavorites,
                   ),
                 ),
               ),
-              const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
-              const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
-              const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
-              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
-              if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
-              const PopupMenuItem(
+              PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.image_outlined), title: Text(AppLocalizations.of(context)!.addImage))),
+              PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.document_scanner_outlined), title: Text(AppLocalizations.of(context)!.scanTextFromImage))),
+              PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.auto_awesome_outlined), title: Text(AppLocalizations.of(context)!.template))),
+              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? AppLocalizations.of(context)!.setReminder : AppLocalizations.of(context)!.reminderAt(DateFormat('d MMM, h:mm a').format(_dueAt!))))),
+              if (_dueAt != null) PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_off_outlined), title: Text(AppLocalizations.of(context)!.clearReminder))),
+              PopupMenuItem(
                 value: 'color',
-                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
+                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text(AppLocalizations.of(context)!.noteColor)),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'organize',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: OrahAssetIcon('tag'),
-                  title: Text('Folder & tags'),
+                  title: Text(AppLocalizations.of(context)!.folderAndTags),
                 ),
               ),
               PopupMenuItem(
@@ -1562,25 +1617,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         ? Icons.unarchive_outlined
                         : Icons.archive_outlined,
                   ),
-                  title: Text(_isArchived ? 'Unarchive' : 'Archive'),
+                  title: Text(_isArchived ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive),
                 ),
               ),
               if (!_isLocked)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'lock',
-                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text('Lock note')),
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text(AppLocalizations.of(context)!.lockNote)),
                 ),
               if (_isLocked && _privateUnlocked)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'unlock_note',
-                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text('Unlock and move to Notes')),
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text(AppLocalizations.of(context)!.unlockAndMoveToNotes)),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: OrahAssetIcon('trash'),
-                  title: Text('Delete'),
+                  title: Text(AppLocalizations.of(context)!.delete),
                 ),
               ),
             ],
@@ -1622,8 +1677,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           Expanded(
                             child: Text(
                               _isListening
-                                  ? 'Recording • ${_formatVoiceDuration()}'
-                                  : (_voiceProcessing ? 'Saving voice text…' : 'Preparing microphone…'),
+                                  ? AppLocalizations.of(context)!.recordingVoiceInput(_formatVoiceDuration())
+                                  : (_voiceProcessing ? AppLocalizations.of(context)!.savingVoiceText : AppLocalizations.of(context)!.preparingMicrophone),
                               style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
@@ -1643,17 +1698,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             TextButton.icon(
                               onPressed: _cancelVoiceInput,
                               icon: const Icon(Icons.close_rounded, size: 18),
-                              label: const Text('Cancel'),
+                              label: Text(AppLocalizations.of(context)!.cancel),
                             ),
                             TextButton.icon(
                               onPressed: _retryVoiceInput,
                               icon: const Icon(Icons.refresh_rounded, size: 18),
-                              label: const Text('Retry'),
+                              label: Text(AppLocalizations.of(context)!.retry),
                             ),
                             FilledButton.icon(
                               onPressed: _stopAndSaveVoiceInput,
                               icon: const Icon(Icons.check_rounded, size: 18),
-                              label: const Text('Stop & Save'),
+                              label: Text(AppLocalizations.of(context)!.stopAndSave),
                             ),
                           ],
                         ),
@@ -1741,7 +1796,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           right: 2,
                           top: 2,
                           child: IconButton.filledTonal(
-                            tooltip: 'Remove',
+                            tooltip: AppLocalizations.of(context)!.remove,
                             visualDensity: VisualDensity.compact,
                             onPressed: () => _showAttachmentActions(path),
                             icon: const OrahAssetIcon('menu', size: 16),
@@ -1811,7 +1866,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
                               ),
-                          decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          decoration: InputDecoration(hintText: AppLocalizations.of(context)!.titleHint, filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           maxLines: 2,
                         ),
                         const SizedBox(height: 8),
@@ -1836,7 +1891,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                       : null,
                                   height: 1.55,
                                 ),
-                            decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                            decoration: InputDecoration(hintText: AppLocalizations.of(context)!.startWritingHint, filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           ),
                       ],
                     ),
@@ -1858,49 +1913,49 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     children: [
                       _ToolButton(
                         icon: Icons.format_bold_rounded,
-                        label: 'Bold',
+                        label: AppLocalizations.of(context)!.bold,
                         onPressed: () => _wrapSelection('**', '**'),
                       ),
                       _ToolButton(
                         icon: Icons.format_italic_rounded,
-                        label: 'Italic',
+                        label: AppLocalizations.of(context)!.italic,
                         onPressed: () => _wrapSelection('*', '*'),
                       ),
                       _ToolButton(
                         icon: Icons.strikethrough_s_rounded,
-                        label: 'Strikethrough',
+                        label: AppLocalizations.of(context)!.strikethrough,
                         onPressed: () => _wrapSelection('~~', '~~'),
                       ),
                       _ToolButton(
                         icon: Icons.title_rounded,
-                        label: 'Heading',
+                        label: AppLocalizations.of(context)!.heading,
                         onPressed: () => _insertPrefix('## '),
                       ),
                       _ToolButton(
                         icon: Icons.format_list_bulleted_rounded,
-                        label: 'Bullets',
+                        label: AppLocalizations.of(context)!.bullets,
                         onPressed: () => _insertPrefix('- '),
                       ),
                       _ToolButton(
                         icon: Icons.format_list_numbered_rounded,
-                        label: 'Numbered list',
+                        label: AppLocalizations.of(context)!.numberedList,
                         onPressed: () => _insertPrefix('1. '),
                       ),
                       _ToolButton(
                         icon: Icons.format_quote_rounded,
-                        label: 'Quote',
+                        label: AppLocalizations.of(context)!.quote,
                         onPressed: () => _insertPrefix('> '),
                       ),
                       _ToolButton(
                         icon: Icons.link_rounded,
-                        label: 'Link',
+                        label: AppLocalizations.of(context)!.linkLabel,
                         onPressed: _insertLink,
                       ),
                       _ToolButton(
                         assetIcon: _noteType == NoteType.checklist ? 'notes' : 'checklist',
                         label: _noteType == NoteType.checklist
-                            ? 'Text note'
-                            : 'Checklist',
+                            ? AppLocalizations.of(context)!.textNote
+                            : AppLocalizations.of(context)!.checklistType,
                         onPressed: () {
                           setState(() {
                             _noteType = _noteType == NoteType.checklist
@@ -1913,18 +1968,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                       _ToolButton(
                         assetIcon: 'tag',
-                        label: 'Folder & tags',
+                        label: AppLocalizations.of(context)!.folderAndTags,
                         onPressed: _organize,
                       ),
                       _ToolButton(
                         icon: Icons.attach_file_rounded,
-                        label: 'Add image or file',
+                        label: AppLocalizations.of(context)!.addImageOrFile,
                         onPressed: _showAttachmentMenu,
                       ),
                       _ToolButton(
                         icon: _isListening ? Icons.stop_circle_outlined : null,
                         assetIcon: _isListening ? null : 'microphone',
-                        label: _isListening ? 'Stop voice input' : 'Voice input',
+                        label: _isListening ? AppLocalizations.of(context)!.stopVoiceInput : AppLocalizations.of(context)!.voiceInput,
                         onPressed: _toggleVoiceInput,
                       ),
                     ],
@@ -1949,23 +2004,24 @@ class _MoodSelector extends StatelessWidget {
   final String? selectedMood;
   final ValueChanged<String?> onSelected;
 
-  static const moods = <(String, String, String)>[
-    ('happy', '😊', 'Happy'),
-    ('neutral', '😐', 'Neutral'),
-    ('sad', '😢', 'Sad'),
-    ('angry', '😡', 'Angry'),
-    ('thoughtful', '🤔', 'Thoughtful'),
+  static const moods = <(String, String)>[
+    ('happy', '😊'),
+    ('neutral', '😐'),
+    ('sad', '😢'),
+    ('angry', '😡'),
+    ('thoughtful', '🤔'),
   ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('How are you feeling?', style: theme.textTheme.labelMedium?.copyWith(
+          Text(AppLocalizations.of(context)!.howAreYouFeeling, style: theme.textTheme.labelMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           )),
@@ -1975,7 +2031,13 @@ class _MoodSelector extends StatelessWidget {
             children: [
               for (final mood in moods)
                 Tooltip(
-                  message: mood.$3,
+                  message: switch (mood.$1) {
+                    'happy' => l10n.moodHappy,
+                    'neutral' => l10n.moodNeutral,
+                    'sad' => l10n.moodSad,
+                    'angry' => l10n.moodAngry,
+                    _ => l10n.moodThoughtful,
+                  },
                   child: ChoiceChip(
                     label: Text(mood.$2, style: const TextStyle(fontSize: 18)),
                     selected: selectedMood == mood.$1,
@@ -2033,12 +2095,12 @@ class _ChecklistEditor extends StatelessWidget {
               children: [
                 OrahAssetIcon('checklist', size: 44, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 12),
-                const Text('Your checklist is empty'),
+                Text(AppLocalizations.of(context)!.checklistEmpty),
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: onAdd,
                   icon: const OrahAssetIcon('plus'),
-                  label: const Text('Add first task'),
+                  label: Text(AppLocalizations.of(context)!.addFirstTask),
                 ),
               ],
             ),
@@ -2070,7 +2132,7 @@ class _ChecklistEditor extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onAdd,
               icon: const OrahAssetIcon('plus'),
-              label: const Text('Add task'),
+              label: Text(AppLocalizations.of(context)!.addTask),
             ),
           ),
       ],
@@ -2122,17 +2184,17 @@ class _ChecklistRow extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              tooltip: 'Move up',
+              tooltip: AppLocalizations.of(context)!.moveUp,
               onPressed: canMoveUp ? onMoveUp : null,
               icon: const Icon(Icons.keyboard_arrow_up_rounded),
             ),
             IconButton(
-              tooltip: 'Move down',
+              tooltip: AppLocalizations.of(context)!.moveDown,
               onPressed: canMoveDown ? onMoveDown : null,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
             ),
             IconButton(
-              tooltip: 'Delete task',
+              tooltip: AppLocalizations.of(context)!.deleteTask,
               onPressed: onDelete,
               icon: const OrahAssetIcon('trash'),
             ),

@@ -65,5 +65,898 @@
   "unlock": "解锁",
   "useBiometrics": "使用生物识别",
   "incorrectPin": "PIN 码错误",
-  "biometricFallbackError": "生物识别已取消或不可用。请输入 PIN 码解锁。"
+  "biometricFallbackError": "生物识别已取消或不可用。请输入 PIN 码解锁。",
+  "journeyTitle": "你的旅程",
+  "journeyHeadline": "点滴时刻汇聚成篇。",
+  "journeySubtitle": "温和地回顾你的写作习惯与思考。",
+  "dayInARow": "天连续",
+  "daysInARow": "天连续",
+  "notesSaved": "条笔记已保存",
+  "notesStayOnDevice": "你的笔记保存在此设备上。这些统计根据已保存的笔记计算。",
+  "moodStoryStarts": "你的心情故事从这里开始",
+  "chooseMoodToSeeDistribution": "写笔记时选择心情，心情分布就会显示在这里。",
+  "moodDistributionSubtitle": "你记录下的感受",
+  "notesCreatedLast7Days": "过去 7 天创建的笔记",
+  "calendarSubtitle": "按日期查看笔记和已安排的提醒",
+  "goToToday": "回到今天",
+  "scheduleNote": "安排笔记",
+  "nothingOnThisDay": "这一天没有内容",
+  "chooseAnotherDate": "选择其他日期，或为这一天安排一条笔记。",
+  "untitledNote": "无标题笔记",
+  "scheduledLabel": "已安排",
+  "createdLabel": "已创建",
+  "calendarItemStatusTime": "{status}：{time}",
+  "writingRhythm": "你的写作节奏",
+  "historyTimeline": "历史时间线",
+  "storyStartsWithNote": "你的故事从一条笔记开始",
+  "pickHighlightedDay": "选择有标记的日期，重温当时的记录或浏览完整历史。",
+  "savedDaysHighlighted": "保存了笔记的日期会在日历中突出显示.",
+  "addFolderImage": "添加文件夹图片",
+  "changeImage": "更改图片",
+  "removeImage": "删除图片",
+  "folderName": "文件夹名称",
+  "folderNameHint": "例如：工作、灵感、个人",
+  "cancel": "取消",
+  "create": "创建",
+  "newFolder": "新建文件夹",
+  "editFolder": "编辑文件夹",
+  "save": "保存",
+  "deleteFolderTitle": "删除“{folderName}”？",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "文件夹为空。",
+  "notesMovedFromFolder": "{count} 条笔记将保留并移回“所有笔记”。",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "删除",
+  "selectedFoldersDeleteTitle": "删除 {count} 个文件夹？",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "所选文件夹为空。",
+  "deleteSelected": "删除所选项",
+  "cancelSelection": "取消选择",
+  "selectedCount": "已选择 {count} 项",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "删除所选文件夹",
+  "folderOptions": "文件夹选项",
+  "open": "打开",
+  "rename": "重命名",
+  "folderNoteCount": "{count} 条笔记",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "从文件夹中移除",
+  "moveToTrash": "移至回收站",
+  "noFoldersYet": "暂无文件夹",
+  "emptyFoldersDescription": "创建文件夹，将相关笔记归类在一起。",
+  "createFolder": "创建文件夹",
+  "noNotesInFolder": "此文件夹中还没有笔记。\n打开一条笔记并选择“整理”即可将其添加到这里。",
+  "welcomeToOrah": "欢迎使用 Orah",
+  "personalizeYourSpace": "个性化设置您的空间。请输入姓名和电子邮件以开始使用。",
+  "fullName": "姓名",
+  "yourName": "您的姓名",
+  "emailAddress": "电子邮件地址",
+  "emailExample": "you@example.com",
+  "enterFullName": "请输入您的姓名。",
+  "enterValidEmail": "请输入有效的电子邮件地址。",
+  "registerAndContinue": "注册并继续",
+  "profileStoredOnDevice": "您的个人资料安全地存储在此设备上。同步订阅者列表需要配置 newsletter 服务。",
+  "proRestore": "恢复",
+  "proHeroEyebrow": "让笔记发挥更大作用",
+  "proHeroHeadline": "让每条笔记\n更有价值。",
+  "proHeroDescription": "将纸面内容转化为可搜索的知识，快速找到所需细节，并随时随地使用你的笔记。",
+  "proHeroFootnote": "需要更多功能时再升级。日常笔记始终属于你。",
+  "proMoreThanNotes": "不止是笔记",
+  "proOcrTitle": "通过 OCR 搜索图片文字",
+  "proOcrDescription": "从支持的图片和文档中提取文字，无需重新输入。",
+  "proExportTitle": "按需导出为所需格式",
+  "proExportDescription": "通过高级 PDF、Word 和 Excel 导出，在 ORAH 之外使用你的笔记。",
+  "proSearchTitle": "从海量信息中找到关键内容",
+  "proSearchDescription": "使用高级搜索和筛选器，更快找回重要细节。",
+  "proWorkspaceTitle": "更有条理的工作空间",
+  "proWorkspaceDescription": "当前版本提供后，即可使用高级模板和进阶效率工具。",
+  "proEntitlementActive": "你的 Pro 权益已启用。",
+  "proChoosePlan": "选择 Pro 方案",
+  "proPricesFromPlay": "价格由 Google Play 根据你所在的地区提供。",
+  "proPlanYearly": "按年",
+  "proBestValue": "超值之选",
+  "proPlanMonthly": "按月",
+  "proMonthlySubtitle": "按月付款",
+  "proOfferInstruction": "你有来自雇主或开发者的 ORAH 优惠吗？使用邀请中提供的 Google Play 链接或代码兑换，然后返回此处点按“恢复”。",
+  "proRestorePurchases": "恢复购买",
+  "proRenewalDisclosure": "除非在 Google Play 中取消，否则订阅会自动续订。确认前请查看显示的价格、计费周期和试用条款。你可以在 Play 商店账户中管理或取消订阅。",
+  "proBestValueBadge": "超值之选",
+  "proLoadingPrice": "正在加载价格…",
+  "proUnavailable": "目前不可用",
+  "proChooseButton": "选择",
+  "microphoneAccessNeeded": "需要麦克风权限",
+  "microphoneAccessPermanentDenied": "ORAH Notes 需要麦克风权限才能将语音转成文字。你可以在设置中开启此权限。",
+  "microphoneAccessRequest": "ORAH Notes 需要麦克风权限才能将语音转成文字。请允许访问，或在设置中开启权限。",
+  "notNow": "暂不",
+  "openSettings": "打开设置",
+  "voiceInputUnavailableWithMessage": "语音输入不可用：{message}",
+  "voiceInputUnavailable": "此设备无法使用语音输入。",
+  "couldNotStartVoiceCapture": "无法开始语音录入：{error}",
+  "voiceTextSaved": "语音文本已保存到笔记。",
+  "recordingStoppedPartialSaved": "录音已停止，部分文本已保存。",
+  "addTask": "添加任务",
+  "taskHint": "需要完成什么？",
+  "add": "添加",
+  "editTask": "编辑任务",
+  "enterVaultPin": "输入 Vault PIN",
+  "pinDigitsLabel": "4–8 位 PIN",
+  "vaultAuthenticationFailed": "身份验证失败。请尝试生物识别或 Vault PIN。",
+  "secureYourVault": "保护你的 Vault",
+  "vaultSetupDescription": "要锁定此笔记，请先设置 PIN 或生物识别验证。这样只有你可以访问它。",
+  "setUpSecurity": "设置安全验证",
+  "createVaultPin": "创建 Vault PIN",
+  "confirmVaultPin": "确认 Vault PIN",
+  "vaultPinsDoNotMatch": "两次 PIN 不一致，笔记未锁定。",
+  "vaultPinCreated": "Vault PIN 已创建，正在保护笔记…",
+  "enterPinDigits": "请输入 4–8 位数字",
+  "addContentBeforeLock": "请先添加内容，再锁定此笔记。",
+  "vaultAuthenticationNotCompleted": "身份验证未完成，笔记未锁定。",
+  "noteLockedMovedToVault": "笔记已锁定并移至 Vault。",
+  "noteUnlockedMovedToNotes": "笔记已解锁并移回笔记列表。",
+  "continueLabel": "继续",
+  "ocrNoReadableText": "未找到可识别的文字。",
+  "ocrTextExtracted": "已从图片中提取文字。",
+  "ocrCouldNotReadImage": "无法读取该图片中的文字。",
+  "chooseTemplate": "选择模板",
+  "replaceCurrentNote": "要替换当前笔记吗？",
+  "templateReplaceWarning": "此模板将替换当前标题和内容。",
+  "replace": "替换",
+  "insertLink": "插入链接",
+  "insert": "插入",
+  "couldNotAddImage": "无法添加图片：{error}",
+  "couldNotAddFiles": "无法添加文件：{error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "重命名附件",
+  "preview": "预览",
+  "share": "分享",
+  "details": "详情",
+  "removeFromNote": "从笔记中移除",
+  "chooseFromGallery": "从图库选择",
+  "takePhoto": "拍照",
+  "attachFiles": "添加文件",
+  "close": "关闭",
+  "couldNotUnlockPrivateNote": "无法解锁私人笔记：{error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "导出",
+  "removeFavorite": "从收藏中移除",
+  "addToFavorites": "添加到收藏",
+  "addImage": "添加图片",
+  "template": "模板",
+  "setReminder": "设置提醒",
+  "reminderAt": "提醒：{date}",
+  "clearReminder": "清除提醒",
+  "noteColor": "笔记颜色",
+  "unarchive": "取消归档",
+  "archive": "归档",
+  "back": "返回",
+  "remove": "移除",
+  "retry": "重试",
+  "titleHint": "标题",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "无法分享笔记卡片：{error}",
+  "couldNotRenameAttachment": "无法重命名附件：{error}",
+  "attachmentDetailsFormat": "大小：{size}\n修改时间：{modified}",
+  "authenticationFailedNoteNotDeleted": "身份验证失败。笔记未被删除。",
+  "privateNote": "私人笔记",
+  "thisNoteIsPrivate": "此笔记为私密内容",
+  "unlockPrivateNoteHint": "使用生物识别或 PIN 解锁后查看。",
+  "exitZenMode": "退出禅模式",
+  "exportAsCard": "导出为卡片",
+  "scanTextFromImage": "扫描图片中的文字",
+  "folderAndTags": "文件夹和标签",
+  "lockNote": "锁定笔记",
+  "unlockAndMoveToNotes": "解锁并移至笔记",
+  "stopAndSave": "停止并保存",
+  "startWritingHint": "开始书写...",
+  "howAreYouFeeling": "你现在感觉如何？",
+  "checklistEmpty": "清单为空",
+  "addFirstTask": "添加第一个任务",
+  "moveUp": "上移",
+  "moveDown": "下移",
+  "deleteTask": "删除任务",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "正在解锁…",
+  "unlockNote": "解锁笔记",
+  "zenMode": "专注模式",
+  "edit": "编辑",
+  "pinNote": "置顶",
+  "unpinNote": "取消置顶",
+  "bold": "粗体",
+  "italic": "斜体",
+  "strikethrough": "删除线",
+  "heading": "标题",
+  "bullets": "项目符号",
+  "numberedList": "编号列表",
+  "quote": "引用",
+  "linkLabel": "链接",
+  "addImageOrFile": "添加图片或文件",
+  "stopVoiceInput": "停止语音输入",
+  "voiceInput": "语音输入",
+  "stopAndSaveVoiceInput": "停止并保存语音输入",
+  "tapMicToSpeak": "点击麦克风口述笔记",
+  "voiceNote": "语音笔记",
+  "preparing": "准备中…",
+  "saving": "保存中…",
+  "unsavedChanges": "有未保存的更改",
+  "saved": "已保存",
+  "recordingVoiceInput": "录音中 • {duration}",
+  "savingVoiceText": "正在保存语音文本…",
+  "preparingMicrophone": "正在准备麦克风…",
+  "textNote": "文本笔记",
+  "checklistType": "清单",
+  "templateMeetingNotes": "会议记录",
+  "templateAgenda": "议程",
+  "templateDecisions": "决定事项",
+  "templateActionItems": "行动事项",
+  "templateDailyPlan": "每日计划",
+  "templateTopPriority": "最高优先级",
+  "templateImportant": "重要",
+  "templateIfTimeAllows": "如果有时间",
+  "templateShoppingList": "购物清单",
+  "templateMilk": "牛奶",
+  "templateVegetables": "蔬菜",
+  "templateHousehold": "家居用品",
+  "templateTravelPlan": "旅行计划",
+  "templateDates": "日期",
+  "templateBookings": "预订",
+  "templatePlacesToVisit": "要参观的地方",
+  "orahNoteCard": "Orah 笔记卡",
+  "sharedFromOrah": "从 Orah 分享",
+  "noteCardCaptureError": "无法捕获笔记卡。",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "你好，{name}",
+  "welcomeBack": "欢迎回来",
+  "friend": "朋友",
+  "voiceGreeting": "你好，{name}",
+  "voicePreviewGreeting": "你好，这里是 Orah Notes",
+  "speakMyNameAtStartup": "启动时读出我的名字",
+  "voiceGreetingEnabledDescription": "打开应用时，Orah 会使用你选择的语言问候你。",
+  "voiceGreetingDisabledDescription": "启动问候将保持静音。",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "取消归档",
+  "archiveNote": "归档",
+  "duplicateNote": "复制笔记",
+  "navNotes": "笔记",
+  "navFolders": "文件夹",
+  "navFavorites": "收藏夹",
+  "navArchivedNotes": "已归档笔记",
+  "navDailyReflection": "每日反思",
+  "navVoiceCapture": "语音录入",
+  "navChecklists": "清单",
+  "navAppearance": "外观",
+  "navSearch": "搜索",
+  "offlineAccess": "离线访问",
+  "backupExport": "备份与导出",
+  "recentlyUpdated": "最近更新",
+  "recentlyCreated": "最近创建",
+  "titleAZ": "标题 A–Z",
+  "noNotesYet": "还没有笔记",
+  "vaultLocked": "保险库 / 锁定笔记",
+  "vaultLockedDesc": "打开您的私人加密笔记",
+  "privacyPledge": "隐私承诺",
+  "privacyPledgeDesc": "阅读我们的零云端承诺",
+  "backupExportDesc": "本地备份和可移植数据",
+  "vaultResetTitle": "忘记保险库 PIN？重置保险库",
+  "vaultResetDesc": "无法恢复。重置将永久删除旧保险库。",
+  "pinBiometric": "PIN 和生物识别保护",
+  "androidFeaturesDesc": "小组件、快捷方式和共享",
+  "archivedNotesTitle": "已归档笔记",
+  "archivedNotesDesc": "打开或恢复已归档的笔记",
+  "trashTitle": "回收站",
+  "trashDesc": "恢复或永久删除笔记",
+  "orahFeaturesTitle": "Orah 功能",
+  "orahFeaturesDesc": "探索 Orah 的功能",
+  "aboutOrahTitle": "关于 Orah",
+  "aboutOrahDesc": "产品信息和隐私理念",
+  "cancelLabel": "取消",
+  "resetVaultQuestion": "重置保险库？",
+  "deleteVaultConfirm": "删除旧保险库并创建新保险库",
+  "themeLabel": "主题",
+  "themeSystem": "系统",
+  "themeLight": "浅色",
+  "themeDark": "深色",
+  "portableBackup": "Taşınabilir yedekleme",
+  "createBackup": "Yedek oluştur",
+  "restoreBackup": "Yedeği geri yükle",
+  "storageMaintenance": "Depolama bakımı",
+  "cleanOrphanAttachments": "Sahipsiz ekleri temizle",
+  "vaultAutoLock": "Kasayı otomatik kilitle",
+  "neverLabel": "Asla",
+  "dailyReflectionReminder": "Günlük düşünce hatırlatıcısı",
+  "reminderTime": "Hatırlatma saati",
+  "backupExportTitle": "Yedekleme ve dışa aktarma",
+  "vaultResetSuccess": "Eski kasa silindi. Yeni PIN oluşturmak için kasayı açın.",
+  "vaultResetFailed": "Kasa sıfırlanamadı: {error}",
+  "backupRestoredCount": "{count} not başarıyla geri yüklendi.",
+  "backupError": "Yedekleme hatası: {error}",
+  "unusedFilesFound": "{count} kullanılmayan dosya bulundu",
+  "removedOrphanAttachments": "{count} sahipsiz ek kaldırıldı.",
+  "showDailyInspiration": "Ana ekranda günlük ilhamı göster",
+  "showDailyInspirationDesc": "Notlarınızın üzerinde günlük düşünce önerisi gösterin.",
+  "reminderUpdateFailed": "Günlük düşünce hatırlatıcısı güncellenemedi: {error}",
+  "reminderScheduleFailed": "Günlük düşünce planlanamadı: {error}",
+  "orahFeaturesSemantics": "Orah özellikleri",
+  "vaultTooltip": "Kasa / Kilitli notlar",
+  "calendarHistoryTooltip": "Takvim ve geçmiş",
+  "statisticsTooltip": "İstatistikler ve içgörüler",
+  "appearanceTooltip": "Görünüm",
+  "appearanceSemantics": "Görünüm ayarları",
+  "searchFiltersTooltip": "Arama filtreleri",
+  "hideDailyInspiration": "Günlük ilhamı gizle",
+  "sortNotesTooltip": "Notları sırala",
+  "listView": "Liste görünümü",
+  "gridView": "Izgara görünümü",
+  "searchLabel": "Ara",
+  "newNoteLabel": "Yeni not",
+  "microphoneTooltip": "Mikrofon",
+  "unpinTooltip": "Sabitlemeyi kaldır",
+  "pinTooltip": "Sabitle",
+  "favoriteTooltip": "Favori",
+  "editNoteLabel": "Notu düzenle",
+  "lockedContent": "Kilitli içerik",
+  "portableBackupDesc": "Notlar, klasörler ve ekler tek bir .nova paketinde.",
+  "vaultAutoLockDesc": "Uygulama arka plana geçtiğinde kimlik doğrulaması iste",
+  "searchClear": "清除",
+  "favoritesOnly": "仅收藏",
+  "pinnedOnly": "仅显示置顶",
+  "folderLabel": "文件夹",
+  "allFolders": "所有文件夹",
+  "archivedLabel": "已归档",
+  "noteTypeLabel": "笔记类型",
+  "allTypes": "所有类型",
+  "typeText": "文本",
+  "typeChecklist": "清单",
+  "typeVoice": "语音",
+  "typeImage": "图片",
+  "typeDrawing": "绘图",
+  "applyFilters": "应用筛选",
+  "filtersTooltip": "筛选",
+  "openOrahPro": "打开 ORAH Pro",
+  "searchScreenTitle": "搜索",
+  "searchFiltersTitle": "搜索筛选",
+  "homeTagline": "想一想，写下来，保存好。",
+  "homeSubtitle": "用于记录笔记、计划和反思的宁静空间。",
+  "tapToBeginNote": "轻触以开始记笔记",
+  "selectNotePrompt": "选择一条笔记",
+  "desktopNoteEmpty": "此笔记为空。",
+  "noContentLabel": "无内容",
+  "emptyNotesHint": "轻触 + 按钮，记录你的第一个想法。",
+  "justNow": "刚刚",
+  "minutesAgoSuffix": "分钟前",
+  "hoursAgoSuffix": "小时前",
+  "daysAgoSuffix": "天前",
+  "hideOrahFeatures": "隐藏 Orah 功能",
+  "showOrahFeatures": "显示 Orah 功能",
+  "activeNotesCount": "{count} 条笔记",
+  "completedLabel": "已完成",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "已完成 {count} 项",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title}（副本）",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "感恩",
+  "reflectionCategoryMindfulness": "正念",
+  "reflectionCategoryPersonalGrowth": "个人成长",
+  "reflectionCategoryRelationships": "人际关系",
+  "reflectionCategorySelfCompassion": "自我关怀",
+  "reflectionCategoryClarity": "清晰",
+  "reflectionCategoryPossibility": "可能性",
+  "reflectionCategoryDailyReview": "每日回顾",
+  "reflectionCategoryPurposeValues": "目标与价值观",
+  "reflectionCategoryResilience": "韧性",
+  "reflectionCategoryCreativityCuriosity": "创造力与好奇心",
+  "reflectionCategoryRestRenewal": "休息与恢复",
+  "reflectionWriteHint": "写下此刻想到的任何内容…",
+  "reflectionSaveError": "无法保存反思：{error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "永久删除？",
+  "trashDeletePermanentlyMessage": "此笔记将被永久删除。",
+  "trashEmptyTitle": "清空回收站？",
+  "trashEmptyMessage": "永久删除 {count} 条笔记？",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "清空回收站",
+  "trashNoNotesTitle": "还没有笔记。",
+  "trashPrivateNote": "私人笔记",
+  "trashLockedNote": "已锁定笔记",
+  "trashChecklist": "清单",
+  "trashNote": "笔记",
+  "trashDeletePermanentlyAction": "永久删除",
+  "favoritesEmptyTitle": "还没有收藏",
+  "favoritesEmptyDescription": "为重要笔记加星标，它们就会显示在这里。",
+  "favoritesNoContent": "没有内容",
+  "archivedRestoreMessage": "笔记已恢复到你的笔记列表。",
+  "archivedRefreshTooltip": "刷新已归档笔记",
+  "archivedEmptyTitle": "没有已归档笔记",
+  "archivedEmptyDescription": "归档的笔记会显示在这里。你可以打开它们或恢复到主笔记列表。",
+  "privacyPledgeHeadline": "我们的隐私承诺",
+  "privacyPledgeIntro": "你的想法属于个人隐私。Orah 旨在让笔记保持私密并由你掌控。",
+  "privacyLocalTitle": "完全本地",
+  "privacyLocalDescription": "你的笔记仅存储在此设备上。",
+  "privacyCloudTitle": "不使用云端",
+  "privacyCloudDescription": "Orah 没有笔记同步服务器。除非你选择分享或导出，否则笔记会保留在设备上。",
+  "privacyAiTitle": "不使用 AI",
+  "privacyAiDescription": "Orah 不会扫描、读取你的笔记，也不会用笔记训练 AI。",
+  "privacyVaultTitle": "加密保险库",
+  "privacyVaultDescription": "保险库中的敏感笔记采用 AES-256-GCM 加密保护。",
+  "privacySharingDisclosure": "当你选择使用分享、导出、设备服务或操作系统功能时，信息可能会发送到应用之外。",
+  "gotIt": "知道了",
+  "aboutFast": "快速",
+  "aboutFastDescription": "专为快速记录而设计。",
+  "aboutOfflineFirst": "离线优先",
+  "aboutOfflineFirstDescription": "无需账户即可使用笔记。",
+  "aboutPrivate": "私密",
+  "aboutPrivateDescription": "本地数据，可选择启用设备保护。",
+  "aboutSummary": "Orah 力求简洁：打开、记录、整理、查找。",
+  "developerSignatureLabel": "Abhinav Bajpai — 开发者签名",
+  "aboutFeedback": "如需提出功能建议、反馈或想法：",
+  "aboutCopyright": "版权所有 © 2026 Abhinav Bajpai。保留所有权利。",
+  "aboutLegalNotice": "Orah 应用代码、原创品牌、艺术作品和产品资产归 Abhinav Bajpai 所有。第三方组件仍受其各自许可证约束。",
+  "voiceLanguageTitle": "语音语言",
+  "voiceLanguageDescription": "选择你要说的语言。它可以与应用界面语言不同。",
+  "voiceLanguageSystemDefault": "使用设备默认语言",
+  "voiceLanguageNoLocales": "此设备的语音识别服务没有提供可用语言。",
+  "securityCreatePin": "创建 PIN",
+  "securityConfirmPin": "确认 PIN",
+  "securityPinMismatch": "两次 PIN 不一致。",
+  "securityPinCreated": "PIN 已创建，应用锁已开启。",
+  "securityPinActionFailed": "无法更新 PIN：{error}",
+  "securityEnterCurrentPin": "输入当前 PIN",
+  "securityPinDisabled": "PIN 和应用锁已关闭。",
+  "securityBiometricNotCompleted": "生物识别验证未完成。",
+  "securityPinDigitsHint": "4–8 位数字",
+  "securityEnterDigits": "请输入 4–8 位数字",
+  "securityAppLock": "应用锁",
+  "securityRequirePin": "ORAH 锁定时要求输入 PIN",
+  "securityCreatePinToProtect": "创建 PIN 以保护 ORAH",
+  "securityChangePin": "更改 PIN",
+  "securityReplacePinSubtitle": "替换当前 ORAH PIN",
+  "securityRemovePin": "移除 PIN",
+  "securityTurnOffPinProtection": "关闭 PIN 保护",
+  "securityBiometricUnlock": "生物识别解锁",
+  "securityUseBiometrics": "使用指纹或设备生物识别",
+  "securityLocalFirstPrivacy": "本地优先的隐私保护",
+  "securityLocalFirstDescription": "ORAH 无需账户或云同步即可保存你的笔记。",
+  "securityStorageNote": "安全提示：PIN 凭据存储在 Android/iOS 安全存储中。敏感笔记内容保留在设备本地。在 ORAH 声称内容具有端到端加密之前，我们会加入完全加密的保险库存储。",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ PIN 无法恢复。忘记后将无法找回保险库。",
+  "vaultPinDigitsHint": "4–8 位保险库 PIN",
+  "vaultConfirmPin": "确认 PIN",
+  "vaultCancel": "取消",
+  "vaultPinsMismatch": "两次 PIN 不一致。",
+  "vaultPinDigitsError": "保险库 PIN 必须为 4–8 位数字。",
+  "vaultIncorrectPin": "保险库 PIN 错误。",
+  "vaultVerifyCurrentPin": "验证当前保险库 PIN",
+  "vaultIncorrectCurrentPin": "当前保险库 PIN 错误。",
+  "vaultCreateNewPin": "创建新的保险库 PIN",
+  "vaultPinChanged": "保险库 PIN 已更改。",
+  "vaultNewFolder": "新建保险库文件夹",
+  "vaultFolderName": "文件夹名称",
+  "vaultCreate": "创建",
+  "vaultRenameFolder": "重命名保险库文件夹",
+  "vaultSave": "保存",
+  "vaultDelete": "删除",
+  "vaultLockedTitle": "保险库 / 已锁定笔记",
+  "vaultChangePin": "更改保险库 PIN",
+  "vaultTrustBadge": "高安全性保险库",
+  "vaultCreatePrivateNote": "创建私人笔记",
+  "vaultAllFolders": "所有文件夹",
+  "vaultFolderOptions": "保险库文件夹选项",
+  "vaultRename": "重命名",
+  "vaultNewFolderAction": "新建文件夹",
+  "vaultEmptyTitle": "保险库为空",
+  "vaultEmptyDescription": "请在编辑器中锁定笔记，或创建私人笔记。",
+  "vaultMoveToFolder": "移动到文件夹",
+  "vaultUnfiled": "未归类",
+  "vaultJustNow": "刚刚",
+  "vaultMinutesAgoSuffix": "分钟前",
+  "vaultHoursAgoSuffix": "小时前",
+  "vaultDaysAgoSuffix": "天前",
+  "vaultDeleteFolderTitle": "删除 {folderName}？",
+  "vaultFolderEmpty": "此文件夹为空。",
+  "vaultDeleteFolderWithNotes": "确定继续吗？{count} 条私人笔记将移至未归类。",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "导出笔记",
+  "exportSheetDescription": "请从下方可用格式中选择一种。",
+  "exportDocuments": "文档",
+  "exportData": "数据",
+  "exportPlannedSection": "计划中 / 即将推出",
+  "exportPlannedDescription": "这些格式计划在未来的 Orah 更新中提供。",
+  "sendAsEmailAttachment": "作为电子邮件附件发送",
+  "emailAttachmentDescription": "生成 PDF 并打开系统分享菜单",
+  "exportAllAvailable": "导出所有可用格式",
+  "exportComingSoon": "即将推出",
+  "plannedExportFormats": "计划中的导出格式",
+  "plannedExportFormatsDescription": "这些格式计划在未来的 Orah 更新中提供，目前尚不能导出。",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "可打印文档",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "可编辑的 Microsoft Word 文档",
+  "exportFormatText": "纯文本",
+  "exportDescriptionText": "最大兼容性",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "便携式 Markdown",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "清单将转换为行",
+  "organizationPickerTitle": "整理笔记",
+  "organizationDone": "完成",
+  "organizationNoFolder": "无文件夹",
+  "organizationAddTagHint": "添加标签",
+  "organizationAddTag": "添加",
+  "organizationNoTags": "还没有标签。",
+  "exportFailed": "导出失败：{error}",
+  "exportEmailAttachmentFailed": "邮件附件失败：{error}",
+  "exportAllFailed": "全部导出失败：{error}",
+  "exportCategoryEbooks": "电子书",
+  "exportCategoryAcademic": "学术",
+  "exportCategoryPresentation": "演示文稿",
+  "exportCategorySpeechAudio": "语音 / 音频",
+  "exportCategorySubtitles": "字幕",
+  "exportCategoryEmail": "电子邮件",
+  "exportCategoryCodeLiterate": "代码 / 技术文档",
+  "exportCategoryArchive": "存档",
+  "exportCategoryDatabase": "电子邮件",
+  "exportCategoryClipboard": "剪贴板",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "文件夹",
+  "organizationTagsLabel": "标签",
+  "plannedExportRichText": "富文本 (.rtf)",
+  "plannedExportRichTextDescription": "跨平台富文本",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "LibreOffice 的开放标准",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "网页、电子邮件和博客",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "大多数电子书阅读器",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "较旧的 Kindle",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "较新的 Kindle",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "常见电子书格式",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "研究论文和数学文档",
+  "plannedExportLatexPdf": "LaTeX 转 PDF (.pdf)",
+  "plannedExportLatexPdfDescription": "最终学术论文",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "参考文献管理",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "表格和数据分析",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "开发者、API 和结构化数据",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "结构化文档",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "配置和可读数据",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "制表符分隔表格",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "演示文稿",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "文本转语音音频",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "文本转语音音频",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "视频字幕",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "网页/视频字幕",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "电子邮件消息格式",
+  "plannedExportHtmlEmail": "HTML 邮件",
+  "plannedExportHtmlEmailDescription": "可直接发送的 HTML 邮件",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "代码文档",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "压缩导出包",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "压缩导出包",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "数据库导出",
+  "plannedExportRichClipboard": "富文本剪贴板",
+  "plannedExportRichClipboardDescription": "富文本剪贴板格式",
+  "plannedExportHtmlClipboard": "HTML 剪贴板",
+  "plannedExportHtmlClipboardDescription": "剪贴板 HTML 格式",
+  "plannedExportPlainClipboard": "纯文本剪贴板",
+  "plannedExportPlainClipboardDescription": "剪贴板纯文本格式",
+  "exportShareSubject": "ORAH — 导出：{title}",
+  "exportShareBody": "已从 ORAH 导出",
+  "emailAttachmentSubject": "ORAH — 邮件附件：{title}",
+  "emailAttachmentBody": "来自 ORAH 的附件",
+  "exportAllShareSubject": "ORAH — {title} — 导出包",
+  "exportAllShareBody": "已从 ORAH 导出所有当前可用格式",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} 分钟",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "添加 ORAH 小组件",
+  "androidWidgetSetupBody": "在 Android 主屏幕上长按空白区域，选择“小组件”，找到 ORAH，然后将小组件拖到主屏幕。",
+  "androidQuickShortcutDialogTitle": "快速记事快捷方式",
+  "androidQuickShortcutDialogBody": "在 Android 主屏幕上长按 ORAH 图标，然后从快捷菜单中选择“新建笔记”或“新建清单”。",
+  "androidShortcutNewNote": "新建笔记",
+  "androidShortcutNewChecklist": "新建清单",
+  "androidShortcutSearch": "搜索",
+  "androidShareUnavailable": "此设备暂不支持分享内容到 ORAH。",
+  "androidFeatureHeading": "Android 版 ORAH",
+  "androidFeatureIntro": "ORAH 通过 Android 原生集成提供快速记录、分享和主屏幕访问功能。",
+  "androidWidgetTitle": "主屏幕小组件",
+  "androidWidgetDescription": "从主屏幕创建笔记、清单或打开搜索。",
+  "androidQuickCaptureTitle": "快速记事快捷方式",
+  "androidQuickCaptureDescription": "直接打开 ORAH，立即记录想法。",
+  "androidShareTitle": "分享至 ORAH",
+  "androidShareDescription": "将支持的文本和内容发送到新的 ORAH 笔记。",
+  "androidRemindersTitle": "提醒",
+  "androidRemindersDescription": "无需后端即可为笔记和清单创建提醒。",
+  "androidLocalIntegrationsNote": "这些是 Android 本地功能，无需后端服务。",
+  "androidDone": "完成",
+  "androidGotIt": "知道了",
+  "captureTitle": "记录",
+  "captureDescription": "选择要记录的内容。",
+  "quickNote": "快速笔记",
+  "startTypingImmediately": "立即开始输入",
+  "quickChecklist": "快速清单",
+  "captureTasksWithoutSetup": "无需设置即可记录任务",
+  "dailyChecklistTooltip": "每日清单",
+  "quickCaptureHint": "点击开始书写 • 长按查看清单和选项",
+  "quickCaptureTooltip": "快速记录。长按可查看清单和选项。",
+  "filtersActive": "筛选条件已启用",
+  "searchResultsCount": "结果：{count}",
+  "advancedSearchProFeature": "高级搜索是 ORAH Pro 功能",
+  "noNotesFound": "未找到笔记",
+  "searchFilterHint": "可免费使用普通关键词搜索；如需筛选条件和运算符，请打开 ORAH Pro。",
+  "searchEmptyHint": "请尝试其他词语或移除筛选条件。",
+  "voicePreferences": "语音偏好",
+  "dailyReflectionSchedule": "每日反思计划",
+  "versionLabel": "版本 {version}",
+  "vaultResetWarning": "Vault PIN 无法恢复。重置将永久删除所有 Vault 笔记及其加密密钥。普通笔记和文件夹不会受到影响。",
+  "portableBackupShareText": "Orah 便携备份",
+  "storageAttachmentCount": "{count} 个附件 • {size}",
+  "dailyReflectionTimePicker": "选择每日反思时间",
+  "scheduleLoading": "正在加载计划…",
+  "scheduleEnabledAt": "已启用 • 每天 {time}",
+  "scheduleDisabled": "已停用 • 开启后可接收每日反思提醒",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "featureVoiceCaptureDescription": "通过语音优先创建笔记，快速记录想法。",
+  "featureChecklistDescription": "将笔记转换为可执行清单，并跟踪完成情况。",
+  "featureShareExportTitle": "分享与导出",
+  "featureShareExportDescription": "分享笔记，并以便携格式导出内容。",
+  "notificationDailyReflectionTitle": "每日反思时间到了",
+  "notificationDailyReflectionBody": "留出片刻安静时间，写下此刻的想法。",
+  "notificationDailyReflectionChannel": "每日反思",
+  "notificationDailyReflectionChannelDescription": "温和提醒您每天暂停片刻并进行反思",
+  "notificationReminderChannel": "Orah 提醒",
+  "notificationReminderChannelDescription": "笔记和任务提醒",
+  "notificationDoneAction": "完成",
+  "notificationSnooze10Action": "延后 10 分钟",
+  "notificationSnooze60Action": "延后 1 小时",
+  "notificationReminderTitle": "ORAH 提醒",
+  "genericTryAgain": "请重试。",
+  "registrationFailed": "无法完成注册，请重试。"
 }

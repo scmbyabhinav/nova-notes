@@ -28,11 +28,12 @@ import 'screens/app_lock_screen.dart';
 import 'core/services/nova_security_service.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.securityService, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.securityService, this.locale, this.skipRegistrationForTesting = false});
 
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final NovaSecurityService? securityService;
+  final Locale? locale;
   final bool skipRegistrationForTesting;
 
   @override
@@ -68,8 +69,12 @@ class _OrahAppState extends State<OrahApp> {
       theme: light,
       darkTheme: dark,
       themeMode: _theme.mode,
+      locale: widget.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: const [
+        Locale('en'), Locale('hi'), Locale('es'), Locale('fr'), Locale('de'), Locale('he'),
+        Locale('ar'), Locale('id'), Locale('it'), Locale('ja'), Locale('ko'), Locale('pt'), Locale('tr'), Locale('zh'),
+      ],
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
       home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, securityService: widget.securityService, skipRegistrationForTesting: widget.skipRegistrationForTesting),
@@ -229,7 +234,11 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
     final voiceEnabled = await OrahUserProfileService.instance.voiceGreetingEnabled();
     if (!mounted || !voiceEnabled) return;
     OrahUserProfileService.instance
-        .speakGreeting(widget.profile.fullName)
+        .speakGreeting(
+          widget.profile.fullName,
+          languageCode: Localizations.localeOf(context).languageCode,
+          greeting: AppLocalizations.of(context)!.voiceGreeting(widget.profile.fullName),
+        )
         .catchError((_) {});
   }
 
@@ -360,6 +369,7 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
   }
 
   Future<void> _showCaptureOptions() async {
+    final l10n = AppLocalizations.of(context)!;
     final capture = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -372,7 +382,7 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Capture',
+                  l10n.captureTitle,
                   style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -382,7 +392,7 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Choose what you want to capture.',
+                  l10n.captureDescription,
                   style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(sheetContext).colorScheme.onSurfaceVariant,
                   ),
@@ -391,14 +401,14 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
               const SizedBox(height: 12),
               ListTile(
                 leading: const CircleAvatar(child: OrahAssetIcon('compose', size: 24, color: Colors.white)),
-                title: const Text('Quick note'),
-                subtitle: const Text('Start typing immediately'),
+                title: Text(l10n.quickNote),
+                subtitle: Text(l10n.startTypingImmediately),
                 onTap: () => Navigator.pop(sheetContext, 'text'),
               ),
               ListTile(
                 leading: const CircleAvatar(child: OrahAssetIcon('checklist', size: 24, color: Colors.white)),
-                title: const Text('Quick checklist'),
-                subtitle: const Text('Capture tasks without setup'),
+                title: Text(l10n.quickChecklist),
+                subtitle: Text(l10n.captureTasksWithoutSetup),
                 onTap: () => Navigator.pop(sheetContext, 'checklist'),
               ),
             ],
@@ -444,14 +454,14 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
             children: [
               FloatingActionButton.small(
                 heroTag: 'orah_checklist_fab',
-                tooltip: 'Daily checklist',
+                tooltip: AppLocalizations.of(context)!.dailyChecklistTooltip,
                 onPressed: () => _openEditor(NoteType.checklist),
                 child: const Icon(Icons.checklist_rounded),
               ),
               const SizedBox(width: 12),
               Tooltip(
                 key: _quickCaptureHintKey,
-                message: 'Tap to write • Long-press for checklist & quick options',
+                message: AppLocalizations.of(context)!.quickCaptureHint,
                 triggerMode: TooltipTriggerMode.manual,
                 excludeFromSemantics: true,
                 child: Listener(
@@ -462,7 +472,7 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
                   child: FloatingActionButton(
                     heroTag: 'orah_voice_capture_fab',
                     onPressed: _quickCapture,
-                    tooltip: 'Quick capture. Long-press for checklist and quick options.',
+                    tooltip: AppLocalizations.of(context)!.quickCaptureTooltip,
                     child: OrahAssetIcon('microphone', color: theme.colorScheme.onPrimary),
                   ),
                 ),
@@ -499,27 +509,27 @@ class _NovaShellState extends State<NovaShell> with WidgetsBindingObserver {
               NavigationDestination(
                 icon: OrahAssetIcon('notes', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('notes', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Notes',
+                label: AppLocalizations.of(context)!.navNotes,
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('folder', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('folder', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Folders',
+                label: AppLocalizations.of(context)!.navFolders,
               ),
               NavigationDestination(
                 icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
                 selectedIcon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
-                label: 'Add',
+                label: AppLocalizations.of(context)!.add,
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('star', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('star', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Favorites',
+                label: AppLocalizations.of(context)!.navFavorites,
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('settings', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('settings', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Settings',
+                label: AppLocalizations.of(context)!.settings,
               ),
             ],
           ),

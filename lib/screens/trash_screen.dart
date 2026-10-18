@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../core/widgets/orah_asset_icon.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
@@ -40,14 +41,15 @@ class _TrashScreenState extends State<TrashScreen> {
   }
 
   Future<void> _deleteForever(Note note) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete permanently?'),
-        content: const Text('This note will be permanently removed.'),
+        title: Text(l10n.trashDeletePermanentlyTitle),
+        content: Text(l10n.trashDeletePermanentlyMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.delete)),
         ],
       ),
     );
@@ -64,14 +66,15 @@ class _TrashScreenState extends State<TrashScreen> {
 
   Future<void> _emptyTrash() async {
     if (_notes.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Empty Trash?'),
-        content: Text('Permanently delete ' + _notes.length.toString() + ' note' + (_notes.length == 1 ? '' : 's') + '?'),
+        title: Text(l10n.trashEmptyTitle),
+        content: Text(l10n.trashEmptyMessage(_notes.length)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Empty Trash')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.trashEmptyAction)),
         ],
       ),
     );
@@ -88,11 +91,12 @@ class _TrashScreenState extends State<TrashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trash'),
+        title: Text(l10n.trashTitle),
         actions: [
-          if (_notes.isNotEmpty) IconButton(tooltip: 'Empty Trash', onPressed: _emptyTrash, icon: const OrahAssetIcon('trash')),
+          if (_notes.isNotEmpty) IconButton(tooltip: l10n.trashEmptyAction, onPressed: _emptyTrash, icon: const OrahAssetIcon('trash')),
         ],
       ),
       body: _loading
@@ -111,7 +115,7 @@ class _TrashScreenState extends State<TrashScreen> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'No notes yet.',
+                          l10n.trashNoNotesTitle,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w800,
@@ -120,7 +124,7 @@ class _TrashScreenState extends State<TrashScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Tap the + button to capture your first thought.',
+                          l10n.emptyNotesHint,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 height: 1.5,
@@ -140,13 +144,13 @@ class _TrashScreenState extends State<TrashScreen> {
                     return Card(
                       child: ListTile(
                         leading: const OrahAssetIcon('trash'),
-                        title: Text(note.isLocked ? 'Private note' : note.title),
-                        subtitle: Text(note.isLocked ? 'Locked note' : (note.type == NoteType.checklist ? 'Checklist' : 'Note')),
+                        title: Text(note.isLocked ? l10n.trashPrivateNote : note.title),
+                        subtitle: Text(note.isLocked ? l10n.trashLockedNote : (note.type == NoteType.checklist ? l10n.trashChecklist : l10n.trashNote)),
                         trailing: PopupMenuButton<String>(
                           onSelected: (value) => value == 'restore' ? _restore(note) : _deleteForever(note),
-                          itemBuilder: (_) => const [
-                            PopupMenuItem(value: 'restore', child: Text('Restore')),
-                            PopupMenuItem(value: 'delete', child: Text('Delete permanently')),
+                          itemBuilder: (_) => [
+                            PopupMenuItem(value: 'restore', child: Text(l10n.proRestore)),
+                            PopupMenuItem(value: 'delete', child: Text(l10n.trashDeletePermanentlyAction)),
                           ],
                         ),
                       ),

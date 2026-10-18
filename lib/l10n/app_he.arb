@@ -65,5 +65,898 @@
   "unlock": "ביטול נעילה",
   "useBiometrics": "שימוש בזיהוי ביומטרי",
   "incorrectPin": "קוד PIN שגוי",
-  "biometricFallbackError": "הזיהוי הביומטרי בוטל או אינו זמין. הזינו את קוד ה-PIN כדי לבטל את הנעילה."
+  "biometricFallbackError": "הזיהוי הביומטרי בוטל או אינו זמין. הזינו את קוד ה-PIN כדי לבטל את הנעילה.",
+  "journeyTitle": "המסע שלך",
+  "journeyHeadline": "רגעים קטנים מצטברים.",
+  "journeySubtitle": "מבט עדין על הרגלי הכתיבה וההתבוננות שלך.",
+  "dayInARow": "יום ברצף",
+  "daysInARow": "ימים ברצף",
+  "notesSaved": "פתקים שנשמרו",
+  "notesStayOnDevice": "הפתקים שלך נשארים במכשיר הזה. התובנות מחושבות מהפתקים ששמרת.",
+  "moodStoryStarts": "סיפור מצב הרוח שלך מתחיל כאן",
+  "chooseMoodToSeeDistribution": "בחר מצב רוח בעת כתיבת פתק כדי לראות כאן את ההתפלגות.",
+  "moodDistributionSubtitle": "הרגשות שתיעדת",
+  "notesCreatedLast7Days": "פתקים שנוצרו בשבעת הימים האחרונים",
+  "calendarSubtitle": "פתקים לפי יום ותזכורות מתוזמנות",
+  "goToToday": "מעבר להיום",
+  "scheduleNote": "תזמון פתק",
+  "nothingOnThisDay": "אין פריטים ביום הזה",
+  "chooseAnotherDate": "בחר תאריך אחר או תזמן פתק ליום הזה.",
+  "untitledNote": "פתק ללא כותרת",
+  "scheduledLabel": "מתוזמן",
+  "createdLabel": "נוצר",
+  "calendarItemStatusTime": "{status} בשעה {time}",
+  "writingRhythm": "קצב הכתיבה שלך",
+  "historyTimeline": "ציר זמן של ההיסטוריה",
+  "storyStartsWithNote": "הסיפור שלך מתחיל בפתק",
+  "pickHighlightedDay": "בחר יום מסומן כדי לחזור לרגע או לעיין בכל ההיסטוריה.",
+  "savedDaysHighlighted": "ימים שבהם נשמרו פתקים יסומנו בלוח השנה.",
+  "addFolderImage": "הוספת תמונה לתיקייה",
+  "changeImage": "שינוי תמונה",
+  "removeImage": "הסרת תמונה",
+  "folderName": "שם התיקייה",
+  "folderNameHint": "למשל: עבודה, רעיונות, אישי",
+  "cancel": "ביטול",
+  "create": "יצירה",
+  "newFolder": "תיקייה חדשה",
+  "editFolder": "עריכת תיקייה",
+  "save": "שמירה",
+  "deleteFolderTitle": "למחוק את {folderName}?",
+  "@deleteFolderTitle": {
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "folderEmpty": "התיקייה ריקה.",
+  "notesMovedFromFolder": "{count} פתק(ים) יישמרו ויועברו בחזרה אל כל הפתקים.",
+  "@notesMovedFromFolder": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "delete": "מחיקה",
+  "selectedFoldersDeleteTitle": "למחוק {count} תיקייה(ות)?",
+  "@selectedFoldersDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectedFoldersEmpty": "התיקיות שנבחרו ריקות.",
+  "deleteSelected": "מחיקת הבחירה",
+  "cancelSelection": "ביטול הבחירה",
+  "selectedCount": "נבחרו {count}",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteSelectedFolders": "מחיקת התיקיות שנבחרו",
+  "folderOptions": "אפשרויות תיקייה",
+  "open": "פתיחה",
+  "rename": "שינוי שם",
+  "folderNoteCount": "{count} פתקים",
+  "@folderNoteCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "removeFromFolder": "הסרה מהתיקייה",
+  "moveToTrash": "העברה לאשפה",
+  "noFoldersYet": "עדיין אין תיקיות",
+  "emptyFoldersDescription": "יוצרים תיקיות כדי לשמור יחד פתקים קשורים.",
+  "createFolder": "יצירת תיקייה",
+  "noNotesInFolder": "אין עדיין פתקים בתיקייה הזו.\nפתחו פתק ובחרו ארגון כדי להוסיף אותו לכאן.",
+  "welcomeToOrah": "ברוכים הבאים ל-Orah",
+  "personalizeYourSpace": "התאימו אישית את המרחב שלכם. הזינו שם וכתובת אימייל כדי להתחיל.",
+  "fullName": "שם מלא",
+  "yourName": "השם שלך",
+  "emailAddress": "כתובת אימייל",
+  "emailExample": "you@example.com",
+  "enterFullName": "יש להזין שם מלא.",
+  "enterValidEmail": "יש להזין כתובת אימייל תקינה.",
+  "registerAndContinue": "הרשמה והמשך",
+  "profileStoredOnDevice": "הפרופיל נשמר באופן מאובטח במכשיר זה. סנכרון רשימת המנויים דורש שירות ניוזלטר מוגדר.",
+  "proRestore": "שחזור",
+  "proHeroEyebrow": "ההערות שלך, עם יותר עוצמה",
+  "proHeroHeadline": "הפיקו יותר מכל הערה.",
+  "proHeroDescription": "הפכו נייר לידע שניתן לחיפוש, מצאו פרטים וקחו את ההערות לכל מקום.",
+  "proHeroFootnote": "שדרגו כשתצטרכו יכולות נוספות. ההערות היומיומיות נשארות שלכם.",
+  "proMoreThanNotes": "יותר מהערות",
+  "proOcrTitle": "OCR שמאפשר חיפוש בתמונות",
+  "proOcrDescription": "חלצו טקסט מתמונות וממסמכים נתמכים במקום להקליד אותו מחדש.",
+  "proExportTitle": "ייצוא בפורמט הרצוי",
+  "proExportDescription": "השתמשו בהערות מחוץ ל-ORAH באמצעות ייצוא PDF, Word ו-Excel.",
+  "proSearchTitle": "מצאו את המחט בערימת השחת",
+  "proSearchDescription": "השתמשו בחיפוש מתקדם ובמסננים כדי למצוא פרטים חשובים במהירות.",
+  "proWorkspaceTitle": "סביבת עבודה מאורגנת יותר",
+  "proWorkspaceDescription": "פתחו תבניות פרימיום וכלי פרודוקטיביות מתקדמים כשהם יהיו זמינים בגרסה שלכם.",
+  "proEntitlementActive": "הגישה שלך ל-Pro פעילה.",
+  "proChoosePlan": "בחרו את תוכנית Pro",
+  "proPricesFromPlay": "המחירים מסופקים על ידי Google Play בהתאם לאזור שלך.",
+  "proPlanYearly": "שנתי",
+  "proBestValue": "התמורה הטובה ביותר",
+  "proPlanMonthly": "חודשי",
+  "proMonthlySubtitle": "תשלום מדי חודש",
+  "proOfferInstruction": "יש לכם הצעת ORAH מהמעסיק או מהמפתח? ממשו אותה דרך הקישור או הקוד של Google Play שבהזמנה, ואז חזרו לכאן ולחצו על שחזור.",
+  "proRestorePurchases": "שחזור רכישות",
+  "proRenewalDisclosure": "המנויים מתחדשים אוטומטית אלא אם מבטלים אותם ב-Google Play. בדקו את המחיר, תקופת החיוב ותנאי הניסיון לפני האישור. ניתן לנהל או לבטל את המינוי בחשבון Play Store.",
+  "proBestValueBadge": "התמורה הטובה ביותר",
+  "proLoadingPrice": "המחיר נטען…",
+  "proUnavailable": "לא זמין כרגע",
+  "proChooseButton": "בחירה",
+  "microphoneAccessNeeded": "נדרשת גישה למיקרופון",
+  "microphoneAccessPermanentDenied": "ORAH Notes זקוק לגישה למיקרופון כדי לתמלל את קולכם. אפשר להפעיל את ההרשאה בהגדרות.",
+  "microphoneAccessRequest": "ORAH Notes זקוק לגישה למיקרופון כדי לתמלל את קולכם. אשרו את הגישה או הפעילו אותה בהגדרות.",
+  "notNow": "לא עכשיו",
+  "openSettings": "פתיחת ההגדרות",
+  "voiceInputUnavailableWithMessage": "הקלטה קולית אינה זמינה: {message}",
+  "voiceInputUnavailable": "הקלטה קולית אינה זמינה במכשיר הזה.",
+  "couldNotStartVoiceCapture": "לא ניתן להתחיל הקלטה קולית: {error}",
+  "voiceTextSaved": "הטקסט הקולי נשמר בהערה.",
+  "recordingStoppedPartialSaved": "ההקלטה נעצרה. הטקסט החלקי נשמר.",
+  "addTask": "הוספת משימה",
+  "taskHint": "מה צריך לעשות?",
+  "add": "הוספה",
+  "editTask": "עריכת משימה",
+  "enterVaultPin": "הזינו קוד PIN לכספת",
+  "pinDigitsLabel": "קוד PIN בן 4–8 ספרות",
+  "vaultAuthenticationFailed": "האימות נכשל. נסו זיהוי ביומטרי או את קוד ה-PIN של הכספת.",
+  "secureYourVault": "אבטחו את הכספת",
+  "vaultSetupDescription": "כדי לנעול את ההערה, צריך להגדיר תחילה קוד PIN או אימות ביומטרי. כך רק אתם תוכלו לגשת אליה.",
+  "setUpSecurity": "הגדרת אבטחה",
+  "createVaultPin": "יצירת קוד PIN לכספת",
+  "confirmVaultPin": "אישור קוד PIN לכספת",
+  "vaultPinsDoNotMatch": "קודי ה-PIN אינם תואמים. ההערה לא ננעלה.",
+  "vaultPinCreated": "קוד ה-PIN לכספת נוצר. ההערה מאובטחת כעת…",
+  "enterPinDigits": "הזינו 4–8 ספרות",
+  "addContentBeforeLock": "הוסיפו תוכן לפני נעילת ההערה.",
+  "vaultAuthenticationNotCompleted": "האימות לא הושלם. ההערה לא ננעלה.",
+  "noteLockedMovedToVault": "ההערה ננעלה והועברה לכספת.",
+  "noteUnlockedMovedToNotes": "ההערה שוחררה והוחזרה לרשימת ההערות.",
+  "continueLabel": "המשך",
+  "ocrNoReadableText": "לא נמצא טקסט קריא.",
+  "ocrTextExtracted": "הטקסט חולץ מהתמונה.",
+  "ocrCouldNotReadImage": "לא ניתן לקרוא טקסט מהתמונה הזו.",
+  "chooseTemplate": "בחירת תבנית",
+  "replaceCurrentNote": "להחליף את ההערה הנוכחית?",
+  "templateReplaceWarning": "התבנית הזו תחליף את הכותרת והתוכן הנוכחיים.",
+  "replace": "החלפה",
+  "insertLink": "הוספת קישור",
+  "insert": "הוספה",
+  "couldNotAddImage": "לא ניתן להוסיף תמונה: {error}",
+  "couldNotAddFiles": "לא ניתן להוסיף קבצים: {error}",
+  "@couldNotAddImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotAddFiles": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "renameAttachmentTitle": "שינוי שם הקובץ המצורף",
+  "preview": "תצוגה מקדימה",
+  "share": "שיתוף",
+  "details": "פרטים",
+  "removeFromNote": "הסרה מההערה",
+  "chooseFromGallery": "בחירה מהגלריה",
+  "takePhoto": "צילום תמונה",
+  "attachFiles": "צירוף קבצים",
+  "close": "סגירה",
+  "couldNotUnlockPrivateNote": "לא ניתן לפתוח את ההערה הפרטית: {error}",
+  "@couldNotUnlockPrivateNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exportLabel": "ייצוא",
+  "removeFavorite": "הסרה מהמועדפים",
+  "addToFavorites": "הוספה למועדפים",
+  "addImage": "הוספת תמונה",
+  "template": "תבנית",
+  "setReminder": "הגדרת תזכורת",
+  "reminderAt": "תזכורת: {date}",
+  "clearReminder": "ניקוי תזכורת",
+  "noteColor": "צבע ההערה",
+  "unarchive": "ביטול העברה לארכיון",
+  "archive": "העברה לארכיון",
+  "back": "חזרה",
+  "remove": "הסרה",
+  "retry": "ניסיון חוזר",
+  "titleHint": "כותרת",
+  "@reminderAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotShareNoteCard": "לא ניתן לשתף את כרטיס ההערה: {error}",
+  "couldNotRenameAttachment": "לא ניתן לשנות את שם הקובץ המצורף: {error}",
+  "attachmentDetailsFormat": "גודל: {size}\nשונה: {modified}",
+  "authenticationFailedNoteNotDeleted": "האימות נכשל. ההערה לא נמחקה.",
+  "privateNote": "הערה פרטית",
+  "thisNoteIsPrivate": "ההערה הזו פרטית",
+  "unlockPrivateNoteHint": "יש לפתוח באמצעות זיהוי ביומטרי או קוד PIN כדי לצפות בה.",
+  "exitZenMode": "יציאה ממצב זן",
+  "exportAsCard": "ייצוא ככרטיס",
+  "scanTextFromImage": "סריקת טקסט מתמונה",
+  "folderAndTags": "תיקיות ותגיות",
+  "lockNote": "נעילת הערה",
+  "unlockAndMoveToNotes": "ביטול נעילה והעברה להערות",
+  "stopAndSave": "עצירה ושמירה",
+  "startWritingHint": "התחילו לכתוב...",
+  "howAreYouFeeling": "איך ההרגשה שלך?",
+  "checklistEmpty": "רשימת המשימות ריקה",
+  "addFirstTask": "הוספת משימה ראשונה",
+  "moveUp": "הזזה למעלה",
+  "moveDown": "הזזה למטה",
+  "deleteTask": "מחיקת משימה",
+  "@couldNotShareNoteCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@couldNotRenameAttachment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@attachmentDetailsFormat": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "modified": {
+        "type": "String"
+      }
+    }
+  },
+  "unlocking": "פותח…",
+  "unlockNote": "פתיחת הפתק",
+  "zenMode": "מצב ריכוז",
+  "edit": "עריכה",
+  "pinNote": "הצמדה",
+  "unpinNote": "ביטול הצמדה",
+  "bold": "מודגש",
+  "italic": "נטוי",
+  "strikethrough": "קו חוצה",
+  "heading": "כותרת",
+  "bullets": "תבליטים",
+  "numberedList": "רשימה ממוספרת",
+  "quote": "ציטוט",
+  "linkLabel": "קישור",
+  "addImageOrFile": "הוספת תמונה או קובץ",
+  "stopVoiceInput": "עצירת הקלטה קולית",
+  "voiceInput": "קלט קולי",
+  "stopAndSaveVoiceInput": "עצירה ושמירת הקלט הקולי",
+  "tapMicToSpeak": "הקישו על המיקרופון כדי להכתיב את הפתק",
+  "voiceNote": "פתק קולי",
+  "preparing": "מכין…",
+  "saving": "שומר…",
+  "unsavedChanges": "יש שינויים שלא נשמרו",
+  "saved": "נשמר",
+  "recordingVoiceInput": "מקליט • {duration}",
+  "savingVoiceText": "שומר את תמלול הקול…",
+  "preparingMicrophone": "מכין את המיקרופון…",
+  "textNote": "פתק טקסט",
+  "checklistType": "רשימת משימות",
+  "templateMeetingNotes": "סיכום פגישה",
+  "templateAgenda": "סדר יום",
+  "templateDecisions": "החלטות",
+  "templateActionItems": "משימות לביצוע",
+  "templateDailyPlan": "תוכנית יומית",
+  "templateTopPriority": "העדיפות העליונה",
+  "templateImportant": "חשוב",
+  "templateIfTimeAllows": "אם יישאר זמן",
+  "templateShoppingList": "רשימת קניות",
+  "templateMilk": "חלב",
+  "templateVegetables": "ירקות",
+  "templateHousehold": "מוצרי בית",
+  "templateTravelPlan": "תוכנית נסיעה",
+  "templateDates": "תאריכים",
+  "templateBookings": "הזמנות",
+  "templatePlacesToVisit": "מקומות לביקור",
+  "orahNoteCard": "כרטיס פתק של Orah",
+  "sharedFromOrah": "שותף מתוך Orah",
+  "noteCardCaptureError": "לא ניתן ללכוד את כרטיס הפתק.",
+  "@recordingVoiceInput": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "helloUser": "שלום, {name}",
+  "welcomeBack": "ברוך שובך",
+  "friend": "חבר/ה",
+  "voiceGreeting": "שלום, {name}",
+  "voicePreviewGreeting": "שלום, כאן Orah Notes",
+  "speakMyNameAtStartup": "להשמיע את שמי בעת ההפעלה",
+  "voiceGreetingEnabledDescription": "Orah יברך אותך בשפה שבחרת בעת פתיחת האפליקציה.",
+  "voiceGreetingDisabledDescription": "הברכה תישאר מושתקת.",
+  "@helloUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@voiceGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unarchiveNote": "הוצא מהארכיון",
+  "archiveNote": "העבר לארכיון",
+  "duplicateNote": "שכפל פתק",
+  "navNotes": "פתקים",
+  "navFolders": "תיקיות",
+  "navFavorites": "מועדפים",
+  "navArchivedNotes": "פתקים בארכיון",
+  "navDailyReflection": "הרהור יומי",
+  "navVoiceCapture": "הקלטה קולית",
+  "navChecklists": "רשימות תיוג",
+  "navAppearance": "מראה",
+  "navSearch": "חיפוש",
+  "offlineAccess": "גישה לא מקוונת",
+  "backupExport": "גיבוי וייצוא",
+  "recentlyUpdated": "עודכנו לאחרונה",
+  "recentlyCreated": "נוצרו לאחרונה",
+  "titleAZ": "כותרת א׳–ת׳",
+  "noNotesYet": "אין פתקים עדיין",
+  "vaultLocked": "כספת / פתקים נעולים",
+  "vaultLockedDesc": "פתח פתקים פרטיים ומוצפנים",
+  "privacyPledge": "הבטחת הפרטיות",
+  "privacyPledgeDesc": "קרא על ההבטחה שלנו ללא ענן",
+  "backupExportDesc": "גיבוי מקומי ונתונים ניידים",
+  "vaultResetTitle": "שכחת PIN? אפס את הכספת",
+  "vaultResetDesc": "לא ניתן לשחזר. האיפוס ימחק לצמיתות את הכספת הישנה.",
+  "pinBiometric": "הגנת PIN וביומטריה",
+  "androidFeaturesDesc": "ווידג׳טים, קיצורים ושיתוף",
+  "archivedNotesTitle": "פתקים בארכיון",
+  "archivedNotesDesc": "פתח או שחזר פתקים שהועברו לארכיון",
+  "trashTitle": "אשפה",
+  "trashDesc": "שחזר או מחק פתקים לצמיתות",
+  "orahFeaturesTitle": "תכונות Orah",
+  "orahFeaturesDesc": "גלה מה Orah יכולה לעשות",
+  "aboutOrahTitle": "על Orah",
+  "aboutOrahDesc": "מידע על המוצר וגישת הפרטיות",
+  "cancelLabel": "ביטול",
+  "resetVaultQuestion": "לאפס את הכספת?",
+  "deleteVaultConfirm": "מחק את הכספת הישנה וצור חדשה",
+  "themeLabel": "ערכת נושא",
+  "themeSystem": "מערכת",
+  "themeLight": "בהיר",
+  "themeDark": "כהה",
+  "portableBackup": "גיבוי נייד",
+  "createBackup": "צור גיבוי",
+  "restoreBackup": "שחזר גיבוי",
+  "storageMaintenance": "תחזוקת אחסון",
+  "cleanOrphanAttachments": "נקה קבצים מצורפים יתומים",
+  "vaultAutoLock": "נעילה אוטומטית של הכספת",
+  "neverLabel": "לעולם לא",
+  "dailyReflectionReminder": "תזכורת להרהור יומי",
+  "reminderTime": "שעת התזכורת",
+  "backupExportTitle": "גיבוי וייצוא",
+  "vaultResetSuccess": "הכספת הישנה נמחקה. פתח את הכספת כדי ליצור PIN חדש.",
+  "vaultResetFailed": "איפוס הכספת נכשל: {error}",
+  "backupRestoredCount": "{count} פתקים שוחזרו בהצלחה.",
+  "backupError": "שגיאת גיבוי: {error}",
+  "unusedFilesFound": "נמצאו {count} קבצים לא בשימוש",
+  "removedOrphanAttachments": "הוסרו {count} קבצים מצורפים יתומים.",
+  "showDailyInspiration": "הצג השראה יומית במסך הבית",
+  "showDailyInspirationDesc": "הצג הנחיית הרהור יומית מעל הפתקים.",
+  "reminderUpdateFailed": "לא ניתן לעדכן את תזכורת ההרהור היומי: {error}",
+  "reminderScheduleFailed": "לא ניתן לתזמן הרהור יומי: {error}",
+  "orahFeaturesSemantics": "תכונות Orah",
+  "vaultTooltip": "כספת / פתקים נעולים",
+  "calendarHistoryTooltip": "לוח שנה והיסטוריה",
+  "statisticsTooltip": "סטטיסטיקות ותובנות",
+  "appearanceTooltip": "מראה",
+  "appearanceSemantics": "הגדרות מראה",
+  "searchFiltersTooltip": "מסנני חיפוש",
+  "hideDailyInspiration": "הסתר השראה יומית",
+  "sortNotesTooltip": "מיין פתקים",
+  "listView": "תצוגת רשימה",
+  "gridView": "תצוגת רשת",
+  "searchLabel": "חיפוש",
+  "newNoteLabel": "פתק חדש",
+  "microphoneTooltip": "מיקרופון",
+  "unpinTooltip": "בטל הצמדה",
+  "pinTooltip": "הצמד",
+  "favoriteTooltip": "מועדף",
+  "editNoteLabel": "ערוך פתק",
+  "lockedContent": "תוכן נעול",
+  "portableBackupDesc": "פתקים, תיקיות וקבצים מצורפים בחבילת ‎.nova אחת.",
+  "vaultAutoLockDesc": "דרוש אימות לאחר שהאפליקציה עוברת לרקע",
+  "searchClear": "נקה",
+  "favoritesOnly": "מועדפים בלבד",
+  "pinnedOnly": "מוצמדים בלבד",
+  "folderLabel": "תיקייה",
+  "allFolders": "כל התיקיות",
+  "archivedLabel": "בארכיון",
+  "noteTypeLabel": "סוג פתק",
+  "allTypes": "כל הסוגים",
+  "typeText": "טקסט",
+  "typeChecklist": "רשימת משימות",
+  "typeVoice": "קול",
+  "typeImage": "תמונה",
+  "typeDrawing": "ציור",
+  "applyFilters": "החל מסננים",
+  "filtersTooltip": "מסננים",
+  "openOrahPro": "פתח את ORAH Pro",
+  "searchScreenTitle": "חיפוש",
+  "searchFiltersTitle": "מסנני חיפוש",
+  "homeTagline": "חשוב. כתוב. שמור.",
+  "homeSubtitle": "מרחב רגוע להערות, לתוכניות ולהתבוננות.",
+  "tapToBeginNote": "הקישו כדי להתחיל הערה",
+  "selectNotePrompt": "בחרו הערה",
+  "desktopNoteEmpty": "ההערה הזו ריקה.",
+  "noContentLabel": "אין תוכן",
+  "emptyNotesHint": "הקישו על כפתור + כדי לשמור את המחשבה הראשונה שלכם.",
+  "justNow": "הרגע",
+  "minutesAgoSuffix": "דק׳ קודם",
+  "hoursAgoSuffix": "שע׳ קודם",
+  "daysAgoSuffix": "ימים קודם",
+  "hideOrahFeatures": "הסתרת תכונות Orah",
+  "showOrahFeatures": "הצגת תכונות Orah",
+  "activeNotesCount": "{count} הערות",
+  "completedLabel": "הושלמו",
+  "@activeNotesCount": {
+    "description": "Count of active notes shown in the desktop Home sidebar.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedCountLabel": "{count} הושלמו",
+  "@completedCountLabel": {
+    "description": "Compact count of completed checklist notes on the Home screen.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duplicateTitle": "{title} (עותק)",
+  "@duplicateTitle": {
+    "description": "Title for a newly duplicated note.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "reflectionCategoryGratitude": "הכרת תודה",
+  "reflectionCategoryMindfulness": "קשיבות",
+  "reflectionCategoryPersonalGrowth": "צמיחה אישית",
+  "reflectionCategoryRelationships": "מערכות יחסים",
+  "reflectionCategorySelfCompassion": "חמלה עצמית",
+  "reflectionCategoryClarity": "בהירות",
+  "reflectionCategoryPossibility": "אפשרויות",
+  "reflectionCategoryDailyReview": "סקירה יומית",
+  "reflectionCategoryPurposeValues": "מטרה וערכים",
+  "reflectionCategoryResilience": "חוסן נפשי",
+  "reflectionCategoryCreativityCuriosity": "יצירתיות וסקרנות",
+  "reflectionCategoryRestRenewal": "מנוחה והתחדשות",
+  "reflectionWriteHint": "כתוב כל מה שעולה בדעתך…",
+  "reflectionSaveError": "לא ניתן לשמור את ההרהור: {error}",
+  "@reflectionSaveError": {
+    "description": "Error shown when a daily reflection cannot be saved.",
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "trashDeletePermanentlyTitle": "למחוק לצמיתות?",
+  "trashDeletePermanentlyMessage": "הפתק הזה יימחק לצמיתות.",
+  "trashEmptyTitle": "לרוקן את האשפה?",
+  "trashEmptyMessage": "למחוק לצמיתות {count} פתקים?",
+  "@trashEmptyMessage": {
+    "description": "Confirmation before permanently emptying the trash.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trashEmptyAction": "ריקון האשפה",
+  "trashNoNotesTitle": "עדיין אין פתקים.",
+  "trashPrivateNote": "פתק פרטי",
+  "trashLockedNote": "פתק נעול",
+  "trashChecklist": "רשימת משימות",
+  "trashNote": "פתק",
+  "trashDeletePermanentlyAction": "מחיקה לצמיתות",
+  "favoritesEmptyTitle": "עדיין אין מועדפים",
+  "favoritesEmptyDescription": "סמנו פתקים חשובים בכוכב והם יופיעו כאן.",
+  "favoritesNoContent": "אין תוכן",
+  "archivedRestoreMessage": "הפתק שוחזר לרשימת הפתקים.",
+  "archivedRefreshTooltip": "רענון פתקים בארכיון",
+  "archivedEmptyTitle": "אין פתקים בארכיון",
+  "archivedEmptyDescription": "פתקים שתעבירו לארכיון יופיעו כאן. אפשר לפתוח אותם או לשחזר אותם לרשימה הראשית.",
+  "privacyPledgeHeadline": "ההבטחה שלנו לפרטיות",
+  "privacyPledgeIntro": "המחשבות שלך אישיות. Orah נועד לשמור על הפתקים שלך פרטיים ובשליטתך.",
+  "privacyLocalTitle": "محلي بالكامل",
+  "privacyLocalDescription": "הפתקים שלך נשמרים במכשיר הזה בלבד.",
+  "privacyCloudTitle": "ללא ענן",
+  "privacyCloudDescription": "ל-Orah אין שרת לסנכרון פתקים. הם נשארים במכשיר שלך אלא אם תבחר לשתף או לייצא אותם.",
+  "privacyAiTitle": "ללא בינה מלאכותית",
+  "privacyAiDescription": "Orah אינו סורק או קורא את הפתקים שלך ואינו מאמן עליהם בינה מלאכותית.",
+  "privacyVaultTitle": "כספת מוצפנת",
+  "privacyVaultDescription": "פתקים רגישים בכספת מוגנים בהצפנת AES-256-GCM.",
+  "privacySharingDisclosure": "שיתוף, ייצוא, שירותי מכשיר ותכונות מערכת ההפעלה עשויים להעביר מידע מחוץ לאפליקציה כשתבחר להשתמש בהם.",
+  "gotIt": "הבנתי",
+  "aboutFast": "מהיר",
+  "aboutFastDescription": "נועד ללכידה מיידית.",
+  "aboutOfflineFirst": "يعمل دون اتصال",
+  "aboutOfflineFirstDescription": "הפתקים שלך פועלים ללא חשבון.",
+  "aboutPrivate": "פרטי",
+  "aboutPrivateDescription": "נתונים מקומיים עם הגנה אופציונלית למכשיר.",
+  "aboutSummary": "Orah נשאר פשוט: פותחים, מתעדים, מארגנים ומוצאים.",
+  "developerSignatureLabel": "Abhinav Bajpai — חתימת המפתח",
+  "aboutFeedback": "להצעות לתכונות, משוב או רעיונות:",
+  "aboutCopyright": "זכויות יוצרים © 2026 Abhinav Bajpai. כל הזכויות שמורות.",
+  "aboutLegalNotice": "קוד אפליקציית Orah, המותג המקורי, הגרפיקה ונכסי המוצר הם בבעלות Abhinav Bajpai. רכיבי צד שלישי כפופים לרישיונות שלהם.",
+  "voiceLanguageTitle": "שפת דיבור",
+  "voiceLanguageDescription": "בחרו את השפה שבה תדברו. היא יכולה להיות שונה משפת האפליקציה.",
+  "voiceLanguageSystemDefault": "שימוש בשפת המכשיר",
+  "voiceLanguageNoLocales": "שירות זיהוי הדיבור במכשיר אינו מציע שפות זמינות.",
+  "securityCreatePin": "יצירת קוד PIN",
+  "securityConfirmPin": "אישור קוד PIN",
+  "securityPinMismatch": "קודי ה‑PIN אינם תואמים.",
+  "securityPinCreated": "קוד ה‑PIN נוצר. נעילת האפליקציה מופעלת.",
+  "securityPinActionFailed": "לא ניתן לעדכן את קוד ה‑PIN: {error}",
+  "securityEnterCurrentPin": "הזנת קוד ה‑PIN הנוכחי",
+  "securityPinDisabled": "קוד ה‑PIN ונעילת האפליקציה הושבתו.",
+  "securityBiometricNotCompleted": "האימות הביומטרי לא הושלם.",
+  "securityPinDigitsHint": "4–8 ספרות",
+  "securityEnterDigits": "יש להזין 4–8 ספרות",
+  "securityAppLock": "נעילת האפליקציה",
+  "securityRequirePin": "דרישת קוד PIN כאשר ORAH נעולה",
+  "securityCreatePinToProtect": "יצירת קוד PIN להגנה על ORAH",
+  "securityChangePin": "שינוי קוד PIN",
+  "securityReplacePinSubtitle": "החלפת קוד ה‑PIN הנוכחי של ORAH",
+  "securityRemovePin": "הסרת קוד PIN",
+  "securityTurnOffPinProtection": "כיבוי ההגנה באמצעות PIN",
+  "securityBiometricUnlock": "פתיחה באמצעות זיהוי ביומטרי",
+  "securityUseBiometrics": "שימוש בטביעת אצבע או בזיהוי הביומטרי של המכשיר",
+  "securityLocalFirstPrivacy": "פרטיות עם עדיפות לאחסון מקומי",
+  "securityLocalFirstDescription": "ORAH אינה דורשת חשבון או סנכרון בענן עבור ההערות שלך.",
+  "securityStorageNote": "הערת אבטחה: פרטי ה‑PIN נשמרים באחסון המאובטח של Android/iOS. תוכן רגיש של הערות נשאר במכשיר. אחסון מוצפן מלא לכספת יתווסף לפני ש‑ORAH תטען שהתוכן מוצפן מקצה לקצה.",
+  "@securityPinActionFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultPinRecoveryWarning": "⚠️ לא ניתן לשחזר את קוד ה‑PIN. אם תשכחו אותו, לא ניתן יהיה לשחזר את הכספת.",
+  "vaultPinDigitsHint": "קוד PIN לכספת בן 4–8 ספרות",
+  "vaultConfirmPin": "אישור PIN",
+  "vaultCancel": "ביטול",
+  "vaultPinsMismatch": "קודי ה‑PIN אינם תואמים.",
+  "vaultPinDigitsError": "קוד ה‑PIN של הכספת חייב להכיל 4–8 ספרות.",
+  "vaultIncorrectPin": "קוד PIN שגוי לכספת.",
+  "vaultVerifyCurrentPin": "אימות קוד ה‑PIN הנוכחי של הכספת",
+  "vaultIncorrectCurrentPin": "קוד ה‑PIN הנוכחי של הכספת שגוי.",
+  "vaultCreateNewPin": "יצירת קוד PIN חדש לכספת",
+  "vaultPinChanged": "קוד ה‑PIN של הכספת שונה.",
+  "vaultNewFolder": "תיקייה חדשה בכספת",
+  "vaultFolderName": "שם התיקייה",
+  "vaultCreate": "יצירה",
+  "vaultRenameFolder": "שינוי שם תיקיית הכספת",
+  "vaultSave": "שמירה",
+  "vaultDelete": "מחיקה",
+  "vaultLockedTitle": "כספת / פתקים נעולים",
+  "vaultChangePin": "שינוי קוד PIN לכספת",
+  "vaultTrustBadge": "כספת מאובטחת",
+  "vaultCreatePrivateNote": "יצירת פתק פרטי",
+  "vaultAllFolders": "כל התיקיות",
+  "vaultFolderOptions": "אפשרויות תיקיית הכספת",
+  "vaultRename": "שינוי שם",
+  "vaultNewFolderAction": "תיקייה חדשה",
+  "vaultEmptyTitle": "הכספת ריקה",
+  "vaultEmptyDescription": "נעלו פתק מתוך העורך או צרו פתק פרטי.",
+  "vaultMoveToFolder": "העברה לתיקייה",
+  "vaultUnfiled": "ללא תיקייה",
+  "vaultJustNow": "כרגע",
+  "vaultMinutesAgoSuffix": "דק׳ לפני",
+  "vaultHoursAgoSuffix": "שע׳ לפני",
+  "vaultDaysAgoSuffix": "ימים לפני",
+  "vaultDeleteFolderTitle": "למחוק את {folderName}?",
+  "vaultFolderEmpty": "התיקייה ריקה.",
+  "vaultDeleteFolderWithNotes": "להמשיך? {count} פתקים פרטיים יועברו אל «ללא תיקייה».",
+  "@vaultDeleteFolderTitle": {
+    "description": "Confirmation title when deleting a Vault folder.",
+    "placeholders": {
+      "folderName": {
+        "type": "String"
+      }
+    }
+  },
+  "@vaultDeleteFolderWithNotes": {
+    "description": "Confirmation message when a Vault folder has notes assigned.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportSheetTitle": "ייצוא פתק",
+  "exportSheetDescription": "בחרו פורמט אחד בלבד מתוך הפורמטים הזמינים למטה.",
+  "exportDocuments": "מסמכים",
+  "exportData": "נתונים",
+  "exportPlannedSection": "מתוכנן / בקרוב",
+  "exportPlannedDescription": "הפורמטים האלה מתוכננים לעדכונים עתידיים של Orah.",
+  "sendAsEmailAttachment": "שליחה כקובץ מצורף לדוא״ל",
+  "emailAttachmentDescription": "יוצר קובץ PDF ופותח את חלון השיתוף של המערכת",
+  "exportAllAvailable": "ייצוא כל הפורמטים הזמינים",
+  "exportComingSoon": "בקרוב",
+  "plannedExportFormats": "פורמטי ייצוא מתוכננים",
+  "plannedExportFormatsDescription": "הפורמטים האלה מתוכננים לעדכונים עתידיים של Orah ואינם זמינים לייצוא עדיין.",
+  "exportFormatPdf": "PDF (.pdf)",
+  "exportDescriptionPdf": "מסמך להדפסה",
+  "exportFormatWord": "Word (.docx)",
+  "exportDescriptionWord": "מסמך Microsoft Word הניתן לעריכה",
+  "exportFormatText": "טקסט פשוט",
+  "exportDescriptionText": "תאימות מרבית",
+  "exportFormatMarkdown": "Markdown (.md)",
+  "exportDescriptionMarkdown": "Markdown נייד",
+  "exportFormatExcel": "Excel (.xlsx)",
+  "exportDescriptionExcel": "רשימות הופכות לשורות",
+  "organizationPickerTitle": "ארגון הפתק",
+  "organizationDone": "סיום",
+  "organizationNoFolder": "ללא תיקייה",
+  "organizationAddTagHint": "הוספת תגית",
+  "organizationAddTag": "הוספה",
+  "organizationNoTags": "עדיין אין תגיות.",
+  "exportFailed": "הייצוא נכשל: {error}",
+  "exportEmailAttachmentFailed": "צירוף הקובץ למייל נכשל: {error}",
+  "exportAllFailed": "ייצוא הכול נכשל: {error}",
+  "exportCategoryEbooks": "ספרים אלקטרוניים",
+  "exportCategoryAcademic": "אקדמי",
+  "exportCategoryPresentation": "מצגת",
+  "exportCategorySpeechAudio": "דיבור / שמע",
+  "exportCategorySubtitles": "כתוביות",
+  "exportCategoryEmail": "דוא״ל",
+  "exportCategoryCodeLiterate": "קוד / מסמכים טכניים",
+  "exportCategoryArchive": "ארכיון",
+  "exportCategoryDatabase": "מסד נתונים",
+  "exportCategoryClipboard": "לוח גזירים",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportEmailAttachmentFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "organizationFolderLabel": "תיקייה",
+  "organizationTagsLabel": "תגיות",
+  "plannedExportRichText": "טקסט עשיר (.rtf)",
+  "plannedExportRichTextDescription": "טקסט עשיר בין פלטפורמות",
+  "plannedExportOpenDocument": "OpenDocument (.odt)",
+  "plannedExportOpenDocumentDescription": "תקן פתוח ל‑LibreOffice",
+  "plannedExportHtml": "HTML (.html)",
+  "plannedExportHtmlDescription": "דפי אינטרנט, דוא״ל ובלוגים",
+  "plannedExportEpub": "EPUB (.epub)",
+  "plannedExportEpubDescription": "רוב קוראי הספרים האלקטרוניים",
+  "plannedExportMobi": "MOBI (.mobi)",
+  "plannedExportMobiDescription": "מכשירי Kindle ישנים",
+  "plannedExportAzw3": "AZW3 (.azw3)",
+  "plannedExportAzw3Description": "מכשירי Kindle חדשים",
+  "plannedExportFb2": "FB2 (.fb2)",
+  "plannedExportFb2Description": "פורמט ספרים דיגיטליים נפוץ",
+  "plannedExportLatex": "LaTeX (.tex)",
+  "plannedExportLatexDescription": "מאמרי מחקר ומסמכים מתמטיים",
+  "plannedExportLatexPdf": "LaTeXからPDF (.pdf)",
+  "plannedExportLatexPdfDescription": "最終版の学術論文",
+  "plannedExportBibtex": "BibTeX (.bib)",
+  "plannedExportBibtexDescription": "ניהול מקורות",
+  "plannedExportCsv": "CSV (.csv)",
+  "plannedExportCsvDescription": "טבלאות וניתוח נתונים",
+  "plannedExportJson": "JSON (.json)",
+  "plannedExportJsonDescription": "למפתחים, API ונתונים מובנים",
+  "plannedExportXml": "XML (.xml)",
+  "plannedExportXmlDescription": "מסמכים מובנים",
+  "plannedExportYaml": "YAML (.yaml)",
+  "plannedExportYamlDescription": "הגדרות ונתונים קריאים",
+  "plannedExportTsv": "TSV (.tsv)",
+  "plannedExportTsvDescription": "טבלאות מופרדות בטאבים",
+  "plannedExportPowerPoint": "PowerPoint (.pptx)",
+  "plannedExportPowerPointDescription": "מצגות",
+  "plannedExportMp3": "MP3 (.mp3)",
+  "plannedExportMp3Description": "שמע מטקסט לדיבור",
+  "plannedExportWav": "WAV (.wav)",
+  "plannedExportWavDescription": "שמע מטקסט לדיבור",
+  "plannedExportSrt": "SRT (.srt)",
+  "plannedExportSrtDescription": "כתוביות וידאו",
+  "plannedExportVtt": "VTT (.vtt)",
+  "plannedExportVttDescription": "כתוביות לאינטרנט ולווידאו",
+  "plannedExportEml": "Email (.eml)",
+  "plannedExportEmlDescription": "פורמט הודעת דוא״ל",
+  "plannedExportHtmlEmail": "דוא״ל HTML",
+  "plannedExportHtmlEmailDescription": "דוא״ל HTML מוכן לשליחה",
+  "plannedExportJupyter": "Jupyter Notebook (.ipynb)",
+  "plannedExportJupyterDescription": "מסמכי קוד",
+  "plannedExportZip": "ZIP (.zip)",
+  "plannedExportZipDescription": "חבילת ייצוא דחוסה",
+  "plannedExport7z": "7Z (.7z)",
+  "plannedExport7zDescription": "חבילת ייצוא דחוסה",
+  "plannedExportSqlite": "SQLite",
+  "plannedExportSqliteDescription": "ייצוא מסד נתונים",
+  "plannedExportRichClipboard": "לוח טקסט עשיר",
+  "plannedExportRichClipboardDescription": "פורמט לוח טקסט עשיר",
+  "plannedExportHtmlClipboard": "לוח HTML",
+  "plannedExportHtmlClipboardDescription": "פורמט HTML ללוח",
+  "plannedExportPlainClipboard": "לוח טקסט פשוט",
+  "plannedExportPlainClipboardDescription": "פורמט טקסט פשוט ללוח",
+  "exportShareSubject": "ORAH — ייצוא: {title}",
+  "exportShareBody": "יוצא מ‑ORAH",
+  "emailAttachmentSubject": "ORAH — קובץ מצורף: {title}",
+  "emailAttachmentBody": "מצורף מ‑ORAH",
+  "exportAllShareSubject": "ORAH — {title} — חבילת ייצוא",
+  "exportAllShareBody": "יוצא מ‑ORAH בכל הפורמטים הזמינים כרגע",
+  "@exportShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@emailAttachmentSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@exportAllShareSubject": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "vaultAutoLockDuration": "{count} דקות",
+  "@vaultAutoLockDuration": {
+    "description": "Short duration label for the Vault auto-lock time picker.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "androidWidgetSetupTitle": "הוספת הווידג׳ט של ORAH",
+  "androidWidgetSetupBody": "במסך הבית של Android, לחצו לחיצה ארוכה על אזור ריק, בחרו Widgets, חפשו ORAH וגררו את הווידג׳ט למסך הבית.",
+  "androidQuickShortcutDialogTitle": "קיצור דרך להערה מהירה",
+  "androidQuickShortcutDialogBody": "לחצו לחיצה ארוכה על סמל ORAH במסך הבית. בחרו «הערה חדשה» או «רשימת משימות חדשה» מתפריט קיצורי הדרך.",
+  "androidShortcutNewNote": "הערה חדשה",
+  "androidShortcutNewChecklist": "רשימת משימות חדשה",
+  "androidShortcutSearch": "חיפוש",
+  "androidShareUnavailable": "השיתוף אל ORAH אינו זמין במכשיר הזה.",
+  "androidFeatureHeading": "ORAH ב-Android",
+  "androidFeatureIntro": "ORAH כוללת לכידה מהירה, שיתוף וגישה ממסך הבית באמצעות שילובים מובנים של Android.",
+  "androidWidgetTitle": "ווידג׳ט למסך הבית",
+  "androidWidgetDescription": "צרו הערה או רשימת משימות, או פתחו חיפוש ישירות ממסך הבית.",
+  "androidQuickCaptureTitle": "קיצור דרך להערה מהירה",
+  "androidQuickCaptureDescription": "פתחו את ORAH ישירות ללכידה מיידית.",
+  "androidShareTitle": "שיתוף אל ORAH",
+  "androidShareDescription": "שלחו טקסט ותוכן נתמכים להערה חדשה ב-ORAH.",
+  "androidRemindersTitle": "תזכורות",
+  "androidRemindersDescription": "צרו תזכורות להערות ולרשימות משימות ללא שרת backend.",
+  "androidLocalIntegrationsNote": "אלה תכונות Android מקומיות שאינן דורשות שרת backend.",
+  "androidDone": "בוצע",
+  "androidGotIt": "הבנתי",
+  "captureTitle": "לכידה",
+  "captureDescription": "בחרו מה ברצונכם ללכוד.",
+  "quickNote": "פתק מהיר",
+  "startTypingImmediately": "התחילו לכתוב מיד",
+  "quickChecklist": "רשימת משימות מהירה",
+  "captureTasksWithoutSetup": "תעדו משימות ללא הגדרה",
+  "dailyChecklistTooltip": "רשימת משימות יומית",
+  "quickCaptureHint": "הקישו כדי לכתוב • לחצו לחיצה ארוכה לרשימה ולאפשרויות",
+  "quickCaptureTooltip": "לכידה מהירה. לחצו לחיצה ארוכה לרשימה ולאפשרויות.",
+  "filtersActive": "המסננים פעילים",
+  "searchResultsCount": "תוצאות: {count}",
+  "advancedSearchProFeature": "חיפוש מתקדם הוא תכונה של ORAH Pro",
+  "noNotesFound": "לא נמצאו פתקים",
+  "searchFilterHint": "השתמשו במילות חיפוש רגילות בחינם, או פתחו את ORAH Pro כדי לפתוח מסננים ואופרטורים.",
+  "searchEmptyHint": "נסו מילה אחרת או הסירו מסנן.",
+  "voicePreferences": "העדפות קול",
+  "dailyReflectionSchedule": "לוח זמנים להרהור יומי",
+  "versionLabel": "גרסה {version}",
+  "vaultResetWarning": "לא ניתן לשחזר את קוד ה-PIN של הכספת. איפוס ימחק לצמיתות את כל הפתקים בכספת ואת מפתח ההצפנה שלה. הפתקים והתיקיות הרגילים יישארו ללא שינוי.",
+  "portableBackupShareText": "גיבוי נייד של Orah",
+  "storageAttachmentCount": "{count} קבצים מצורפים • {size}",
+  "dailyReflectionTimePicker": "בחירת שעת ההרהור היומי",
+  "scheduleLoading": "טוען לוח זמנים…",
+  "scheduleEnabledAt": "מופעל • בכל יום בשעה {time}",
+  "scheduleDisabled": "מושבת • הפעילו לקבלת תזכורת יומית",
+  "@searchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@storageAttachmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "@scheduleEnabledAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "featureVoiceCaptureDescription": "תעדו מחשבות במהירות באמצעות יצירת פתקים בקול.",
+  "featureChecklistDescription": "הפכו פתקים לרשימות משימות מעשיות עם מעקב אחר השלמה.",
+  "featureShareExportTitle": "שיתוף וייצוא",
+  "featureShareExportDescription": "שתפו פתקים וייצאו את התוכן בפורמטים ניידים.",
+  "notificationDailyReflectionTitle": "הגיע הזמן להרהור היומי",
+  "notificationDailyReflectionBody": "קחו רגע שקט כדי לכתוב את מה שעולה במחשבותיכם.",
+  "notificationDailyReflectionChannel": "הרהור יומי",
+  "notificationDailyReflectionChannelDescription": "תזכורת יומית עדינה לעצור ולהרהר",
+  "notificationReminderChannel": "תזכורות Orah",
+  "notificationReminderChannelDescription": "תזכורות לפתקים ולמשימות",
+  "notificationDoneAction": "בוצע",
+  "notificationSnooze10Action": "נודניק ל-10 דקות",
+  "notificationSnooze60Action": "נודניק לשעה",
+  "notificationReminderTitle": "תזכורת ORAH",
+  "genericTryAgain": "נסו שוב.",
+  "registrationFailed": "לא ניתן להשלים את ההרשמה. נסו שוב."
 }

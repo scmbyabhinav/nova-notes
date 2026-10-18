@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/app.dart';
+import 'package:orah_notes/l10n/app_localizations.dart';
 import 'package:orah_notes/core/services/nova_security_service.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
@@ -16,6 +17,8 @@ void main() {
   });
   testWidgets('registration form requires name and email fields', (tester) async {
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: registration.OrahRegistrationScreen(onRegistered: (_) {}),
     ));
 
@@ -27,6 +30,8 @@ void main() {
 
   testWidgets('registration rejects malformed email addresses', (tester) async {
     await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: registration.OrahRegistrationScreen(onRegistered: (_) {}),
     ));
 
@@ -45,6 +50,42 @@ void main() {
     // The brand is rendered as a gradient OrahWordmark, not a plain Text('Orah').
     expect(find.byType(OrahWordmark), findsOneWidget);
     expect(find.byTooltip('New note'), findsNothing);
+  });
+
+  testWidgets('ORAH shell renders across all 14 locales with correct text direction', (tester) async {
+    const localeCodes = <String>[
+      'en', 'hi', 'es', 'fr', 'de', 'he', 'ar',
+      'id', 'it', 'ja', 'ko', 'pt', 'tr', 'zh',
+    ];
+
+    for (final code in localeCodes) {
+      final locale = Locale(code);
+      final l10n = await AppLocalizations.delegate.load(locale);
+      await tester.pumpWidget(
+        OrahApp(
+          locale: locale,
+          skipRegistrationForTesting: true,
+          securityService: _FakeSecurityService(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OrahWordmark), findsOneWidget,
+          reason: 'Brand wordmark missing for $code.');
+      expect(find.byTooltip(l10n.quickCaptureTooltip), findsOneWidget,
+          reason: 'Quick Capture tooltip did not localize for $code.');
+
+      final appDirection = Directionality.of(
+        tester.element(find.byType(OrahWordmark)),
+      );
+      expect(
+        appDirection,
+        (code == 'ar' || code == 'he')
+            ? TextDirection.rtl
+            : TextDirection.ltr,
+        reason: 'Incorrect text direction for $code.',
+      );
+    }
   });
 
   testWidgets('quick capture opens a note immediately', (tester) async {
@@ -152,8 +193,14 @@ void main() {
     expect(prefs.getBool('orah_voice_hint_shown'), isTrue);
   });
 
-  testWidgets('templates list all starter templates and inserts selected content', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: OrahTemplatesScreen()));
+  testWidgets('templates list starter templates and opens selected content', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const OrahTemplatesScreen(),
+    ));
     await tester.pumpAndSettle();
 
     for (final title in [
@@ -178,7 +225,8 @@ void main() {
     await tester.pumpAndSettle();
 
     final contentField = find.byWidgetPredicate(
-      (widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...',
+      (widget) => widget is TextField &&
+          widget.decoration?.hintText == 'Start writing...',
     );
     expect(contentField, findsOneWidget);
     final content = tester.widget<TextField>(contentField).controller?.text ?? '';
@@ -193,6 +241,11 @@ void main() {
 
 class _FakeSpeechService implements VoiceSpeechService {
   int startCount = 0;
+
+  @override
+  Future<List<SpeechLocaleOption>> locales() async => const [
+        SpeechLocaleOption(localeId: 'en_US', name: 'English (United States)'),
+      ];
   bool _isListening = false;
 
   @override
@@ -206,6 +259,7 @@ class _FakeSpeechService implements VoiceSpeechService {
 
   @override
   Future<void> startListening({
+    String? localeId,
     required SpeechResultCallback onResult,
   }) async {
     startCount++;
