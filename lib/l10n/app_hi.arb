@@ -973,22 +973,10 @@
   "sharingPrivacy": "जब तक आप साझा करने के लिए ऐप नहीं चुनते, आपका नोट इसी डिवाइस पर रहता है।",
   "integrationsTitle": "कनेक्ट किए गए ऐप",
   "integrationsSubtitle": "अपनी सेवाओं के बीच नोट्स और फ़ाइलें साझा करने की तैयारी करें।",
-  "integrationsGoogleDrive": "Google Drive",
-  "integrationsGmail": "Gmail",
-  "integrationsOutlook": "Outlook",
-  "integrationsTeams": "Microsoft Teams",
-  "integrationsWhatsApp": "WhatsApp",
-  "integrationsOneDrive": "OneDrive",
   "integrationsNotConnected": "कनेक्ट नहीं है",
   "integrationsSetupPending": "कनेक्शन सेटअप अभी कॉन्फ़िगर नहीं किया गया है।",
   "integrationsSecurityNote": "सुरक्षित साइन-इन और अनुमतियों की समीक्षा सेट होने के बाद ही खाते कनेक्ट होंगे।",
   "integrationsComingNext": "अगला चरण इंटीग्रेशन सेटअप है।",
   "integrationsCloudFiles": "क्लाउड फ़ाइलें और बैकअप",
-  "integrationsScheduledMessages": "शेड्यूल किए गए ईमेल और संदेश",
-  "integrationsProviderGoogle": "चुनी हुई फ़ाइलें Google Drive में सेव या एक्सपोर्ट करें।",
-  "integrationsProviderGmail": "नोट्स से प्राप्तकर्ता और अटैचमेंट सहित ईमेल तैयार करें।",
-  "integrationsProviderOutlook": "Outlook ईमेल और Microsoft 365 वर्कफ़्लो तैयार करें।",
-  "integrationsProviderTeams": "समर्थित Teams चैट और चैनलों के लिए संदेश तैयार करें।",
-  "integrationsProviderWhatsApp": "समर्थित WhatsApp विकल्पों के ज़रिए नोट्स साझा करें।",
-  "integrationsProviderOneDrive": "चुनी हुई फ़ाइलें Microsoft OneDrive में सेव या एक्सपोर्ट करें।"
+  "integrationsScheduledMessages": "शेड्यूल किए गए ईमेल और संदेश"
 }
