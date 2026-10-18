@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "1時間後に再通知",
   "notificationReminderTitle": "ORAHリマインダー",
   "genericTryAgain": "もう一度お試しください。",
-  "registrationFailed": "登録を完了できませんでした。もう一度お試しください。"
+  "registrationFailed": "登録を完了できませんでした。もう一度お試しください。",
+  "shareNote": "ノートを共有",
+  "shareNoteDescription": "端末のアプリを使ってこのノートを共有します。",
+  "shareAsFile": "ファイルとしてエクスポートして共有",
+  "shareText": "テキストを共有",
+  "shareEmail": "メール",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "この端末ではこの共有方法を利用できません。",
+  "shareError": "ノートを共有できませんでした。もう一度お試しください。",
+  "shareReady": "ノートを共有する準備ができました。",
+  "sharingOptions": "共有とエクスポート",
+  "sharingPrivacy": "共有するアプリを選ぶまで、ノートはこの端末内に保存されます。"
 }
