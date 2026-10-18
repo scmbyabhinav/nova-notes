@@ -20,6 +20,7 @@ void main() {
       'lib/screens/favorites_screen.dart',
       'lib/screens/folders_screen.dart',
       'lib/screens/home_screen.dart',
+      'lib/screens/integrations_screen.dart',
       'lib/screens/note_editor_screen.dart',
       'lib/screens/orah_features_screen.dart',
       'lib/screens/orah_pro_screen.dart',
