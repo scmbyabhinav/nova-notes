@@ -78,7 +78,12 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
 
   String _noteShareText(AppLocalizations l10n) {
     final title = widget.note.title.trim();
-    final content = widget.note.content.trim();
+    final content = widget.note.type == NoteType.checklist &&
+            widget.note.checklistItems.isNotEmpty
+        ? widget.note.checklistItems
+            .map((item) => '${item.isDone ? '☑' : '☐'} ${item.text}')
+            .join('\n')
+        : widget.note.content.trim();
     final parts = <String>[];
     if (title.isNotEmpty) parts.add(title);
     if (content.isNotEmpty) parts.add(content);
