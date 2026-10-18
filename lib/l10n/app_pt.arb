@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "Adiar 1 h",
   "notificationReminderTitle": "Lembrete ORAH",
   "genericTryAgain": "Tente novamente.",
-  "registrationFailed": "Não foi possível concluir o registo. Tente novamente."
+  "registrationFailed": "Não foi possível concluir o registo. Tente novamente.",
+  "shareNote": "Partilhar nota",
+  "shareNoteDescription": "Partilhe esta nota usando uma aplicação no seu dispositivo.",
+  "shareAsFile": "Exportar e partilhar como ficheiro",
+  "shareText": "Partilhar texto",
+  "shareEmail": "E-mail",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "Esta opção de partilha não está disponível neste dispositivo.",
+  "shareError": "Não foi possível partilhar esta nota. Tente novamente.",
+  "shareReady": "A sua nota está pronta para partilhar.",
+  "sharingOptions": "Partilha e exportação",
+  "sharingPrivacy": "A sua nota permanece neste dispositivo até escolher uma aplicação para a partilhar."
 }
