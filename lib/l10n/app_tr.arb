@@ -970,5 +970,13 @@
   "shareError": "Bu not paylaşılamadı. Tekrar deneyin.",
   "shareReady": "Notunuz paylaşılmaya hazır.",
   "sharingOptions": "Paylaşım ve dışa aktarma",
-  "sharingPrivacy": "Paylaşmak için bir uygulama seçene kadar notunuz bu cihazda kalır."
+  "sharingPrivacy": "Paylaşmak için bir uygulama seçene kadar notunuz bu cihazda kalır.",
+  "integrationsTitle": "Bağlı uygulamalar",
+  "integrationsSubtitle": "Hizmetleriniz arasında not ve dosya paylaşımını hazırlayın.",
+  "integrationsNotConnected": "Bağlı değil",
+  "integrationsSetupPending": "Bağlantı kurulumu henüz yapılandırılmadı.",
+  "integrationsSecurityNote": "Hesaplar yalnızca güvenli oturum açma ve izin incelemesi yapılandırıldıktan sonra bağlanır.",
+  "integrationsComingNext": "Sıradaki adım entegrasyon kurulumudur.",
+  "integrationsCloudFiles": "Bulut dosyaları ve yedeklemeler",
+  "integrationsScheduledMessages": "Zamanlanmış e-postalar ve mesajlar"
 }
