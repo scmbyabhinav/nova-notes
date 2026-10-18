@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "1 Std. verschieben",
   "notificationReminderTitle": "ORAH-Erinnerung",
   "genericTryAgain": "Bitte versuche es erneut.",
-  "registrationFailed": "Die Registrierung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
+  "registrationFailed": "Die Registrierung konnte nicht abgeschlossen werden. Bitte versuche es erneut.",
+  "shareNote": "Notiz teilen",
+  "shareNoteDescription": "Teile diese Notiz über eine App auf deinem Gerät.",
+  "shareAsFile": "Als Datei exportieren und teilen",
+  "shareText": "Text teilen",
+  "shareEmail": "E-Mail",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "Diese Teilen-Option ist auf diesem Gerät nicht verfügbar.",
+  "shareError": "Die Notiz konnte nicht geteilt werden. Bitte versuche es erneut.",
+  "shareReady": "Deine Notiz kann geteilt werden.",
+  "sharingOptions": "Teilen und exportieren",
+  "sharingPrivacy": "Deine Notiz bleibt auf diesem Gerät, bis du eine App zum Teilen auswählst."
 }
