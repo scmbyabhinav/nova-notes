@@ -9,11 +9,19 @@ class IntegrationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    // Phase 1 intentionally includes only the four providers selected for the
+    // free-first launch scope. Teams and WhatsApp stay out until their extra
+    // permissions, policies, and potential costs have been evaluated.
     final providers = <_IntegrationProvider>[
       _IntegrationProvider(
         name: 'Google Drive',
         category: l10n.integrationsCloudFiles,
         icon: Icons.add_to_drive_outlined,
+      ),
+      _IntegrationProvider(
+        name: 'OneDrive',
+        category: l10n.integrationsCloudFiles,
+        icon: Icons.cloud_outlined,
       ),
       _IntegrationProvider(
         name: 'Gmail',
@@ -24,21 +32,6 @@ class IntegrationsScreen extends StatelessWidget {
         name: 'Outlook',
         category: l10n.integrationsScheduledMessages,
         icon: Icons.mail_outline_rounded,
-      ),
-      _IntegrationProvider(
-        name: 'Microsoft Teams',
-        category: l10n.integrationsScheduledMessages,
-        icon: Icons.groups_2_outlined,
-      ),
-      _IntegrationProvider(
-        name: 'WhatsApp',
-        category: l10n.integrationsScheduledMessages,
-        icon: Icons.chat_bubble_outline_rounded,
-      ),
-      _IntegrationProvider(
-        name: 'OneDrive',
-        category: l10n.integrationsCloudFiles,
-        icon: Icons.cloud_outlined,
       ),
     ];
 
