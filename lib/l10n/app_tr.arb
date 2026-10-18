@@ -85,7 +85,7 @@
   "untitledNote": "Başlıksız not",
   "scheduledLabel": "Planlandı",
   "createdLabel": "Oluşturuldu",
-  "calendarItemStatusTime": "{status} • {time}",
+  "calendarItemStatusTime": "{status} saat {time}",
   "writingRhythm": "Yazma ritminiz",
   "historyTimeline": "Geçmiş zaman çizelgesi",
   "storyStartsWithNote": "Hikâyeniz bir notla başlar",

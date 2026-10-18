@@ -85,7 +85,7 @@
   "untitledNote": "פתק ללא כותרת",
   "scheduledLabel": "מתוזמן",
   "createdLabel": "נוצר",
-  "calendarItemStatusTime": "{status} • {time}",
+  "calendarItemStatusTime": "{status} בשעה {time}",
   "writingRhythm": "קצב הכתיבה שלך",
   "historyTimeline": "ציר זמן של ההיסטוריה",
   "storyStartsWithNote": "הסיפור שלך מתחיל בפתק",
