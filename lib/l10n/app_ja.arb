@@ -970,5 +970,13 @@
   "shareError": "ノートを共有できませんでした。もう一度お試しください。",
   "shareReady": "ノートを共有する準備ができました。",
   "sharingOptions": "共有とエクスポート",
-  "sharingPrivacy": "共有するアプリを選ぶまで、ノートはこの端末内に保存されます。"
+  "sharingPrivacy": "共有するアプリを選ぶまで、ノートはこの端末内に保存されます。",
+  "integrationsTitle": "接続済みアプリ",
+  "integrationsSubtitle": "各サービス間でノートやファイルを共有する準備をします。",
+  "integrationsNotConnected": "未接続",
+  "integrationsSetupPending": "接続設定はまだ構成されていません。",
+  "integrationsSecurityNote": "安全なサインインと権限確認を設定した後にのみアカウントを接続します。",
+  "integrationsComingNext": "次のステップは連携設定です。",
+  "integrationsCloudFiles": "クラウドファイルとバックアップ",
+  "integrationsScheduledMessages": "予約メールとメッセージ"
 }

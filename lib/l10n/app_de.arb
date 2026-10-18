@@ -970,5 +970,13 @@
   "shareError": "Die Notiz konnte nicht geteilt werden. Bitte versuche es erneut.",
   "shareReady": "Deine Notiz kann geteilt werden.",
   "sharingOptions": "Teilen und exportieren",
-  "sharingPrivacy": "Deine Notiz bleibt auf diesem Gerät, bis du eine App zum Teilen auswählst."
+  "sharingPrivacy": "Deine Notiz bleibt auf diesem Gerät, bis du eine App zum Teilen auswählst.",
+  "integrationsTitle": "Verbundene Apps",
+  "integrationsSubtitle": "Bereite das Teilen von Notizen und Dateien über deine Dienste vor.",
+  "integrationsNotConnected": "Nicht verbunden",
+  "integrationsSetupPending": "Die Verbindung ist noch nicht eingerichtet.",
+  "integrationsSecurityNote": "Konten werden erst verbunden, wenn sichere Anmeldung und Berechtigungsprüfung eingerichtet sind.",
+  "integrationsComingNext": "Als Nächstes wird die Integration eingerichtet.",
+  "integrationsCloudFiles": "Cloud-Dateien und Sicherungen",
+  "integrationsScheduledMessages": "Geplante E-Mails und Nachrichten"
 }

@@ -970,5 +970,13 @@
   "shareError": "नोट साझा नहीं हो सका। कृपया फिर कोशिश करें।",
   "shareReady": "आपका नोट साझा करने के लिए तैयार है।",
   "sharingOptions": "साझा करें और निर्यात करें",
-  "sharingPrivacy": "जब तक आप साझा करने के लिए ऐप नहीं चुनते, आपका नोट इसी डिवाइस पर रहता है।"
+  "sharingPrivacy": "जब तक आप साझा करने के लिए ऐप नहीं चुनते, आपका नोट इसी डिवाइस पर रहता है।",
+  "integrationsTitle": "कनेक्ट किए गए ऐप",
+  "integrationsSubtitle": "अपनी सेवाओं के बीच नोट्स और फ़ाइलें साझा करने की तैयारी करें।",
+  "integrationsNotConnected": "कनेक्ट नहीं है",
+  "integrationsSetupPending": "कनेक्शन सेटअप अभी कॉन्फ़िगर नहीं किया गया है।",
+  "integrationsSecurityNote": "सुरक्षित साइन-इन और अनुमतियों की समीक्षा सेट होने के बाद ही खाते कनेक्ट होंगे।",
+  "integrationsComingNext": "अगला चरण इंटीग्रेशन सेटअप है।",
+  "integrationsCloudFiles": "क्लाउड फ़ाइलें और बैकअप",
+  "integrationsScheduledMessages": "शेड्यूल किए गए ईमेल और संदेश"
 }

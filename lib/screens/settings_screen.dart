@@ -24,6 +24,7 @@ import 'trash_screen.dart';
 import 'archived_notes_screen.dart';
 import 'vault_screen.dart';
 import 'privacy_pledge_screen.dart';
+import 'integrations_screen.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
@@ -151,6 +152,18 @@ class SettingsScreen extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (_) => const AndroidFeaturesScreen(),
                 ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.hub_outlined),
+              title: Text(l10n.integrationsTitle),
+              subtitle: Text(l10n.integrationsSubtitle),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const IntegrationsScreen()),
               ),
             ),
           ),

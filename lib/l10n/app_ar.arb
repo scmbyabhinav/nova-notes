@@ -970,5 +970,13 @@
   "shareError": "تعذرت مشاركة هذه الملاحظة. حاول مرة أخرى.",
   "shareReady": "ملاحظتك جاهزة للمشاركة.",
   "sharingOptions": "مشاركة وتصدير",
-  "sharingPrivacy": "تبقى ملاحظتك على جهازك حتى تختار تطبيقًا لمشاركتها."
+  "sharingPrivacy": "تبقى ملاحظتك على جهازك حتى تختار تطبيقًا لمشاركتها.",
+  "integrationsTitle": "التطبيقات المتصلة",
+  "integrationsSubtitle": "استعد لمشاركة الملاحظات والملفات عبر خدماتك.",
+  "integrationsNotConnected": "غير متصل",
+  "integrationsSetupPending": "لم يتم إعداد الاتصال بعد.",
+  "integrationsSecurityNote": "لن يتم ربط حساباتك إلا بعد إعداد تسجيل الدخول الآمن ومراجعة الأذونات.",
+  "integrationsComingNext": "إعداد التكامل هو الخطوة التالية.",
+  "integrationsCloudFiles": "الملفات والنسخ الاحتياطية السحابية",
+  "integrationsScheduledMessages": "البريد والرسائل المجدولة"
 }

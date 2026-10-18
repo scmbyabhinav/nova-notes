@@ -970,5 +970,13 @@
   "shareError": "No se pudo compartir la nota. Inténtalo de nuevo.",
   "shareReady": "Tu nota está lista para compartir.",
   "sharingOptions": "Compartir y exportar",
-  "sharingPrivacy": "Tu nota permanece en este dispositivo hasta que elijas una aplicación para compartirla."
+  "sharingPrivacy": "Tu nota permanece en este dispositivo hasta que elijas una aplicación para compartirla.",
+  "integrationsTitle": "Aplicaciones conectadas",
+  "integrationsSubtitle": "Prepara el uso compartido de notas y archivos entre tus servicios.",
+  "integrationsNotConnected": "No conectado",
+  "integrationsSetupPending": "La conexión aún no está configurada.",
+  "integrationsSecurityNote": "Las cuentas solo se conectarán cuando estén configurados el inicio de sesión seguro y la revisión de permisos.",
+  "integrationsComingNext": "El siguiente paso es configurar las integraciones.",
+  "integrationsCloudFiles": "Archivos y copias de seguridad en la nube",
+  "integrationsScheduledMessages": "Correos y mensajes programados"
 }
