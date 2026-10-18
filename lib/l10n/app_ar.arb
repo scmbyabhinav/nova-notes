@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "تأجيل ساعة",
   "notificationReminderTitle": "تذكير ORAH",
   "genericTryAgain": "يرجى المحاولة مرة أخرى.",
-  "registrationFailed": "تعذّر إكمال التسجيل. يرجى المحاولة مرة أخرى."
+  "registrationFailed": "تعذّر إكمال التسجيل. يرجى المحاولة مرة أخرى.",
+  "shareNote": "مشاركة الملاحظة",
+  "shareNoteDescription": "شارك هذه الملاحظة باستخدام تطبيق على جهازك.",
+  "shareAsFile": "تصدير ومشاركة كملف",
+  "shareText": "مشاركة النص",
+  "shareEmail": "البريد الإلكتروني",
+  "shareWhatsApp": "واتساب",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "خيار المشاركة هذا غير متاح على هذا الجهاز.",
+  "shareError": "تعذرت مشاركة هذه الملاحظة. حاول مرة أخرى.",
+  "shareReady": "ملاحظتك جاهزة للمشاركة.",
+  "sharingOptions": "مشاركة وتصدير",
+  "sharingPrivacy": "تبقى ملاحظتك على جهازك حتى تختار تطبيقًا لمشاركتها."
 }
