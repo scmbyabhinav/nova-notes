@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "Reporter d’1 h",
   "notificationReminderTitle": "Rappel ORAH",
   "genericTryAgain": "Veuillez réessayer.",
-  "registrationFailed": "L’inscription n’a pas pu aboutir. Veuillez réessayer."
+  "registrationFailed": "L’inscription n’a pas pu aboutir. Veuillez réessayer.",
+  "shareNote": "Partager la note",
+  "shareNoteDescription": "Partagez cette note avec une application de votre appareil.",
+  "shareAsFile": "Exporter et partager comme fichier",
+  "shareText": "Partager le texte",
+  "shareEmail": "E-mail",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "Cette option de partage n’est pas disponible sur cet appareil.",
+  "shareError": "Impossible de partager cette note. Veuillez réessayer.",
+  "shareReady": "Votre note est prête à être partagée.",
+  "sharingOptions": "Partager et exporter",
+  "sharingPrivacy": "Votre note reste sur cet appareil jusqu’à ce que vous choisissiez une application pour la partager."
 }
