@@ -970,5 +970,13 @@
   "shareError": "Não foi possível partilhar esta nota. Tente novamente.",
   "shareReady": "A sua nota está pronta para partilhar.",
   "sharingOptions": "Partilha e exportação",
-  "sharingPrivacy": "A sua nota permanece neste dispositivo até escolher uma aplicação para a partilhar."
+  "sharingPrivacy": "A sua nota permanece neste dispositivo até escolher uma aplicação para a partilhar.",
+  "integrationsTitle": "Aplicações ligadas",
+  "integrationsSubtitle": "Prepare a partilha de notas e ficheiros entre os seus serviços.",
+  "integrationsNotConnected": "Não ligado",
+  "integrationsSetupPending": "A configuração da ligação ainda não está disponível.",
+  "integrationsSecurityNote": "As contas só serão ligadas depois de configurar o início de sessão seguro e a revisão de permissões.",
+  "integrationsComingNext": "O próximo passo é configurar as integrações.",
+  "integrationsCloudFiles": "Ficheiros na nuvem e cópias de segurança",
+  "integrationsScheduledMessages": "E-mails e mensagens agendados"
 }
