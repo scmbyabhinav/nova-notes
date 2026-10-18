@@ -25,6 +25,10 @@ class OrahGoogleConnectService {
 
   bool get isConnected => currentAccount != null;
 
+  /// Restores an existing app session without showing an account prompt.
+  Future<GoogleSignInAccount?> restoreSession() =>
+      _googleSignIn.signInSilently();
+
   /// Opens Google's native account/consent flow. Returns null if cancelled.
   Future<GoogleSignInAccount?> connect() => _googleSignIn.signIn();
 
