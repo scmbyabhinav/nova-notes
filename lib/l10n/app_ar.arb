@@ -973,22 +973,10 @@
   "sharingPrivacy": "تبقى ملاحظتك على جهازك حتى تختار تطبيقًا لمشاركتها.",
   "integrationsTitle": "التطبيقات المتصلة",
   "integrationsSubtitle": "استعد لمشاركة الملاحظات والملفات عبر خدماتك.",
-  "integrationsGoogleDrive": "Google Drive",
-  "integrationsGmail": "Gmail",
-  "integrationsOutlook": "Outlook",
-  "integrationsTeams": "Microsoft Teams",
-  "integrationsWhatsApp": "WhatsApp",
-  "integrationsOneDrive": "OneDrive",
   "integrationsNotConnected": "غير متصل",
   "integrationsSetupPending": "لم يتم إعداد الاتصال بعد.",
   "integrationsSecurityNote": "لن يتم ربط حساباتك إلا بعد إعداد تسجيل الدخول الآمن ومراجعة الأذونات.",
   "integrationsComingNext": "إعداد التكامل هو الخطوة التالية.",
   "integrationsCloudFiles": "الملفات والنسخ الاحتياطية السحابية",
-  "integrationsScheduledMessages": "البريد والرسائل المجدولة",
-  "integrationsProviderGoogle": "احفظ الملفات المحددة أو صدّرها إلى Google Drive.",
-  "integrationsProviderGmail": "جهّز رسائل البريد من الملاحظات، بما في ذلك المستلمون والمرفقات.",
-  "integrationsProviderOutlook": "جهّز رسائل Outlook وسير عمل Microsoft 365.",
-  "integrationsProviderTeams": "جهّز رسائل لمحادثات وقنوات Teams المدعومة.",
-  "integrationsProviderWhatsApp": "شارك الملاحظات عبر خيارات WhatsApp المدعومة.",
-  "integrationsProviderOneDrive": "احفظ الملفات المحددة أو صدّرها إلى Microsoft OneDrive."
+  "integrationsScheduledMessages": "البريد والرسائل المجدولة"
 }
