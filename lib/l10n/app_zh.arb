@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "延后 1 小时",
   "notificationReminderTitle": "ORAH 提醒",
   "genericTryAgain": "请重试。",
-  "registrationFailed": "无法完成注册，请重试。"
+  "registrationFailed": "无法完成注册，请重试。",
+  "shareNote": "分享笔记",
+  "shareNoteDescription": "使用设备上的应用分享此笔记。",
+  "shareAsFile": "导出并作为文件分享",
+  "shareText": "分享文本",
+  "shareEmail": "电子邮件",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "此设备无法使用此分享选项。",
+  "shareError": "无法分享此笔记，请重试。",
+  "shareReady": "笔记已准备好分享。",
+  "sharingOptions": "分享与导出",
+  "sharingPrivacy": "在你选择应用分享之前，笔记会保留在此设备上。"
 }
