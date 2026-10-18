@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 
+/// Shows destinations available through the device's native sharing apps.
+///
+/// This screen does not connect accounts or call cloud APIs. To share actual
+/// content, open a note and use its Share or Export action.
 class IntegrationsScreen extends StatelessWidget {
   const IntegrationsScreen({super.key});
 
@@ -9,103 +13,74 @@ class IntegrationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final providers = <_IntegrationProvider>[
-      _IntegrationProvider(
+    final destinations = <_ShareDestination>[
+      _ShareDestination(
         name: 'Google Drive',
-        category: l10n.integrationsCloudFiles,
         icon: Icons.add_to_drive_outlined,
+        category: l10n.backupAndStorage,
       ),
-      _IntegrationProvider(
-        name: 'Gmail',
-        category: l10n.integrationsScheduledMessages,
-        icon: Icons.mail_outline_rounded,
-      ),
-      _IntegrationProvider(
-        name: 'Outlook',
-        category: l10n.integrationsScheduledMessages,
-        icon: Icons.mail_outline_rounded,
-      ),
-      _IntegrationProvider(
-        name: 'Microsoft Teams',
-        category: l10n.integrationsScheduledMessages,
-        icon: Icons.groups_2_outlined,
-      ),
-      _IntegrationProvider(
-        name: 'WhatsApp',
-        category: l10n.integrationsScheduledMessages,
-        icon: Icons.chat_bubble_outline_rounded,
-      ),
-      _IntegrationProvider(
+      _ShareDestination(
         name: 'OneDrive',
-        category: l10n.integrationsCloudFiles,
         icon: Icons.cloud_outlined,
+        category: l10n.backupAndStorage,
+      ),
+      _ShareDestination(
+        name: 'Gmail',
+        icon: Icons.mail_outline_rounded,
+        category: l10n.shareEmail,
+      ),
+      _ShareDestination(
+        name: 'Outlook',
+        icon: Icons.mail_outline_rounded,
+        category: l10n.shareEmail,
       ),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.integrationsTitle)),
+      appBar: AppBar(title: Text(l10n.sharingOptions)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
         children: [
-          Text(l10n.integrationsSubtitle, style: theme.textTheme.bodyLarge),
-          const SizedBox(height: 16),
-          for (final provider in providers) ...[
+          Text(l10n.sharingPrivacy, style: theme.textTheme.bodyLarge),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.share_outlined, color: theme.colorScheme.primary),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.shareNoteDescription,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          for (final destination in destinations) ...[
             Card(
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
                 leading: Icon(
-                  provider.icon,
+                  destination.icon,
                   size: 28,
                   color: theme.colorScheme.primary,
                 ),
-                title: Text(
-                  provider.name,
-                  style: theme.textTheme.titleMedium,
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(provider.category),
-                      const SizedBox(height: 6),
-                      Text(l10n.integrationsSetupPending),
-                    ],
-                  ),
-                ),
-                trailing: Container(
-                  constraints: const BoxConstraints(maxWidth: 112),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    l10n.integrationsNotConnected,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.labelSmall,
-                  ),
-                ),
+                title: Text(destination.name),
+                subtitle: Text(destination.category),
               ),
             ),
             const SizedBox(height: 8),
           ],
           const SizedBox(height: 8),
+          Text(l10n.shareAsFile, style: theme.textTheme.titleSmall),
+          const SizedBox(height: 4),
           Text(
-            l10n.integrationsSecurityNote,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.integrationsComingNext,
+            l10n.sharingPrivacy,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -116,14 +91,14 @@ class IntegrationsScreen extends StatelessWidget {
   }
 }
 
-class _IntegrationProvider {
-  const _IntegrationProvider({
+class _ShareDestination {
+  const _ShareDestination({
     required this.name,
-    required this.category,
     required this.icon,
+    required this.category,
   });
 
   final String name;
-  final String category;
   final IconData icon;
+  final String category;
 }
