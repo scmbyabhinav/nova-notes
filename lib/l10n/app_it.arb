@@ -958,5 +958,17 @@
   "notificationSnooze60Action": "Rinvia di 1 ora",
   "notificationReminderTitle": "Promemoria ORAH",
   "genericTryAgain": "Riprova.",
-  "registrationFailed": "Impossibile completare la registrazione. Riprova."
+  "registrationFailed": "Impossibile completare la registrazione. Riprova.",
+  "shareNote": "Condividi nota",
+  "shareNoteDescription": "Condividi questa nota usando un'app sul dispositivo.",
+  "shareAsFile": "Esporta e condividi come file",
+  "shareText": "Condividi testo",
+  "shareEmail": "E-mail",
+  "shareWhatsApp": "WhatsApp",
+  "shareGoogleDrive": "Google Drive",
+  "shareUnavailable": "Questa opzione di condivisione non è disponibile su questo dispositivo.",
+  "shareError": "Impossibile condividere la nota. Riprova.",
+  "shareReady": "La nota è pronta per essere condivisa.",
+  "sharingOptions": "Condividi ed esporta",
+  "sharingPrivacy": "La nota rimane sul dispositivo finché non scegli un'app per condividerla."
 }
