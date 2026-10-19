@@ -981,5 +981,13 @@
   "integrationsSecurityNote": "Les comptes ne seront connectés qu’après la configuration de la connexion sécurisée et la vérification des autorisations.",
   "integrationsComingNext": "La configuration des intégrations est la prochaine étape.",
   "integrationsCloudFiles": "Fichiers cloud et sauvegardes",
-  "integrationsScheduledMessages": "E-mails et messages programmés"
+  "integrationsScheduledMessages": "E-mails et messages programmés",
+  "shareNoteText": "Partager le texte de la note",
+  "shareNoteTextDescription": "Partager le titre et le texte de la note avec une autre application.",
+  "shareViaWhatsApp": "Partager via WhatsApp",
+  "whatsAppShareDescription": "Ouvrir WhatsApp avec la note prête à être partagée.",
+  "whatsAppUnavailable": "Impossible d’ouvrir WhatsApp. Essayez plutôt le menu de partage Android.",
+  "googleDriveExport": "Enregistrer le PDF dans Google Drive",
+  "googleDriveExportDescription": "Choisissez Google Drive dans le menu de partage Android pour enregistrer une copie.",
+  "googleDriveExportBody": "Choisissez Google Drive pour enregistrer ce PDF exporté depuis ORAH."
 }
