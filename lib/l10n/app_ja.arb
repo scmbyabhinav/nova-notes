@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "WhatsAppを開けませんでした。Androidの共有メニューをお試しください。",
   "googleDriveExport": "PDFをGoogle Driveに保存",
   "googleDriveExportDescription": "コピーを保存するには、Androidの共有メニューでGoogle Driveを選択してください。",
-  "googleDriveExportBody": "このORAHのPDFを書き出して保存するにはGoogle Driveを選択してください。"
+  "googleDriveExportBody": "このORAHのPDFを書き出して保存するにはGoogle Driveを選択してください。",
+  "startupErrorTitle": "ORAHを起動できませんでした",
+  "startupErrorRetry": "再試行",
+  "startupErrorMessage": "ORAHは端末に保存されたプロフィールを読み込めませんでした。もう一度お試しください。"
 }
