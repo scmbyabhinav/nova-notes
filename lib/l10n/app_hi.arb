@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "WhatsApp नहीं खुल सका। इसके बजाय Android शेयर शीट आज़माएँ।",
   "googleDriveExport": "PDF को Google Drive में सहेजें",
   "googleDriveExportDescription": "कॉपी सहेजने के लिए Android शेयर शीट में Google Drive चुनें।",
-  "googleDriveExportBody": "इस ORAH PDF निर्यात को सहेजने के लिए Google Drive चुनें।"
+  "googleDriveExportBody": "इस ORAH PDF निर्यात को सहेजने के लिए Google Drive चुनें।",
+  "startupErrorTitle": "ORAH शुरू नहीं हो सका",
+  "startupErrorRetry": "फिर से प्रयास करें",
+  "startupErrorMessage": "ORAH आपकी डिवाइस पर सहेजी प्रोफ़ाइल लोड नहीं कर सका। कृपया फिर से प्रयास करें।"
 }
