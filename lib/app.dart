@@ -174,18 +174,18 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
                 children: [
                   const Icon(Icons.warning_amber_rounded, size: 48),
                   const SizedBox(height: 16),
-                  const Text(
-                    'ORAH could not finish startup',
+                  Text(
+                    AppLocalizations.of(context)!.startupErrorTitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
-                  Text(_profileLoadError!, textAlign: TextAlign.center),
+                  Text(AppLocalizations.of(context)!.startupErrorMessage, textAlign: TextAlign.center),
                   const SizedBox(height: 20),
                   FilledButton.icon(
                     onPressed: _loadProfile,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    label: Text(AppLocalizations.of(context)!.startupErrorRetry),
                   ),
                 ],
               ),
