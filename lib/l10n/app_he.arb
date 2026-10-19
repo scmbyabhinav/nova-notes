@@ -981,5 +981,13 @@
   "integrationsSecurityNote": "החשבונות יחוברו רק לאחר הגדרת כניסה מאובטחת ובדיקת הרשאות.",
   "integrationsComingNext": "השלב הבא הוא הגדרת האינטגרציות.",
   "integrationsCloudFiles": "קבצים וגיבויים בענן",
-  "integrationsScheduledMessages": "הודעות ודואר מתוזמנים"
+  "integrationsScheduledMessages": "הודעות ודואר מתוזמנים",
+  "shareNoteText": "שיתוף טקסט ההערה",
+  "shareNoteTextDescription": "שיתוף כותרת ההערה והטקסט עם אפליקציה אחרת.",
+  "shareViaWhatsApp": "שיתוף דרך WhatsApp",
+  "whatsAppShareDescription": "פתיחת WhatsApp כשההערה מוכנה לשיתוף.",
+  "whatsAppUnavailable": "לא ניתן לפתוח את WhatsApp. נסו את תפריט השיתוף של Android.",
+  "googleDriveExport": "שמירת PDF ב-Google Drive",
+  "googleDriveExportDescription": "בחרו ב-Google Drive בתפריט השיתוף של Android כדי לשמור עותק.",
+  "googleDriveExportBody": "בחרו ב-Google Drive כדי לשמור את קובץ ה-PDF שיוצא מ-ORAH."
 }
