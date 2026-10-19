@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "无法打开 WhatsApp。请尝试使用 Android 分享菜单。",
   "googleDriveExport": "将 PDF 保存到 Google Drive",
   "googleDriveExportDescription": "在 Android 分享菜单中选择 Google Drive 以保存副本。",
-  "googleDriveExportBody": "选择 Google Drive 以保存此 ORAH 导出的 PDF。"
+  "googleDriveExportBody": "选择 Google Drive 以保存此 ORAH 导出的 PDF。",
+  "startupErrorTitle": "ORAH 无法完成启动",
+  "startupErrorRetry": "重试",
+  "startupErrorMessage": "ORAH 无法加载保存在此设备上的个人资料。请重试。"
 }
