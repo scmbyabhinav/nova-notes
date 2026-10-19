@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "לא ניתן לפתוח את WhatsApp. נסו את תפריט השיתוף של Android.",
   "googleDriveExport": "שמירת PDF ב-Google Drive",
   "googleDriveExportDescription": "בחרו ב-Google Drive בתפריט השיתוף של Android כדי לשמור עותק.",
-  "googleDriveExportBody": "בחרו ב-Google Drive כדי לשמור את קובץ ה-PDF שיוצא מ-ORAH."
+  "googleDriveExportBody": "בחרו ב-Google Drive כדי לשמור את קובץ ה-PDF שיוצא מ-ORAH.",
+  "startupErrorTitle": "ORAH לא הצליחה להשלים את ההפעלה",
+  "startupErrorRetry": "לנסות שוב",
+  "startupErrorMessage": "ORAH לא הצליחה לטעון את הפרופיל השמור במכשיר. נסו שוב."
 }
