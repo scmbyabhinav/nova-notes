@@ -196,13 +196,13 @@ class _ExportNoteSheetState extends State<ExportNoteSheet> {
                     padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
                     child: Text(l10n.exportDocuments, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                  for (final option in _options(l10n).where((o) => o.category == 'Documents'))
+                  for (final option in _options(l10n).where((o) => o.category == l10n.exportDocuments))
                     _formatTile(option),
                   Padding(
                     padding: const EdgeInsets.only(left: 4, top: 10, bottom: 4),
                     child: Text(l10n.exportData, style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
-                  for (final option in _options(l10n).where((o) => o.category == 'Data'))
+                  for (final option in _options(l10n).where((o) => o.category == l10n.exportData))
                     _formatTile(option),
                   Padding(
                     padding: const EdgeInsets.only(left: 4, top: 14, bottom: 4),
