@@ -115,38 +115,47 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         _profileLoadError = null;
       });
     }
+
+    OrahUserProfile? profile;
     try {
-      // Avoid an infinite entry-gate spinner if secure storage or preferences
-      // fail to respond during first launch.
-      final profile = await OrahUserProfileService.instance
+      profile = await OrahUserProfileService.instance
           .loadProfile()
           .timeout(const Duration(seconds: 12));
+    } catch (error, stackTrace) {
+      // A profile read failure must not trap a first-time user on a blocking
+      // error screen. Continue to registration; the registration form will
+      // report a save failure if secure storage itself is unavailable.
+      debugPrint('ORAH profile read failed; showing registration: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      profile = null;
+    }
+
+    String userName = profile?.fullName ?? 'Friend';
+    bool showWelcome = true;
+    try {
       final prefs = await SharedPreferences.getInstance()
           .timeout(const Duration(seconds: 12));
       if (profile != null && prefs.getString('user_name') == null) {
         await prefs.setString('user_name', profile.fullName)
             .timeout(const Duration(seconds: 12));
       }
-      final userName = prefs.getString('user_name') ?? 'Friend';
-      final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
-      if (!mounted) return;
-      setState(() {
-        _profile = profile;
-        _welcomeUserName = userName;
-        _showWelcome = profile != null && showWelcome;
-        _loading = false;
-        _profileLoadError = null;
-      });
+      userName = prefs.getString('user_name') ?? userName;
+      showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     } catch (error, stackTrace) {
-      debugPrint('ORAH profile startup failed: $error');
+      // Preferences are optional for entry routing. Preserve a successfully
+      // loaded profile and continue with safe defaults if preferences fail.
+      debugPrint('ORAH startup preferences unavailable; using defaults: $error');
       debugPrintStack(stackTrace: stackTrace);
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-        _profileLoadError =
-            'ORAH could not load your on-device profile. Please retry.';
-      });
     }
+
+    if (!mounted) return;
+    setState(() {
+      _profile = profile;
+      _welcomeUserName = userName;
+      _showWelcome = profile != null && showWelcome;
+      _loading = false;
+      _profileLoadError = null;
+    });
   }
 
   @override
