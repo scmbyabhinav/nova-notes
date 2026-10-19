@@ -981,5 +981,13 @@
   "integrationsSecurityNote": "لن يتم ربط حساباتك إلا بعد إعداد تسجيل الدخول الآمن ومراجعة الأذونات.",
   "integrationsComingNext": "إعداد التكامل هو الخطوة التالية.",
   "integrationsCloudFiles": "الملفات والنسخ الاحتياطية السحابية",
-  "integrationsScheduledMessages": "البريد والرسائل المجدولة"
+  "integrationsScheduledMessages": "البريد والرسائل المجدولة",
+  "shareNoteText": "مشاركة نص الملاحظة",
+  "shareNoteTextDescription": "شارك عنوان الملاحظة ونصها مع تطبيق آخر.",
+  "shareViaWhatsApp": "المشاركة عبر واتساب",
+  "whatsAppShareDescription": "افتح واتساب والملاحظة جاهزة للمشاركة.",
+  "whatsAppUnavailable": "تعذّر فتح واتساب. جرّب قائمة المشاركة في أندرويد.",
+  "googleDriveExport": "حفظ PDF في Google Drive",
+  "googleDriveExportDescription": "اختر Google Drive من قائمة المشاركة في أندرويد لحفظ نسخة.",
+  "googleDriveExportBody": "اختر Google Drive لحفظ ملف PDF المُصدّر من ORAH."
 }
