@@ -981,5 +981,13 @@
   "integrationsSecurityNote": "Akun hanya akan terhubung setelah proses masuk aman dan peninjauan izin disiapkan.",
   "integrationsComingNext": "Langkah berikutnya adalah menyiapkan integrasi.",
   "integrationsCloudFiles": "File cloud dan cadangan",
-  "integrationsScheduledMessages": "Email dan pesan terjadwal"
+  "integrationsScheduledMessages": "Email dan pesan terjadwal",
+  "shareNoteText": "Bagikan teks catatan",
+  "shareNoteTextDescription": "Bagikan judul dan teks catatan ke aplikasi lain.",
+  "shareViaWhatsApp": "Bagikan melalui WhatsApp",
+  "whatsAppShareDescription": "Buka WhatsApp dengan catatan yang siap dibagikan.",
+  "whatsAppUnavailable": "WhatsApp tidak dapat dibuka. Coba menu berbagi Android.",
+  "googleDriveExport": "Simpan PDF ke Google Drive",
+  "googleDriveExportDescription": "Pilih Google Drive dari menu berbagi Android untuk menyimpan salinan.",
+  "googleDriveExportBody": "Pilih Google Drive untuk menyimpan ekspor PDF ORAH ini."
 }
