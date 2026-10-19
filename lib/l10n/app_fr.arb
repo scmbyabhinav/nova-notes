@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "Impossible d’ouvrir WhatsApp. Essayez plutôt le menu de partage Android.",
   "googleDriveExport": "Enregistrer le PDF dans Google Drive",
   "googleDriveExportDescription": "Choisissez Google Drive dans le menu de partage Android pour enregistrer une copie.",
-  "googleDriveExportBody": "Choisissez Google Drive pour enregistrer ce PDF exporté depuis ORAH."
+  "googleDriveExportBody": "Choisissez Google Drive pour enregistrer ce PDF exporté depuis ORAH.",
+  "startupErrorTitle": "ORAH n’a pas pu terminer le démarrage",
+  "startupErrorRetry": "Réessayer",
+  "startupErrorMessage": "ORAH n’a pas pu charger votre profil stocké sur l’appareil. Réessayez."
 }
