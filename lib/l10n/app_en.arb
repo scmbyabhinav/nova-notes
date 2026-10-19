@@ -1015,5 +1015,8 @@
   "whatsAppUnavailable": "WhatsApp could not be opened. Try the Android share sheet instead.",
   "googleDriveExport": "Save PDF to Google Drive",
   "googleDriveExportDescription": "Choose Google Drive in the Android share sheet to save a copy.",
-  "googleDriveExportBody": "Choose Google Drive to save this ORAH PDF export."
+  "googleDriveExportBody": "Choose Google Drive to save this ORAH PDF export.",
+  "startupErrorTitle": "ORAH could not finish startup",
+  "startupErrorRetry": "Retry",
+  "startupErrorMessage": "ORAH could not load your on-device profile. Please retry."
 }
