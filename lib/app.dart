@@ -23,7 +23,6 @@ import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
 import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart' as registration;
-import 'screens/welcome_splash_screen.dart';
 import 'screens/app_lock_screen.dart';
 import 'core/services/nova_security_service.dart';
 
@@ -98,8 +97,6 @@ class OrahEntryGate extends StatefulWidget {
 class _OrahEntryGateState extends State<OrahEntryGate> {
   OrahUserProfile? _profile;
   bool _loading = true;
-  bool _showWelcome = false;
-  String _welcomeUserName = 'Friend';
 
   @override
   void initState() {
@@ -108,18 +105,25 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   }
 
   Future<void> _loadProfile() async {
-    final profile = await OrahUserProfileService.instance.loadProfile();
-    final prefs = await SharedPreferences.getInstance();
-    if (profile != null && prefs.getString('user_name') == null) {
-      await prefs.setString('user_name', profile.fullName);
+    // Secure-storage reads can stall on some devices after an app update.
+    // Bound startup time so ORAH always reaches its single entry screen.
+    OrahUserProfile? profile;
+    try {
+      profile = await OrahUserProfileService.instance
+          .loadProfile()
+          .timeout(const Duration(seconds: 8));
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 4));
+      if (profile != null && prefs.getString('user_name') == null) {
+        await prefs.setString('user_name', profile.fullName);
+      }
+    } catch (_) {
+      // Fall back to the entry screen instead of leaving an endless spinner.
+      profile = null;
     }
-    final userName = prefs.getString('user_name') ?? 'Friend';
-    final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     if (!mounted) return;
     setState(() {
       _profile = profile;
-      _welcomeUserName = userName;
-      _showWelcome = profile != null && showWelcome;
       _loading = false;
     });
   }
@@ -142,14 +146,6 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     if (profile == null) {
       return registration.OrahRegistrationScreen(
         onRegistered: (value) => setState(() => _profile = value),
-      );
-    }
-    if (_showWelcome) {
-      return WelcomeSplashScreen(
-        userName: _welcomeUserName,
-        onComplete: () {
-          if (mounted) setState(() => _showWelcome = false);
-        },
       );
     }
     return NovaShell(
