@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "تعذّر فتح واتساب. جرّب قائمة المشاركة في أندرويد.",
   "googleDriveExport": "حفظ PDF في Google Drive",
   "googleDriveExportDescription": "اختر Google Drive من قائمة المشاركة في أندرويد لحفظ نسخة.",
-  "googleDriveExportBody": "اختر Google Drive لحفظ ملف PDF المُصدّر من ORAH."
+  "googleDriveExportBody": "اختر Google Drive لحفظ ملف PDF المُصدّر من ORAH.",
+  "startupErrorTitle": "تعذّر على ORAH إكمال بدء التشغيل",
+  "startupErrorRetry": "إعادة المحاولة",
+  "startupErrorMessage": "تعذّر على ORAH تحميل ملفك الشخصي المحفوظ على الجهاز. يُرجى المحاولة مرة أخرى."
 }
