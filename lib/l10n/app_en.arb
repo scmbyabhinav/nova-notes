@@ -1007,5 +1007,13 @@
   "integrationsSecurityNote": "Your accounts will only connect after secure sign-in and permission review are configured.",
   "integrationsComingNext": "Integration setup is the next step.",
   "integrationsCloudFiles": "Cloud files and backups",
-  "integrationsScheduledMessages": "Scheduled email and messages"
+  "integrationsScheduledMessages": "Scheduled email and messages",
+  "shareNoteText": "Share note text",
+  "shareNoteTextDescription": "Share the note title and text with another app.",
+  "shareViaWhatsApp": "Share via WhatsApp",
+  "whatsAppShareDescription": "Open WhatsApp with your note ready to share.",
+  "whatsAppUnavailable": "WhatsApp could not be opened. Try the Android share sheet instead.",
+  "googleDriveExport": "Save PDF to Google Drive",
+  "googleDriveExportDescription": "Choose Google Drive in the Android share sheet to save a copy.",
+  "googleDriveExportBody": "Choose Google Drive to save this ORAH PDF export."
 }
