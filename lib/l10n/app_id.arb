@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "WhatsApp tidak dapat dibuka. Coba menu berbagi Android.",
   "googleDriveExport": "Simpan PDF ke Google Drive",
   "googleDriveExportDescription": "Pilih Google Drive dari menu berbagi Android untuk menyimpan salinan.",
-  "googleDriveExportBody": "Pilih Google Drive untuk menyimpan ekspor PDF ORAH ini."
+  "googleDriveExportBody": "Pilih Google Drive untuk menyimpan ekspor PDF ORAH ini.",
+  "startupErrorTitle": "ORAH tidak dapat menyelesaikan proses mulai",
+  "startupErrorRetry": "Coba lagi",
+  "startupErrorMessage": "ORAH tidak dapat memuat profil yang tersimpan di perangkat. Silakan coba lagi."
 }
