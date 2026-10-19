@@ -989,5 +989,8 @@
   "whatsAppUnavailable": "WhatsApp을 열 수 없습니다. Android 공유 메뉴를 사용해 보세요.",
   "googleDriveExport": "PDF를 Google Drive에 저장",
   "googleDriveExportDescription": "사본을 저장하려면 Android 공유 메뉴에서 Google Drive를 선택하세요.",
-  "googleDriveExportBody": "이 ORAH PDF 내보내기를 저장하려면 Google Drive를 선택하세요."
+  "googleDriveExportBody": "이 ORAH PDF 내보내기를 저장하려면 Google Drive를 선택하세요.",
+  "startupErrorTitle": "ORAH를 시작하지 못했습니다",
+  "startupErrorRetry": "다시 시도",
+  "startupErrorMessage": "ORAH가 기기에 저장된 프로필을 불러오지 못했습니다. 다시 시도해 주세요."
 }
