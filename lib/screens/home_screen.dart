@@ -947,7 +947,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                             _loadNotes();
                           },
                           icon: const Icon(Icons.refresh),
-                          label: const Text('Retry'),
+                          label: Text(l10n.retry),
                         ),
                       ],
                     ),
