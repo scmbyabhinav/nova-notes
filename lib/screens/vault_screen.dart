@@ -481,7 +481,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                         _initialize();
                       },
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Retry'),
+                      label: Text(l10n.retry),
                     ),
                   ],
                 ),
