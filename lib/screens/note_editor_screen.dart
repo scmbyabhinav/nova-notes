@@ -75,6 +75,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late String _noteId;
   late NoteType _noteType;
   bool _saving = false;
+  bool _saveErrorShown = false;
   bool _hasChanges = false;
   bool _hasHapticSaved = false;
   bool _reviewCounted = false;
@@ -804,7 +805,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (!_hasChanges && widget.note != null) return;
 
     if (mounted) setState(() => _saving = true);
-
+    try {
     final title = _titleController.text.trim();
     final content = _noteType == NoteType.checklist ? _checklistContent() : _contentController.text;
 
@@ -906,8 +907,29 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       // Reminder plugins may be unavailable in widget tests; note persistence must still succeed.
     }
     _hasChanges = false;
-
-    if (mounted) setState(() => _saving = false);
+    _saveErrorShown = false;
+    } catch (error, stack) {
+      // Never log note text, attachment paths, PINs, or encrypted payloads.
+      debugPrint('ORAH note save failed: ${error.runtimeType}: $error');
+      debugPrintStack(stackTrace: stack);
+      if (mounted && !_saveErrorShown) {
+        _saveErrorShown = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.shareError),
+            action: SnackBarAction(
+              label: AppLocalizations.of(context)!.retry,
+              onPressed: () {
+                _saveErrorShown = false;
+                _save();
+              },
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _close() async {

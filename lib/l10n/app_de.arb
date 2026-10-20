@@ -981,5 +981,16 @@
   "integrationsSecurityNote": "Konten werden erst verbunden, wenn sichere Anmeldung und Berechtigungsprüfung eingerichtet sind.",
   "integrationsComingNext": "Als Nächstes wird die Integration eingerichtet.",
   "integrationsCloudFiles": "Cloud-Dateien und Sicherungen",
-  "integrationsScheduledMessages": "Geplante E-Mails und Nachrichten"
+  "integrationsScheduledMessages": "Geplante E-Mails und Nachrichten",
+  "shareNoteText": "Notiztext teilen",
+  "shareNoteTextDescription": "Notiztitel und Text mit einer anderen App teilen.",
+  "shareViaWhatsApp": "Über WhatsApp teilen",
+  "whatsAppShareDescription": "WhatsApp mit deiner teilfertigen Notiz öffnen.",
+  "whatsAppUnavailable": "WhatsApp konnte nicht geöffnet werden. Verwende stattdessen das Android-Teilen-Menü.",
+  "googleDriveExport": "PDF in Google Drive speichern",
+  "googleDriveExportDescription": "Wähle Google Drive im Android-Teilen-Menü, um eine Kopie zu speichern.",
+  "googleDriveExportBody": "Wähle Google Drive, um diesen ORAH-PDF-Export zu speichern.",
+  "startupErrorTitle": "ORAH konnte den Start nicht abschließen",
+  "startupErrorRetry": "Erneut versuchen",
+  "startupErrorMessage": "ORAH konnte dein auf dem Gerät gespeichertes Profil nicht laden. Bitte versuche es erneut."
 }

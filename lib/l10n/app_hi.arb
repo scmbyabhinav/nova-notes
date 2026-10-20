@@ -981,5 +981,16 @@
   "integrationsSecurityNote": "सुरक्षित साइन-इन और अनुमतियों की समीक्षा सेट होने के बाद ही खाते कनेक्ट होंगे।",
   "integrationsComingNext": "अगला चरण इंटीग्रेशन सेटअप है।",
   "integrationsCloudFiles": "क्लाउड फ़ाइलें और बैकअप",
-  "integrationsScheduledMessages": "शेड्यूल किए गए ईमेल और संदेश"
+  "integrationsScheduledMessages": "शेड्यूल किए गए ईमेल और संदेश",
+  "shareNoteText": "नोट का टेक्स्ट साझा करें",
+  "shareNoteTextDescription": "नोट का शीर्षक और टेक्स्ट किसी दूसरे ऐप से साझा करें।",
+  "shareViaWhatsApp": "WhatsApp से साझा करें",
+  "whatsAppShareDescription": "साझा करने के लिए तैयार नोट के साथ WhatsApp खोलें।",
+  "whatsAppUnavailable": "WhatsApp नहीं खुल सका। इसके बजाय Android शेयर शीट आज़माएँ।",
+  "googleDriveExport": "PDF को Google Drive में सहेजें",
+  "googleDriveExportDescription": "कॉपी सहेजने के लिए Android शेयर शीट में Google Drive चुनें।",
+  "googleDriveExportBody": "इस ORAH PDF निर्यात को सहेजने के लिए Google Drive चुनें।",
+  "startupErrorTitle": "ORAH शुरू नहीं हो सका",
+  "startupErrorRetry": "फिर से प्रयास करें",
+  "startupErrorMessage": "ORAH आपकी डिवाइस पर सहेजी प्रोफ़ाइल लोड नहीं कर सका। कृपया फिर से प्रयास करें।"
 }

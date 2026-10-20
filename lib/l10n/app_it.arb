@@ -981,5 +981,16 @@
   "integrationsSecurityNote": "Gli account verranno collegati solo dopo aver configurato l'accesso sicuro e la verifica delle autorizzazioni.",
   "integrationsComingNext": "Il prossimo passo è configurare le integrazioni.",
   "integrationsCloudFiles": "File cloud e backup",
-  "integrationsScheduledMessages": "Email e messaggi programmati"
+  "integrationsScheduledMessages": "Email e messaggi programmati",
+  "shareNoteText": "Condividi il testo della nota",
+  "shareNoteTextDescription": "Condividi il titolo e il testo della nota con un'altra app.",
+  "shareViaWhatsApp": "Condividi con WhatsApp",
+  "whatsAppShareDescription": "Apri WhatsApp con la nota pronta da condividere.",
+  "whatsAppUnavailable": "Impossibile aprire WhatsApp. Prova il menu di condivisione Android.",
+  "googleDriveExport": "Salva il PDF su Google Drive",
+  "googleDriveExportDescription": "Scegli Google Drive nel menu di condivisione Android per salvare una copia.",
+  "googleDriveExportBody": "Scegli Google Drive per salvare questo PDF esportato da ORAH.",
+  "startupErrorTitle": "ORAH non è riuscita a completare l’avvio",
+  "startupErrorRetry": "Riprova",
+  "startupErrorMessage": "ORAH non è riuscita a caricare il profilo salvato sul dispositivo. Riprova."
 }

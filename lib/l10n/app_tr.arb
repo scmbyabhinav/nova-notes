@@ -981,5 +981,16 @@
   "integrationsSecurityNote": "Hesaplar yalnızca güvenli oturum açma ve izin incelemesi yapılandırıldıktan sonra bağlanır.",
   "integrationsComingNext": "Sıradaki adım entegrasyon kurulumudur.",
   "integrationsCloudFiles": "Bulut dosyaları ve yedeklemeler",
-  "integrationsScheduledMessages": "Zamanlanmış e-postalar ve mesajlar"
+  "integrationsScheduledMessages": "Zamanlanmış e-postalar ve mesajlar",
+  "shareNoteText": "Not metnini paylaş",
+  "shareNoteTextDescription": "Not başlığını ve metnini başka bir uygulamayla paylaş.",
+  "shareViaWhatsApp": "WhatsApp ile paylaş",
+  "whatsAppShareDescription": "Paylaşmaya hazır notla WhatsApp'ı aç.",
+  "whatsAppUnavailable": "WhatsApp açılamadı. Bunun yerine Android paylaşım menüsünü deneyin.",
+  "googleDriveExport": "PDF'yi Google Drive'a kaydet",
+  "googleDriveExportDescription": "Bir kopya kaydetmek için Android paylaşım menüsünden Google Drive'ı seçin.",
+  "googleDriveExportBody": "Bu ORAH PDF dışa aktarımını kaydetmek için Google Drive'ı seçin.",
+  "startupErrorTitle": "ORAH başlatmayı tamamlayamadı",
+  "startupErrorRetry": "Yeniden dene",
+  "startupErrorMessage": "ORAH cihazda kayıtlı profilinizi yükleyemedi. Lütfen yeniden deneyin."
 }

@@ -100,6 +100,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   bool _loading = true;
   bool _showWelcome = false;
   String _welcomeUserName = 'Friend';
+  String? _profileLoadError;
 
   @override
   void initState() {
@@ -108,19 +109,52 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   }
 
   Future<void> _loadProfile() async {
-    final profile = await OrahUserProfileService.instance.loadProfile();
-    final prefs = await SharedPreferences.getInstance();
-    if (profile != null && prefs.getString('user_name') == null) {
-      await prefs.setString('user_name', profile.fullName);
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _profileLoadError = null;
+      });
     }
-    final userName = prefs.getString('user_name') ?? 'Friend';
-    final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
+
+    OrahUserProfile? profile;
+    try {
+      profile = await OrahUserProfileService.instance
+          .loadProfile()
+          .timeout(const Duration(seconds: 12));
+    } catch (error, stackTrace) {
+      // A profile read failure must not trap a first-time user on a blocking
+      // error screen. Continue to registration; the registration form will
+      // report a save failure if secure storage itself is unavailable.
+      debugPrint('ORAH profile read failed; showing registration: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      profile = null;
+    }
+
+    String userName = profile?.fullName ?? 'Friend';
+    bool showWelcome = true;
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 12));
+      if (profile != null && prefs.getString('user_name') == null) {
+        await prefs.setString('user_name', profile.fullName)
+            .timeout(const Duration(seconds: 12));
+      }
+      userName = prefs.getString('user_name') ?? userName;
+      showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
+    } catch (error, stackTrace) {
+      // Preferences are optional for entry routing. Preserve a successfully
+      // loaded profile and continue with safe defaults if preferences fail.
+      debugPrint('ORAH startup preferences unavailable; using defaults: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+
     if (!mounted) return;
     setState(() {
       _profile = profile;
       _welcomeUserName = userName;
       _showWelcome = profile != null && showWelcome;
       _loading = false;
+      _profileLoadError = null;
     });
   }
 
@@ -137,6 +171,37 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     }
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_profileLoadError != null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.warning_amber_rounded, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppLocalizations.of(context)!.startupErrorTitle,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(AppLocalizations.of(context)!.startupErrorMessage, textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: _loadProfile,
+                    icon: const Icon(Icons.refresh),
+                    label: Text(AppLocalizations.of(context)!.startupErrorRetry),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
     }
     final profile = _profile;
     if (profile == null) {

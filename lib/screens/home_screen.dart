@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   bool _showFeatures = false;
   bool _hideDailyPrompt = false;
   bool _loading = true;
+  String? _loadError;
   String _sort = 'updated';
   String _activeFilter = 'all';
   List<Note> _notes = const [];
@@ -133,20 +134,41 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
   Future<void> _loadNotes() async {
     final loadGeneration = ++_notesLoadGeneration;
-    final repository = await NoteRepositoryProvider.instance();
+    try {
+      final repository = await NoteRepositoryProvider.instance().timeout(
+        const Duration(seconds: 12),
+      );
 
-    // Keep one live subscription for the lifetime of HomeScreen. Replacing
-    // the subscription during navigation can create a small window in which
-    // a broadcast emission is dropped while the editor is closing.
-    _notesSubscription ??= repository.watchNotes().listen(_applyNotes);
+      // Keep one live subscription for the lifetime of HomeScreen.
+      _notesSubscription ??= repository.watchNotes().listen(
+        _applyNotes,
+        onError: (Object error, StackTrace stack) {
+          debugPrint('ORAH home notes stream failed: ${error.runtimeType}');
+          if (!mounted) return;
+          setState(() {
+            _loadError = 'Notes could not be refreshed. Please retry.';
+            _loading = false;
+          });
+        },
+      );
 
-    // Read the persisted snapshot as well. This covers startup and any
-    // update that happened before the stream listener was attached.
-    await repository.refresh();
-    if (!mounted || loadGeneration != _notesLoadGeneration) return;
-    final notes = await repository.getNotes();
-    if (!mounted || loadGeneration != _notesLoadGeneration) return;
-    _applyNotes(notes);
+      await repository.refresh().timeout(const Duration(seconds: 12));
+      if (!mounted || loadGeneration != _notesLoadGeneration) return;
+      final notes = await repository.getNotes().timeout(
+        const Duration(seconds: 12),
+      );
+      if (!mounted || loadGeneration != _notesLoadGeneration) return;
+      setState(() => _loadError = null);
+      _applyNotes(notes);
+    } catch (error, stack) {
+      debugPrint('ORAH home notes load failed: ${error.runtimeType}: $error');
+      debugPrintStack(stackTrace: stack);
+      if (!mounted || loadGeneration != _notesLoadGeneration) return;
+      setState(() {
+        _loadError = 'Notes could not be loaded. Your saved data has not been cleared. Tap Retry.';
+        _loading = false;
+      });
+    }
   }
 
   void _applyNotes(List<Note> notes) {
@@ -902,6 +924,35 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_loadError != null)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.cloud_off_outlined, size: 42),
+                        const SizedBox(height: 12),
+                        Text(_loadError!, textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _loading = true;
+                              _loadError = null;
+                            });
+                            _loadNotes();
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: Text(l10n.retry),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               )
             else ...[
               if (_activeFilter == 'all' && pinned.isNotEmpty) ...[

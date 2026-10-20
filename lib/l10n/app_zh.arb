@@ -981,5 +981,16 @@
   "integrationsSecurityNote": "只有在配置安全登录和权限审核后，才会连接账户。",
   "integrationsComingNext": "下一步是配置应用集成。",
   "integrationsCloudFiles": "云端文件与备份",
-  "integrationsScheduledMessages": "定时邮件和消息"
+  "integrationsScheduledMessages": "定时邮件和消息",
+  "shareNoteText": "分享笔记文本",
+  "shareNoteTextDescription": "将笔记标题和正文分享到其他应用。",
+  "shareViaWhatsApp": "通过 WhatsApp 分享",
+  "whatsAppShareDescription": "打开 WhatsApp，并准备好要分享的笔记。",
+  "whatsAppUnavailable": "无法打开 WhatsApp。请尝试使用 Android 分享菜单。",
+  "googleDriveExport": "将 PDF 保存到 Google Drive",
+  "googleDriveExportDescription": "在 Android 分享菜单中选择 Google Drive 以保存副本。",
+  "googleDriveExportBody": "选择 Google Drive 以保存此 ORAH 导出的 PDF。",
+  "startupErrorTitle": "ORAH 无法完成启动",
+  "startupErrorRetry": "重试",
+  "startupErrorMessage": "ORAH 无法加载保存在此设备上的个人资料。请重试。"
 }
