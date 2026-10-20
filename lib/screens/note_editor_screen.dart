@@ -916,7 +916,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         _saveErrorShown = true;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Could not save this note. Your edits are still on screen. Please retry.'),
+            content: Text(AppLocalizations.of(context)!.shareError),
             action: SnackBarAction(
               label: AppLocalizations.of(context)!.retry,
               onPressed: () {
