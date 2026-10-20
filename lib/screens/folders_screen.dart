@@ -20,6 +20,7 @@ class FoldersScreen extends StatefulWidget {
 
 class _FoldersScreenState extends State<FoldersScreen> {
   bool _loading = true;
+  String? _loadError;
   List<NoteFolder> _folders = const [];
   Map<String, int> _counts = const {};
   final Set<String> _selectedFolderIds = <String>{};
@@ -33,28 +34,48 @@ class _FoldersScreenState extends State<FoldersScreen> {
   }
 
   Future<void> _load() async {
-    final folderRepository = await FolderRepositoryProvider.instance();
-    final noteRepository = await NoteRepositoryProvider.instance();
-
-    final folders = await folderRepository.getFolders();
-    final notes = await noteRepository.getNotes();
-
-    final counts = <String, int>{};
-    for (final note in notes) {
-      if (note.folderId != null && !note.isArchived && !note.isTrashed) {
-        counts[note.folderId!] = (counts[note.folderId!] ?? 0) + 1;
-      }
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _loadError = null;
+      });
     }
+    try {
+      final folderRepository = await FolderRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 12));
+      final noteRepository = await NoteRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 12));
 
-    if (!mounted) return;
-    setState(() {
-      _folders = folders;
-      _counts = counts;
-      _selectedFolderIds.removeWhere(
-        (id) => !folders.any((folder) => folder.id == id),
-      );
-      _loading = false;
-    });
+      final folders = await folderRepository.getFolders()
+          .timeout(const Duration(seconds: 12));
+      final notes = await noteRepository.getNotes()
+          .timeout(const Duration(seconds: 12));
+
+      final counts = <String, int>{};
+      for (final note in notes) {
+        if (note.folderId != null && !note.isArchived && !note.isTrashed) {
+          counts[note.folderId!] = (counts[note.folderId!] ?? 0) + 1;
+        }
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _folders = folders;
+        _counts = counts;
+        _selectedFolderIds.removeWhere(
+          (id) => !folders.any((folder) => folder.id == id),
+        );
+        _loading = false;
+        _loadError = null;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH folders load failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError = 'Folders could not be loaded. Your saved data has not been cleared. Tap Retry.';
+      });
+    }
   }
 
   Future<_FolderDraft?> _promptFolderDetails({
@@ -372,9 +393,29 @@ class _FoldersScreenState extends State<FoldersScreen> {
             ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _folders.isEmpty
-              ? _EmptyFolders(onCreate: _addFolder)
-              : ListView.separated(
+          : _loadError != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.cloud_off_outlined, size: 48),
+                        const SizedBox(height: 16),
+                        Text(_loadError!, textAlign: TextAlign.center),
+                        const SizedBox(height: 18),
+                        FilledButton.icon(
+                          onPressed: _load,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : _folders.isEmpty
+                  ? _EmptyFolders(onCreate: _addFolder)
+                  : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                   itemCount: _folders.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
