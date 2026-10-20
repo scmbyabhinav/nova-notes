@@ -569,6 +569,7 @@ class _DailyReflectionScheduleSettingTileState
     extends State<_DailyReflectionScheduleSettingTile> {
   bool _enabled = false;
   bool _loading = true;
+  String? _loadError;
   int _hour = 20;
   int _minute = 0;
 
@@ -579,14 +580,31 @@ class _DailyReflectionScheduleSettingTileState
   }
 
   Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    setState(() {
-      _enabled = prefs.getBool('orah_daily_reflection_enabled') ?? false;
-      _hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
-      _minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
-      _loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _loadError = null;
+      });
+    }
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 12));
+      if (!mounted) return;
+      setState(() {
+        _enabled = prefs.getBool('orah_daily_reflection_enabled') ?? false;
+        _hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
+        _minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
+        _loading = false;
+        _loadError = null;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH Daily Reflection schedule load failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError = 'Could not load the reminder schedule. Tap to retry.';
+      });
+    }
   }
 
   TimeOfDay get _time => TimeOfDay(hour: _hour, minute: _minute);
@@ -655,11 +673,11 @@ class _DailyReflectionScheduleSettingTileState
           title: const Text('Daily Reflection reminder'),
           subtitle: Text(_loading
               ? 'Loading schedule…'
-              : _enabled
+              : _loadError ?? (_enabled
                   ? 'Enabled • Every day at $_formattedTime'
-                  : 'Disabled • Turn on to receive a daily reflection reminder'),
+                  : 'Disabled • Turn on to receive a daily reflection reminder')),
           value: _enabled,
-          onChanged: _loading ? null : _setEnabled,
+          onChanged: _loading || _loadError != null ? null : _setEnabled,
         ),
         const Divider(height: 1),
         ListTile(
@@ -667,7 +685,7 @@ class _DailyReflectionScheduleSettingTileState
           title: const Text('Reminder time'),
           subtitle: Text(_formattedTime),
           trailing: const Icon(Icons.chevron_right_rounded),
-          onTap: _loading ? null : _pickTime,
+          onTap: _loading ? null : _loadError != null ? _loadPreferences : _pickTime,
         ),
       ],
     );
