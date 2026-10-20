@@ -918,7 +918,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           SnackBar(
             content: Text('Could not save this note. Your edits are still on screen. Please retry.'),
             action: SnackBarAction(
-              label: 'Retry',
+              label: AppLocalizations.of(context)!.retry,
               onPressed: () {
                 _saveErrorShown = false;
                 _save();
