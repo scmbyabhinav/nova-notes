@@ -195,14 +195,22 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   }
 
   Future<void> _openReflection() async {
-    final repository = await NoteRepositoryProvider.instance();
-    if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ReflectionPromptScreen(repository: repository),
-      ),
-    );
-    await _loadNotes();
+    try {
+      final repository = await NoteRepositoryProvider.instance();
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ReflectionPromptScreen(repository: repository),
+        ),
+      );
+      await _loadNotes();
+    } catch (error, stackTrace) {
+      debugPrint('ORAH Daily Reflection navigation failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Daily Reflection could not be opened. Your notes have not been cleared.')),
+      );
+    }
   }
 
   Future<void> _checkScheduledReflection() async {
