@@ -579,14 +579,28 @@ class _DailyReflectionScheduleSettingTileState
   }
 
   Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    setState(() {
-      _enabled = prefs.getBool('orah_daily_reflection_enabled') ?? false;
-      _hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
-      _minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
-      _loading = false;
-    });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
+      setState(() {
+        _enabled = prefs.getBool('orah_daily_reflection_enabled') ?? false;
+        _hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
+        _minute = prefs.getInt('orah_daily_reflection_minute') ?? 0;
+        _loading = false;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH reflection preferences load failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _enabled = false;
+        _hour = 20;
+        _minute = 0;
+        _loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not load reminder settings. Reopen Settings to try again.')),
+      );
+    }
   }
 
   TimeOfDay get _time => TimeOfDay(hour: _hour, minute: _minute);
