@@ -89,6 +89,7 @@ class OrahEntryGate extends StatefulWidget {
 class _OrahEntryGateState extends State<OrahEntryGate> {
   OrahUserProfile? _profile;
   bool _loading = true;
+  String? _loadError;
   bool _showWelcome = false;
   String _welcomeUserName = 'Friend';
 
@@ -99,20 +100,45 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   }
 
   Future<void> _loadProfile() async {
-    final profile = await OrahUserProfileService.instance.loadProfile();
-    final prefs = await SharedPreferences.getInstance();
-    if (profile != null && prefs.getString('user_name') == null) {
-      await prefs.setString('user_name', profile.fullName);
-    }
-    final userName = prefs.getString('user_name') ?? 'Friend';
-    final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     if (!mounted) return;
     setState(() {
-      _profile = profile;
-      _welcomeUserName = userName;
-      _showWelcome = profile != null && showWelcome;
-      _loading = false;
+      _loading = true;
+      _loadError = null;
     });
+
+    try {
+      // Secure-storage and preference platform calls can fail or stall on
+      // some Android installs. Bound them and give the user a recovery path.
+      final profile = await OrahUserProfileService.instance
+          .loadProfile()
+          .timeout(const Duration(seconds: 10));
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 10));
+      if (profile != null && prefs.getString('user_name') == null) {
+        await prefs
+            .setString('user_name', profile.fullName)
+            .timeout(const Duration(seconds: 5));
+      }
+      final userName = prefs.getString('user_name') ?? 'Friend';
+      final showWelcome =
+          prefs.getBool('orah_welcome_animation_enabled') ?? true;
+      if (!mounted) return;
+      setState(() {
+        _profile = profile;
+        _welcomeUserName = userName;
+        _showWelcome = profile != null && showWelcome;
+        _loading = false;
+        _loadError = null;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH entry profile load failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError =
+            'ORAH could not read its local profile. Your notes have not been reset. Check storage permissions and tap Retry.';
+      });
+    }
   }
 
   @override
@@ -127,6 +153,37 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     }
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_loadError != null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.warning_amber_rounded, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'ORAH could not finish startup',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(_loadError!, textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: _loadProfile,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
     }
     final profile = _profile;
     if (profile == null) {
