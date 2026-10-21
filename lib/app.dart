@@ -249,23 +249,39 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _openStatistics() async {
-    final repository = await NoteRepositoryProvider.instance();
-    await repository.refresh();
-    final notes = await repository.getNotes();
-    if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => StatisticsScreen(notes: notes)),
-    );
+    try {
+      final repository = await NoteRepositoryProvider.instance();
+      await repository.refresh();
+      final notes = await repository.getNotes();
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => StatisticsScreen(notes: notes)),
+      );
+    } catch (error, stackTrace) {
+      debugPrint('ORAH statistics navigation failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Statistics could not be opened. Your notes have not been cleared.')),
+      );
+    }
   }
 
   Future<void> _openCalendarHistory() async {
-    final repository = await NoteRepositoryProvider.instance();
-    await repository.refresh();
-    final notes = await repository.getNotes();
-    if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => CalendarHistoryScreen(notes: notes)),
-    );
+    try {
+      final repository = await NoteRepositoryProvider.instance();
+      await repository.refresh();
+      final notes = await repository.getNotes();
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => CalendarHistoryScreen(notes: notes)),
+      );
+    } catch (error, stackTrace) {
+      debugPrint('ORAH calendar navigation failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Calendar and history could not be opened. Your notes have not been cleared.')),
+      );
+    }
   }
 
   Future<void> _openVoiceEditor() async {
