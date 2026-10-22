@@ -28,9 +28,16 @@ import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key, required this.themeController});
+  const SettingsScreen({
+    super.key,
+    required this.themeController,
+    this.selectedLocale = const Locale('en'),
+    this.onLocaleChanged,
+  });
 
   final OrahThemeController themeController;
+  final Locale selectedLocale;
+  final ValueChanged<Locale>? onLocaleChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +55,17 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
+          _sectionHeader(theme, 'Language'),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.language_rounded),
+              title: const Text('App language'),
+              subtitle: Text(_languageDisplayName(selectedLocale.languageCode)),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => _showLanguagePicker(context),
+            ),
+          ),
+          const SizedBox(height: 16),
           _sectionHeader(theme, l10n.accountAndPro),
           Card(
             child: ListTile(
@@ -235,6 +253,61 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _languageDisplayName(String code) {
+    const names = <String, String>{
+      'en': 'English (default)',
+      'ar': 'العربية · Arabic',
+      'de': 'Deutsch · German',
+      'es': 'Español · Spanish',
+      'fr': 'Français · French',
+      'he': 'עברית · Hebrew',
+      'hi': 'हिन्दी · Hindi',
+      'id': 'Bahasa Indonesia · Indonesian',
+      'it': 'Italiano · Italian',
+      'ja': '日本語 · Japanese',
+      'ko': '한국어 · Korean',
+      'pt': 'Português · Portuguese',
+      'tr': 'Türkçe · Turkish',
+      'zh': '简体中文 · Chinese',
+    };
+    return names[code] ?? names['en']!;
+  }
+
+  Future<void> _showLanguagePicker(BuildContext context) async {
+    const locales = <Locale>[
+      Locale('en'),
+      Locale('ar'),
+      Locale('de'),
+      Locale('es'),
+      Locale('fr'),
+      Locale('he'),
+      Locale('hi'),
+      Locale('id'),
+      Locale('it'),
+      Locale('ja'),
+      Locale('ko'),
+      Locale('pt'),
+      Locale('tr'),
+      Locale('zh'),
+    ];
+    final selected = await showDialog<Locale>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('Choose app language'),
+        children: [
+          for (final locale in locales)
+            RadioListTile<Locale>(
+              value: locale,
+              groupValue: selectedLocale,
+              title: Text(_languageDisplayName(locale.languageCode)),
+              onChanged: (value) => Navigator.of(dialogContext).pop(value),
+            ),
+        ],
+      ),
+    );
+    if (selected != null) onLocaleChanged?.call(selected);
   }
 
   Widget _sectionHeader(ThemeData theme, String title) {
