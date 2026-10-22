@@ -63,7 +63,9 @@ class LocalFolderRepository implements FolderRepository {
       NoteFolder(id: 'study', name: 'Study', createdAt: now),
     ];
 
-    await _write(defaults);
+    // Reading folders must never overwrite an existing value, even if it is
+    // malformed or the platform storage plugin is unhealthy. Persist defaults
+    // only when the user performs a successful write.
     return defaults;
   }
 

@@ -10,6 +10,7 @@ import 'core/theme/nova_theme.dart';
 import 'core/theme/orah_theme_controller.dart';
 import 'core/widgets/orah_asset_icon.dart';
 import 'data/repositories/note_repository_provider.dart';
+import 'data/repositories/local_note_repository.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar_screen.dart';
@@ -89,6 +90,7 @@ class OrahEntryGate extends StatefulWidget {
 class _OrahEntryGateState extends State<OrahEntryGate> {
   OrahUserProfile? _profile;
   bool _loading = true;
+  String? _loadError;
   bool _showWelcome = false;
   String _welcomeUserName = 'Friend';
 
@@ -99,20 +101,49 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
   }
 
   Future<void> _loadProfile() async {
-    final profile = await OrahUserProfileService.instance.loadProfile();
-    final prefs = await SharedPreferences.getInstance();
-    if (profile != null && prefs.getString('user_name') == null) {
-      await prefs.setString('user_name', profile.fullName);
-    }
-    final userName = prefs.getString('user_name') ?? 'Friend';
-    final showWelcome = prefs.getBool('orah_welcome_animation_enabled') ?? true;
     if (!mounted) return;
     setState(() {
-      _profile = profile;
-      _welcomeUserName = userName;
-      _showWelcome = profile != null && showWelcome;
-      _loading = false;
+      _loading = true;
+      _loadError = null;
     });
+
+    try {
+      // Secure-storage and preference platform calls can fail or stall on
+      // some Android installs. Bound them and give the user a recovery path.
+      final profile = await OrahUserProfileService.instance
+          .loadProfile()
+          .timeout(const Duration(seconds: 10));
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 10));
+      if (profile != null && prefs.getString('user_name') == null) {
+        await prefs
+            .setString('user_name', profile.fullName)
+            .timeout(const Duration(seconds: 5));
+      }
+      final userName = prefs.getString('user_name') ?? 'Friend';
+      final showWelcome =
+          prefs.getBool('orah_welcome_animation_enabled') ?? true;
+      if (!mounted) return;
+      setState(() {
+        _profile = profile;
+        _welcomeUserName = userName;
+        _showWelcome = profile != null && showWelcome;
+        _loading = false;
+        _loadError = null;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH entry profile load failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      // A profile read failure must never block the core note-taking app.
+      // Show registration so the user can continue; do not clear or rewrite
+      // existing notes or other local data.
+      setState(() {
+        _profile = null;
+        _showWelcome = false;
+        _loading = false;
+        _loadError = null;
+      });
+    }
   }
 
   @override
@@ -122,11 +153,43 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         themeController: widget.themeController,
         speechService: widget.speechService,
         requestMicrophonePermission: widget.requestMicrophonePermission,
+        enableStartupGreeting: false,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (_loadError != null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.warning_amber_rounded, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'ORAH could not finish startup',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(_loadError!, textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: _loadProfile,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
     }
     final profile = _profile;
     if (profile == null) {
@@ -151,12 +214,13 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
+  final bool enableStartupGreeting;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -176,15 +240,30 @@ class _NovaShellState extends State<NovaShell> {
   void initState() {
     super.initState();
     _loadQuickCaptureHint();
-    _greetUserAtStartup();
+    if (widget.enableStartupGreeting) {
+      _greetUserAtStartup();
+    }
   }
 
   Future<void> _greetUserAtStartup() async {
-    final voiceEnabled = await OrahUserProfileService.instance.voiceGreetingEnabled();
+    var voiceEnabled = true;
+    try {
+      voiceEnabled = await OrahUserProfileService.instance
+          .voiceGreetingEnabled()
+          .timeout(const Duration(seconds: 3));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH voice preference read failed: $error\\n$stackTrace');
+      // The greeting defaults to enabled when the preference store is unavailable.
+    }
     if (!mounted || !voiceEnabled) return;
-    OrahUserProfileService.instance
-        .speakGreeting(widget.profile.fullName)
-        .catchError((_) {});
+    try {
+      await OrahUserProfileService.instance
+          .speakGreeting(widget.profile.fullName)
+          .timeout(const Duration(seconds: 10));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH startup voice greeting failed: $error\\n$stackTrace');
+      // TTS failure is non-fatal and must not affect note editing.
+    }
   }
 
   Future<void> _loadQuickCaptureHint() async {
@@ -227,11 +306,24 @@ class _NovaShellState extends State<NovaShell> {
         SettingsScreen(themeController: widget.themeController),
       ];
 
-  Future<void> _openEditor(NoteType type) async {
-    final repository = await NoteRepositoryProvider.instance();
+  Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
+    final LocalNoteRepository repository;
+    try {
+      repository = await NoteRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 6));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH could not open note editor: $error\\n$stackTrace');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ORAH storage is not responding. Your existing notes have not been deleted. Please try again in a moment.'),
+          duration: Duration(seconds: 5),
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
-
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NoteEditorScreen(
@@ -239,13 +331,16 @@ class _NovaShellState extends State<NovaShell> {
           initialType: type,
           speechService: widget.speechService,
           requestMicrophonePermission: widget.requestMicrophonePermission,
+          autoStartVoice: autoStartVoice,
         ),
       ),
     );
 
-    // Re-publish the persisted snapshot after the editor route closes so the
-    // Home stream receives the latest state even if a broadcast was missed.
-    await repository.refresh();
+    try {
+      await repository.refresh().timeout(const Duration(seconds: 5));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
+    }
   }
 
   Future<void> _openStatistics() async {
@@ -269,21 +364,7 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _openVoiceEditor() async {
-    final repository = await NoteRepositoryProvider.instance();
-    if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => NoteEditorScreen(
-          repository: repository,
-          initialType: NoteType.text,
-          speechService: widget.speechService,
-          requestMicrophonePermission: widget.requestMicrophonePermission,
-          autoStartVoice: true,
-        ),
-      ),
-    );
-
-    await repository.refresh();
+    await _openEditor(NoteType.text, autoStartVoice: true);
   }
 
   Future<void> _quickCapture() async {

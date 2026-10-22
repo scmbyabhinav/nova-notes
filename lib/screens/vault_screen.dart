@@ -25,6 +25,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   List<Note> _lockedNotes = const [];
   bool _loading = true;
   bool _authenticated = false;
+  String? _loadError;
   DateTime? _pausedAt;
   int _autoLockMinutes = 5;
   List<VaultFolder> _folders = const [];
@@ -41,22 +42,29 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _loadVaultPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_foldersKey);
-    var folders = <VaultFolder>[];
-    if (raw != null) {
-      try {
-        folders = (jsonDecode(raw) as List).whereType<Map>()
-            .map((item) => VaultFolder.fromMap(Map<String, dynamic>.from(item))).toList();
-      } catch (_) {
-        folders = [];
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 5));
+      final raw = prefs.getString(_foldersKey);
+      var folders = <VaultFolder>[];
+      if (raw != null) {
+        try {
+          folders = (jsonDecode(raw) as List).whereType<Map>()
+              .map((item) => VaultFolder.fromMap(Map<String, dynamic>.from(item))).toList();
+        } catch (_) {
+          folders = [];
+        }
       }
+      if (!mounted) return;
+      setState(() {
+        _autoLockMinutes = prefs.getInt(_autoLockKey) ?? 5;
+        _folders = folders;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH Vault preferences load failed: $error\\n$stackTrace');
+      // Vault note access is guarded separately; default only non-secret UI
+      // preferences and do not touch stored private notes or PIN data.
     }
-    if (!mounted) return;
-    setState(() {
-      _autoLockMinutes = prefs.getInt(_autoLockKey) ?? 5;
-      _folders = folders;
-    });
   }
 
   @override
@@ -101,34 +109,61 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _initialize() async {
-    final security = NovaSecurityService();
-    // Enter Vault directly. If no Vault PIN exists yet, the Vault
-    // authentication dialog creates it here instead of sending the user
-    // through Security Settings first.
-    if (!await _authenticateVault()) {
-      if (mounted) Navigator.of(context).pop();
-      return;
-    }
-    final repository = await NoteRepositoryProvider.instance();
-    if (!mounted) return;
-    setState(() => _authenticated = true);
-    _repository = repository;
-    final notes = await repository.getVaultNotes();
-    if (!mounted) return;
-    setState(() {
-      _lockedNotes = notes.where((note) => !note.isTrashed).toList()
-        ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-      _loading = false;
-    });
-    _subscription = repository.watchNotes().listen((_) async {
-      final latest = await repository.getVaultNotes();
+    try {
+      if (!await _authenticateVault()) {
+        if (mounted) Navigator.of(context).pop();
+        return;
+      }
+      final repository = await NoteRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 8));
+      if (!mounted) return;
+      _repository = repository;
+      final notes = await repository.getVaultNotes()
+          .timeout(const Duration(seconds: 8));
       if (!mounted) return;
       setState(() {
-        _lockedNotes = latest.where((note) => !note.isTrashed).toList()
+        _authenticated = true;
+        _lockedNotes = notes.where((note) => !note.isTrashed).toList()
           ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        _loading = false;
+        _loadError = null;
       });
-    });
-    await repository.refresh();
+      _subscription = repository.watchNotes().listen((_) async {
+        try {
+          final latest = await repository.getVaultNotes()
+              .timeout(const Duration(seconds: 5));
+          if (!mounted) return;
+          setState(() {
+            _lockedNotes = latest.where((note) => !note.isTrashed).toList()
+              ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+          });
+        } catch (error, stackTrace) {
+          debugPrint('ORAH Vault refresh failed: $error\\n$stackTrace');
+        }
+      });
+      try {
+        await repository.refresh().timeout(const Duration(seconds: 5));
+      } catch (error, stackTrace) {
+        debugPrint('ORAH Vault ordinary-note refresh failed: $error\\n$stackTrace');
+      }
+    } catch (error, stackTrace) {
+      debugPrint('ORAH Vault initialization failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError = 'Storage error (${error.runtimeType}). Your private notes have not been reset. Tap Retry to try again.';
+      });
+    }
+  }
+
+  Future<void> _retryInitialize() async {
+    if (mounted) {
+      setState(() {
+        _loading = true;
+        _loadError = null;
+      });
+    }
+    await _initialize();
   }
 
   Future<String?> _promptVaultPin({required String title, required bool confirm}) async {
@@ -427,9 +462,33 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      body: !_authenticated || _loading
+      body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
+          : _loadError != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.sync_problem_rounded, size: 42),
+                        const SizedBox(height: 12),
+                        const Text('ORAH could not load Vault', style: TextStyle(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        Text(_loadError!, textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: _retryInitialize,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : !_authenticated
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),

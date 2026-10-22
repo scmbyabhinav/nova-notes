@@ -26,12 +26,38 @@ class OrahUserProfileService {
   final FlutterTts _tts = FlutterTts();
 
   Future<OrahUserProfile?> loadProfile() async {
-    final name = await _storage.read(key: _nameKey);
-    final email = await _storage.read(key: _emailKey);
-    if (name == null || email == null || name.trim().isEmpty || email.trim().isEmpty) {
+    try {
+      final name = await _storage
+          .read(key: _nameKey)
+          .timeout(const Duration(seconds: 2));
+      final email = await _storage
+          .read(key: _emailKey)
+          .timeout(const Duration(seconds: 2));
+      if (name != null && email != null &&
+          name.trim().isNotEmpty && email.trim().isNotEmpty) {
+        return OrahUserProfile(fullName: name, email: email);
+      }
+    } catch (_) {
+      // Secure storage may be unavailable on some Android installs. Fall back
+      // to the non-secret profile cache so the app can still start.
+    }
+
+    // Preferences are a secondary cache only. If this platform channel also
+    // fails, treat the profile as unavailable and let the app show registration
+    // rather than blocking startup. No notes are touched here.
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 3));
+      final name = prefs.getString(_nameKey);
+      final email = prefs.getString(_emailKey);
+      if (name == null || email == null ||
+          name.trim().isEmpty || email.trim().isEmpty) {
+        return null;
+      }
+      return OrahUserProfile(fullName: name, email: email);
+    } catch (_) {
       return null;
     }
-    return OrahUserProfile(fullName: name, email: email);
   }
 
   Future<void> register({required String fullName, required String email}) async {
@@ -69,21 +95,46 @@ class OrahUserProfileService {
     // Profile and local subscriber roster are protected by Android secure
     // storage. Without a configured remote endpoint, the roster stays on this
     // device; central newsletter delivery needs a backend endpoint.
-    await _storage.write(key: _nameKey, value: normalizedName);
-    await _storage.write(key: _emailKey, value: normalizedEmail);
-    final raw = await _storage.read(key: _subscribersKey);
-    final List<dynamic> roster =
-        raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
-    final exists = roster.any((entry) =>
-        entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
-    if (!exists) {
-      roster.add({
-        'fullName': normalizedName,
-        'email': normalizedEmail,
-        'subscribedAt': DateTime.now().toUtc().toIso8601String(),
-        'source': 'orah_android_app',
-      });
-      await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
+    try {
+      await _storage
+          .write(key: _nameKey, value: normalizedName)
+          .timeout(const Duration(seconds: 2));
+      await _storage
+          .write(key: _emailKey, value: normalizedEmail)
+          .timeout(const Duration(seconds: 2));
+      final raw = await _storage
+          .read(key: _subscribersKey)
+          .timeout(const Duration(seconds: 2));
+      final List<dynamic> roster =
+          raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
+      final exists = roster.any((entry) =>
+          entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
+      if (!exists) {
+        roster.add({
+          'fullName': normalizedName,
+          'email': normalizedEmail,
+          'subscribedAt': DateTime.now().toUtc().toIso8601String(),
+          'source': 'orah_android_app',
+        });
+        await _storage
+            .write(key: _subscribersKey, value: jsonEncode(roster))
+            .timeout(const Duration(seconds: 2));
+      }
+    } catch (error) {
+      // Keep registration usable if Android secure storage is unavailable.
+      // This cache contains only the profile name/email, not note contents.
+      try {
+        final prefs = await SharedPreferences.getInstance()
+            .timeout(const Duration(seconds: 3));
+        await prefs.setString(_nameKey, normalizedName)
+            .timeout(const Duration(seconds: 3));
+        await prefs.setString(_emailKey, normalizedEmail)
+            .timeout(const Duration(seconds: 3));
+      } catch (_) {
+        // Keep this device session usable even if every profile store fails.
+        // The registration screen will still pass the entered profile to the
+        // in-memory app session; persistence can be repaired separately.
+      }
     }
   }
 
@@ -125,19 +176,29 @@ class OrahUserProfileService {
   }
 
   Future<void> speakGreeting(String name) async {
-    await _tts.stop();
-    await _applyVoice();
-    await _tts.setSpeechRate(0.48);
-    await _tts.setVolume(1.0);
-    await _tts.speak('Hello, $name');
+    try { await _tts.stop().timeout(const Duration(seconds: 2)); } catch (_) {}
+    // Voice enumeration is optional: some Android TTS engines do not answer
+    // getVoices reliably. Never let it prevent the actual greeting.
+    try {
+      await _applyVoice().timeout(const Duration(seconds: 2));
+    } catch (error) {
+      // Continue with the device's default voice.
+    }
+    try { await _tts.setLanguage('en-US').timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setSpeechRate(0.48).timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setVolume(1.0).timeout(const Duration(seconds: 2)); } catch (_) {}
+    await _tts.speak('Hello, $name').timeout(const Duration(seconds: 5));
   }
 
   Future<void> previewVoice() async {
-    await _tts.stop();
-    await _applyVoice();
-    await _tts.setSpeechRate(0.48);
-    await _tts.setVolume(1.0);
-    await _tts.speak('Hello, this is Orah Notes');
+    try { await _tts.stop().timeout(const Duration(seconds: 2)); } catch (_) {}
+    try {
+      await _applyVoice().timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    try { await _tts.setLanguage('en-US').timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setSpeechRate(0.48).timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setVolume(1.0).timeout(const Duration(seconds: 2)); } catch (_) {}
+    await _tts.speak('Hello, this is Orah Notes').timeout(const Duration(seconds: 5));
   }
 
   Future<void> stopGreeting() => _tts.stop();

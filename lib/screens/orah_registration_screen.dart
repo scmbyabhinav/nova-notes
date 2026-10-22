@@ -37,8 +37,20 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
         fullName: _nameController.text,
         email: _emailController.text,
       );
-      final profile = await OrahUserProfileService.instance.loadProfile();
-      if (!mounted || profile == null) return;
+      OrahUserProfile? profile;
+      try {
+        profile = await OrahUserProfileService.instance
+            .loadProfile()
+            .timeout(const Duration(seconds: 4));
+      } catch (_) {
+        // Continue with the just-entered profile for this app session if
+        // device storage is unavailable; never make registration a dead end.
+      }
+      profile ??= OrahUserProfile(
+        fullName: _nameController.text.trim().replaceAll(RegExp(r'\s+'), ' '),
+        email: _emailController.text.trim().toLowerCase(),
+      );
+      if (!mounted) return;
       widget.onRegistered(profile);
     } catch (error) {
       if (!mounted) return;

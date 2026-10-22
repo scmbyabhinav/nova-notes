@@ -94,8 +94,8 @@ class LocalNoteRepository implements NoteRepository {
           for (final item in locked) {
             if (item is Map && item['id'] is String) byId[item['id'] as String] = item;
           }
-          await _preferences.setString(_vaultStorageKey, jsonEncode(byId.values.toList()));
-          await _preferences.setString(_storageKey, jsonEncode(ordinary));
+          await _preferences.setString(_vaultStorageKey, jsonEncode(byId.values.toList())).timeout(const Duration(seconds: 3));
+          await _preferences.setString(_storageKey, jsonEncode(ordinary)).timeout(const Duration(seconds: 3));
         }
       }
     } catch (_) {
@@ -262,8 +262,8 @@ class LocalNoteRepository implements NoteRepository {
     }
     // Persist both snapshots before publishing. Vault records never enter the
     // ordinary notes JSON array.
-    await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()));
-    await _preferences.setString(_storageKey, jsonEncode(ordinary));
+    await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList())).timeout(const Duration(seconds: 5));
+    await _preferences.setString(_storageKey, jsonEncode(ordinary)).timeout(const Duration(seconds: 5));
   }
 
   /// Returns encrypted Vault records only. Callers must authenticate before
