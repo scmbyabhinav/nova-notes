@@ -133,10 +133,14 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     } catch (error, stackTrace) {
       debugPrint('ORAH entry profile load failed: $error\\n$stackTrace');
       if (!mounted) return;
+      // A profile read failure must never block the core note-taking app.
+      // Show registration so the user can continue; do not clear or rewrite
+      // existing notes or other local data.
       setState(() {
+        _profile = null;
+        _showWelcome = false;
         _loading = false;
-        _loadError =
-            'ORAH could not read its local profile. Your notes have not been reset. Check storage permissions and tap Retry.';
+        _loadError = null;
       });
     }
   }
