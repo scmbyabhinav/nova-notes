@@ -241,11 +241,24 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _greetUserAtStartup() async {
-    final voiceEnabled = await OrahUserProfileService.instance.voiceGreetingEnabled();
+    var voiceEnabled = true;
+    try {
+      voiceEnabled = await OrahUserProfileService.instance
+          .voiceGreetingEnabled()
+          .timeout(const Duration(seconds: 3));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH voice preference read failed: $error\\n$stackTrace');
+      // The greeting defaults to enabled when the preference store is unavailable.
+    }
     if (!mounted || !voiceEnabled) return;
-    OrahUserProfileService.instance
-        .speakGreeting(widget.profile.fullName)
-        .catchError((_) {});
+    try {
+      await OrahUserProfileService.instance
+          .speakGreeting(widget.profile.fullName)
+          .timeout(const Duration(seconds: 10));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH startup voice greeting failed: $error\\n$stackTrace');
+      // TTS failure is non-fatal and must not affect note editing.
+    }
   }
 
   Future<void> _loadQuickCaptureHint() async {
