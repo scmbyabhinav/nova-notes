@@ -66,7 +66,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _loadError = 'Folders could not be loaded. Your notes have not been deleted. Tap Retry to try again.';
+        _loadError = 'Storage error (${error.runtimeType}). Your notes have not been deleted. Tap Retry to try again.';
       });
     }
   }
@@ -188,18 +188,30 @@ class _FoldersScreenState extends State<FoldersScreen> {
     );
     if (draft == null) return;
 
-    final repository = await FolderRepositoryProvider.instance();
-    await repository.saveFolder(
-      NoteFolder(
-        id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
-        name: draft.name,
-        createdAt: DateTime.now(),
-        folderCoverImagePath: draft.imagePath,
-      ),
-    );
+    try {
+      final repository = await FolderRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 8));
+      await repository.saveFolder(
+        NoteFolder(
+          id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
+          name: draft.name,
+          createdAt: DateTime.now(),
+          folderCoverImagePath: draft.imagePath,
+        ),
+      ).timeout(const Duration(seconds: 8));
 
-    if (!mounted) return;
-    await _load();
+      if (!mounted) return;
+      await _load();
+    } catch (error, stackTrace) {
+      debugPrint('ORAH folder save failed: $error\\n$stackTrace');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Folder could not be saved (${error.runtimeType}). Your existing data has not been deleted.'),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 
   Future<void> _renameFolder(NoteFolder folder) async {
