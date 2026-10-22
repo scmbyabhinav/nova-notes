@@ -39,12 +39,43 @@ class OrahApp extends StatefulWidget {
 
 class _OrahAppState extends State<OrahApp> {
   final OrahThemeController _theme = OrahThemeController();
+  Locale _locale = const Locale('en');
+  static const _localePreferenceKey = 'orah_locale_code';
 
   @override
   void initState() {
     super.initState();
     _theme.addListener(_onThemeChanged);
     _theme.load();
+    _loadSavedLocale();
+  }
+
+  Future<void> _loadSavedLocale() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedCode = prefs.getString(_localePreferenceKey) ?? 'en';
+      final supported = AppLocalizations.supportedLocales.any(
+        (locale) => locale.languageCode == savedCode,
+      );
+      if (!mounted || !supported) return;
+      setState(() => _locale = Locale(savedCode));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH language preference load failed: $error\\n$stackTrace');
+    }
+  }
+
+  Future<void> _setLocale(Locale locale) async {
+    final supported = AppLocalizations.supportedLocales.any(
+      (item) => item.languageCode == locale.languageCode,
+    );
+    if (!supported) return;
+    setState(() => _locale = Locale(locale.languageCode));
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_localePreferenceKey, locale.languageCode);
+    } catch (error, stackTrace) {
+      debugPrint('ORAH language preference save failed: $error\\n$stackTrace');
+    }
   }
 
   void _onThemeChanged() => setState(() {});
@@ -66,22 +97,40 @@ class _OrahAppState extends State<OrahApp> {
       theme: light,
       darkTheme: dark,
       themeMode: _theme.mode,
+      locale: _locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting),
+      home: OrahEntryGate(
+        themeController: _theme,
+        speechService: widget.speechService,
+        requestMicrophonePermission: widget.requestMicrophonePermission,
+        skipRegistrationForTesting: widget.skipRegistrationForTesting,
+        selectedLocale: _locale,
+        onLocaleChanged: _setLocale,
+      ),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahEntryGate({
+    super.key,
+    required this.themeController,
+    this.speechService,
+    this.requestMicrophonePermission,
+    this.skipRegistrationForTesting = false,
+    this.selectedLocale = const Locale('en'),
+    this.onLocaleChanged,
+  });
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final Locale selectedLocale;
+  final ValueChanged<Locale>? onLocaleChanged;
 
   @override
   State<OrahEntryGate> createState() => _OrahEntryGateState();
@@ -153,6 +202,8 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         themeController: widget.themeController,
         speechService: widget.speechService,
         requestMicrophonePermission: widget.requestMicrophonePermission,
+        selectedLocale: widget.selectedLocale,
+        onLocaleChanged: widget.onLocaleChanged,
         enableStartupGreeting: false,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
@@ -208,19 +259,32 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     return NovaShell(
       themeController: widget.themeController,
       speechService: widget.speechService,
+      selectedLocale: widget.selectedLocale,
+      onLocaleChanged: widget.onLocaleChanged,
       profile: profile,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true});
+  const NovaShell({
+    super.key,
+    required this.themeController,
+    required this.profile,
+    this.speechService,
+    this.requestMicrophonePermission,
+    this.enableStartupGreeting = true,
+    this.selectedLocale = const Locale('en'),
+    this.onLocaleChanged,
+  });
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
   final bool enableStartupGreeting;
+  final Locale selectedLocale;
+  final ValueChanged<Locale>? onLocaleChanged;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -303,7 +367,11 @@ class _NovaShellState extends State<NovaShell> {
         ),
         const FoldersScreen(),
         const FavoritesScreen(),
-        SettingsScreen(themeController: widget.themeController),
+        SettingsScreen(
+          themeController: widget.themeController,
+          selectedLocale: widget.selectedLocale,
+          onLocaleChanged: widget.onLocaleChanged,
+        ),
       ];
 
   Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
@@ -526,27 +594,42 @@ class _NovaShellState extends State<NovaShell> {
               NavigationDestination(
                 icon: OrahAssetIcon('notes', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('notes', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Notes',
+                label: _bilingualMenuLabel(
+                  AppLocalizations.of(context)!.notes,
+                  'Notes',
+                ),
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('folder', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('folder', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Folders',
+                label: _bilingualMenuLabel(
+                  AppLocalizations.of(context)!.folders,
+                  'Folders',
+                ),
               ),
               NavigationDestination(
                 icon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
                 selectedIcon: Icon(Icons.add_rounded, color: theme.colorScheme.primary),
-                label: 'Add',
+                label: _bilingualMenuLabel(
+                  _localizedAddLabel(Localizations.localeOf(context).languageCode),
+                  'Add',
+                ),
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('star', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('star', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Favorites',
+                label: _bilingualMenuLabel(
+                  AppLocalizations.of(context)!.favorites,
+                  'Favorites',
+                ),
               ),
               NavigationDestination(
                 icon: OrahAssetIcon('settings', color: theme.colorScheme.onSurfaceVariant),
                 selectedIcon: OrahAssetIcon('settings', color: theme.colorScheme.onSecondaryContainer),
-                label: 'Settings',
+                label: _bilingualMenuLabel(
+                  AppLocalizations.of(context)!.settings,
+                  'Settings',
+                ),
               ),
             ],
           ),
@@ -554,6 +637,31 @@ class _NovaShellState extends State<NovaShell> {
     },
   );
   }
+}
+
+
+String _bilingualMenuLabel(String localized, String english) {
+  if (localized.trim().isEmpty || localized == english) return english;
+  return '$localized · $english';
+}
+
+String _localizedAddLabel(String languageCode) {
+  const labels = <String, String>{
+    'ar': 'إضافة',
+    'de': 'Hinzufügen',
+    'es': 'Añadir',
+    'fr': 'Ajouter',
+    'he': 'הוסף',
+    'hi': 'जोड़ें',
+    'id': 'Tambah',
+    'it': 'Aggiungi',
+    'ja': '追加',
+    'ko': '추가',
+    'pt': 'Adicionar',
+    'tr': 'Ekle',
+    'zh': '添加',
+  };
+  return labels[languageCode] ?? 'Add';
 }
 
 class _QuickCaptureCard extends StatelessWidget {
