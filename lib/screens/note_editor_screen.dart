@@ -21,6 +21,7 @@ import '../models/folder.dart';
 import '../models/note.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
+import 'orah_connect_screen.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
@@ -1812,6 +1813,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             });
                             await _save();
                           },
+                          onOpenConnect: () async {
+                            await _save();
+                            if (!mounted) return;
+                            await Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => OrahConnectScreen(
+                                  noteTitle: _titleController.text.trim(),
+                                  noteContent: _contentController.text,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                         TextField(
                           controller: _titleController,
@@ -1960,10 +1973,12 @@ class _MoodSelector extends StatelessWidget {
   const _MoodSelector({
     required this.selectedMood,
     required this.onSelected,
+    required this.onOpenConnect,
   });
 
   final String? selectedMood;
   final ValueChanged<String?> onSelected;
+  final VoidCallback onOpenConnect;
 
   static const moods = <(String, String, String)>[
     ('happy', '😊', 'Happy'),
@@ -1988,6 +2003,8 @@ class _MoodSelector extends StatelessWidget {
           const SizedBox(height: 6),
           Wrap(
             spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               for (final mood in moods)
                 Tooltip(
@@ -2000,6 +2017,13 @@ class _MoodSelector extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   ),
                 ),
+              ActionChip(
+                avatar: const Icon(Icons.hub_outlined, size: 18),
+                label: const Text('ORAH Connect'),
+                onPressed: onOpenConnect,
+                tooltip: 'Prepare a post for LinkedIn or Instagram',
+                visualDensity: VisualDensity.compact,
+              ),
             ],
           ),
         ],
