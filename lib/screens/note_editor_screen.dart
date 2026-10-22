@@ -75,6 +75,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late String _noteId;
   late NoteType _noteType;
   bool _saving = false;
+  bool _saveFailed = false;
   bool _hasChanges = false;
   bool _hasHapticSaved = false;
   bool _reviewCounted = false;
@@ -759,8 +760,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _save() async {
     if (!_hasChanges && widget.note != null) return;
 
-    if (mounted) setState(() => _saving = true);
+    if (mounted) setState(() { _saving = true; _saveFailed = false; });
 
+    try {
     final title = _titleController.text.trim();
     final content = _noteType == NoteType.checklist ? _checklistContent() : _contentController.text;
 
@@ -829,7 +831,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             imagePath: _imagePath,
           );
 
-    await widget.repository.saveNote(note);
+    await widget.repository.saveNote(note).timeout(const Duration(seconds: 10));
     if (!_hasHapticSaved) {
       _hasHapticSaved = true;
       unawaited(HapticFeedback.lightImpact());
@@ -843,7 +845,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // This makes the save-to-list handoff deterministic even if a stream
     // emission raced with route navigation.
     if (widget.repository is LocalNoteRepository) {
-      await (widget.repository as LocalNoteRepository).refresh();
+      await (widget.repository as LocalNoteRepository).refresh().timeout(const Duration(seconds: 5));
     }
     try {
       for (final item in _checklistItems) {
@@ -864,13 +866,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _hasChanges = false;
 
     if (mounted) setState(() => _saving = false);
+    } catch (error, stackTrace) {
+      debugPrint('ORAH note save failed: $error\\n$stackTrace');
+      _hasChanges = true;
+      _saveFailed = true;
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Note could not be saved. Your text is still open here. Check storage and tap Save again.'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _close() async {
     _saveTimer?.cancel();
     await _save();
 
-    if (!mounted) return;
+    if (!mounted || _saveFailed) return;
     Navigator.of(context).pop();
   }
 
