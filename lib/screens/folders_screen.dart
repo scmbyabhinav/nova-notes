@@ -66,7 +66,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _loadError = 'Storage error (${error.runtimeType}). Your notes have not been deleted. Tap Retry to try again.';
+        _loadError = 'Storage error: $error. Your notes have not been deleted. Tap Retry to try again.';
       });
     }
   }
