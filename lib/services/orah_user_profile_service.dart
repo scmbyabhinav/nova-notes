@@ -26,9 +26,23 @@ class OrahUserProfileService {
   final FlutterTts _tts = FlutterTts();
 
   Future<OrahUserProfile?> loadProfile() async {
-    final name = await _storage.read(key: _nameKey);
-    final email = await _storage.read(key: _emailKey);
-    if (name == null || email == null || name.trim().isEmpty || email.trim().isEmpty) {
+    try {
+      final name = await _storage.read(key: _nameKey);
+      final email = await _storage.read(key: _emailKey);
+      if (name != null && email != null &&
+          name.trim().isNotEmpty && email.trim().isNotEmpty) {
+        return OrahUserProfile(fullName: name, email: email);
+      }
+    } catch (_) {
+      // Secure storage may be unavailable on some Android installs. Fall back
+      // to the non-secret profile cache so the app can still start.
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString(_nameKey);
+    final email = prefs.getString(_emailKey);
+    if (name == null || email == null ||
+        name.trim().isEmpty || email.trim().isEmpty) {
       return null;
     }
     return OrahUserProfile(fullName: name, email: email);
@@ -69,21 +83,29 @@ class OrahUserProfileService {
     // Profile and local subscriber roster are protected by Android secure
     // storage. Without a configured remote endpoint, the roster stays on this
     // device; central newsletter delivery needs a backend endpoint.
-    await _storage.write(key: _nameKey, value: normalizedName);
-    await _storage.write(key: _emailKey, value: normalizedEmail);
-    final raw = await _storage.read(key: _subscribersKey);
-    final List<dynamic> roster =
-        raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
-    final exists = roster.any((entry) =>
-        entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
-    if (!exists) {
-      roster.add({
-        'fullName': normalizedName,
-        'email': normalizedEmail,
-        'subscribedAt': DateTime.now().toUtc().toIso8601String(),
-        'source': 'orah_android_app',
-      });
-      await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
+    try {
+      await _storage.write(key: _nameKey, value: normalizedName);
+      await _storage.write(key: _emailKey, value: normalizedEmail);
+      final raw = await _storage.read(key: _subscribersKey);
+      final List<dynamic> roster =
+          raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
+      final exists = roster.any((entry) =>
+          entry is Map && (entry['email'] as String?)?.toLowerCase() == normalizedEmail);
+      if (!exists) {
+        roster.add({
+          'fullName': normalizedName,
+          'email': normalizedEmail,
+          'subscribedAt': DateTime.now().toUtc().toIso8601String(),
+          'source': 'orah_android_app',
+        });
+        await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
+      }
+    } catch (error) {
+      // Keep registration usable if Android secure storage is unavailable.
+      // This cache contains only the profile name/email, not note contents.
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_nameKey, normalizedName);
+      await prefs.setString(_emailKey, normalizedEmail);
     }
   }
 
