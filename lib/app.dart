@@ -153,6 +153,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         themeController: widget.themeController,
         speechService: widget.speechService,
         requestMicrophonePermission: widget.requestMicrophonePermission,
+        enableStartupGreeting: false,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
@@ -213,12 +214,13 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
+  final bool enableStartupGreeting;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -238,7 +240,9 @@ class _NovaShellState extends State<NovaShell> {
   void initState() {
     super.initState();
     _loadQuickCaptureHint();
-    _greetUserAtStartup();
+    if (widget.enableStartupGreeting) {
+      _greetUserAtStartup();
+    }
   }
 
   Future<void> _greetUserAtStartup() async {
