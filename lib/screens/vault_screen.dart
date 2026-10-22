@@ -42,22 +42,29 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _loadVaultPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_foldersKey);
-    var folders = <VaultFolder>[];
-    if (raw != null) {
-      try {
-        folders = (jsonDecode(raw) as List).whereType<Map>()
-            .map((item) => VaultFolder.fromMap(Map<String, dynamic>.from(item))).toList();
-      } catch (_) {
-        folders = [];
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 5));
+      final raw = prefs.getString(_foldersKey);
+      var folders = <VaultFolder>[];
+      if (raw != null) {
+        try {
+          folders = (jsonDecode(raw) as List).whereType<Map>()
+              .map((item) => VaultFolder.fromMap(Map<String, dynamic>.from(item))).toList();
+        } catch (_) {
+          folders = [];
+        }
       }
+      if (!mounted) return;
+      setState(() {
+        _autoLockMinutes = prefs.getInt(_autoLockKey) ?? 5;
+        _folders = folders;
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH Vault preferences load failed: $error\\n$stackTrace');
+      // Vault note access is guarded separately; default only non-secret UI
+      // preferences and do not touch stored private notes or PIN data.
     }
-    if (!mounted) return;
-    setState(() {
-      _autoLockMinutes = prefs.getInt(_autoLockKey) ?? 5;
-      _folders = folders;
-    });
   }
 
   @override
@@ -144,7 +151,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _loadError = 'Vault storage is not responding. Your private notes have not been reset. Tap Retry to try again.';
+        _loadError = 'Storage error (${error.runtimeType}). Your private notes have not been reset. Tap Retry to try again.';
       });
     }
   }
