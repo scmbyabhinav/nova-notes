@@ -47,7 +47,7 @@ class _OrahRegistrationScreenState extends State<OrahRegistrationScreen> {
         // device storage is unavailable; never make registration a dead end.
       }
       profile ??= OrahUserProfile(
-        fullName: _nameController.text.trim().replaceAll(RegExp(r'\\s+'), ' '),
+        fullName: _nameController.text.trim().replaceAll(RegExp(r'\s+'), ' '),
         email: _emailController.text.trim().toLowerCase(),
       );
       if (!mounted) return;
