@@ -42,14 +42,22 @@ class OrahUserProfileService {
       // to the non-secret profile cache so the app can still start.
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString(_nameKey);
-    final email = prefs.getString(_emailKey);
-    if (name == null || email == null ||
-        name.trim().isEmpty || email.trim().isEmpty) {
+    // Preferences are a secondary cache only. If this platform channel also
+    // fails, treat the profile as unavailable and let the app show registration
+    // rather than blocking startup. No notes are touched here.
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 3));
+      final name = prefs.getString(_nameKey);
+      final email = prefs.getString(_emailKey);
+      if (name == null || email == null ||
+          name.trim().isEmpty || email.trim().isEmpty) {
+        return null;
+      }
+      return OrahUserProfile(fullName: name, email: email);
+    } catch (_) {
       return null;
     }
-    return OrahUserProfile(fullName: name, email: email);
   }
 
   Future<void> register({required String fullName, required String email}) async {
@@ -115,9 +123,18 @@ class OrahUserProfileService {
     } catch (error) {
       // Keep registration usable if Android secure storage is unavailable.
       // This cache contains only the profile name/email, not note contents.
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_nameKey, normalizedName);
-      await prefs.setString(_emailKey, normalizedEmail);
+      try {
+        final prefs = await SharedPreferences.getInstance()
+            .timeout(const Duration(seconds: 3));
+        await prefs.setString(_nameKey, normalizedName)
+            .timeout(const Duration(seconds: 3));
+        await prefs.setString(_emailKey, normalizedEmail)
+            .timeout(const Duration(seconds: 3));
+      } catch (_) {
+        // Keep this device session usable even if every profile store fails.
+        // The registration screen will still pass the entered profile to the
+        // in-memory app session; persistence can be repaired separately.
+      }
     }
   }
 
