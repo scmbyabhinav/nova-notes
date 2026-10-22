@@ -10,6 +10,7 @@ import 'core/theme/nova_theme.dart';
 import 'core/theme/orah_theme_controller.dart';
 import 'core/widgets/orah_asset_icon.dart';
 import 'data/repositories/note_repository_provider.dart';
+import 'data/repositories/local_note_repository.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar_screen.dart';
@@ -301,7 +302,7 @@ class _NovaShellState extends State<NovaShell> {
         SettingsScreen(themeController: widget.themeController),
       ];
 
-  Future<void> _openEditor(NoteType type) async {
+  Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
     final LocalNoteRepository repository;
     try {
       repository = await NoteRepositoryProvider.instance()
@@ -326,6 +327,7 @@ class _NovaShellState extends State<NovaShell> {
           initialType: type,
           speechService: widget.speechService,
           requestMicrophonePermission: widget.requestMicrophonePermission,
+          autoStartVoice: autoStartVoice,
         ),
       ),
     );
@@ -358,7 +360,7 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _openVoiceEditor() async {
-    await _openEditor(NoteType.text);
+    await _openEditor(NoteType.text, autoStartVoice: true);
   }
 
   Future<void> _quickCapture() async {
