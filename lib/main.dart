@@ -22,17 +22,27 @@ Future<void> main() async {
 
   runApp(const OrahApp());
 
-  // These services are best-effort. Their failures are logged but cannot stop
-  // the registration screen or local note-taking UI from appearing.
-  unawaited(_runStartupTask(
+  // Defer optional native plugins until the first screen has had time to
+  // initialize local notes and folders. Start them sequentially to reduce
+  // contention between platform-channel initializations on Android.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_initializeOptionalServices());
+  });
+}
+
+
+Future<void> _initializeOptionalServices() async {
+  await Future<void>.delayed(const Duration(seconds: 2));
+
+  await _runStartupTask(
     'analytics',
     () => OrahAnalyticsService.instance.initialize(),
-  ));
-  unawaited(_runStartupTask(
+  );
+  await _runStartupTask(
     'entitlements',
     () => OrahEntitlementService.instance.initialize(),
-  ));
-  unawaited(_runStartupTask('reminders', () async {
+  );
+  await _runStartupTask('reminders', () async {
     await OrahReminderService.instance
         .initialize()
         .timeout(const Duration(seconds: 8));
@@ -53,18 +63,15 @@ Future<void> main() async {
     await OrahReminderService.instance
         .openPendingNotification()
         .timeout(const Duration(seconds: 5));
-  }));
-
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    unawaited(_runStartupTask(
-      'share intake',
-      () => OrahShareIntakeService.instance.initialize(),
-    ));
-    unawaited(_runStartupTask(
-      'Android intents',
-      () => OrahAndroidIntentService.instance.initialize(),
-    ));
   });
+  await _runStartupTask(
+    'share intake',
+    () => OrahShareIntakeService.instance.initialize(),
+  );
+  await _runStartupTask(
+    'Android intents',
+    () => OrahAndroidIntentService.instance.initialize(),
+  );
 }
 
 Future<void> _runStartupTask(
