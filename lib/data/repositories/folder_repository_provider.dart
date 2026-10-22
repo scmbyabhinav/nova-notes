@@ -10,7 +10,7 @@ class FolderRepositoryProvider {
   static Future<LocalFolderRepository> instance() async {
     if (_repository != null) return _repository!;
 
-    final preferences = await SharedPreferences.getInstance();
+    final preferences = await SharedPreferences.getInstance().timeout(const Duration(seconds: 5));
     _repository = LocalFolderRepository(preferences);
     return _repository!;
   }
