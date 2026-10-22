@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
       setState(() {
         _loading = false;
-        _loadError = 'Notes could not be loaded. Your saved notes have not been deleted. Tap Retry to try again.';
+        _loadError = 'Storage error (${error.runtimeType}). Your saved notes have not been deleted. Tap Retry to try again.';
       });
     }
   }
