@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   bool _showFeatures = false;
   bool _hideDailyPrompt = false;
   bool _loading = true;
+  String? _loadError;
   String _sort = 'updated';
   String _activeFilter = 'all';
   List<Note> _notes = const [];
@@ -130,20 +131,33 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
   Future<void> _loadNotes() async {
     final loadGeneration = ++_notesLoadGeneration;
-    final repository = await NoteRepositoryProvider.instance();
+    try {
+      final repository = await NoteRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 8));
 
-    // Keep one live subscription for the lifetime of HomeScreen. Replacing
-    // the subscription during navigation can create a small window in which
-    // a broadcast emission is dropped while the editor is closing.
-    _notesSubscription ??= repository.watchNotes().listen(_applyNotes);
+      // Keep one live subscription for the lifetime of HomeScreen.
+      _notesSubscription ??= repository.watchNotes().listen(
+        _applyNotes,
+        onError: (Object error, StackTrace stackTrace) {
+          debugPrint('ORAH notes stream failed: $error');
+        },
+      );
 
-    // Read the persisted snapshot as well. This covers startup and any
-    // update that happened before the stream listener was attached.
-    await repository.refresh();
-    if (!mounted || loadGeneration != _notesLoadGeneration) return;
-    final notes = await repository.getNotes();
-    if (!mounted || loadGeneration != _notesLoadGeneration) return;
-    _applyNotes(notes);
+      await repository.refresh().timeout(const Duration(seconds: 8));
+      if (!mounted || loadGeneration != _notesLoadGeneration) return;
+      final notes = await repository.getNotes()
+          .timeout(const Duration(seconds: 8));
+      if (!mounted || loadGeneration != _notesLoadGeneration) return;
+      setState(() => _loadError = null);
+      _applyNotes(notes);
+    } catch (error, stackTrace) {
+      debugPrint('ORAH home notes load failed: $error\\n$stackTrace');
+      if (!mounted || loadGeneration != _notesLoadGeneration) return;
+      setState(() {
+        _loading = false;
+        _loadError = 'Notes could not be loaded. Your saved notes have not been deleted. Tap Retry to try again.';
+      });
+    }
   }
 
   void _applyNotes(List<Note> notes) {
@@ -881,6 +895,31 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               const SliverFillRemaining(
                 hasScrollBody: false,
                 child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_loadError != null)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.sync_problem_rounded, size: 42),
+                        const SizedBox(height: 12),
+                        const Text('ORAH could not load your notes', style: TextStyle(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        Text(_loadError!, textAlign: TextAlign.center),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: _loadNotes,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               )
             else ...[
               if (_activeFilter == 'all' && pinned.isNotEmpty) ...[
