@@ -27,8 +27,12 @@ class OrahUserProfileService {
 
   Future<OrahUserProfile?> loadProfile() async {
     try {
-      final name = await _storage.read(key: _nameKey);
-      final email = await _storage.read(key: _emailKey);
+      final name = await _storage
+          .read(key: _nameKey)
+          .timeout(const Duration(seconds: 2));
+      final email = await _storage
+          .read(key: _emailKey)
+          .timeout(const Duration(seconds: 2));
       if (name != null && email != null &&
           name.trim().isNotEmpty && email.trim().isNotEmpty) {
         return OrahUserProfile(fullName: name, email: email);
@@ -84,9 +88,15 @@ class OrahUserProfileService {
     // storage. Without a configured remote endpoint, the roster stays on this
     // device; central newsletter delivery needs a backend endpoint.
     try {
-      await _storage.write(key: _nameKey, value: normalizedName);
-      await _storage.write(key: _emailKey, value: normalizedEmail);
-      final raw = await _storage.read(key: _subscribersKey);
+      await _storage
+          .write(key: _nameKey, value: normalizedName)
+          .timeout(const Duration(seconds: 2));
+      await _storage
+          .write(key: _emailKey, value: normalizedEmail)
+          .timeout(const Duration(seconds: 2));
+      final raw = await _storage
+          .read(key: _subscribersKey)
+          .timeout(const Duration(seconds: 2));
       final List<dynamic> roster =
           raw == null ? <dynamic>[] : (jsonDecode(raw) as List<dynamic>);
       final exists = roster.any((entry) =>
@@ -98,7 +108,9 @@ class OrahUserProfileService {
           'subscribedAt': DateTime.now().toUtc().toIso8601String(),
           'source': 'orah_android_app',
         });
-        await _storage.write(key: _subscribersKey, value: jsonEncode(roster));
+        await _storage
+            .write(key: _subscribersKey, value: jsonEncode(roster))
+            .timeout(const Duration(seconds: 2));
       }
     } catch (error) {
       // Keep registration usable if Android secure storage is unavailable.
