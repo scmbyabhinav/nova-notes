@@ -302,10 +302,23 @@ class _NovaShellState extends State<NovaShell> {
       ];
 
   Future<void> _openEditor(NoteType type) async {
-    final repository = await NoteRepositoryProvider.instance();
+    final LocalNoteRepository repository;
+    try {
+      repository = await NoteRepositoryProvider.instance()
+          .timeout(const Duration(seconds: 6));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH could not open note editor: $error\\n$stackTrace');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ORAH storage is not responding. Your existing notes have not been deleted. Please try again in a moment.'),
+          duration: Duration(seconds: 5),
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
-
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NoteEditorScreen(
@@ -317,9 +330,11 @@ class _NovaShellState extends State<NovaShell> {
       ),
     );
 
-    // Re-publish the persisted snapshot after the editor route closes so the
-    // Home stream receives the latest state even if a broadcast was missed.
-    await repository.refresh();
+    try {
+      await repository.refresh().timeout(const Duration(seconds: 5));
+    } catch (error, stackTrace) {
+      debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
+    }
   }
 
   Future<void> _openStatistics() async {
@@ -343,21 +358,7 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _openVoiceEditor() async {
-    final repository = await NoteRepositoryProvider.instance();
-    if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => NoteEditorScreen(
-          repository: repository,
-          initialType: NoteType.text,
-          speechService: widget.speechService,
-          requestMicrophonePermission: widget.requestMicrophonePermission,
-          autoStartVoice: true,
-        ),
-      ),
-    );
-
-    await repository.refresh();
+    await _openEditor(NoteType.text);
   }
 
   Future<void> _quickCapture() async {
