@@ -176,19 +176,29 @@ class OrahUserProfileService {
   }
 
   Future<void> speakGreeting(String name) async {
-    await _tts.stop();
-    await _applyVoice();
-    await _tts.setSpeechRate(0.48);
-    await _tts.setVolume(1.0);
-    await _tts.speak('Hello, $name');
+    try { await _tts.stop().timeout(const Duration(seconds: 2)); } catch (_) {}
+    // Voice enumeration is optional: some Android TTS engines do not answer
+    // getVoices reliably. Never let it prevent the actual greeting.
+    try {
+      await _applyVoice().timeout(const Duration(seconds: 2));
+    } catch (error) {
+      // Continue with the device's default voice.
+    }
+    try { await _tts.setLanguage('en-US').timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setSpeechRate(0.48).timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setVolume(1.0).timeout(const Duration(seconds: 2)); } catch (_) {}
+    await _tts.speak('Hello, $name').timeout(const Duration(seconds: 5));
   }
 
   Future<void> previewVoice() async {
-    await _tts.stop();
-    await _applyVoice();
-    await _tts.setSpeechRate(0.48);
-    await _tts.setVolume(1.0);
-    await _tts.speak('Hello, this is Orah Notes');
+    try { await _tts.stop().timeout(const Duration(seconds: 2)); } catch (_) {}
+    try {
+      await _applyVoice().timeout(const Duration(seconds: 2));
+    } catch (_) {}
+    try { await _tts.setLanguage('en-US').timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setSpeechRate(0.48).timeout(const Duration(seconds: 2)); } catch (_) {}
+    try { await _tts.setVolume(1.0).timeout(const Duration(seconds: 2)); } catch (_) {}
+    await _tts.speak('Hello, this is Orah Notes').timeout(const Duration(seconds: 5));
   }
 
   Future<void> stopGreeting() => _tts.stop();
