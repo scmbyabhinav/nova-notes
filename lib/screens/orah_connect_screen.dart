@@ -1,6 +1,5 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -72,18 +71,9 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 92,
-    );
-    if (picked == null || !mounted) return;
-    setState(() => _imagePath = picked.path);
-  }
-
   Future<void> _shareToPlatform(_SharePlatform platform) async {
     final caption = _captionController.text.trim();
-    if (caption.isEmpty && _imagePath == null) {
+    if (caption.isEmpty && _imagePath == null && widget.attachmentPaths.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Write a caption or attach an image first.')),
       );
@@ -91,7 +81,8 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     }
     setState(() => _selectedPlatform = platform.name);
 
-    final uri = _imagePath == null ? _deepLinkFor(platform.name, caption) : null;
+    final hasFiles = _imagePath != null || widget.attachmentPaths.isNotEmpty;
+    final uri = hasFiles ? null : _deepLinkFor(platform.name, _shareMessage(caption));
     if (uri != null) {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!opened) await _openNativeShareSheet(caption);
@@ -125,12 +116,27 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     }
   }
 
+  String _shareMessage(String caption) {
+    final clean = caption.trim();
+    return clean.isEmpty
+        ? 'Shared by Orah Notes'
+        : '$clean\n\nShared by Orah Notes';
+  }
+
+  List<XFile> _shareFiles() => [
+        if (_imagePath != null && _imagePath!.isNotEmpty) XFile(_imagePath!),
+        ...widget.attachmentPaths
+            .where((path) => path.isNotEmpty)
+            .map((path) => XFile(path)),
+      ];
+
   Future<void> _openNativeShareSheet(String caption) async {
+    final files = _shareFiles();
     await SharePlus.instance.share(
       ShareParams(
-        text: caption,
+        text: _shareMessage(caption),
         subject: widget.noteTitle.trim().isEmpty ? 'ORAH note' : widget.noteTitle.trim(),
-        files: _imagePath == null ? null : [XFile(_imagePath!)],
+        files: files.isEmpty ? null : files,
       ),
     );
   }
@@ -327,26 +333,21 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: _pickImage,
-            icon: const Icon(Icons.add_photo_alternate_outlined),
-            label: Text(_imagePath == null ? 'Attach image (optional)' : 'Change attached image'),
-          ),
-          if (_imagePath != null) ...[
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.image_outlined, size: 18),
-                const SizedBox(width: 8),
-                const Expanded(child: Text('Image attached — it will be shared with your caption.')),
-                IconButton(
-                  tooltip: 'Remove image',
-                  onPressed: () => setState(() => _imagePath = null),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+          if (_imagePath != null || widget.attachmentPaths.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  const Icon(Icons.attach_file_rounded, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Sharing this note with its ${_imagePath != null ? 'image and ' : ''}${widget.attachmentPaths.length} attached file(s).',
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
           const SizedBox(height: 14),
           Card(
             child: Padding(
