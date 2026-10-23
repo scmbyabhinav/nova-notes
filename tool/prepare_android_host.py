@@ -605,10 +605,7 @@ object OrahAlarmScheduler {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent(context, id, "", 0L))
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PREFIX + id).apply()
-        context.sendBroadcast(Intent(context, OrahAlarmReceiver::class.java).apply {
-            action = OrahAlarmReceiver.ACTION_STOP
-            putExtra("id", id)
-        })
+        context.stopService(Intent(context, OrahAlarmSpeechService::class.java).putExtra("id", id))
     }
 
     fun restore(context: Context) {
@@ -739,6 +736,8 @@ class OrahAlarmSpeechService : Service(), TextToSpeech.OnInitListener {
     private var alarmId = ""
     private var stopped = false
 
+    private var ttsReady = false
+
     override fun onCreate() {
         super.onCreate()
         createChannel()
@@ -763,13 +762,17 @@ class OrahAlarmSpeechService : Service(), TextToSpeech.OnInitListener {
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
+            ttsReady = true
             tts?.language = Locale.getDefault()
-            if (!stopped) handler.postDelayed({ speakTitle() }, 2200L)
         }
     }
 
     private fun speakTitle() {
         if (stopped || title.isBlank()) return
+        if (!ttsReady) {
+            handler.postDelayed({ speakTitle() }, 500L)
+            return
+        }
         tts?.speak("Reminder. $title", TextToSpeech.QUEUE_FLUSH, null, "orah_alarm_$alarmId")
         // Repeat the title periodically until the user dismisses the alarm.
         handler.postDelayed({
