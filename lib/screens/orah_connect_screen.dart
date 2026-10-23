@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../models/scheduled_post.dart';
+import '../services/orah_reminder_service.dart';
+import '../services/orah_scheduled_post_store.dart';
+
 class OrahConnectScreen extends StatefulWidget {
   const OrahConnectScreen({
     super.key,
     required this.noteTitle,
     required this.noteContent,
+    this.scheduledPostId,
+    this.preferredPlatform,
   });
 
   final String noteTitle;
   final String noteContent;
+  final String? scheduledPostId;
+  final String? preferredPlatform;
 
   @override
   State<OrahConnectScreen> createState() => _OrahConnectScreenState();
@@ -39,6 +47,7 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedPlatform = widget.preferredPlatform;
     final title = widget.noteTitle.trim();
     final body = widget.noteContent.trim();
     _captionController = TextEditingController(
@@ -71,6 +80,72 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
             : widget.noteTitle.trim(),
       ),
     );
+    final scheduledPostId = widget.scheduledPostId;
+    if (scheduledPostId != null) {
+      await OrahScheduledPostStore.instance.markCompleted(scheduledPostId);
+      await OrahReminderService.instance.cancelConnectPost(scheduledPostId);
+    }
+  }
+
+  Future<void> _schedulePost() async {
+    final date = _scheduledDate;
+    final time = _scheduledTime;
+    final caption = _captionController.text.trim();
+    final platform = _selectedPlatform ?? widget.preferredPlatform;
+    if (date == null || time == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Choose a date and time first.')),
+      );
+      return;
+    }
+    if (caption.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Write a caption before scheduling.')),
+      );
+      return;
+    }
+    if (platform == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Choose a destination before scheduling.')),
+      );
+      return;
+    }
+    final when = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    if (!when.isAfter(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Choose a future date and time.')),
+      );
+      return;
+    }
+
+    final id = 'connect-${DateTime.now().microsecondsSinceEpoch}';
+    final post = ScheduledPost(
+      id: id,
+      platform: platform,
+      caption: caption,
+      scheduledAt: when,
+    );
+    try {
+      await OrahScheduledPostStore.instance.save(post);
+      await OrahReminderService.instance.scheduleConnectPost(
+        postId: id,
+        platform: platform,
+        caption: caption,
+        when: when,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Saved locally. ORAH will remind you to share on $platform.'),
+        ),
+      );
+    } catch (error) {
+      await OrahScheduledPostStore.instance.delete(id);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not schedule reminder: $error')),
+      );
+    }
   }
 
   Future<void> _pickSchedule() async {
@@ -245,9 +320,9 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.tonalIcon(
-                      onPressed: _explainSchedulingStatus,
+                      onPressed: _schedulePost,
                       icon: const Icon(Icons.schedule_send_rounded),
-                      label: const Text('Review scheduling status'),
+                      label: const Text('Schedule reminder'),
                     ),
                   ),
                 ],
