@@ -111,7 +111,6 @@ class OrahReminderService {
           if (post == null) return;
           final navigator = orahNavigatorKey.currentState;
           if (navigator == null) return;
-          await OrahScheduledPostStore.instance.markCompleted(post.id);
           navigator.push(MaterialPageRoute(
             builder: (_) => OrahConnectScreen(
               noteTitle: 'Scheduled share · ${post.platform}',
