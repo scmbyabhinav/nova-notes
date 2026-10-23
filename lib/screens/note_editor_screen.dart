@@ -856,7 +856,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         }
       }
       if (_dueAt != null) {
-        await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!);
+        await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title.trim().isEmpty ? 'Untitled note' : note.title.trim(), when: _dueAt!);
       } else {
         await OrahReminderService.instance.cancel(_noteId);
       }
