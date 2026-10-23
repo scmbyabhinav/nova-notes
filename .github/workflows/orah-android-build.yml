@@ -35,6 +35,7 @@ jobs:
         run: |
           flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
           python3 tool/prepare_android_host.py
+          python3 tool/prepare_alarm_host.py
       - name: Verify Android target API 36+
         run: python3 tool/verify_android_config.py --min-api 36
       - name: Prepare supplied Orah launcher icon
@@ -216,6 +217,7 @@ jobs:
         run: |
           flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
           python3 tool/prepare_android_host.py
+          python3 tool/prepare_alarm_host.py
       - name: Prepare supplied Orah launcher icon
         run: |
           python3 -m pip install --disable-pip-version-check CairoSVG
