@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -15,6 +16,7 @@ class OrahReminderService {
   OrahReminderService._();
   static final instance = OrahReminderService._();
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  static const MethodChannel _nativeAlarmChannel = MethodChannel('orah_notes/android');
   static const doneAction = 'orah_done';
   static const snooze10Action = 'orah_snooze_10';
   static const snooze60Action = 'orah_snooze_60';
@@ -215,6 +217,18 @@ class OrahReminderService {
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
     );
+
+    // A native AlarmManager receiver speaks the note title even when Flutter
+    // is backgrounded or the app process is not running.
+    try {
+      await _nativeAlarmChannel.invokeMethod<bool>('scheduleVoiceAlarm', {
+        'id': _notificationId('voice:$noteId'),
+        'title': safeTitle,
+        'triggerAtMillis': when.toLocal().millisecondsSinceEpoch,
+      });
+    } catch (error, stackTrace) {
+      debugPrint('ORAH voice alarm scheduling failed: $error\\n$stackTrace');
+    }
   }
 
   Future<void> cancel(String noteId) async {
@@ -223,6 +237,14 @@ class OrahReminderService {
       _plugin.cancel(id: _notificationId('note:$noteId')),
       _plugin.cancel(id: _notificationId(noteId)),
     ]);
+    try {
+      await _nativeAlarmChannel.invokeMethod<bool>(
+        'cancelVoiceAlarm',
+        {'id': _notificationId('voice:$noteId')},
+      );
+    } catch (error, stackTrace) {
+      debugPrint('ORAH voice alarm cancellation failed: $error\\n$stackTrace');
+    }
   }
 
   _ReminderTarget _decodePayload(String? payload) {
