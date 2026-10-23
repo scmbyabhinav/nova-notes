@@ -1,6 +1,7 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/scheduled_post.dart';
@@ -37,18 +38,18 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
   String? _imagePath;
 
   static const _platforms = <_SharePlatform>[
-    _SharePlatform('WhatsApp', Icons.chat_rounded, Color(0xFF25D366)),
-    _SharePlatform('Instagram', Icons.camera_alt_rounded, Color(0xFFE1306C)),
-    _SharePlatform('Facebook', Icons.facebook, Color(0xFF1877F2)),
-    _SharePlatform('LinkedIn', Icons.work_rounded, Color(0xFF0A66C2)),
-    _SharePlatform('Telegram', Icons.send_rounded, Color(0xFF229ED9)),
-    _SharePlatform('X', Icons.close_rounded, Color(0xFF111111)),
-    _SharePlatform('VK', Icons.groups_rounded, Color(0xFF0077FF)),
-    _SharePlatform('LINE', Icons.chat_bubble_rounded, Color(0xFF06C755)),
-    _SharePlatform('KakaoTalk', Icons.forum_rounded, Color(0xFFFEE500)),
-    _SharePlatform('Snapchat', Icons.photo_camera_rounded, Color(0xFFFFD400)),
-    _SharePlatform('YouTube', Icons.play_circle_fill_rounded, Color(0xFFFF0033)),
-    _SharePlatform('Substack', Icons.article_rounded, Color(0xFFFF6719)),
+    _SharePlatform('WhatsApp', SimpleIcons.whatsapp, Color(0xFF25D366)),
+    _SharePlatform('Instagram', SimpleIcons.instagram, Color(0xFFE1306C)),
+    _SharePlatform('Facebook', SimpleIcons.facebook, Color(0xFF1877F2)),
+    _SharePlatform('LinkedIn', SimpleIcons.linkedin, Color(0xFF0A66C2)),
+    _SharePlatform('Telegram', SimpleIcons.telegram, Color(0xFF229ED9)),
+    _SharePlatform('X', SimpleIcons.x, Color(0xFF111111)),
+    _SharePlatform('VK', SimpleIcons.vk, Color(0xFF0077FF)),
+    _SharePlatform('LINE', SimpleIcons.line, Color(0xFF06C755)),
+    _SharePlatform('KakaoTalk', SimpleIcons.kakaotalk, Color(0xFFFEE500)),
+    _SharePlatform('Snapchat', SimpleIcons.snapchat, Color(0xFFFFD400)),
+    _SharePlatform('YouTube', SimpleIcons.youtube, Color(0xFFFF0033)),
+    _SharePlatform('Substack', SimpleIcons.substack, Color(0xFFFF6719)),
     _SharePlatform('Email', Icons.email_rounded, Color(0xFF475569)),
   ];
 
