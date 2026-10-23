@@ -170,6 +170,7 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
       platform: platform,
       caption: caption,
       scheduledAt: when,
+      imagePath: _imagePath,
     );
     try {
       await OrahScheduledPostStore.instance.save(post);
@@ -323,6 +324,27 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
               alignLabelWithHint: true,
             ),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.add_photo_alternate_outlined),
+            label: Text(_imagePath == null ? 'Attach image (optional)' : 'Change attached image'),
+          ),
+          if (_imagePath != null) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(Icons.image_outlined, size: 18),
+                const SizedBox(width: 8),
+                const Expanded(child: Text('Image attached — it will be shared with your caption.')),
+                IconButton(
+                  tooltip: 'Remove image',
+                  onPressed: () => setState(() => _imagePath = null),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 14),
           Card(
             child: Padding(
@@ -336,19 +358,15 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Schedule a post',
+                          'Schedule a share reminder',
                           style: theme.textTheme.titleMedium,
                         ),
-                      ),
-                      const Chip(
-                        label: Text('Coming soon'),
-                        visualDensity: VisualDensity.compact,
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'No API fees, no account login. Choose a reminder time for planning; automatic publishing is not enabled yet.',
+                    'Save this draft on your phone and get a reminder. You will still confirm the final share; ORAH never auto-publishes.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -377,7 +395,7 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            'Free sharing through your device. App availability and supported content vary by phone and destination. ORAH does not log in to social accounts or publish automatically in this version.',
+            'Free sharing through your device. Text links open supported destinations where available; image shares use the native share sheet. Email attachments also use the share sheet.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
