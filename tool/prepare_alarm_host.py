@@ -20,7 +20,7 @@ for permission in (
     if permission not in manifest:
         manifest = manifest.replace(
             "<application",
-            f'    <uses-permission android:name="{permission}" />\\n    <application',
+            f'    <uses-permission android:name="{permission}" />\n    <application',
             1,
         )
 
