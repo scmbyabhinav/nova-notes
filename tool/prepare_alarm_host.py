@@ -216,6 +216,12 @@ class OrahAlarmSpeechService : Service(), TextToSpeech.OnInitListener {
         try {
             tts?.language = Locale.getDefault()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                tts?.setAudioAttributes(AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build())
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 tts?.speak(alarmTitle, TextToSpeech.QUEUE_FLUSH, null, "orah_alarm_title")
             } else {
                 @Suppress("DEPRECATION")
