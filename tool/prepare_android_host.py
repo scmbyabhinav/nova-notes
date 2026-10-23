@@ -243,6 +243,11 @@ class MainActivity : FlutterActivity() {
         rememberIntent(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        OrahAlarmScheduler.restore(this)
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -588,6 +593,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
+import android.net.Uri
 import org.json.JSONObject
 
 object OrahAlarmScheduler {
@@ -640,6 +647,10 @@ object OrahAlarmScheduler {
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !manager.canScheduleExactAlarms()) {
             manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pending)
+            try {
+                context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                    Uri.parse("package:${context.packageName}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (_: Exception) {}
         } else {
             manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pending)
         }
@@ -676,7 +687,7 @@ class OrahAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val id = intent.getStringExtra("id") ?: return
         if (intent.action == ACTION_STOP) {
-            context.stopService(Intent(context, OrahAlarmSpeechService::class.java).putExtra("id", id))
+            OrahAlarmScheduler.cancel(context, id)
             return
         }
         if (intent.action != ACTION_FIRE) return
@@ -859,7 +870,8 @@ class OrahAlarmSpeechService : Service(), TextToSpeech.OnInitListener {
         tts?.stop()
         tts?.shutdown()
         tts = null
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
+        else @Suppress("DEPRECATION") stopForeground(true)
         super.onDestroy()
     }
 
