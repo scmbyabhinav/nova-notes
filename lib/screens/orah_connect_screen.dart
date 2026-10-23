@@ -236,7 +236,10 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
                   OutlinedButton.icon(
                     onPressed: _pickSchedule,
                     icon: const Icon(Icons.calendar_month_outlined),
-                    label: const Text(' $scheduledLabel '),
+                    label: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(scheduledLabel),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   SizedBox(
