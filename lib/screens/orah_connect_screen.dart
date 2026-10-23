@@ -16,6 +16,7 @@ class OrahConnectScreen extends StatefulWidget {
     this.scheduledPostId,
     this.preferredPlatform,
     this.imagePath,
+    this.attachmentPaths = const [],
   });
 
   final String noteTitle;
@@ -23,6 +24,7 @@ class OrahConnectScreen extends StatefulWidget {
   final String? scheduledPostId;
   final String? preferredPlatform;
   final String? imagePath;
+  final List<String> attachmentPaths;
 
   @override
   State<OrahConnectScreen> createState() => _OrahConnectScreenState();
