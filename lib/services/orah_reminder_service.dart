@@ -117,6 +117,7 @@ class OrahReminderService {
               noteContent: post.caption,
               scheduledPostId: post.id,
               preferredPlatform: post.platform,
+              imagePath: post.imagePath,
             ),
           ));
           return;
