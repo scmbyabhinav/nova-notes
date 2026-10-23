@@ -70,29 +70,67 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 92,
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _imagePath = picked.path);
+  }
+
   Future<void> _shareToPlatform(_SharePlatform platform) async {
     final caption = _captionController.text.trim();
-    if (caption.isEmpty) {
+    if (caption.isEmpty && _imagePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Write a caption before sharing.')),
+        const SnackBar(content: Text('Write a caption or attach an image first.')),
       );
       return;
     }
-
     setState(() => _selectedPlatform = platform.name);
+
+    final uri = _imagePath == null ? _deepLinkFor(platform.name, caption) : null;
+    if (uri != null) {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened) await _openNativeShareSheet(caption);
+    } else {
+      await _openNativeShareSheet(caption);
+    }
+
+    final postId = widget.scheduledPostId;
+    if (postId != null) {
+      await OrahScheduledPostStore.instance.markCompleted(postId);
+      await OrahReminderService.instance.cancelConnectPost(postId);
+    }
+  }
+
+  Uri? _deepLinkFor(String platform, String caption) {
+    final text = Uri.encodeComponent(caption);
+    switch (platform) {
+      case 'WhatsApp':
+        return Uri.parse('https://wa.me/?text=$text');
+      case 'Telegram':
+        return Uri.parse('https://t.me/share/url?url=&text=$text');
+      case 'X':
+        return Uri.parse('https://twitter.com/intent/tweet?text=$text');
+      case 'Email':
+        final subject = Uri.encodeComponent(
+          widget.noteTitle.trim().isEmpty ? 'ORAH note' : widget.noteTitle.trim(),
+        );
+        return Uri.parse('mailto:?subject=$subject&body=$text');
+      default:
+        return null;
+    }
+  }
+
+  Future<void> _openNativeShareSheet(String caption) async {
     await SharePlus.instance.share(
       ShareParams(
         text: caption,
-        subject: widget.noteTitle.trim().isEmpty
-            ? 'ORAH note'
-            : widget.noteTitle.trim(),
+        subject: widget.noteTitle.trim().isEmpty ? 'ORAH note' : widget.noteTitle.trim(),
+        files: _imagePath == null ? null : [XFile(_imagePath!)],
       ),
     );
-    final scheduledPostId = widget.scheduledPostId;
-    if (scheduledPostId != null) {
-      await OrahScheduledPostStore.instance.markCompleted(scheduledPostId);
-      await OrahReminderService.instance.cancelConnectPost(scheduledPostId);
-    }
   }
 
   Future<void> _schedulePost() async {
