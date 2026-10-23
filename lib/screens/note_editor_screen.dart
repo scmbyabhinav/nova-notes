@@ -2022,29 +2022,24 @@ class _MoodSelector extends StatelessWidget {
                   ),
                 ),
               Tooltip(
-                message: 'ORAH Connect · Share to your favourite apps',
-                child: ActionChip(
+                message: 'Share this note with its images and attachments',
+                child: FilledButton.icon(
                   onPressed: onOpenConnect,
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.share_rounded,
-                        size: 17,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'ORAH CONNECT',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+                  icon: const Icon(Icons.share_rounded, size: 18),
+                  label: const Text(
+                    'ORAH CONNECT',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.7,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    minimumSize: const Size(0, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),
