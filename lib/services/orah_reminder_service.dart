@@ -10,6 +10,8 @@ import '../core/navigation/orah_navigation.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../screens/note_editor_screen.dart';
 import '../screens/reflection_prompt_screen.dart';
+import '../screens/orah_connect_screen.dart';
+import '../services/orah_scheduled_post_store.dart';
 
 class OrahReminderService {
   OrahReminderService._();
@@ -102,6 +104,25 @@ class OrahReminderService {
           await _openDailyReflection();
           return;
         }
+      if (decoded is Map && decoded['type'] == 'scheduled_connect_post') {
+        final postId = decoded['postId'];
+        if (postId is String && postId.isNotEmpty) {
+          final post = await OrahScheduledPostStore.instance.getById(postId);
+          if (post == null) return;
+          final navigator = orahNavigatorKey.currentState;
+          if (navigator == null) return;
+          await OrahScheduledPostStore.instance.markCompleted(post.id);
+          navigator.push(MaterialPageRoute(
+            builder: (_) => OrahConnectScreen(
+              noteTitle: 'Scheduled share · ${post.platform}',
+              noteContent: post.caption,
+              scheduledPostId: post.id,
+              preferredPlatform: post.platform,
+            ),
+          ));
+          return;
+        }
+      }
       } catch (_) {
         // Existing note reminders may use a plain note ID payload.
       }
@@ -164,6 +185,43 @@ class OrahReminderService {
       matchDateTimeComponents: DateTimeComponents.time,
       payload: jsonEncode({'type': 'daily_reflection'}),
     );
+  }
+
+  /// Fires a local reminder that reopens the saved share draft for a final,
+  /// user-confirmed share. This does not publish content automatically.
+  Future<void> scheduleConnectPost({
+    required String postId,
+    required String platform,
+    required String caption,
+    required DateTime when,
+  }) async {
+    if (!_initialized) await initialize();
+    if (!when.isAfter(DateTime.now())) {
+      throw ArgumentError.value(when, 'when', 'Must be a future date/time');
+    }
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'orah_connect_scheduled_shares',
+        'ORAH Connect reminders',
+        channelDescription: 'Reminders to share saved ORAH Connect drafts',
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+    );
+    await _plugin.zonedSchedule(
+      id: _notificationId('connect:$postId'),
+      title: 'Ready to share with $platform?',
+      body: caption.trim().isEmpty ? 'Open ORAH to finish sharing your draft.' : caption.trim().replaceAll(RegExp(r'\\s+'), ' '),
+      scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
+      notificationDetails: details,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      payload: jsonEncode({'type': 'scheduled_connect_post', 'postId': postId}),
+    );
+  }
+
+  Future<void> cancelConnectPost(String postId) async {
+    if (!_initialized) await initialize();
+    await _plugin.cancel(id: _notificationId('connect:$postId'));
   }
 
   Future<void> cancelDailyReflection() async {
