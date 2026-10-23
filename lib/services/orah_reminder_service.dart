@@ -196,13 +196,15 @@ class OrahReminderService {
     });
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
-        'orah_reminders',
-        'Orah reminders',
-        channelDescription: 'Reminders for notes and tasks',
-        importance: Importance.high,
-        priority: Priority.high,
-        playSound: false,
-        enableVibration: false,
+        'orah_reminders_alarm_v2',
+        'ORAH note alarms',
+        channelDescription: 'Audible note alarms with spoken titles',
+        importance: Importance.max,
+        priority: Priority.max,
+        audioAttributesUsage: AudioAttributesUsage.alarm,
+        category: AndroidNotificationCategory.alarm,
+        playSound: true,
+        enableVibration: true,
         actions: const [
           AndroidNotificationAction(doneAction, 'Done', showsUserInterface: true),
           AndroidNotificationAction(snooze10Action, 'Snooze 10m', showsUserInterface: true),
@@ -221,11 +223,18 @@ class OrahReminderService {
     );
     // Native AlarmManager + foreground service provides reliable audible
     // alarm playback and title speech even when Flutter is not running.
-    await _alarmChannel.invokeMethod<void>('scheduleAlarm', <String, Object>{
-      'id': 'note:$noteId',
-      'title': safeTitle,
-      'atMillis': when.millisecondsSinceEpoch,
-    });
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        await _alarmChannel.invokeMethod<void>('scheduleAlarm', <String, Object>{
+          'id': 'note:$noteId',
+          'title': safeTitle,
+          'atMillis': when.millisecondsSinceEpoch,
+        });
+      } catch (error) {
+        // The local notification remains scheduled as an audible fallback.
+        debugPrint('ORAH native spoken alarm scheduling failed: $error');
+      }
+    }
   }
 
   Future<void> cancel(String noteId) async {
@@ -234,7 +243,13 @@ class OrahReminderService {
       _plugin.cancel(id: _notificationId('note:$noteId')),
       _plugin.cancel(id: _notificationId(noteId)),
     ]);
-    await _alarmChannel.invokeMethod<void>('cancelAlarm', 'note:$noteId');
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      try {
+        await _alarmChannel.invokeMethod<void>('cancelAlarm', 'note:$noteId');
+      } catch (error) {
+        debugPrint('ORAH native alarm cancellation failed: $error');
+      }
+    }
   }
 
   _ReminderTarget _decodePayload(String? payload) {
