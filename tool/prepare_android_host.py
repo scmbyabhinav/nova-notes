@@ -23,6 +23,13 @@ manifest = MANIFEST.read_text()
 if not MANIFEST.exists():
     raise SystemExit("AndroidManifest.xml was not generated.")
 
+if 'android.permission.SCHEDULE_EXACT_ALARM' not in manifest:
+    manifest = manifest.replace(
+        '<application',
+        '    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\\n    <uses-permission android:name="android.permission.WAKE_LOCK" />\\n    <application',
+        1,
+    )
+
 # speech_to_text needs microphone access on Android. The host is generated
 # during CI, so keep the permission in this preparation step rather than in
 # a non-existent checked-in Android host.
@@ -129,6 +136,9 @@ widget_receiver = '''
 if 'OrahQuickWidgetProvider' not in manifest:
     manifest = manifest.replace('</application>', widget_receiver + '    </application>', 1)
 
+if 'OrahVoiceAlarmReceiver' not in manifest:
+    manifest = manifest.replace('</application>', "\n        <receiver\n            android:name=\".OrahVoiceAlarmReceiver\"\n            android:exported=\"false\" />\n" + '    </application>', 1)
+
 MANIFEST.write_text(manifest)
 
 (MAIN / "kotlin" / "com" / "orah" / "orah_notes" / "MainActivity.kt").write_text(r'''package com.orah.orah_notes
@@ -162,6 +172,55 @@ class MainActivity : FlutterActivity() {
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
         channel?.setMethodCallHandler { call, result ->
             when (call.method) {
+                "scheduleVoiceAlarm" -> {
+                    val alarmId = call.argument<Int>("id")
+                    val title = call.argument<String>("title")
+                    val triggerAtMillis = call.argument<Long>("triggerAtMillis")
+                    if (alarmId == null || title.isNullOrBlank() || triggerAtMillis == null) {
+                        result.error("invalid_alarm", "Alarm ID, title, and time are required", null)
+                    } else {
+                        val alarmManager = getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+                        val alarmIntent = Intent(this, OrahVoiceAlarmReceiver::class.java).apply {
+                            putExtra(OrahVoiceAlarmReceiver.EXTRA_TITLE, title)
+                        }
+                        val pending = PendingIntent.getBroadcast(
+                            this, alarmId, alarmIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S &&
+                            !alarmManager.canScheduleExactAlarms()) {
+                            try {
+                                startActivity(Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                    data = android.net.Uri.parse("package:$packageName")
+                                })
+                            } catch (_: Exception) {}
+                            alarmManager.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerAtMillis, pending)
+                            result.success(false)
+                        } else {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                alarmManager.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerAtMillis, pending)
+                            } else {
+                                alarmManager.setExact(android.app.AlarmManager.RTC_WAKEUP, triggerAtMillis, pending)
+                            }
+                            result.success(true)
+                        }
+                    }
+                }
+                "cancelVoiceAlarm" -> {
+                    val alarmId = call.argument<Int>("id")
+                    if (alarmId == null) {
+                        result.error("invalid_alarm", "Alarm ID is required", null)
+                    } else {
+                        val alarmIntent = Intent(this, OrahVoiceAlarmReceiver::class.java)
+                        val pending = PendingIntent.getBroadcast(
+                            this, alarmId, alarmIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                        (getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager).cancel(pending)
+                        pending.cancel()
+                        result.success(true)
+                    }
+                }
                 "shareIntoOrah" -> {
                     val shareIntent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
@@ -212,6 +271,8 @@ class MainActivity : FlutterActivity() {
     }
 }
 ''')
+
+(MAIN / "kotlin" / "com" / "orah" / "orah_notes" / "OrahVoiceAlarmReceiver.kt").write_text("package com.orah.orah_notes\n\nimport android.content.BroadcastReceiver\nimport android.content.Context\nimport android.content.Intent\nimport android.media.AudioAttributes\nimport android.os.PowerManager\nimport android.speech.tts.TextToSpeech\nimport java.util.Locale\n\nclass OrahVoiceAlarmReceiver : BroadcastReceiver() {\n    companion object {\n        const val EXTRA_TITLE = \"orah_alarm_title\"\n    }\n\n    override fun onReceive(context: Context, intent: Intent) {\n        val title = intent.getStringExtra(EXTRA_TITLE)?.trim().orEmpty()\n        if (title.isEmpty()) return\n\n        val pending = goAsync()\n        val power = context.getSystemService(Context.POWER_SERVICE) as PowerManager\n        val wakeLock = power.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, \"Orah:VoiceAlarm\")\n        wakeLock.acquire(45_000L)\n\n        var tts: TextToSpeech? = null\n        tts = TextToSpeech(context.applicationContext) { status ->\n            if (status != TextToSpeech.SUCCESS) {\n                try { tts?.shutdown() } catch (_: Exception) {}\n                try { if (wakeLock.isHeld) wakeLock.release() } catch (_: Exception) {}\n                pending.finish()\n                return@TextToSpeech\n            }\n            val engine = tts\n            if (engine == null) {\n                try { if (wakeLock.isHeld) wakeLock.release() } catch (_: Exception) {}\n                pending.finish()\n                return@TextToSpeech\n            }\n            engine.setAudioAttributes(\n                AudioAttributes.Builder()\n                    .setUsage(AudioAttributes.USAGE_ALARM)\n                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)\n                    .build()\n            )\n            engine.language = Locale.getDefault()\n            engine.setSpeechRate(0.9f)\n            engine.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {\n                private fun finish() {\n                    try { engine.shutdown() } catch (_: Exception) {}\n                    try { if (wakeLock.isHeld) wakeLock.release() } catch (_: Exception) {}\n                    pending.finish()\n                }\n                override fun onStart(utteranceId: String?) {}\n                override fun onDone(utteranceId: String?) = finish()\n                @Deprecated(\"Deprecated in Java\")\n                override fun onError(utteranceId: String?) = finish()\n                override fun onError(utteranceId: String?, errorCode: Int) = finish()\n            })\n            engine.speak(\"Reminder. $title\", TextToSpeech.QUEUE_FLUSH, android.os.Bundle(), \"orah-title-alarm\")\n        }\n    }\n}\n")
 
 (MAIN / "kotlin" / "com" / "orah" / "orah_notes" / "OrahQuickWidgetProvider.kt").write_text(r'''package com.orah.orah_notes
 
