@@ -2023,19 +2023,20 @@ class _MoodSelector extends StatelessWidget {
                   onPressed: onOpenConnect,
                   visualDensity: VisualDensity.compact,
                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                  avatar: const Row(
+                  label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _ConnectMiniIcon(icon: Icons.chat_rounded, color: Color(0xFF25D366)),
-                      SizedBox(width: 3),
+                      const SizedBox(width: 3),
                       _ConnectMiniIcon(icon: Icons.camera_alt_rounded, color: Color(0xFFE1306C)),
-                      SizedBox(width: 3),
+                      const SizedBox(width: 3),
                       _ConnectMiniIcon(icon: Icons.facebook, color: Color(0xFF1877F2)),
+                      const SizedBox(width: 6),
+                      const Text(
+                        'orah connect',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
                     ],
-                  ),
-                  label: const Text(
-                    'orah connect',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
