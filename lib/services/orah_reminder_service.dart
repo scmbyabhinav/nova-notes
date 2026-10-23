@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -15,6 +16,7 @@ class OrahReminderService {
   OrahReminderService._();
   static final instance = OrahReminderService._();
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  static const MethodChannel _alarmChannel = MethodChannel('orah_notes/alarm_speech');
   static const doneAction = 'orah_done';
   static const snooze10Action = 'orah_snooze_10';
   static const snooze60Action = 'orah_snooze_60';
@@ -199,6 +201,8 @@ class OrahReminderService {
         channelDescription: 'Reminders for notes and tasks',
         importance: Importance.high,
         priority: Priority.high,
+        playSound: false,
+        enableVibration: false,
         actions: const [
           AndroidNotificationAction(doneAction, 'Done', showsUserInterface: true),
           AndroidNotificationAction(snooze10Action, 'Snooze 10m', showsUserInterface: true),
@@ -215,6 +219,13 @@ class OrahReminderService {
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
     );
+    // Native AlarmManager + foreground service provides reliable audible
+    // alarm playback and title speech even when Flutter is not running.
+    await _alarmChannel.invokeMethod<void>('scheduleAlarm', <String, Object>{
+      'id': 'note:$noteId',
+      'title': safeTitle,
+      'atMillis': when.millisecondsSinceEpoch,
+    });
   }
 
   Future<void> cancel(String noteId) async {
@@ -223,6 +234,7 @@ class OrahReminderService {
       _plugin.cancel(id: _notificationId('note:$noteId')),
       _plugin.cancel(id: _notificationId(noteId)),
     ]);
+    await _alarmChannel.invokeMethod<void>('cancelAlarm', 'note:$noteId');
   }
 
   _ReminderTarget _decodePayload(String? payload) {
