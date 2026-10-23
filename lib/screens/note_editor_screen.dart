@@ -860,8 +860,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       } else {
         await OrahReminderService.instance.cancel(_noteId);
       }
-    } catch (_) {
-      // Reminder plugins may be unavailable in widget tests; note persistence must still succeed.
+    } catch (error) {
+      // Note persistence must succeed even if Android alarm permission is missing.
+      if (mounted && error is PlatformException &&
+          error.code == 'exact_alarm_permission_required') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Allow ORAH alarms in Android settings, then set this reminder again. The note itself is saved.'),
+            duration: Duration(seconds: 6),
+          ),
+        );
+      } else {
+        debugPrint('ORAH reminder scheduling failed: $error');
+      }
     }
     _hasChanges = false;
 
