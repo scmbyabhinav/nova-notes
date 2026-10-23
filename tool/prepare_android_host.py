@@ -26,7 +26,7 @@ if not MANIFEST.exists():
 if 'android.permission.SCHEDULE_EXACT_ALARM' not in manifest:
     manifest = manifest.replace(
         '<application',
-        '    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\\n    <uses-permission android:name="android.permission.WAKE_LOCK" />\\n    <application',
+        '    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <application',
         1,
     )
 
@@ -36,14 +36,14 @@ if 'android.permission.SCHEDULE_EXACT_ALARM' not in manifest:
 if 'android.permission.USE_BIOMETRIC' not in manifest:
     manifest = manifest.replace(
         '<application',
-        '    <uses-permission android:name="android.permission.USE_BIOMETRIC" />\\n    <application',
+        '    <uses-permission android:name="android.permission.USE_BIOMETRIC" />\n    <application',
         1,
     )
 
 if 'android.permission.RECORD_AUDIO' not in manifest:
     manifest = manifest.replace(
         '<application',
-        '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\\n    <application',
+        '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application',
         1,
     )
 
@@ -173,9 +173,9 @@ class MainActivity : FlutterActivity() {
         channel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "scheduleVoiceAlarm" -> {
-                    val alarmId = call.argument<Int>("id")
+                    val alarmId = call.argument<Number>("id")?.toInt()
                     val title = call.argument<String>("title")
-                    val triggerAtMillis = call.argument<Long>("triggerAtMillis")
+                    val triggerAtMillis = call.argument<Number>("triggerAtMillis")?.toLong()
                     if (alarmId == null || title.isNullOrBlank() || triggerAtMillis == null) {
                         result.error("invalid_alarm", "Alarm ID, title, and time are required", null)
                     } else {
@@ -207,7 +207,7 @@ class MainActivity : FlutterActivity() {
                     }
                 }
                 "cancelVoiceAlarm" -> {
-                    val alarmId = call.argument<Int>("id")
+                    val alarmId = call.argument<Number>("id")?.toInt()
                     if (alarmId == null) {
                         result.error("invalid_alarm", "Alarm ID is required", null)
                     } else {
