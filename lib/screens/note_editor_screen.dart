@@ -2030,7 +2030,7 @@ class _MoodSelector extends StatelessWidget {
                       SizedBox(width: 3),
                       _ConnectMiniIcon(icon: Icons.camera_alt_rounded, color: Color(0xFFE1306C)),
                       SizedBox(width: 3),
-                      _ConnectMiniIcon(icon: Icons.facebook_rounded, color: Color(0xFF1877F2)),
+                      _ConnectMiniIcon(icon: Icons.facebook, color: Color(0xFF1877F2)),
                     ],
                   ),
                   label: const Text(
