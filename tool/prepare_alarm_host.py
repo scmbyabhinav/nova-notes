@@ -40,7 +40,7 @@ MANIFEST.write_text(manifest)
 activity = KOTLIN / "MainActivity.kt"
 source = activity.read_text()
 if "import android.app.PendingIntent" not in source:
-    source = source.replace("import android.content.Context", "import android.app.PendingIntent\\nimport android.content.Context", 1)
+    source = source.replace("import android.content.Context", "import android.app.PendingIntent" + chr(10) + "import android.content.Context", 1)
 marker = '        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)'
 alarm_channel = '''
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "orah_notes/alarm")
