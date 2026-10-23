@@ -29,14 +29,14 @@ if not MANIFEST.exists():
 if 'android.permission.USE_BIOMETRIC' not in manifest:
     manifest = manifest.replace(
         '<application',
-        '    <uses-permission android:name="android.permission.USE_BIOMETRIC" />\\n    <application',
+        '    <uses-permission android:name="android.permission.USE_BIOMETRIC" />\n    <application',
         1,
     )
 
 if 'android.permission.RECORD_AUDIO' not in manifest:
     manifest = manifest.replace(
         '<application',
-        '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\\n    <application',
+        '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application',
         1,
     )
 
@@ -52,7 +52,7 @@ for permission in (
     if permission not in manifest:
         manifest = manifest.replace(
             '<application',
-            f'    <uses-permission android:name="{permission}" />\\n    <application',
+            f'    <uses-permission android:name="{permission}" />\n    <application',
             1,
         )
 
