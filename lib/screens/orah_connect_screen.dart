@@ -24,7 +24,7 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
   static const _platforms = <_SharePlatform>[
     _SharePlatform('WhatsApp', Icons.chat_rounded, Color(0xFF25D366)),
     _SharePlatform('Instagram', Icons.camera_alt_rounded, Color(0xFFE1306C)),
-    _SharePlatform('Facebook', Icons.facebook_rounded, Color(0xFF1877F2)),
+    _SharePlatform('Facebook', Icons.facebook, Color(0xFF1877F2)),
     _SharePlatform('LinkedIn', Icons.work_rounded, Color(0xFF0A66C2)),
     _SharePlatform('Telegram', Icons.send_rounded, Color(0xFF229ED9)),
     _SharePlatform('X', Icons.close_rounded, Color(0xFF111111)),
