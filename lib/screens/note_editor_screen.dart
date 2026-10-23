@@ -1458,6 +1458,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             icon: const Icon(Icons.image_outlined),
           ),
           IconButton(
+            tooltip: _dueAt == null ? 'Schedule reminder' : 'Edit reminder',
+            onPressed: _setDueDate,
+            icon: Icon(
+              _dueAt == null ? Icons.notifications_active_outlined : Icons.notifications_active,
+              color: _dueAt == null ? null : theme.colorScheme.primary,
+            ),
+          ),
+          if (_dueAt != null)
+            IconButton(
+              tooltip: 'Clear reminder',
+              onPressed: _clearDueDate,
+              icon: const Icon(Icons.notifications_off_outlined),
+            ),
+          IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
             icon: const OrahAssetIcon('pin'),
@@ -2042,6 +2056,11 @@ class _MoodSelector extends StatelessWidget {
                     ),
                   ),
                 ),
+              ),
+              FilledButton.tonalIcon(
+                onPressed: _setDueDate,
+                icon: const Icon(Icons.notifications_active_outlined, size: 18),
+                label: Text(_dueAt == null ? 'Schedule reminder' : 'Reminder set'),
               ),
             ],
           ),
