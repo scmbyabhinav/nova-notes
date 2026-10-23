@@ -40,6 +40,23 @@ if 'android.permission.RECORD_AUDIO' not in manifest:
         1,
     )
 
+# Note alarms need exact-alarm access where Android permits it, and a
+# foreground media-playback service so the note title can be spoken while
+# the Flutter process is backgrounded.
+for permission in (
+    "android.permission.SCHEDULE_EXACT_ALARM",
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+):
+    if permission not in manifest:
+        manifest = manifest.replace(
+            '<application',
+            f'    <uses-permission android:name="{permission}" />\\n    <application',
+            1,
+        )
+
+
 # Android 11+ package visibility requires the speech recognition service
 # query so speech_to_text can discover the platform recognizer.
 if 'android.speech.RecognitionService' not in manifest:
@@ -129,6 +146,28 @@ widget_receiver = '''
 if 'OrahQuickWidgetProvider' not in manifest:
     manifest = manifest.replace('</application>', widget_receiver + '    </application>', 1)
 
+alarm_components = """
+        <receiver
+            android:name=".OrahAlarmReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".OrahAlarmBootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".OrahAlarmSpeechService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+"""
+if 'android:name=".OrahAlarmReceiver"' not in manifest:
+    manifest = manifest.replace('</application>', alarm_components + '    </application>', 1)
+
+
 MANIFEST.write_text(manifest)
 
 (MAIN / "kotlin" / "com" / "orah" / "orah_notes" / "MainActivity.kt").write_text(r'''package com.orah.orah_notes
@@ -181,6 +220,22 @@ class MainActivity : FlutterActivity() {
                 "clearLaunchAction" -> {
                     getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(KEY_ACTION).apply()
                     result.success(null)
+                }
+                "scheduleAlarm" -> {
+                    val id = call.argument<String>("id")
+                    val title = call.argument<String>("title")
+                    val atMillis = call.argument<Long>("atMillis")
+                    if (id.isNullOrBlank() || title.isNullOrBlank() || atMillis == null) {
+                        result.error("invalid_alarm", "Alarm id, title and time are required", null)
+                    } else {
+                        OrahAlarmScheduler.schedule(this, id, title, atMillis)
+                        result.success(true)
+                    }
+                }
+                "cancelAlarm" -> {
+                    val id = call.arguments as? String
+                    if (!id.isNullOrBlank()) OrahAlarmScheduler.cancel(this, id)
+                    result.success(true)
                 }
                 else -> result.notImplemented()
             }
@@ -521,5 +576,292 @@ for gradle_path in (ANDROID / "app" / "build.gradle", ANDROID / "app" / "build.g
             text = text.replace("android {", "android {\n    compileSdkVersion 36", 1)
     gradle_path.write_text(text)
 
+
+
+# Native alarm service is required because a Flutter callback cannot speak
+# when Android has terminated the Dart isolate. It uses AlarmManager, Android
+# TextToSpeech, and a foreground service; all alarm metadata remains on-device.
+(KOTLIN / "OrahAlarmScheduler.kt").write_text(r'''package com.orah.orah_notes
+
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import org.json.JSONObject
+
+object OrahAlarmScheduler {
+    private const val PREFS = "orah_alarm_speech"
+    private const val PREFIX = "alarm_"
+
+    fun schedule(context: Context, id: String, title: String, atMillis: Long) {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        prefs.edit().putString(PREFIX + id, JSONObject()
+            .put("id", id).put("title", title).put("atMillis", atMillis).toString()).apply()
+        schedulePending(context, id, title, atMillis)
+    }
+
+    fun cancel(context: Context, id: String) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent(context, id, "", 0L))
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PREFIX + id).apply()
+        context.sendBroadcast(Intent(context, OrahAlarmReceiver::class.java).apply {
+            action = OrahAlarmReceiver.ACTION_STOP
+            putExtra("id", id)
+        })
+    }
+
+    fun restore(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        prefs.all.forEach { (key, value) ->
+            if (key.startsWith(PREFIX) && value is String) {
+                try {
+                    val json = JSONObject(value)
+                    val at = json.getLong("atMillis")
+                    if (at > System.currentTimeMillis()) {
+                        schedulePending(context, json.getString("id"), json.getString("title"), at)
+                    } else {
+                        prefs.edit().remove(key).apply()
+                    }
+                } catch (_: Exception) {
+                    prefs.edit().remove(key).apply()
+                }
+            }
+        }
+    }
+
+    private fun schedulePending(context: Context, id: String, title: String, atMillis: Long) {
+        val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, OrahAlarmReceiver::class.java).apply {
+            action = OrahAlarmReceiver.ACTION_FIRE
+            putExtra("id", id)
+            putExtra("title", title)
+        }
+        val pending = PendingIntent.getBroadcast(
+            context, id.hashCode(), intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !manager.canScheduleExactAlarms()) {
+            manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pending)
+        } else {
+            manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pending)
+        }
+    }
+
+    private fun pendingIntent(context: Context, id: String, title: String, atMillis: Long): PendingIntent {
+        val intent = Intent(context, OrahAlarmReceiver::class.java).apply {
+            action = OrahAlarmReceiver.ACTION_FIRE
+            putExtra("id", id)
+            putExtra("title", title)
+            putExtra("atMillis", atMillis)
+        }
+        return PendingIntent.getBroadcast(
+            context, id.hashCode(), intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+}
+''')
+
+(KOTLIN / "OrahAlarmReceiver.kt").write_text(r'''package com.orah.orah_notes
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+
+class OrahAlarmReceiver : BroadcastReceiver() {
+    companion object {
+        const val ACTION_FIRE = "com.orah.orah_notes.ALARM_FIRE"
+        const val ACTION_STOP = "com.orah.orah_notes.ALARM_STOP"
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        val id = intent.getStringExtra("id") ?: return
+        if (intent.action == ACTION_STOP) {
+            context.stopService(Intent(context, OrahAlarmSpeechService::class.java).putExtra("id", id))
+            return
+        }
+        if (intent.action != ACTION_FIRE) return
+        val service = Intent(context, OrahAlarmSpeechService::class.java)
+            .putExtra("id", id)
+            .putExtra("title", intent.getStringExtra("title") ?: "Your reminder")
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(service)
+            else context.startService(service)
+        } catch (_: Exception) {
+            // The scheduled notification remains as a fallback if Android
+            // prevents the foreground alarm service from starting.
+        }
+    }
+}
+''')
+
+(KOTLIN / "OrahAlarmBootReceiver.kt").write_text(r'''package com.orah.orah_notes
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+
+class OrahAlarmBootReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED ||
+            intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+            OrahAlarmScheduler.restore(context)
+        }
+    }
+}
+''')
+
+(KOTLIN / "OrahAlarmSpeechService.kt").write_text(r'''package com.orah.orah_notes
+
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.Intent
+import android.media.AudioAttributes
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.speech.tts.TextToSpeech
+import java.util.Locale
+
+class OrahAlarmSpeechService : Service(), TextToSpeech.OnInitListener {
+    private val handler = Handler(Looper.getMainLooper())
+    private var tts: TextToSpeech? = null
+    private var ringtone: Ringtone? = null
+    private var title = "Your reminder"
+    private var alarmId = ""
+    private var stopped = false
+
+    override fun onCreate() {
+        super.onCreate()
+        createChannel()
+        tts = TextToSpeech(applicationContext, this)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        alarmId = intent?.getStringExtra("id") ?: alarmId
+        title = intent?.getStringExtra("title") ?: title
+        if (alarmId.isBlank()) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+        startForeground(731204, buildNotification())
+        startRingtone()
+        handler.postDelayed({
+            stopRingtone()
+            speakTitle()
+        }, 1800L)
+        return START_STICKY
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts?.language = Locale.getDefault()
+            if (!stopped) handler.postDelayed({ speakTitle() }, 2200L)
+        }
+    }
+
+    private fun speakTitle() {
+        if (stopped || title.isBlank()) return
+        tts?.speak("Reminder. $title", TextToSpeech.QUEUE_FLUSH, null, "orah_alarm_$alarmId")
+        // Repeat the title periodically until the user dismisses the alarm.
+        handler.postDelayed({
+            if (!stopped) {
+                startRingtone()
+                handler.postDelayed({
+                    stopRingtone()
+                    speakTitle()
+                }, 1200L)
+            }
+        }, 30000L)
+    }
+
+    private fun startRingtone() {
+        try {
+            stopRingtone()
+            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            ringtone = RingtoneManager.getRingtone(applicationContext, uri)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ringtone?.audioAttributes = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            }
+            ringtone?.play()
+        } catch (_: Exception) {}
+    }
+
+    private fun stopRingtone() {
+        try { ringtone?.stop() } catch (_: Exception) {}
+        ringtone = null
+    }
+
+    private fun buildNotification(): Notification {
+        val stopIntent = Intent(this, OrahAlarmReceiver::class.java).apply {
+            action = OrahAlarmReceiver.ACTION_STOP
+            putExtra("id", alarmId)
+        }
+        val stopPending = PendingIntent.getBroadcast(
+            this, alarmId.hashCode(), stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val openIntent = packageManager.getLaunchIntentForPackage(packageName)
+        val openPending = openIntent?.let {
+            PendingIntent.getActivity(this, 731205, it,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        }
+        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, "orah_alarm_speech")
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+        }
+        builder.setSmallIcon(applicationInfo.icon)
+            .setContentTitle("ORAH alarm")
+            .setContentText(title)
+            .setCategory(Notification.CATEGORY_ALARM)
+            .setPriority(Notification.PRIORITY_MAX)
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .addAction(android.R.drawable.ic_media_pause, "Dismiss", stopPending)
+        if (openPending != null) builder.setContentIntent(openPending)
+        return builder.build()
+    }
+
+    private fun createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "orah_alarm_speech", "ORAH spoken alarms", NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Audible reminders that speak the note title"
+                setSound(null, null)
+                enableVibration(true)
+            }
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+    }
+
+    override fun onDestroy() {
+        stopped = true
+        handler.removeCallbacksAndMessages(null)
+        stopRingtone()
+        tts?.stop()
+        tts?.shutdown()
+        tts = null
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+}
+''')
 
 print("ORAH Android host prepared: share target, shortcuts, quick widget.")
