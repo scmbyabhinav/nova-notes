@@ -2017,12 +2017,27 @@ class _MoodSelector extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   ),
                 ),
-              ActionChip(
-                avatar: const Icon(Icons.hub_outlined, size: 18),
-                label: const Text('ORAH Connect'),
-                onPressed: onOpenConnect,
-                tooltip: 'Prepare a post for LinkedIn or Instagram',
-                visualDensity: VisualDensity.compact,
+              Tooltip(
+                message: 'ORAH Connect · Share to your favourite apps',
+                child: ActionChip(
+                  onPressed: onOpenConnect,
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  avatar: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _ConnectMiniIcon(icon: Icons.chat_rounded, color: Color(0xFF25D366)),
+                      SizedBox(width: 3),
+                      _ConnectMiniIcon(icon: Icons.camera_alt_rounded, color: Color(0xFFE1306C)),
+                      SizedBox(width: 3),
+                      _ConnectMiniIcon(icon: Icons.facebook_rounded, color: Color(0xFF1877F2)),
+                    ],
+                  ),
+                  label: const Text(
+                    'orah connect',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                ),
               ),
             ],
           ),
@@ -2030,6 +2045,16 @@ class _MoodSelector extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ConnectMiniIcon extends StatelessWidget {
+  const _ConnectMiniIcon({required this.icon, required this.color});
+
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Icon(icon, size: 14, color: color);
 }
 
 class _ChecklistEditor extends StatelessWidget {
