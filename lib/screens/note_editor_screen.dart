@@ -1820,7 +1820,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               MaterialPageRoute<void>(
                                 builder: (_) => OrahConnectScreen(
                                   noteTitle: _titleController.text.trim(),
-                                  noteContent: _contentController.text,
+                                  noteContent: _noteType == NoteType.checklist
+                                      ? _checklistContent()
+                                      : _contentController.text,
+                                  imagePath: _imagePath,
+                                  attachmentPaths: _attachments,
                                 ),
                               ),
                             );
@@ -2026,15 +2030,19 @@ class _MoodSelector extends StatelessWidget {
                   label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _ConnectMiniIcon(icon: Icons.chat_rounded, color: Color(0xFF25D366)),
-                      const SizedBox(width: 3),
-                      _ConnectMiniIcon(icon: Icons.camera_alt_rounded, color: Color(0xFFE1306C)),
-                      const SizedBox(width: 3),
-                      _ConnectMiniIcon(icon: Icons.facebook, color: Color(0xFF1877F2)),
+                      Icon(
+                        Icons.share_rounded,
+                        size: 17,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       const SizedBox(width: 6),
                       const Text(
-                        'orah connect',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                        'ORAH CONNECT',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ],
                   ),
