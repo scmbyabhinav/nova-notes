@@ -17,9 +17,24 @@ class OrahConnectScreen extends StatefulWidget {
 
 class _OrahConnectScreenState extends State<OrahConnectScreen> {
   late final TextEditingController _captionController;
-  String _platform = 'LinkedIn';
+  String? _selectedPlatform;
   DateTime? _scheduledDate;
   TimeOfDay? _scheduledTime;
+
+  static const _platforms = <_SharePlatform>[
+    _SharePlatform('WhatsApp', Icons.chat_rounded, Color(0xFF25D366)),
+    _SharePlatform('Instagram', Icons.camera_alt_rounded, Color(0xFFE1306C)),
+    _SharePlatform('Facebook', Icons.facebook_rounded, Color(0xFF1877F2)),
+    _SharePlatform('LinkedIn', Icons.work_rounded, Color(0xFF0A66C2)),
+    _SharePlatform('Telegram', Icons.send_rounded, Color(0xFF229ED9)),
+    _SharePlatform('X', Icons.close_rounded, Color(0xFF111111)),
+    _SharePlatform('VK', Icons.groups_rounded, Color(0xFF0077FF)),
+    _SharePlatform('LINE', Icons.chat_bubble_rounded, Color(0xFF06C755)),
+    _SharePlatform('KakaoTalk', Icons.forum_rounded, Color(0xFFFEE500)),
+    _SharePlatform('Snapchat', Icons.photo_camera_rounded, Color(0xFFFFD400)),
+    _SharePlatform('YouTube', Icons.play_circle_fill_rounded, Color(0xFFFF0033)),
+    _SharePlatform('Substack', Icons.article_rounded, Color(0xFFFF6719)),
+  ];
 
   @override
   void initState() {
@@ -38,23 +53,22 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     super.dispose();
   }
 
-  Future<void> _explainConnectionSetup(String platform) async {
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('Connect ' + platform),
-        content: Text(
-          platform + ' sign-in is not configured in this build yet. '
-          'ORAH needs the platform-approved OAuth flow and publishing permissions '
-          'before it can connect an account or publish on your behalf. '
-          'Do not enter or share your social-media password with ORAH.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Got it'),
-          ),
-        ],
+  Future<void> _shareToPlatform(_SharePlatform platform) async {
+    final caption = _captionController.text.trim();
+    if (caption.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Write a caption before sharing.')),
+      );
+      return;
+    }
+
+    setState(() => _selectedPlatform = platform.name);
+    await SharePlus.instance.share(
+      ShareParams(
+        text: caption,
+        subject: widget.noteTitle.trim().isEmpty
+            ? 'ORAH note'
+            : widget.noteTitle.trim(),
       ),
     );
   }
@@ -81,67 +95,49 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     });
   }
 
-  Future<void> _schedulePost() async {
-    if (_scheduledDate == null || _scheduledTime == null) {
-      await _pickSchedule();
-      return;
-    }
-    if (!mounted) return;
-    final dateLabel =
-        MaterialLocalizations.of(context).formatMediumDate(_scheduledDate!);
-    final timeLabel = _scheduledTime!.format(context);
+  Future<void> _explainSchedulingStatus() async {
+    final scheduled = _scheduledDate != null && _scheduledTime != null;
+    final when = scheduled
+        ? '${MaterialLocalizations.of(context).formatMediumDate(_scheduledDate!)} at ${_scheduledTime!.format(context)}'
+        : 'no date or time selected';
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Scheduling setup required'),
+        title: const Text('Scheduling is coming next'),
         content: Text(
-          'Your selected time is ' + dateLabel + ' at ' + timeLabel + '. '
-          'This is only a preview: ORAH cannot schedule or publish the post '
-          'until account sign-in, platform permissions, and the publishing service '
-          'are configured. Nothing has been scheduled or posted.',
+          'You selected $when. ORAH Connect currently shares through your phone’s share sheet. '
+          'This date/time is only a draft preference: no post or reminder has been scheduled, '
+          'and nothing will publish automatically yet. We are keeping this version free by '
+          'avoiding paid publishing APIs and server hosting.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('OK'),
+            child: const Text('Got it'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _shareManually() async {
-    final caption = _captionController.text.trim();
-    if (caption.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Write a caption before sharing.')),
-      );
-      return;
-    }
-    await Share.share(
-      caption,
-      subject: widget.noteTitle.trim().isEmpty
-          ? 'ORAH note'
-          : widget.noteTitle.trim(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final selected = _platforms.where((item) => item.name == _selectedPlatform);
+    final selectedPlatform = selected.isEmpty ? null : selected.first;
     final scheduledLabel = _scheduledDate == null || _scheduledTime == null
-        ? 'No time selected'
-        : MaterialLocalizations.of(context).formatMediumDate(_scheduledDate!) +
-            ' · ' +
-            _scheduledTime!.format(context);
+        ? 'Choose a date and time (optional)'
+        : '${MaterialLocalizations.of(context).formatMediumDate(_scheduledDate!)} · ${_scheduledTime!.format(context)}';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('ORAH Connect'),
         actions: [
           IconButton(
-            tooltip: 'Share manually',
-            onPressed: _shareManually,
+            tooltip: 'Open share sheet',
+            onPressed: selectedPlatform == null
+                ? () => _shareToPlatform(_platforms.first)
+                : () => _shareToPlatform(selectedPlatform),
             icon: const Icon(Icons.ios_share_rounded),
           ),
         ],
@@ -150,67 +146,58 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
         padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
         children: [
           Text(
-            'Turn your note into a social post',
+            'Your note, ready to share',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
+              letterSpacing: -0.4,
             ),
           ),
           const SizedBox(height: 6),
           Text(
-            'Choose a destination, edit the caption, then share manually or prepare a schedule.',
+            'Pick an app below. ORAH opens your device’s share sheet—choose the destination there.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 20),
-          SegmentedButton<String>(
-            segments: const [
-              ButtonSegment<String>(
-                value: 'LinkedIn',
-                icon: Icon(Icons.work_outline_rounded),
-                label: Text('LinkedIn'),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              for (final platform in _platforms)
+                _PlatformTile(
+                  platform: platform,
+                  selected: _selectedPlatform == platform.name,
+                  onTap: () => _shareToPlatform(platform),
+                ),
+            ],
+          ),
+          const SizedBox(height: 22),
+          Row(
+            children: [
+              Expanded(
+                child: Text('Post text', style: theme.textTheme.titleMedium),
               ),
-              ButtonSegment<String>(
-                value: 'Instagram',
-                icon: Icon(Icons.camera_alt_outlined),
-                label: Text('Instagram'),
+              TextButton.icon(
+                onPressed: () async {
+                  await SharePlus.instance.share(
+                    ShareParams(text: _captionController.text.trim()),
+                  );
+                },
+                icon: const Icon(Icons.ios_share_rounded, size: 18),
+                label: const Text('Share'),
               ),
             ],
-            selected: {_platform},
-            onSelectionChanged: (selection) =>
-                setState(() => _platform = selection.first),
           ),
-          const SizedBox(height: 14),
-          Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: theme.colorScheme.secondaryContainer,
-                child: Icon(
-                  _platform == 'LinkedIn'
-                      ? Icons.work_outline_rounded
-                      : Icons.camera_alt_outlined,
-                  color: theme.colorScheme.onSecondaryContainer,
-                ),
-              ),
-              title: Text(_platform + ' account'),
-              subtitle: const Text('Not connected'),
-              trailing: OutlinedButton(
-                onPressed: () => _explainConnectionSetup(_platform),
-                child: const Text('Connect'),
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          Text('Post caption', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           TextField(
             controller: _captionController,
-            minLines: 7,
-            maxLines: 14,
+            minLines: 5,
+            maxLines: 12,
             maxLength: 3000,
             textCapitalization: TextCapitalization.sentences,
             decoration: const InputDecoration(
-              hintText: 'Write your post...',
+              hintText: 'Write something to share…',
               border: OutlineInputBorder(),
               alignLabelWithHint: true,
             ),
@@ -228,66 +215,130 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Schedule for later',
+                          'Schedule a post',
                           style: theme.textTheme.titleMedium,
                         ),
                       ),
+                      const Chip(
+                        label: Text('Coming soon'),
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
-                    scheduledLabel,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _pickSchedule,
-                      icon: const Icon(Icons.calendar_month_outlined),
-                      label: const Text('Choose date & time'),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: _schedulePost,
-                      icon: const Icon(Icons.schedule_send_rounded),
-                      label: const Text('Schedule post'),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Scheduling is a preview until official account login and publishing access are configured. ORAH will not claim a post is scheduled unless the platform confirms it.',
+                    'No API fees, no account login. Choose a reminder time for planning; automatic publishing is not enabled yet.',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _pickSchedule,
+                    icon: const Icon(Icons.calendar_month_outlined),
+                    label: const Text(' $scheduledLabel '),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.tonalIcon(
+                      onPressed: _explainSchedulingStatus,
+                      icon: const Icon(Icons.schedule_send_rounded),
+                      label: const Text('Review scheduling status'),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonalIcon(
-              onPressed: _shareManually,
-              icon: const Icon(Icons.ios_share_rounded),
-              label: Text('Share ' + _platform + ' manually'),
-            ),
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
-            'Manual sharing opens Android’s share sheet. The destination app may require its own login and may not support text-only posting. ORAH does not receive your social-media password.',
+            'Free sharing through your device. App availability and supported content vary by phone and destination. ORAH does not log in to social accounts or publish automatically in this version.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SharePlatform {
+  const _SharePlatform(this.name, this.icon, this.color);
+
+  final String name;
+  final IconData icon;
+  final Color color;
+}
+
+class _PlatformTile extends StatelessWidget {
+  const _PlatformTile({
+    required this.platform,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final _SharePlatform platform;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox(
+      width: 104,
+      child: Material(
+        color: selected
+            ? theme.colorScheme.secondaryContainer
+            : theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: platform.color,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    platform.icon,
+                    color: platform.name == 'KakaoTalk' ||
+                            platform.name == 'Snapchat'
+                        ? const Color(0xFF202020)
+                        : Colors.white,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  platform.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Free share',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
