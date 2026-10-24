@@ -40,6 +40,36 @@ if 'android.permission.RECORD_AUDIO' not in manifest:
         1,
     )
 
+# Android 13+ notifications are opt-in. Request permission from Dart at schedule time.
+# These receivers let flutter_local_notifications restore alarms after reboot/app update.
+for permission in (
+    "android.permission.POST_NOTIFICATIONS",
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+):
+    if permission not in manifest:
+        manifest = manifest.replace(
+            '<application',
+            f'    <uses-permission android:name="{permission}" />\\n    <application',
+            1,
+        )
+
+notification_receivers = '''
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+'''
+if "com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" not in manifest:
+    manifest = manifest.replace('</application>', notification_receivers + '    </application>', 1)
+
 # Android 11+ package visibility requires the speech recognition service
 # query so speech_to_text can discover the platform recognizer.
 if 'android.speech.RecognitionService' not in manifest:
