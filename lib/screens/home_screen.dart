@@ -433,6 +433,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         // extend action-bearing SnackBars beyond their configured duration.
         _trashSnackBarTimer = Timer(const Duration(seconds: 3), () {
           if (mounted) trashSnackBar.close();
+          _trashSnackBarTimer = null;
         });
         return;
     }
