@@ -86,6 +86,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isArchived = false;
   DateTime? _dueAt;
   String? _fontFamily;
+  List<String> _linkedNoteIds = [];
   String? _mood;
   String? _imagePath;
   int? _noteColor;
@@ -143,6 +144,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (locked) _lockedCiphertext = existing?.content;
     _dueAt = existing?.dueAt ?? widget.initialDueAt;
     _fontFamily = existing?.fontFamily;
+    _linkedNoteIds = [...(existing?.linkedNoteIds ?? const [])];
     _mood = existing?.mood;
     _imagePath = existing?.imagePath;
     _noteColor = existing?.color;
@@ -815,6 +817,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             mood: _mood,
             imagePath: _imagePath,
             fontFamily: _fontFamily,
+            linkedNoteIds: _linkedNoteIds,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -835,6 +838,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             mood: _mood,
             imagePath: _imagePath,
             fontFamily: _fontFamily,
+            linkedNoteIds: _linkedNoteIds,
           );
 
     await widget.repository.saveNote(note).timeout(const Duration(seconds: 10));
@@ -1010,6 +1014,48 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _clearDueDate() async {
     setState(() { _dueAt = null; _hasChanges = true; });
     await OrahReminderService.instance.cancel(_noteId);
+    await _save();
+  }
+
+  Future<void> _showLinkNoteSheet() async {
+    final notes = await widget.repository.getNotes();
+    if (!mounted) return;
+    final candidates = notes.where((note) =>
+      note.id != _noteId &&
+      !note.isTrashed &&
+      !note.isLocked &&
+      !_linkedNoteIds.contains(note.id)
+    ).toList()..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    final selected = await showModalBottomSheet<Note>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) => _LinkNotePickerSheet(notes: candidates),
+    );
+    if (selected == null || !mounted || _linkedNoteIds.contains(selected.id)) return;
+    setState(() {
+      _linkedNoteIds = [..._linkedNoteIds, selected.id];
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _openLinkedNote(String noteId) async {
+    await _save();
+    final target = await widget.repository.getNote(noteId);
+    if (target == null || !mounted || target.isTrashed || target.isLocked) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => NoteEditorScreen(repository: widget.repository, note: target),
+      ),
+    );
+  }
+
+  Future<void> _unlinkNote(String noteId) async {
+    setState(() {
+      _linkedNoteIds = _linkedNoteIds.where((id) => id != noteId).toList();
+      _hasChanges = true;
+    });
     await _save();
   }
 
@@ -1581,6 +1627,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               onPressed: _clearDueDate,
               icon: const Icon(Icons.notifications_off_outlined),
             ),
+          IconButton(
+            tooltip: 'Link another note',
+            onPressed: _showLinkNoteSheet,
+            icon: const Icon(Icons.add_link_rounded),
+          ),
           PopupMenuButton<String>(
             tooltip: 'Note font',
             icon: const Icon(Icons.text_fields_rounded),
@@ -1987,6 +2038,36 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           maxLines: 2,
                         ),
+                        if (_linkedNoteIds.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          FutureBuilder<List<Note>>(
+                            future: widget.repository.getNotes(),
+                            builder: (context, snapshot) {
+                              final all = snapshot.data ?? const <Note>[];
+                              final linked = _linkedNoteIds
+                                  .map((id) => all.where((note) => note.id == id).firstOrNull)
+                                  .whereType<Note>()
+                                  .where((note) => !note.isTrashed && !note.isLocked)
+                                  .toList();
+                              if (linked.isEmpty) return const SizedBox.shrink();
+                              return Align(
+                                alignment: Alignment.centerLeft,
+                                child: Wrap(
+                                  spacing: 6,
+                                  runSpacing: 4,
+                                  children: [
+                                    for (final note in linked)
+                                      ActionChip(
+                                        avatar: const Icon(Icons.link_rounded, size: 16),
+                                        label: Text(note.title.isEmpty ? 'Untitled note' : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        onPressed: () => _openLinkedNote(note.id),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                         const SizedBox(height: 8),
                         if (_noteType == NoteType.checklist)
                           _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
@@ -2001,6 +2082,35 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             maxLines: null,
                             style: _noteBodyStyle(theme),
                             decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          ),
+                        if (!_isLocked && !_isCapturingNoteCard)
+                          FutureBuilder<List<Note>>(
+                            future: widget.repository.getNotes(),
+                            builder: (context, snapshot) {
+                              final backlinks = (snapshot.data ?? const <Note>[])
+                                  .where((note) => note.id != _noteId && !note.isTrashed && !note.isLocked && note.linkedNoteIds.contains(_noteId))
+                                  .toList()
+                                ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+                              if (backlinks.isEmpty) return const SizedBox.shrink();
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 24, bottom: 28),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Linked from', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                                    const SizedBox(height: 8),
+                                    for (final note in backlinks)
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        dense: true,
+                                        leading: const Icon(Icons.subdirectory_arrow_left_rounded),
+                                        title: Text(note.title.isEmpty ? 'Untitled note' : note.title),
+                                        onTap: () => _openLinkedNote(note.id),
+                                      ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                       ],
                     ),
@@ -2382,6 +2492,84 @@ class _ToolButton extends StatelessWidget {
         tooltip: label,
         onPressed: onPressed,
         icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
+      ),
+    );
+  }
+}
+
+class _LinkNotePickerSheet extends StatefulWidget {
+  const _LinkNotePickerSheet({required this.notes});
+  final List<Note> notes;
+
+  @override
+  State<_LinkNotePickerSheet> createState() => _LinkNotePickerSheetState();
+}
+
+class _LinkNotePickerSheetState extends State<_LinkNotePickerSheet> {
+  final TextEditingController _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _search.text.trim().toLowerCase();
+    final results = widget.notes.where((note) =>
+      query.isEmpty ||
+      note.title.toLowerCase().contains(query) ||
+      note.content.toLowerCase().contains(query)
+    ).toList();
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.72,
+          child: Column(
+            children: [
+              const ListTile(
+                title: Text('Link a note'),
+                subtitle: Text('Choose a note to link to this one'),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: TextField(
+                  controller: _search,
+                  autofocus: true,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: 'Search notes',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    suffixIcon: _search.text.isEmpty ? null : IconButton(
+                      tooltip: 'Clear search',
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () { _search.clear(); setState(() {}); },
+                    ),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: results.isEmpty
+                  ? const Center(child: Text('No matching notes'))
+                  : ListView.builder(
+                      itemCount: results.length,
+                      itemBuilder: (context, index) {
+                        final note = results[index];
+                        return ListTile(
+                          leading: const Icon(Icons.note_alt_outlined),
+                          title: Text(note.title.isEmpty ? 'Untitled note' : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          subtitle: Text(note.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          onTap: () => Navigator.of(context).pop(note),
+                        );
+                      },
+                    ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
