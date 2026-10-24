@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:orah_notes/data/database/orah_database.dart';
 import 'package:orah_notes/data/repositories/local_note_repository.dart';
 import 'package:orah_notes/models/note.dart';
 
@@ -11,6 +12,10 @@ void main() {
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+  });
+
+  tearDown(() async {
+    await OrahDatabase.closeForTesting();
   });
 
   Future<LocalNoteRepository> createRepository() async {
@@ -34,27 +39,19 @@ void main() {
   test('saveNote publishes the persisted note to watchNotes immediately', () async {
     repository = await createRepository();
     final note = makeNote('save-stream-test');
+    final iterator = StreamIterator<List<Note>>(repository.watchNotes());
+    addTearDown(iterator.cancel);
 
-    final stream = repository.watchNotes();
-    final initial = Completer<List<Note>>();
-    final seedSubscription = stream.listen((notes) { if (!initial.isCompleted) initial.complete(notes); });
-    await initial.future;
-    await seedSubscription.cancel();
-    final event = expectLater(
-      stream.skip(1),
-      emits(
-        predicate<List<Note>>(
-          (notes) =>
-              notes.length == 1 &&
-              notes.single.id == note.id &&
-              notes.single.title == note.title &&
-              notes.single.isTrashed == false,
-        ),
-      ),
-    );
-
+    // Keep one subscription for both the initial snapshot and the live update.
+    // Re-subscribing can race a new initial read against the write under test.
+    expect(await iterator.moveNext(), isTrue);
     await repository.saveNote(note);
-    await event;
+
+    expect(await iterator.moveNext(), isTrue);
+    expect(iterator.current, hasLength(1));
+    expect(iterator.current.single.id, note.id);
+    expect(iterator.current.single.title, note.title);
+    expect(iterator.current.single.isTrashed, isFalse);
   });
 
   test('deleteNote publishes the updated list to watchNotes immediately', () async {
@@ -62,20 +59,15 @@ void main() {
     final note = makeNote('delete-stream-test');
     await repository.saveNote(note);
 
-    final stream = repository.watchNotes();
-    final initial = Completer<List<Note>>();
-    final seedSubscription = stream.listen((notes) { if (!initial.isCompleted) initial.complete(notes); });
-    await initial.future;
-    await seedSubscription.cancel();
-    final event = expectLater(
-      stream.skip(1),
-      emits(
-        predicate<List<Note>>((notes) => notes.isEmpty),
-      ),
-    );
+    final iterator = StreamIterator<List<Note>>(repository.watchNotes());
+    addTearDown(iterator.cancel);
+    expect(await iterator.moveNext(), isTrue);
+    expect(iterator.current.map((item) => item.id), contains(note.id));
 
     await repository.deleteNote(note.id);
-    await event;
+
+    expect(await iterator.moveNext(), isTrue);
+    expect(iterator.current, isEmpty);
   });
 
   test('saveNote publishes trash/restore state changes immediately', () async {
@@ -83,31 +75,25 @@ void main() {
     final note = makeNote('trash-restore-stream-test');
     await repository.saveNote(note);
 
-    final stream = repository.watchNotes();
-    final initial = Completer<List<Note>>();
-    final seedSubscription = stream.listen((notes) { if (!initial.isCompleted) initial.complete(notes); });
-    await initial.future;
-    await seedSubscription.cancel();
-    final trashEvent = expectLater(
-      stream.skip(1),
-      emits(
-        predicate<List<Note>>(
-          (notes) => notes.length == 1 && notes.single.isTrashed,
-        ),
-      ),
-    );
-    await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now()));
-    await trashEvent;
+    final iterator = StreamIterator<List<Note>>(repository.watchNotes());
+    addTearDown(iterator.cancel);
+    expect(await iterator.moveNext(), isTrue);
+    expect(iterator.current.single.isTrashed, isFalse);
 
-    final restoreEvent = expectLater(
-      stream.skip(1),
-      emits(
-        predicate<List<Note>>(
-          (notes) => notes.length == 1 && !notes.single.isTrashed,
-        ),
-      ),
-    );
-    await repository.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
-    await restoreEvent;
+    await repository.saveNote(note.copyWith(
+      isTrashed: true,
+      updatedAt: DateTime.now(),
+    ));
+    expect(await iterator.moveNext(), isTrue);
+    expect(iterator.current, hasLength(1));
+    expect(iterator.current.single.isTrashed, isTrue);
+
+    await repository.saveNote(note.copyWith(
+      isTrashed: false,
+      updatedAt: DateTime.now(),
+    ));
+    expect(await iterator.moveNext(), isTrue);
+    expect(iterator.current, hasLength(1));
+    expect(iterator.current.single.isTrashed, isFalse);
   });
 }
