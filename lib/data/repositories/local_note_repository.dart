@@ -424,6 +424,8 @@ class LocalNoteRepository implements NoteRepository {
       'dueAt': note.dueAt?.toIso8601String(),
       'attachments': note.attachments,
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
+      'fontFamily': note.fontFamily,
+      'linkedNoteIds': note.linkedNoteIds,
     };
   }
 
@@ -452,6 +454,10 @@ class LocalNoteRepository implements NoteRepository {
       attachments: (map['attachments'] is List) ? List<String>.from((map['attachments'] as List).whereType<String>()) : const [],
       checklistItems: _checklistItemsFromMap(map),
       imagePath: map['imagePath'] as String?,
+      fontFamily: map['fontFamily'] as String?,
+      linkedNoteIds: (map['linkedNoteIds'] is List)
+          ? List<String>.from((map['linkedNoteIds'] as List).whereType<String>())
+          : const [],
     );
   }
 
