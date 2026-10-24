@@ -55,6 +55,7 @@ class Note {
     this.mood,
     this.imagePath,
     this.fontFamily,
+    this.linkedNoteIds = const [],
   });
 
   final String id;
@@ -80,6 +81,8 @@ class Note {
   /// Primary image selected for this note, if any.
   final String? imagePath;
   final String? fontFamily;
+  /// IDs of other notes linked from this note.
+  final List<String> linkedNoteIds;
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -103,6 +106,7 @@ class Note {
         'mood': mood,
         'imagePath': imagePath,
         'fontFamily': fontFamily,
+        'linkedNoteIds': linkedNoteIds,
       };
 
   factory Note.fromMap(Map<String, dynamic> map) => Note(
@@ -132,6 +136,7 @@ class Note {
         mood: map['mood'] as String?,
         imagePath: map['imagePath'] as String?,
         fontFamily: map['fontFamily'] as String?,
+        linkedNoteIds: List<String>.from(map['linkedNoteIds'] as List? ?? const []),
       );
 
   int get completedChecklistItems =>
@@ -171,6 +176,7 @@ class Note {
     bool clearImagePath = false,
     String? fontFamily,
     bool clearFontFamily = false,
+    List<String>? linkedNoteIds,
   }) {
     return Note(
       id: id,
@@ -194,6 +200,7 @@ class Note {
       mood: clearMood ? null : (mood ?? this.mood),
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
       fontFamily: clearFontFamily ? null : (fontFamily ?? this.fontFamily),
+      linkedNoteIds: linkedNoteIds ?? this.linkedNoteIds,
     );
   }
 }
