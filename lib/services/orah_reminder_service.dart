@@ -38,6 +38,48 @@ class OrahReminderService {
       _pendingLaunchPayload = launch?.notificationResponse?.payload;
     }
     _initialized = true;
+    await reconcileScheduledReminders();
+  }
+
+  /// Reconcile persisted note due dates with Android's pending local alarms.
+  /// The plugin's boot receiver restores alarms across restarts; this also
+  /// repairs missing alarms the next time the app is opened.
+  Future<void> reconcileScheduledReminders() async {
+    if (!_initialized) return;
+    final repository = await NoteRepositoryProvider.instance();
+    final notes = await repository.getNotes();
+    final now = DateTime.now();
+    for (final note in notes) {
+      if (note.isTrashed || note.isLocked) continue;
+      final dueAt = note.dueAt;
+      if (dueAt != null) {
+        if (dueAt.isAfter(now)) {
+          await schedule(noteId: note.id, title: note.title, when: dueAt);
+        } else {
+          await cancel(note.id);
+          await repository.saveNote(note.copyWith(clearDueAt: true, updatedAt: now));
+        }
+      }
+      for (final item in note.checklistItems) {
+        final itemDueAt = item.dueAt;
+        if (itemDueAt == null || item.isDone) continue;
+        final reminderId = 'checklist:${item.id}';
+        if (itemDueAt.isAfter(now)) {
+          await schedule(
+            noteId: reminderId,
+            title: item.text,
+            when: itemDueAt,
+            payloadNoteId: note.id,
+            payloadChecklistId: item.id,
+          );
+        } else {
+          await cancel(reminderId);
+          final updatedItems = note.checklistItems.map((candidate) =>
+              candidate.id == item.id ? candidate.copyWith(clearDueAt: true) : candidate).toList();
+          await repository.saveNote(note.copyWith(checklistItems: updatedItems, updatedAt: now));
+        }
+      }
+    }
   }
 
   Future<void> _requestNotificationPermission() async {
