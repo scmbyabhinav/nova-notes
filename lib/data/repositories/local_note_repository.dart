@@ -373,6 +373,7 @@ class LocalNoteRepository implements NoteRepository {
       'createdAt': note.createdAt.toIso8601String(),
       'updatedAt': note.updatedAt.toIso8601String(),
       'folderId': note.folderId,
+      'vaultFolderId': note.vaultFolderId,
       'tags': note.tags,
       'color': note.color,
       'isPinned': note.isPinned,
@@ -383,6 +384,8 @@ class LocalNoteRepository implements NoteRepository {
       'dueAt': note.dueAt?.toIso8601String(),
       'attachments': note.attachments,
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
+      'mood': note.mood,
+      'imagePath': note.imagePath,
     };
   }
 
@@ -400,6 +403,7 @@ class LocalNoteRepository implements NoteRepository {
       createdAt: createdAt,
       updatedAt: updatedAt,
       folderId: map['folderId'] as String?,
+      vaultFolderId: map['vaultFolderId'] as String?,
       tags: (map['tags'] is List) ? List<String>.from((map['tags'] as List).whereType<String>()) : const [],
       color: map['color'] as int?,
       isPinned: map['isPinned'] as bool? ?? false,
@@ -410,6 +414,7 @@ class LocalNoteRepository implements NoteRepository {
       dueAt: map['dueAt'] is String ? DateTime.tryParse(map['dueAt'] as String) : null,
       attachments: (map['attachments'] is List) ? List<String>.from((map['attachments'] as List).whereType<String>()) : const [],
       checklistItems: _checklistItemsFromMap(map),
+      mood: map['mood'] as String?,
       imagePath: map['imagePath'] as String?,
     );
   }
