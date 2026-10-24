@@ -141,7 +141,7 @@ class OrahDatabase {
       for (final map in ordinary) {
         final id = map['id'];
         if (id is! String || id.trim().isEmpty) continue;
-        await txn.insert('notes', _rowFor(map), conflictAlgorithm: ConflictAlgorithm.ignore);
+        await txn.insert('notes', rowFor(map), conflictAlgorithm: ConflictAlgorithm.ignore);
       }
     });
 
@@ -150,7 +150,7 @@ class OrahDatabase {
     await preferences.setString(vaultNotesKey, jsonEncode(vaultById.values.toList()));
   }
 
-  static Map<String, Object?> _rowFor(Map<String, dynamic> map) => {
+  static Map<String, Object?> rowFor(Map<String, dynamic> map) => {
     'id': map['id'] as String,
     'title': map['title'] as String? ?? '',
     'content': map['content'] as String? ?? '',
