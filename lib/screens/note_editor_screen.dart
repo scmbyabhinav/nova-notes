@@ -177,10 +177,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   void _startVoiceDurationTimer() {
     _voiceDurationTimer?.cancel();
     _voiceElapsedSeconds = 0;
-    _voiceDurationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted && _isListening) {
-        setState(() => _voiceElapsedSeconds++);
+    _voiceDurationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || !_isListening) {
+        timer.cancel();
+        return;
       }
+      setState(() => _voiceElapsedSeconds++);
     });
   }
 
