@@ -772,7 +772,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final title = _titleController.text.trim();
     final content = _noteType == NoteType.checklist ? _checklistContent() : _contentController.text;
 
-    if (title.isEmpty && content.trim().isEmpty && _mood == null && _attachments.isEmpty && _checklistItems.isEmpty) {
+    if (title.isEmpty && content.trim().isEmpty && _mood == null && _attachments.isEmpty && _checklistItems.isEmpty && _linkedNoteIds.isEmpty) {
       if (mounted) setState(() => _saving = false);
       return;
     }
