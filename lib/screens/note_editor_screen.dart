@@ -833,7 +833,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             imagePath: _imagePath,
           );
 
-    await widget.repository.saveNote(note).timeout(const Duration(seconds: 10));
+    await widget.repository.saveNote(note);
     if (!_hasHapticSaved) {
       _hasHapticSaved = true;
       unawaited(HapticFeedback.lightImpact());
@@ -847,7 +847,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // This makes the save-to-list handoff deterministic even if a stream
     // emission raced with route navigation.
     if (widget.repository is LocalNoteRepository) {
-      await (widget.repository as LocalNoteRepository).refresh().timeout(const Duration(seconds: 5));
+      await (widget.repository as LocalNoteRepository).refresh();
     }
     try {
       for (final item in _checklistItems) {
