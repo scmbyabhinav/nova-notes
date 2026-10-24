@@ -2561,7 +2561,7 @@ class _LinkNotePickerSheetState extends State<_LinkNotePickerSheet> {
                         return ListTile(
                           leading: const Icon(Icons.note_alt_outlined),
                           title: Text(note.title.isEmpty ? 'Untitled note' : note.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text(note.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          subtitle: Text(note.content.trim().replaceAll(RegExp(r'\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
                           onTap: () => Navigator.of(context).pop(note),
                         );
                       },
