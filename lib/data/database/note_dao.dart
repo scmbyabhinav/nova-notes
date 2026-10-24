@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 
-import '../../models/note.dart';
 import 'orah_database.dart';
 
 /// Small persistence boundary for ordinary notes; Vault records stay separate.
