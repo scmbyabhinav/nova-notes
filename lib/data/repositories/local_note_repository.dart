@@ -22,39 +22,32 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Stream<List<Note>> watchNotes() {
-    return Stream.multi(
-      (controller) {
-        var sawLiveUpdate = false;
-
-        late final StreamSubscription<List<Note>> subscription;
-        subscription = _notesController.stream.listen(
-          (notes) {
-            sawLiveUpdate = true;
-            controller.add(notes);
-          },
-          onError: controller.addError,
-        );
-        controller.onCancel = subscription.cancel;
-
-        // Broadcast streams intentionally do not buffer events for listeners
-        // that were not present when the event was published. Seed each new
-        // Home subscriber from persistent storage so it cannot miss the note
-        // created immediately before/around navigation.
-        getNotes().then(
-          (notes) {
-            if (!sawLiveUpdate && !controller.isClosed) {
-              controller.add(List<Note>.unmodifiable(notes));
-            }
-          },
-          onError: (Object error, StackTrace stackTrace) {
-            if (!controller.isClosed) {
-              controller.addError(error, stackTrace);
-            }
-          },
-        );
-      },
-      isBroadcast: true,
-    );
+    // A replaying stream makes every subscriber observe a persisted snapshot
+    // immediately, including consumers created after a write. Each save/delete
+    // publishes synchronously after persistence; no async initial read can race
+    // with, or suppress, the write event.
+    return Stream<List<Note>>.multi((controller) {
+      var cancelled = false;
+      late final StreamSubscription<List<Note>> subscription;
+      subscription = _notesController.stream.listen(
+        (notes) {
+          if (!cancelled) controller.add(notes);
+        },
+        onError: controller.addError,
+      );
+      controller.onCancel = () {
+        cancelled = true;
+        return subscription.cancel();
+      };
+      unawaited(getNotes().then(
+        (notes) {
+          if (!cancelled) controller.add(List<Note>.unmodifiable(notes));
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          if (!cancelled) controller.addError(error, stackTrace);
+        },
+      ));
+    }, isBroadcast: true);
   }
 
   /// Re-publish the persisted snapshot after a navigation boundary.
