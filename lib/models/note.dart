@@ -54,6 +54,7 @@ class Note {
     this.dueAt,
     this.mood,
     this.imagePath,
+    this.fontFamily,
   });
 
   final String id;
@@ -78,6 +79,7 @@ class Note {
   final String? mood;
   /// Primary image selected for this note, if any.
   final String? imagePath;
+  final String? fontFamily;
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -100,6 +102,7 @@ class Note {
         'dueAt': dueAt?.toIso8601String(),
         'mood': mood,
         'imagePath': imagePath,
+        'fontFamily': fontFamily,
       };
 
   factory Note.fromMap(Map<String, dynamic> map) => Note(
@@ -128,6 +131,7 @@ class Note {
         dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
         mood: map['mood'] as String?,
         imagePath: map['imagePath'] as String?,
+        fontFamily: map['fontFamily'] as String?,
       );
 
   int get completedChecklistItems =>
@@ -165,6 +169,8 @@ class Note {
     bool clearMood = false,
     String? imagePath,
     bool clearImagePath = false,
+    String? fontFamily,
+    bool clearFontFamily = false,
   }) {
     return Note(
       id: id,
@@ -187,6 +193,7 @@ class Note {
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
       mood: clearMood ? null : (mood ?? this.mood),
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
+      fontFamily: clearFontFamily ? null : (fontFamily ?? this.fontFamily),
     );
   }
 }
