@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:orah_notes/data/database/orah_database.dart';
+import 'package:orah_notes/data/database/note_dao.dart';
 
 void main() {
   late Directory databaseDirectory;
@@ -106,6 +107,23 @@ void main() {
       'payload',
     ]));
     expect(db.getVersion(), completion(OrahDatabase.schemaVersion));
+  });
+
+  test('NoteDao upserts, lists, counts, and deletes by stable ID', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final db = await OrahDatabase.open(prefs);
+    final dao = NoteDao(db);
+
+    await dao.upsert(note());
+    expect(await dao.count(), 1);
+    expect((await dao.getAllRows()).single['id'], 'note-1');
+
+    await dao.upsert(note(title: 'Updated title'));
+    expect(await dao.count(), 1);
+    expect((await dao.getAllRows()).single['title'], 'Updated title');
+
+    await dao.delete('note-1');
+    expect(await dao.count(), 0);
   });
 
   test('malformed legacy JSON fails without overwriting source data', () async {
