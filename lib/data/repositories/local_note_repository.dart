@@ -22,15 +22,16 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Stream<List<Note>> watchNotes() {
-    // A replaying stream makes every subscriber observe a persisted snapshot
-    // immediately, including consumers created after a write. Each save/delete
-    // publishes synchronously after persistence; no async initial read can race
-    // with, or suppress, the write event.
+    // Each subscriber receives a persisted initial snapshot, then every live
+    // write. The database read is sequenced with the write controller so a
+    // save occurring during initialization cannot leave a subscriber stale.
     return Stream<List<Note>>.multi((controller) {
       var cancelled = false;
+      var sawLiveUpdate = false;
       late final StreamSubscription<List<Note>> subscription;
       subscription = _notesController.stream.listen(
         (notes) {
+          sawLiveUpdate = true;
           if (!cancelled) controller.add(notes);
         },
         onError: controller.addError,
@@ -41,7 +42,9 @@ class LocalNoteRepository implements NoteRepository {
       };
       unawaited(getNotes().then(
         (notes) {
-          if (!cancelled) controller.add(List<Note>.unmodifiable(notes));
+          if (!cancelled && !sawLiveUpdate) {
+            controller.add(List<Note>.unmodifiable(notes));
+          }
         },
         onError: (Object error, StackTrace stackTrace) {
           if (!cancelled) controller.addError(error, stackTrace);
