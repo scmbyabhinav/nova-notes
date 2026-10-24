@@ -26,17 +26,24 @@ class OrahReminderService {
   Future<void> initialize() async {
     if (_initialized) return;
     tzdata.initializeTimeZones();
+    // ORAH's current primary locale is India; keep scheduled DateTimes aligned
+    // with the device's expected local clock rather than timezone package UTC.
+    tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     );
     await _plugin.initialize(settings: settings, onDidReceiveNotificationResponse: _onNotificationResponse);
-    final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    await android?.requestNotificationsPermission();
     final launch = await _plugin.getNotificationAppLaunchDetails();
     if (launch?.didNotificationLaunchApp ?? false) {
       _pendingLaunchPayload = launch?.notificationResponse?.payload;
     }
     _initialized = true;
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    await android?.requestNotificationsPermission();
   }
 
   Future<void> _onNotificationResponse(NotificationResponse response) async {
@@ -158,6 +165,7 @@ class OrahReminderService {
 
   Future<void> scheduleDailyReflection({required TimeOfDay time}) async {
     if (!_initialized) await initialize();
+    await _requestNotificationPermission();
 
     final now = DateTime.now();
     var next = DateTime(now.year, now.month, now.day, time.hour, time.minute);
@@ -196,6 +204,7 @@ class OrahReminderService {
     required DateTime when,
   }) async {
     if (!_initialized) await initialize();
+    await _requestNotificationPermission();
     if (!when.isAfter(DateTime.now())) {
       throw ArgumentError.value(when, 'when', 'Must be a future date/time');
     }
@@ -240,6 +249,7 @@ class OrahReminderService {
     String? payloadChecklistId,
   }) async {
     if (!_initialized) await initialize();
+    await _requestNotificationPermission();
     if (!when.isAfter(DateTime.now())) {
       await cancel(noteId);
       return;
