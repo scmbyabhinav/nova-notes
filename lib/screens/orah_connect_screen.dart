@@ -32,8 +32,6 @@ class OrahConnectScreen extends StatefulWidget {
 class _OrahConnectScreenState extends State<OrahConnectScreen> {
   late final TextEditingController _captionController;
   String? _selectedPlatform;
-  DateTime? _scheduledDate;
-  TimeOfDay? _scheduledTime;
   String? _imagePath;
 
   static const _platforms = <_SharePlatform>[
@@ -141,124 +139,11 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
     );
   }
 
-  Future<void> _schedulePost() async {
-    final date = _scheduledDate;
-    final time = _scheduledTime;
-    final caption = _captionController.text.trim();
-    final platform = _selectedPlatform ?? widget.preferredPlatform;
-    if (date == null || time == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Choose a date and time first.')),
-      );
-      return;
-    }
-    if (caption.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Write a caption before scheduling.')),
-      );
-      return;
-    }
-    if (platform == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Choose a destination before scheduling.')),
-      );
-      return;
-    }
-    final when = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-    if (!when.isAfter(DateTime.now())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Choose a future date and time.')),
-      );
-      return;
-    }
-
-    final id = 'connect-${DateTime.now().microsecondsSinceEpoch}';
-    final post = ScheduledPost(
-      id: id,
-      platform: platform,
-      caption: caption,
-      scheduledAt: when,
-      imagePath: _imagePath,
-    );
-    try {
-      await OrahScheduledPostStore.instance.save(post);
-      await OrahReminderService.instance.scheduleConnectPost(
-        postId: id,
-        platform: platform,
-        caption: caption,
-        when: when,
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Saved locally. ORAH will remind you to share on $platform.'),
-        ),
-      );
-    } catch (error) {
-      await OrahScheduledPostStore.instance.delete(id);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not schedule reminder: $error')),
-      );
-    }
-  }
-
-  Future<void> _pickSchedule() async {
-    final now = DateTime.now();
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _scheduledDate ?? now.add(const Duration(days: 1)),
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365)),
-    );
-    if (date == null || !mounted) return;
-
-    final time = await showTimePicker(
-      context: context,
-      initialTime: _scheduledTime ?? const TimeOfDay(hour: 9, minute: 0),
-    );
-    if (time == null || !mounted) return;
-
-    setState(() {
-      _scheduledDate = date;
-      _scheduledTime = time;
-    });
-  }
-
-  Future<void> _explainSchedulingStatus() async {
-    final scheduled = _scheduledDate != null && _scheduledTime != null;
-    final when = scheduled
-        ? '${MaterialLocalizations.of(context).formatMediumDate(_scheduledDate!)} at ${_scheduledTime!.format(context)}'
-        : 'no date or time selected';
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Scheduling is coming next'),
-        content: Text(
-          'You selected $when. ORAH Connect currently shares through your phone’s share sheet. '
-          'This date/time is only a draft preference: no post or reminder has been scheduled, '
-          'and nothing will publish automatically yet. We are keeping this version free by '
-          'avoiding paid publishing APIs and server hosting.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Got it'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final selected = _platforms.where((item) => item.name == _selectedPlatform);
     final selectedPlatform = selected.isEmpty ? null : selected.first;
-    final scheduledLabel = _scheduledDate == null || _scheduledTime == null
-        ? 'Choose a date and time (optional)'
-        : '${MaterialLocalizations.of(context).formatMediumDate(_scheduledDate!)} · ${_scheduledTime!.format(context)}';
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('ORAH Connect'),
@@ -349,56 +234,9 @@ class _OrahConnectScreenState extends State<OrahConnectScreen> {
               ),
             ),
           const SizedBox(height: 14),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.schedule_rounded),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Schedule a share reminder',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Save this draft on your phone and get a reminder. You will still confirm the final share; ORAH never auto-publishes.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: _pickSchedule,
-                    icon: const Icon(Icons.calendar_month_outlined),
-                    label: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(scheduledLabel),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.tonalIcon(
-                      onPressed: _schedulePost,
-                      icon: const Icon(Icons.schedule_send_rounded),
-                      label: const Text('Schedule reminder'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
           const SizedBox(height: 10),
           Text(
-            'Free sharing through your device. Text links open supported destinations where available; image shares use the native share sheet. Email attachments also use the share sheet.',
+            'Sharing sends this note now. To set a reminder, use the reminder control in the note editor.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
