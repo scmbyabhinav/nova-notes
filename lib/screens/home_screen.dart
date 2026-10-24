@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final loadGeneration = ++_notesLoadGeneration;
     try {
       final repository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
+          ;
 
       // Keep one live subscription for the lifetime of HomeScreen.
       _notesSubscription ??= repository.watchNotes().listen(
@@ -160,10 +160,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         },
       );
 
-      await repository.refresh().timeout(const Duration(seconds: 8));
+      await repository.refresh();
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
       final notes = await repository.getNotes()
-          .timeout(const Duration(seconds: 8));
+          ;
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
       setState(() => _loadError = null);
       _applyNotes(notes);
