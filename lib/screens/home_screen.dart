@@ -55,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Timer? _trashSnackBarTimer;
   Timer? _reflectionCheckTimer;
   bool _openingScheduledReflection = false;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -62,7 +63,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
     _loadNotes();
-    _reflectionCheckTimer = Timer.periodic(const Duration(minutes: 1), (_) => _checkScheduledReflection());
+    // Widget tests and inactive app routes should not keep a periodic timer
+    // alive. Scheduled reflections are checked when Home becomes active/resumes.
+    if (widget.isActive) {
+      _reflectionCheckTimer = Timer.periodic(
+        const Duration(minutes: 1),
+        (_) => _checkScheduledReflection(),
+      );
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
   }
 
@@ -74,6 +82,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     // not fire when switching tabs, so refresh preferences when Home returns.
     if (!oldWidget.isActive && widget.isActive) {
       _loadPreferences();
+      _reflectionCheckTimer ??= Timer.periodic(
+        const Duration(minutes: 1),
+        (_) => _checkScheduledReflection(),
+      );
+      _checkScheduledReflection();
+    } else if (oldWidget.isActive && !widget.isActive) {
+      _reflectionCheckTimer?.cancel();
+      _reflectionCheckTimer = null;
     }
   }
 
@@ -102,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (state == AppLifecycleState.resumed) {
       // Reconcile persisted state after Android suspends/resumes the app.
       _loadNotes();
+      if (widget.isActive) _checkScheduledReflection();
     }
   }
 
@@ -200,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   }
 
   Future<void> _checkScheduledReflection() async {
-    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+    if (_disposed || !mounted || !widget.isActive || _openingScheduledReflection) return;
     final prefs = await SharedPreferences.getInstance();
     if (!(prefs.getBool('orah_daily_reflection_enabled') ?? false)) return;
     final hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
@@ -220,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
+    _disposed = true;
     _trashSnackBarTimer?.cancel();
     _reflectionCheckTimer?.cancel();
     super.dispose();
