@@ -1028,7 +1028,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       case 'Lora':
         return GoogleFonts.lora(textStyle: base);
       case 'Caveat':
-        return GoogleFonts.caveat(textStyle: base?.copyWith(fontSize: (base.fontSize ?? 16) + 4));
+        return GoogleFonts.caveat(textStyle: base?.copyWith(fontSize: (base?.fontSize ?? 16) + 4));
       case 'JetBrains Mono':
         return GoogleFonts.jetBrainsMono(textStyle: base);
       default:
