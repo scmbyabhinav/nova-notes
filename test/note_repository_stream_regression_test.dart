@@ -35,10 +35,13 @@ void main() {
     repository = await createRepository();
     final note = makeNote('save-stream-test');
 
-    final stream = StreamIterator<List<Note>>(repository.watchNotes());
-    expect(await stream.moveNext(), isTrue); // Consume the initial persisted snapshot.
+    final stream = repository.watchNotes();
+    final initial = Completer<List<Note>>();
+    final seedSubscription = stream.listen((notes) { if (!initial.isCompleted) initial.complete(notes); });
+    await initial.future;
+    await seedSubscription.cancel();
     final event = expectLater(
-      stream,
+      stream.skip(1),
       emits(
         predicate<List<Note>>(
           (notes) =>
@@ -59,10 +62,13 @@ void main() {
     final note = makeNote('delete-stream-test');
     await repository.saveNote(note);
 
-    final stream = StreamIterator<List<Note>>(repository.watchNotes());
-    expect(await stream.moveNext(), isTrue); // Consume the initial persisted snapshot.
+    final stream = repository.watchNotes();
+    final initial = Completer<List<Note>>();
+    final seedSubscription = stream.listen((notes) { if (!initial.isCompleted) initial.complete(notes); });
+    await initial.future;
+    await seedSubscription.cancel();
     final event = expectLater(
-      stream,
+      stream.skip(1),
       emits(
         predicate<List<Note>>((notes) => notes.isEmpty),
       ),
@@ -77,10 +83,13 @@ void main() {
     final note = makeNote('trash-restore-stream-test');
     await repository.saveNote(note);
 
-    final stream = StreamIterator<List<Note>>(repository.watchNotes());
-    expect(await stream.moveNext(), isTrue); // Consume the initial persisted snapshot.
+    final stream = repository.watchNotes();
+    final initial = Completer<List<Note>>();
+    final seedSubscription = stream.listen((notes) { if (!initial.isCompleted) initial.complete(notes); });
+    await initial.future;
+    await seedSubscription.cancel();
     final trashEvent = expectLater(
-      stream,
+      stream.skip(1),
       emits(
         predicate<List<Note>>(
           (notes) => notes.length == 1 && notes.single.isTrashed,
@@ -91,7 +100,7 @@ void main() {
     await trashEvent;
 
     final restoreEvent = expectLater(
-      stream,
+      stream.skip(1),
       emits(
         predicate<List<Note>>(
           (notes) => notes.length == 1 && !notes.single.isTrashed,
