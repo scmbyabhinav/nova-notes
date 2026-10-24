@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/local_note_repository.dart';
@@ -84,6 +85,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   bool _isFavorite = false;
   bool _isArchived = false;
   DateTime? _dueAt;
+  String? _fontFamily;
   String? _mood;
   String? _imagePath;
   int? _noteColor;
@@ -140,6 +142,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _privateUnlocked = !locked;
     if (locked) _lockedCiphertext = existing?.content;
     _dueAt = existing?.dueAt ?? widget.initialDueAt;
+    _fontFamily = existing?.fontFamily;
     _mood = existing?.mood;
     _imagePath = existing?.imagePath;
     _noteColor = existing?.color;
@@ -811,6 +814,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            fontFamily: _fontFamily,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -830,6 +834,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            fontFamily: _fontFamily,
           );
 
     await widget.repository.saveNote(note).timeout(const Duration(seconds: 10));
@@ -1002,7 +1007,112 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
-  Future<void> _clearDueDate() async { setState(() { _dueAt = null; _hasChanges = true; }); await _save(); }
+  Future<void> _clearDueDate() async {
+    setState(() { _dueAt = null; _hasChanges = true; });
+    await OrahReminderService.instance.cancel(_noteId);
+    await _save();
+  }
+
+  Future<void> _chooseFont(String? font) async {
+    setState(() { _fontFamily = font; _hasChanges = true; });
+    await _save();
+  }
+
+  TextStyle _noteBodyStyle(ThemeData theme) {
+    final base = (_isCapturingNoteCard ? ThemeData.light().textTheme : theme.textTheme)
+        .bodyLarge?.copyWith(
+          color: _isCapturingNoteCard ? const Color(0xFF202124) : null,
+          height: 1.55,
+        );
+    switch (_fontFamily) {
+      case 'Lora':
+        return GoogleFonts.lora(textStyle: base);
+      case 'Caveat':
+        return GoogleFonts.caveat(textStyle: base?.copyWith(fontSize: (base.fontSize ?? 16) + 4));
+      case 'JetBrains Mono':
+        return GoogleFonts.jetBrainsMono(textStyle: base);
+      default:
+        return base ?? const TextStyle();
+    }
+  }
+
+  Future<void> _showReminderManager() async {
+    final allNotes = await widget.repository.getNotes();
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, refreshSheet) {
+          final noteReminders = allNotes.where((n) => n.dueAt != null && !n.isTrashed && !n.isLocked).toList()
+            ..sort((a, b) => a.dueAt!.compareTo(b.dueAt!));
+          final taskReminders = <({Note note, ChecklistItem item})>[
+            for (final n in allNotes)
+              if (!n.isTrashed && !n.isLocked)
+                for (final item in n.checklistItems)
+                  if (item.dueAt != null && !item.isDone) (note: n, item: item),
+          ]..sort((a, b) => a.item.dueAt!.compareTo(b.item.dueAt!));
+          if (noteReminders.isEmpty && taskReminders.isEmpty) {
+            return const SafeArea(child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Icon(Icons.notifications_off_outlined, size: 36),
+                SizedBox(height: 12),
+                Text('No scheduled reminders'),
+              ]),
+            ));
+          }
+          return SafeArea(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.65,
+              child: ListView(
+                children: [
+                  const ListTile(title: Text('Scheduled reminders'), subtitle: Text('Cancel a reminder to remove its notification.')),
+                  for (final n in noteReminders)
+                    ListTile(
+                      leading: const Icon(Icons.notifications_active_outlined),
+                      title: Text(n.title.isEmpty ? 'Untitled note' : n.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: Text(DateFormat('EEE, d MMM · h:mm a').format(n.dueAt!)),
+                      trailing: IconButton(
+                        tooltip: 'Cancel reminder',
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () async {
+                          await OrahReminderService.instance.cancel(n.id);
+                          await widget.repository.saveNote(n.copyWith(clearDueAt: true, updatedAt: DateTime.now()));
+                          if (n.id == _noteId && mounted) setState(() { _dueAt = null; _hasChanges = false; });
+                          allNotes.removeWhere((item) => item.id == n.id);
+                          refreshSheet(() {});
+                        },
+                      ),
+                    ),
+                  for (final entry in taskReminders)
+                    ListTile(
+                      leading: const Icon(Icons.checklist_outlined),
+                      title: Text(entry.item.text, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: Text('${entry.note.title.isEmpty ? 'Untitled note' : entry.note.title} · ${DateFormat('EEE, d MMM · h:mm a').format(entry.item.dueAt!)}'),
+                      trailing: IconButton(
+                        tooltip: 'Cancel reminder',
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () async {
+                          await OrahReminderService.instance.cancel('checklist:${entry.item.id}');
+                          final updatedItems = entry.note.checklistItems.map((item) =>
+                            item.id == entry.item.id ? item.copyWith(clearDueAt: true) : item).toList();
+                          await widget.repository.saveNote(entry.note.copyWith(checklistItems: updatedItems, updatedAt: DateTime.now()));
+                          allNotes.removeWhere((item) => item.id == entry.note.id);
+                          allNotes.add(entry.note.copyWith(checklistItems: updatedItems, updatedAt: DateTime.now()));
+                          refreshSheet(() {});
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   Future<void> _showTemplates() async {
     final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
@@ -1471,20 +1581,22 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               onPressed: _clearDueDate,
               icon: const Icon(Icons.notifications_off_outlined),
             ),
-          IconButton(
-            tooltip: _dueAt == null ? 'Schedule reminder' : 'Edit reminder',
-            onPressed: _setDueDate,
-            icon: Icon(
-              _dueAt == null ? Icons.notifications_active_outlined : Icons.notifications_active,
-              color: _dueAt == null ? null : theme.colorScheme.primary,
-            ),
+          PopupMenuButton<String>(
+            tooltip: 'Note font',
+            icon: const Icon(Icons.text_fields_rounded),
+            onSelected: (value) => _chooseFont(value == 'System' ? null : value),
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'System', child: Row(children: [if (_fontFamily == null) const Icon(Icons.check, size: 18), const SizedBox(width: 8), const Text('System')])),
+              PopupMenuItem(value: 'Lora', child: Row(children: [if (_fontFamily == 'Lora') const Icon(Icons.check, size: 18), const SizedBox(width: 8), Text('Lora', style: GoogleFonts.lora())])),
+              PopupMenuItem(value: 'Caveat', child: Row(children: [if (_fontFamily == 'Caveat') const Icon(Icons.check, size: 18), const SizedBox(width: 8), Text('Caveat', style: GoogleFonts.caveat(fontSize: 22))])),
+              PopupMenuItem(value: 'JetBrains Mono', child: Row(children: [if (_fontFamily == 'JetBrains Mono') const Icon(Icons.check, size: 18), const SizedBox(width: 8), Text('JetBrains Mono', style: GoogleFonts.jetBrainsMono())])),
+            ],
           ),
-          if (_dueAt != null)
-            IconButton(
-              tooltip: 'Clear reminder',
-              onPressed: _clearDueDate,
-              icon: const Icon(Icons.notifications_off_outlined),
-            ),
+          IconButton(
+            tooltip: 'Manage reminders',
+            onPressed: _showReminderManager,
+            icon: const Icon(Icons.event_note_outlined),
+          ),
           IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
@@ -1887,16 +1999,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             textInputAction: TextInputAction.newline,
                             minLines: 18,
                             maxLines: null,
-                            style: (_isCapturingNoteCard
-                                    ? ThemeData.light().textTheme
-                                    : theme.textTheme)
-                                .bodyLarge
-                                ?.copyWith(
-                                  color: _isCapturingNoteCard
-                                      ? const Color(0xFF202124)
-                                      : null,
-                                  height: 1.55,
-                                ),
+                            style: _noteBodyStyle(theme),
                             decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           ),
                       ],
