@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
-
+import '../database/note_dao.dart';
 import '../database/orah_database.dart';
 
 import '../../models/note.dart';
@@ -69,11 +68,11 @@ class LocalNoteRepository implements NoteRepository {
   @override
   Future<List<Note>> getNotes() async {
     final db = await OrahDatabase.open(_preferences);
-    final rows = await db.query('notes', orderBy: 'updated_at DESC');
+    final rows = await NoteDao(db).getAllRows();
     final notes = <Note>[];
     for (final row in rows) {
       try {
-        notes.add(_fromMap(OrahDatabase.mapFromRow(row)));
+        notes.add(_fromMap(row));
       } catch (_) {
         // Skip a corrupt row without hiding otherwise valid notes.
       }
@@ -202,25 +201,20 @@ class LocalNoteRepository implements NoteRepository {
       }
     }
 
-    final ordinaryRows = <Map<String, Object?>>[];
+    final ordinaryPayloads = <Map<String, dynamic>>[];
     for (final note in notes) {
       final encoded = await _toMap(note);
       if (note.isLocked) {
         vaultById[note.id] = encoded;
       } else {
-        ordinaryRows.add(OrahDatabase.rowFor(encoded));
+        ordinaryPayloads.add(encoded);
         vaultById.remove(note.id);
       }
     }
 
     // Keep the Vault in its existing preference store; ordinary notes are
     // replaced atomically in SQLite so a failed write cannot leave a partial list.
-    await db.transaction((txn) async {
-      await txn.delete('notes');
-      for (final row in ordinaryRows) {
-        await txn.insert('notes', row, conflictAlgorithm: ConflictAlgorithm.replace);
-      }
-    });
+    await NoteDao(db).replaceAll(ordinaryPayloads);
     await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()))
         .timeout(const Duration(seconds: 5));
   }
