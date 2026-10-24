@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,8 +35,10 @@ void main() {
     repository = await createRepository();
     final note = makeNote('save-stream-test');
 
+    final stream = StreamIterator<List<Note>>(repository.watchNotes());
+    expect(await stream.moveNext(), isTrue); // Consume the initial persisted snapshot.
     final event = expectLater(
-      repository.watchNotes().skip(1),
+      stream,
       emits(
         predicate<List<Note>>(
           (notes) =>
@@ -55,8 +59,10 @@ void main() {
     final note = makeNote('delete-stream-test');
     await repository.saveNote(note);
 
+    final stream = StreamIterator<List<Note>>(repository.watchNotes());
+    expect(await stream.moveNext(), isTrue); // Consume the initial persisted snapshot.
     final event = expectLater(
-      repository.watchNotes().skip(1),
+      stream,
       emits(
         predicate<List<Note>>((notes) => notes.isEmpty),
       ),
@@ -71,8 +77,10 @@ void main() {
     final note = makeNote('trash-restore-stream-test');
     await repository.saveNote(note);
 
+    final stream = StreamIterator<List<Note>>(repository.watchNotes());
+    expect(await stream.moveNext(), isTrue); // Consume the initial persisted snapshot.
     final trashEvent = expectLater(
-      repository.watchNotes().skip(1),
+      stream,
       emits(
         predicate<List<Note>>(
           (notes) => notes.length == 1 && notes.single.isTrashed,
@@ -83,7 +91,7 @@ void main() {
     await trashEvent;
 
     final restoreEvent = expectLater(
-      repository.watchNotes().skip(1),
+      stream,
       emits(
         predicate<List<Note>>(
           (notes) => notes.length == 1 && !notes.single.isTrashed,
