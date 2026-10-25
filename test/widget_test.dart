@@ -51,7 +51,12 @@ void main() {
   });
 
   testWidgets('quick capture opens a note immediately', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    // Isolate the capture action from Home's independent initial snapshot and
+    // scheduled-reflection work; the editor still initializes the repository.
+    await tester.pumpWidget(const OrahApp(
+      skipRegistrationForTesting: true,
+      skipHomeRepositoryLoadForTesting: true,
+    ));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
