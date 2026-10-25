@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -95,25 +96,42 @@ void main() {
   });
 
   testWidgets('final voice transcript is inserted and autosaved', (tester) async {
+    OrahTestDiagnostics.setPhase('body');
+    OrahTestDiagnostics.log('VOICE_TEST body ENTER');
+    try {
+    OrahTestDiagnostics.log('VOICE checkpoint ENTER: _pumpEditor');
     final state = await _pumpEditor(tester);
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: _pumpEditor');
 
+    OrahTestDiagnostics.log('VOICE checkpoint ENTER: enterText');
     await tester.enterText(
       find.byWidgetPredicate((widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...'),
       'Existing note',
     );
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: enterText');
+    OrahTestDiagnostics.log('VOICE checkpoint ENTER: microphone tap');
     await tester.tap(find.byType(FloatingActionButton));
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: microphone tap');
     await tester.pump();
-
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: pump after microphone');
+    OrahTestDiagnostics.log('VOICE checkpoint ENTER: emit final transcript');
     state.speech.emitFinal('remember the supplier tomorrow');
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: emit final transcript');
     await tester.pump();
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: pump after final transcript');
     await tester.pump(const Duration(milliseconds: 700));
-
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: 700ms autosave pump');
+    OrahTestDiagnostics.log('VOICE checkpoint ENTER: repository.getNotes');
     final notes = await state.repository.getNotes();
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: repository.getNotes count=${notes.length}');
     expect(notes, hasLength(1));
     expect(
       notes.single.content,
       'Existing note\nremember the supplier tomorrow',
     );
+    } finally {
+      OrahTestDiagnostics.log('VOICE_TEST body EXIT from finally');
+    }
   });
 
   testWidgets('voice input does not change the note type', (tester) async {

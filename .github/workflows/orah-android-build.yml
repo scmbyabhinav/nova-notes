@@ -135,6 +135,34 @@ jobs:
             echo "Quick Capture stability run $attempt/10"
             timeout --signal=TERM --kill-after=5s 90s flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --reporter expanded
           done
+      - name: Diagnose voice autosave in isolation
+        id: focused_voice
+        continue-on-error: true
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=10s 120s flutter test test/speech_to_text_test.dart --plain-name "final voice transcript is inserted and autosaved" --concurrency=1 --reporter expanded
+      - name: Diagnose Quick Capture long-press in isolation
+        id: focused_longpress
+        continue-on-error: true
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=10s 120s flutter test test/widget_test.dart --plain-name "long-press quick capture opens checklist options" --concurrency=1 --reporter expanded
+      - name: Require isolated diagnostics to pass before full suite
+        if: always()
+        shell: bash
+        env:
+          VOICE_OUTCOME: ${{ steps.focused_voice.outcome }}
+          LONGPRESS_OUTCOME: ${{ steps.focused_longpress.outcome }}
+        run: |
+          set -euo pipefail
+          echo "focused voice test outcome: $VOICE_OUTCOME"
+          echo "focused long-press test outcome: $LONGPRESS_OUTCOME"
+          test "$VOICE_OUTCOME" = success
+          test "$LONGPRESS_OUTCOME" = success
       - name: Full test suite
         timeout-minutes: 37
         shell: bash

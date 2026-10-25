@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
+import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -96,33 +97,45 @@ void main() {
   });
 
   testWidgets('long-press quick capture opens checklist options', (tester) async {
+    OrahTestDiagnostics.setPhase('body');
+    OrahTestDiagnostics.log('LONG_PRESS_TEST body ENTER');
+    try {
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint ENTER: pumpWidget');
     await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: pumpWidget');
     await tester.pump();
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: initial pump');
 
     final quickCaptureFab = find.byTooltip(
       'Quick capture. Long-press for checklist and quick options.',
     );
     final quickCaptureCenter = tester.getCenter(quickCaptureFab);
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint ENTER: longPressAt');
     await tester.longPressAt(quickCaptureCenter);
-    debugPrint('LONG PRESS AFTER GESTURE: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: longPressAt');
     await tester.pump();
-    debugPrint('LONG PRESS AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: pump after longPressAt');
     await tester.pump(const Duration(milliseconds: 300));
-    debugPrint('LONG PRESS AFTER PUMP 300MS: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: 300ms pump after longPressAt');
     await tester.pump();
-    debugPrint('LONG PRESS AFTER PUMP 2: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: second pump after longPressAt');
 
     expect(find.text('Quick checklist'), findsOneWidget);
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint ENTER: tap Quick checklist');
     await tester.tap(find.text('Quick checklist'));
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: tap Quick checklist');
     await tester.pump();
-    debugPrint('CHECKLIST TAP AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: pump after checklist tap');
     await tester.pump(const Duration(milliseconds: 300));
-    debugPrint('CHECKLIST TAP AFTER PUMP 300MS: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: 300ms pump after checklist tap');
     await tester.pump();
-    debugPrint('CHECKLIST TAP AFTER PUMP 2: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
+    OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: second pump after checklist tap');
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
+    } finally {
+      OrahTestDiagnostics.log('LONG_PRESS_TEST body EXIT from finally');
+    }
   });
 
   testWidgets('new note appears in home list immediately after editor closes', (tester) async {
