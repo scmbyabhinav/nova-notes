@@ -757,9 +757,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   void _onChanged() {
     _hasChanges = true;
-    _save();
+    // Coalesce controller notifications (especially enterText and speech
+    // transcripts) into one write. Every keystroke previously started an
+    // overlapping read/replace/refresh transaction against the same database.
+    _saveTimer?.cancel();
+    _saveTimer = Timer(const Duration(milliseconds: 250), () {
+      _saveTimer = null;
+      unawaited(_save());
+    });
   }
+
   Future<void> _save() async {
+    _saveTimer?.cancel();
+    _saveTimer = null;
     if (!_hasChanges && widget.note != null) return;
 
     if (mounted) setState(() { _saving = true; _saveFailed = false; });
@@ -854,12 +864,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         if (item.dueAt != null && !item.isDone) {
           await OrahReminderService.instance.schedule(noteId: 'checklist:${item.id}', title: item.text, when: item.dueAt!, payloadNoteId: _noteId);
         } else {
-          await OrahReminderService.instance.cancel('checklist:${item.id}');
+          // Only contact the notification plugin when this edit actually
+          // removed a previously scheduled checklist reminder.
+          final previouslyScheduled = widget.note?.checklistItems.any(
+                (oldItem) => oldItem.id == item.id && oldItem.dueAt != null && !oldItem.isDone,
+              ) ??
+              false;
+          if (previouslyScheduled) {
+            await OrahReminderService.instance.cancel('checklist:${item.id}');
+          }
         }
       }
       if (_dueAt != null) {
         await OrahReminderService.instance.schedule(noteId: _noteId, title: note.title, when: _dueAt!);
-      } else {
+      } else if (widget.note?.dueAt != null) {
+        // No reminder exists to cancel for a brand-new note without a due date.
         await OrahReminderService.instance.cancel(_noteId);
       }
     } catch (_) {
