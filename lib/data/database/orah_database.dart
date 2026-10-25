@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:path/path.dart' as p;
@@ -66,9 +67,20 @@ class OrahDatabase {
         await _migrateLegacyJson(db, preferences, legacy);
         print('[ORAH-DIAG] sqlite: legacy migration completed');
       }
-      print('[ORAH-DIAG] sqlite: writing migration marker');
-      final markerSaved = await preferences.setBool(migrationMarkerKey, true);
-      print('[ORAH-DIAG] sqlite: migration marker write completed result=$markerSaved');
+      // The marker is an idempotency optimization, not part of the SQLite
+      // transaction. Do not let a stalled preferences-store write keep the
+      // database unavailable after schema creation and migration have succeeded.
+      // If it does not persist, the next launch safely retries the idempotent
+      // migration (ordinary note inserts use ConflictAlgorithm.ignore).
+      print('[ORAH-DIAG] sqlite: scheduling migration marker write');
+      unawaited(preferences.setBool(migrationMarkerKey, true).then<void>(
+        (saved) {
+          print('[ORAH-DIAG] sqlite: migration marker write completed result=$saved');
+        },
+        onError: (Object error, StackTrace stackTrace) {
+          print('[ORAH-DIAG] sqlite: migration marker write failed: $error');
+        },
+      ));
     }
     print('[ORAH-DIAG] sqlite: database initialization finished');
     return db;
