@@ -26,7 +26,7 @@ class OrahPreferencesProvider {
       final preferences = await pending;
       if (generation == _generation) _instance = preferences;
       return preferences;
-    } catch (error, stackTrace) {
+    } catch (_) {
       if (identical(_pending, pending)) _pending = null;
       rethrow;
     }

@@ -28,7 +28,7 @@ class NoteRepositoryProvider {
       final repository = await pending;
       if (generation == _generation) _repository = repository;
       return repository;
-    } catch (error, stackTrace) {
+    } catch (_) {
       // A failed initialization must not poison future retry attempts.
       if (identical(_pending, pending)) _pending = null;
       rethrow;

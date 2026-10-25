@@ -171,12 +171,31 @@ void main() {
     expect(prefs.getString(OrahDatabase.legacyNotesKey), legacy);
   });
 
+
+  test('SQLite import failure rolls back schema and version while preserving source', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final invalid = note()..['createdAt'] = 123;
+    final legacy = jsonEncode([invalid]);
+    await prefs.setString(OrahDatabase.legacyNotesKey, legacy);
+
+    await expectLater(OrahDatabase.open(prefs), throwsA(anything));
+    expect(prefs.getString(OrahDatabase.legacyNotesKey), legacy);
+
+    final db = await databaseFactoryFfi.openDatabase('${databaseDirectory.path}/orah_notes.db');
+    expect(await db.getVersion(), 0);
+    final tables = await db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('notes', 'migration_state')");
+    expect(tables, isEmpty);
+    await db.close();
+  });
+
   test('malformed legacy JSON fails without overwriting source data', () async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(OrahDatabase.legacyNotesKey, '{not-json');
 
     await expectLater(OrahDatabase.open(prefs), throwsA(anything));
     expect(prefs.getString(OrahDatabase.legacyNotesKey), '{not-json');
-    expect(prefs.getString(OrahDatabase.legacyNotesKey), '{not-json');
+    final db = await databaseFactoryFfi.openDatabase('${databaseDirectory.path}/orah_notes.db');
+    expect(await db.getVersion(), 0);
+    await db.close();
   });
 }
