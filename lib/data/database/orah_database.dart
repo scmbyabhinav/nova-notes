@@ -187,6 +187,18 @@ class OrahDatabase {
 
   /// Test-only reset. Production callers should never close/delete the database.
   static Future<void> closeForTesting() async {
+    // A widget can start opening SQLite and then be disposed before the
+    // future completes. Never clear _opening while that open is still in
+    // flight: doing so permits a second connection to race the first one.
+    final pendingOpen = _opening;
+    if (pendingOpen != null) {
+      try {
+        await pendingOpen;
+      } catch (_) {
+        // Preserve the original open error; cleanup should still reset state.
+      }
+    }
+
     final db = _instance;
     _instance = null;
     _opening = null;
