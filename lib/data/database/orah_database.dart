@@ -18,14 +18,20 @@ class OrahDatabase {
   static Future<Database>? _opening;
 
   static Future<Database> open(SharedPreferences preferences) async {
+    print('[ORAH-DIAG] sqlite.open entered');
     final existing = _instance;
-    if (existing != null && existing.isOpen) return existing;
+    if (existing != null && existing.isOpen) {
+      print('[ORAH-DIAG] sqlite.open using cached database');
+      return existing;
+    }
     final pending = _opening;
     if (pending != null) return pending;
+    print('[ORAH-DIAG] sqlite.open starting open/migration');
     final future = _openAndMigrate(preferences);
     _opening = future;
     try {
       final db = await future;
+      print('[ORAH-DIAG] sqlite.open completed');
       _instance = db;
       return db;
     } finally {
@@ -34,7 +40,10 @@ class OrahDatabase {
   }
 
   static Future<Database> _openAndMigrate(SharedPreferences preferences) async {
+    print('[ORAH-DIAG] sqlite: resolving database directory');
     final root = await getDatabasesPath();
+    print('[ORAH-DIAG] sqlite: database directory resolved to $root');
+    print('[ORAH-DIAG] sqlite: calling openDatabase');
     final db = await openDatabase(
       p.join(root, 'orah_notes.db'),
       version: schemaVersion,
@@ -43,6 +52,7 @@ class OrahDatabase {
         if (oldVersion < 2) await _createSchema(db);
       },
     );
+    print('[ORAH-DIAG] sqlite: openDatabase returned; checking migration marker');
 
     // Migration is idempotent and transactional. Do not mark completion until
     // every valid record has been inserted and the Vault split has succeeded.
@@ -53,7 +63,9 @@ class OrahDatabase {
         await _migrateLegacyJson(db, preferences, legacy);
       }
       await preferences.setBool(migrationMarkerKey, true);
+      print('[ORAH-DIAG] sqlite: migration marker persisted');
     }
+    print('[ORAH-DIAG] sqlite: database initialization finished');
     return db;
   }
 

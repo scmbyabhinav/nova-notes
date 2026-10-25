@@ -51,27 +51,39 @@ void main() {
   });
 
   testWidgets('quick capture opens a note immediately', (tester) async {
+    print('[ORAH-DIAG] TEST: quick capture test started');
     // Isolate the capture action from Home's independent initial snapshot and
     // scheduled-reflection work; the editor still initializes the repository.
     await tester.pumpWidget(const OrahApp(
       skipRegistrationForTesting: true,
       skipHomeRepositoryLoadForTesting: true,
     ));
+    print('[ORAH-DIAG] TEST: pumpWidget completed');
     await tester.pump();
+    print('[ORAH-DIAG] TEST: initial pump completed');
 
     final quickCaptureFab = find.byTooltip(
       'Quick capture. Long-press for checklist and quick options.',
     );
+    print('[ORAH-DIAG] TEST: tapping Quick Capture');
     await tester.tap(quickCaptureFab);
+    print('[ORAH-DIAG] TEST: tap completed');
     await tester.pump();
+    print('[ORAH-DIAG] TEST: post-tap pump completed');
     await tester.pump(const Duration(milliseconds: 300));
+    print('[ORAH-DIAG] TEST: 300ms pump completed');
     await tester.pump();
+    print('[ORAH-DIAG] TEST: final editor pump completed');
 
+    print('[ORAH-DIAG] TEST: asserting editor title');
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Start writing...'), findsOneWidget);
+    print('[ORAH-DIAG] TEST: editor assertions passed');
 
     await tester.pageBack();
+    print('[ORAH-DIAG] TEST: pageBack completed');
     await tester.pump(const Duration(milliseconds: 300));
+    print('[ORAH-DIAG] TEST: teardown pump completed');
   });
 
   testWidgets('long-press quick capture opens checklist options', (tester) async {

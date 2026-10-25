@@ -119,8 +119,19 @@ jobs:
         run: flutter gen-l10n
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
-      - name: Test
-        run: flutter test
+      - name: Diagnose Quick Capture (bounded)
+        timeout-minutes: 7
+        shell: bash
+        run: |
+          set -uo pipefail
+          echo "Running only the Quick Capture widget test with a 5-minute wall-clock limit."
+          timeout --signal=TERM --kill-after=10s 5m flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --reporter expanded
+      - name: Full test suite
+        timeout-minutes: 37
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=15s 35m flutter test --reporter expanded
       - name: Configure Android JVM compatibility
         run: |
           mkdir -p ~/.gradle
