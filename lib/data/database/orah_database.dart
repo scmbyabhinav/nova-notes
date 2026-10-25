@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:path/path.dart' as p;
@@ -21,6 +22,8 @@ class OrahDatabase {
   static const vaultNotesKey = 'orah_vault_notes_v1';
   static Database? _instance;
   static Future<Database>? _opening;
+  static int _activeOperations = 0;
+  static Completer<void>? _operationsDrained;
 
   static Future<Database> open(SharedPreferences preferences) async {
     final existing = _instance;
@@ -214,8 +217,30 @@ class OrahDatabase {
     return const [];
   }
 
+  /// Tracks in-flight repository work for deterministic test teardown.
+  static Future<T> trackOperation<T>(Future<T> Function() operation) async {
+    if (_activeOperations == 0) _operationsDrained = Completer<void>();
+    _activeOperations++;
+    try {
+      return await operation();
+    } finally {
+      _activeOperations--;
+      if (_activeOperations == 0 && !(_operationsDrained?.isCompleted ?? true)) {
+        _operationsDrained!.complete();
+      }
+    }
+  }
+
+  static Future<void> waitForOperationsForTesting() async {
+    final pending = _operationsDrained;
+    if (_activeOperations > 0 && pending != null) {
+      await pending.future.timeout(const Duration(seconds: 15));
+    }
+  }
+
   /// Test-only reset. Production callers should never close/delete the database.
   static Future<void> closeForTesting() async {
+    await waitForOperationsForTesting();
     // A widget can start opening SQLite and then be disposed before the
     // future completes. Never clear _opening while that open is still in
     // flight: doing so permits a second connection to race the first one.
