@@ -5,31 +5,26 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:orah_notes/data/database/orah_database.dart';
 
-/// Configure a native SQLite implementation and give every test its own
-/// database directory. Without per-test isolation, concurrently executing
-/// test files can open the same orah_notes.db and contaminate or lock each
-/// other's data, making stream and widget tests flaky or appear to hang.
+/// Configure native SQLite and give each test its own database directory.
+///
+/// Do not delete these directories in tearDown: widget callbacks and debounced
+/// autosaves may still be completing after a test's last pump. Removing an
+/// open database file causes SQLite SQLITE_IOERR (1802) in the next async
+/// transaction. The OS cleans these uniquely named temp directories later.
 Future<void> testExecutable(Future<void> Function() testMain) async {
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
 
-  Directory? isolatedDatabaseDirectory;
-
   setUp(() async {
     await OrahDatabase.closeForTesting();
-    isolatedDatabaseDirectory =
-        await Directory.systemTemp.createTemp('orah_test_db_');
-    await databaseFactoryFfi
-        .setDatabasesPath(isolatedDatabaseDirectory!.path);
+    final directory = await Directory.systemTemp.createTemp('orah_test_db_');
+    await databaseFactoryFfi.setDatabasesPath(directory.path);
   });
 
   tearDown(() async {
+    // Close connections, but deliberately leave the directory on disk so any
+    // late async operation cannot target a deleted SQLite file.
     await OrahDatabase.closeForTesting();
-    final directory = isolatedDatabaseDirectory;
-    isolatedDatabaseDirectory = null;
-    if (directory != null && await directory.exists()) {
-      await directory.delete(recursive: true);
-    }
   });
 
   await testMain();
