@@ -52,7 +52,10 @@ void main() {
 
   testWidgets('quick capture opens a note immediately', (tester) async {
     // Keep the hint tooltip/auto-hide timer out of this navigation-only test.
-    SharedPreferences.setMockInitialValues({'orah_quick_capture_hint_dismissed': true});
+    SharedPreferences.setMockInitialValues({
+      'orah_quick_capture_hint_dismissed': true,
+      'orah_voice_hint_shown': true,
+    });
     print('[ORAH-DIAG] TEST: started');
     // Isolate capture/navigation from Home startup and post-editor repository I/O.
     await tester.pumpWidget(const OrahApp(
