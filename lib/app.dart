@@ -333,8 +333,9 @@ class _NovaShellState extends State<NovaShell> {
     final LocalNoteRepository repository;
     try {
       print('[ORAH-DIAG] editor: requesting repository');
-      repository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 6));
+      // The provider bounds its own preferences initialization. Avoid a
+      // second Future.timeout timer in widget-test FakeAsync zones.
+      repository = await NoteRepositoryProvider.instance();
       print('[ORAH-DIAG] editor: repository ready');
     } catch (error, stackTrace) {
       debugPrint('ORAH could not open note editor: $error\\n$stackTrace');
