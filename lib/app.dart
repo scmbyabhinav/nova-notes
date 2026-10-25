@@ -27,11 +27,12 @@ import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false});
 
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final bool skipHomeRepositoryLoadForTesting;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -70,18 +71,19 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting, skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final bool skipHomeRepositoryLoadForTesting;
 
   @override
   State<OrahEntryGate> createState() => _OrahEntryGateState();
@@ -154,6 +156,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         speechService: widget.speechService,
         requestMicrophonePermission: widget.requestMicrophonePermission,
         enableStartupGreeting: false,
+        skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
@@ -209,18 +212,20 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
       themeController: widget.themeController,
       speechService: widget.speechService,
       profile: profile,
+      skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true, this.skipHomeRepositoryLoadForTesting = false});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
   final bool enableStartupGreeting;
+  final bool skipHomeRepositoryLoadForTesting;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -298,6 +303,7 @@ class _NovaShellState extends State<NovaShell> {
   List<Widget> get _pages => [
         HomeScreen(
           isActive: _index == 0,
+          loadNotesOnStart: !widget.skipHomeRepositoryLoadForTesting,
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
           onChecklist: () => _openEditor(NoteType.checklist),
