@@ -24,6 +24,8 @@ class OrahDatabase {
   static Database? _instance;
   static Future<Database>? _opening;
   static int _activeOperations = 0;
+  static int _nextOperationId = 0;
+  static final Map<int, Map<String, Object?>> _activeOperationDetails = {};
   static Completer<void>? _operationsDrained;
   static int _activeTransactions = 0;
   static void _diag(String phase, String message) => print('[ORAH-DIAG][utc=${DateTime.now().toUtc().toIso8601String()}][run=${Platform.environment['GITHUB_RUN_ID'] ?? 'local'}][phase=$phase] $message');
@@ -258,14 +260,43 @@ class OrahDatabase {
   }
 
   /// Tracks in-flight repository work for deterministic test teardown.
-  static Future<T> trackOperation<T>(Future<T> Function() operation) async {
+  static Future<T> trackOperation<T>(
+    Future<T> Function() operation, {
+    String name = 'unnamed',
+  }) async {
     if (_activeOperations == 0) _operationsDrained = Completer<void>();
+    final id = ++_nextOperationId;
+    final startedAt = DateTime.now();
+    final clock = Stopwatch()..start();
+    final callSite = StackTrace.current.toString().split('\\n').skip(1).take(5).join(' | ');
     _activeOperations++;
-    _diag('repository-operations', 'trackOperation ENTER activeOperations=$_activeOperations');
-    try { return await operation(); }
-    finally {
+    _activeOperationDetails[id] = {
+      'id': id,
+      'name': name,
+      'startedAt': startedAt.toUtc().toIso8601String(),
+      'elapsedMs': 0,
+      'status': 'active',
+      'callSite': callSite,
+      'finallyEntered': false,
+    };
+    _diag('repository-operations', 'START id=$id name=$name activeOperations=$_activeOperations callSite=$callSite');
+    try {
+      final result = await operation();
+      _diag('repository-operations', 'FUTURE_COMPLETE id=$id name=$name outcome=success elapsedMs=${clock.elapsedMilliseconds}');
+      return result;
+    } catch (error, stackTrace) {
+      _diag('repository-operations', 'FUTURE_COMPLETE id=$id name=$name outcome=failure elapsedMs=${clock.elapsedMilliseconds} error=$error stack=$stackTrace');
+      rethrow;
+    } finally {
+      final details = _activeOperationDetails[id];
+      if (details != null) {
+        details['finallyEntered'] = true;
+        details['elapsedMs'] = clock.elapsedMilliseconds;
+        details['status'] = 'finally';
+      }
+      _activeOperationDetails.remove(id);
       _activeOperations--;
-      _diag('repository-operations', 'trackOperation EXIT activeOperations=$_activeOperations');
+      _diag('repository-operations', 'FINALLY_EXIT id=$id name=$name elapsedMs=${clock.elapsedMilliseconds} activeOperations=$_activeOperations');
       if (_activeOperations == 0 && !(_operationsDrained?.isCompleted ?? true)) {
         _operationsDrained!.complete();
         _diag('repository-operations', 'drain completer completed');
@@ -301,6 +332,10 @@ class OrahDatabase {
       _diag('repository-drain', 'EXIT activeOperations=$_activeOperations');
     } catch (error, stackTrace) {
       _diag('repository-drain', 'FAILED activeOperations=$_activeOperations error=$error');
+      for (final entry in _activeOperationDetails.entries) {
+        final details = entry.value;
+        _diag('repository-drain-active', 'id=${details['id']} name=${details['name']} startedAt=${details['startedAt']} elapsedMs=${DateTime.now().difference(DateTime.parse(details['startedAt'] as String)).inMilliseconds} status=${details['status']} finallyEntered=${details['finallyEntered']} callSite=${details['callSite']}');
+      }
       Error.throwWithStackTrace(error, stackTrace);
     }
   }

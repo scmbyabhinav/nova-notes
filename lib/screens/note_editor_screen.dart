@@ -323,6 +323,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     : firstLine;
               }
             }
+            _saveDiag('VOICE_FINAL_TRANSCRIPT length=${nextText.length} launching _save unawaited=true');
             _hasChanges = true;
             _isListening = false;
             _voiceProcessing = false;
@@ -755,22 +756,33 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
+  void _saveDiag(String message) => debugPrint('[ORAH-SAVE-DIAG][${DateTime.now().toUtc().toIso8601String()}][note=$_noteId][mounted=$mounted] $message');
+
   void _onChanged() {
+    _saveDiag('TEXT_CHANGED schedule debounce; existingTimer=${_saveTimer != null}');
     _hasChanges = true;
     // Coalesce controller notifications (especially enterText and speech
     // transcripts) into one write. Every keystroke previously started an
     // overlapping read/replace/refresh transaction against the same database.
+    final cancelledTimer = _saveTimer != null;
     _saveTimer?.cancel();
+    _saveDiag('DEBOUNCE_SCHEDULE delayMs=250 cancelledPrevious=$cancelledTimer');
     _saveTimer = Timer(const Duration(milliseconds: 250), () {
       _saveTimer = null;
+      _saveDiag('DEBOUNCE_FIRE launching _save unawaited=true');
       unawaited(_save());
     });
   }
 
   Future<void> _save() async {
+    final saveClock = Stopwatch()..start();
+    _saveDiag('SAVE_ENTER hasChanges=$_hasChanges existingNote=${widget.note != null} timerPending=${_saveTimer != null}');
     _saveTimer?.cancel();
     _saveTimer = null;
-    if (!_hasChanges && widget.note != null) return;
+    if (!_hasChanges && widget.note != null) {
+      _saveDiag('SAVE_SKIP noChanges');
+      return;
+    }
 
     if (mounted) setState(() { _saving = true; _saveFailed = false; });
 
@@ -843,7 +855,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             imagePath: _imagePath,
           );
 
+    _saveDiag('REPOSITORY_SAVE_ENTER contentLength=${note.content.length}');
     await widget.repository.saveNote(note);
+    _saveDiag('REPOSITORY_SAVE_EXIT');
     if (!_hasHapticSaved) {
       _hasHapticSaved = true;
       unawaited(HapticFeedback.lightImpact());
@@ -857,7 +871,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // This makes the save-to-list handoff deterministic even if a stream
     // emission raced with route navigation.
     if (widget.repository is LocalNoteRepository) {
+      _saveDiag('REPOSITORY_REFRESH_ENTER');
       await (widget.repository as LocalNoteRepository).refresh();
+      _saveDiag('REPOSITORY_REFRESH_EXIT');
     }
     try {
       for (final item in _checklistItems) {
@@ -885,9 +901,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       // Reminder plugins may be unavailable in widget tests; note persistence must still succeed.
     }
     _hasChanges = false;
+    _saveDiag('SAVE_SUCCESS elapsedMs=${saveClock.elapsedMilliseconds}');
 
     if (mounted) setState(() => _saving = false);
     } catch (error, stackTrace) {
+      _saveDiag('SAVE_FAILURE elapsedMs=${saveClock.elapsedMilliseconds} error=$error stack=$stackTrace');
       debugPrint('ORAH note save failed: $error\\n$stackTrace');
       _hasChanges = true;
       _saveFailed = true;
@@ -900,6 +918,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         );
       }
+    } finally {
+      _saveDiag('SAVE_FINALLY elapsedMs=${saveClock.elapsedMilliseconds} saving=$_saving failed=$_saveFailed');
     }
   }
 
@@ -1377,12 +1397,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   @override
   void dispose() {
+    _saveDiag('EDITOR_DISPOSE_ENTER timerPending=${_saveTimer != null} saving=$_saving');
     _speechService.dispose();
     _voiceDurationTimer?.cancel();
     _saveTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
     _contentFocus.dispose();
+    _saveDiag('EDITOR_DISPOSE_EXIT');
     super.dispose();
   }
 

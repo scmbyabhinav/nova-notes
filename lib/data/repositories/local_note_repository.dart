@@ -70,7 +70,7 @@ class LocalNoteRepository implements NoteRepository {
       try { notes.add(_fromMap(row)); } catch (_) {}
     }
     return notes;
-  });
+  }, name: 'LocalNoteRepository.getNotes');
 
   @override
   Future<Note?> getNote(String id) async {
@@ -89,7 +89,7 @@ class LocalNoteRepository implements NoteRepository {
     if (index == -1) { notes.add(note); } else { notes[index] = note; }
     await _write(notes);
     _publish(await getNotes());
-  });
+  }, name: 'LocalNoteRepository.saveNote');
 
   @override
   Future<void> deleteNote(String id) => OrahDatabase.trackOperation(() async {
@@ -97,7 +97,7 @@ class LocalNoteRepository implements NoteRepository {
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
     _publish(notes);
-  });
+  }, name: 'LocalNoteRepository.deleteNote');
 
   @override
   Future<List<Note>> searchNotes(String query) => search(query);
@@ -191,7 +191,7 @@ class LocalNoteRepository implements NoteRepository {
     await NoteDao(db).replaceAll(ordinaryPayloads);
     await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()))
         .timeout(const Duration(seconds: 5));
-  });
+  }, name: 'LocalNoteRepository._write');
 
   /// Returns encrypted Vault records only. Callers must authenticate before
   /// displaying or opening any record.
@@ -239,7 +239,7 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
     await _write(ordinary);
     _publish(await getNotes());
-  });
+  }, name: 'LocalNoteRepository.unlockVaultNote');
 
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
@@ -446,6 +446,6 @@ class LocalNoteRepository implements NoteRepository {
     await _write(merged);
     _publish(merged);
     return imported.length;
-  });
+  }, name: 'LocalNoteRepository.importJson');
 
 }
