@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Single-flight access to the platform preferences plugin.
@@ -31,11 +33,18 @@ class OrahPreferencesProvider {
       rethrow;
     }
   }
+  static void _diag(String message) => print('[ORAH-DIAG][utc=${DateTime.now().toUtc().toIso8601String()}][run=${Platform.environment['GITHUB_RUN_ID'] ?? 'local'}][phase=preferences-reset] $message');
   static Future<void> resetForTesting() async {
+    _diag('OrahPreferencesProvider.resetForTesting ENTER generation=$_generation pending=${_pending != null}');
     _generation++;
     final pending = _pending;
-    if (pending != null) { try { await pending; } catch (_) {} }
+    if (pending != null) {
+      _diag('awaiting pending SharedPreferences initialization');
+      try { await pending; _diag('pending SharedPreferences initialization completed'); }
+      catch (error) { _diag('pending SharedPreferences initialization completed with error=$error'); }
+    }
     _instance = null;
     _pending = null;
+    _diag('OrahPreferencesProvider.resetForTesting EXIT');
   }
 }

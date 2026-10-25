@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,22 +25,31 @@ class OrahDatabase {
   static Future<Database>? _opening;
   static int _activeOperations = 0;
   static Completer<void>? _operationsDrained;
+  static int _activeTransactions = 0;
+  static void _diag(String phase, String message) => print('[ORAH-DIAG][utc=${DateTime.now().toUtc().toIso8601String()}][run=${Platform.environment['GITHUB_RUN_ID'] ?? 'local'}][phase=$phase] $message');
 
   static Future<Database> open(SharedPreferences preferences) async {
+    _diag('database-open', 'OrahDatabase.open ENTER openingPending=${_opening != null} instanceOpen=${_instance?.isOpen ?? false}');
     final existing = _instance;
     if (existing != null && existing.isOpen) {
+      _diag('database-open', 'OrahDatabase.open EXIT using existing database');
       return existing;
     }
     final pending = _opening;
-    if (pending != null) return pending;
+    if (pending != null) { _diag('database-open', 'joining in-flight SQLite initialization'); return pending; }
     final future = _openAndMigrate(preferences);
     _opening = future;
     try {
       final db = await future;
       _instance = db;
+      _diag('database-open', 'OrahDatabase.open EXIT initialized isOpen=${db.isOpen}');
       return db;
+    } catch (error) {
+      _diag('database-open', 'OrahDatabase.open FAILED error=$error');
+      rethrow;
     } finally {
       _opening = null;
+      _diag('database-open', 'opening future cleared');
     }
   }
 
@@ -47,12 +57,13 @@ class OrahDatabase {
   static const _legacyVaultPendingKey = 'legacy_vault_pending_v1';
 
   static Future<Database> _openAndMigrate(SharedPreferences preferences) async {
+    _diag('sqlite-initialize', 'SQLite initialization ENTER');
     final root = await getDatabasesPath();
-    print('[ORAH-DIAG] db: before openDatabase');
+    _diag('sqlite-initialize', 'before openDatabase root resolved');
     final db = await openDatabase(p.join(root, 'orah_notes.db'));
-    print('[ORAH-DIAG] db: openDatabase returned');
+    _diag('sqlite-initialize', 'openDatabase returned isOpen=${db.isOpen}');
     try {
-      print('[ORAH-DIAG] db: checking migration_state table');
+      _diag('sqlite-initialize', 'checking migration_state table');
       final table = await db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='migration_state'");
       String? existingState;
       if (table.isNotEmpty) {
@@ -60,16 +71,19 @@ class OrahDatabase {
         if (rows.isNotEmpty) existingState = rows.single['value'] as String;
       }
       final legacy = preferences.getString(legacyNotesKey);
-      print('[ORAH-DIAG] db: state preflight complete state=$existingState legacy=${legacy != null && legacy.isNotEmpty}');
+      _diag('sqlite-initialize', 'state preflight complete state=$existingState legacy=${legacy != null && legacy.isNotEmpty}');
       final plan = existingState == null && legacy != null && legacy.isNotEmpty
           ? await _prepareLegacyMigration(preferences, legacy) : null;
-      print('[ORAH-DIAG] db: migration plan prepared=${plan != null}');
+      _diag('sqlite-initialize', 'migration plan prepared=${plan != null}');
+      _activeTransactions++;
+      _diag('sqlite-transaction', 'migration transaction ENTER activeTransactions=$_activeTransactions');
+      try {
       await db.transaction((txn) async {
-        print('[ORAH-DIAG] db: transaction entered');
+        _diag('sqlite-transaction', 'transaction callback entered');
         final versionRows = await txn.rawQuery('PRAGMA user_version');
         final currentVersion = (versionRows.single['user_version'] as int?) ?? 0;
         await _createSchema(txn);
-        print('[ORAH-DIAG] db: schema created');
+        _diag('sqlite-transaction', 'schema created');
         await txn.execute('CREATE TABLE IF NOT EXISTS migration_state (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)');
         final stateRows = await txn.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: [_legacyMigrationKey], limit: 1);
         final state = stateRows.isEmpty ? null : stateRows.single['value'] as String;
@@ -92,20 +106,26 @@ class OrahDatabase {
         } else if (state != 'complete' && state != 'vault_pending') {
           throw StateError('Unknown legacy migration state: $state');
         }
-        print('[ORAH-DIAG] db: migration state staged currentVersion=$currentVersion');
+        _diag('sqlite-transaction', 'migration state staged currentVersion=$currentVersion');
         if (currentVersion < schemaVersion) await txn.execute('PRAGMA user_version = $schemaVersion');
-        print('[ORAH-DIAG] db: user_version write complete');
+        _diag('sqlite-transaction', 'user_version write complete');
       });
-      print('[ORAH-DIAG] db: transaction committed');
+      _diag('sqlite-transaction', 'transaction commit returned activeTransactions=$_activeTransactions');
+      } finally {
+        _activeTransactions--;
+        _diag('sqlite-transaction', 'migration transaction EXIT activeTransactions=$_activeTransactions');
+      }
       await _finishPendingVaultMigration(db, preferences);
-      print('[ORAH-DIAG] db: pending Vault migration finalized');
+      _diag('sqlite-initialize', 'pending Vault migration finalized');
       final version = await db.getVersion();
-      print('[ORAH-DIAG] db: final version=$version');
+      _diag('sqlite-initialize', 'final version=$version');
       if (version < schemaVersion) throw StateError('Database schema version $version is below $schemaVersion.');
+      _diag('sqlite-initialize', 'SQLite initialization EXIT schemaVersion=$version isOpen=${db.isOpen}');
       return db;
-    } catch (_) {
+    } catch (error, stackTrace) {
+      _diag('sqlite-initialize', 'SQLite initialization FAILED error=$error activeTransactions=$_activeTransactions');
       if (db.isOpen) await db.close();
-      rethrow;
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 
@@ -152,10 +172,18 @@ class OrahDatabase {
     final encoded = jsonEncode(pendingVault);
     final saved = await preferences.setString(vaultNotesKey, encoded);
     if (!saved || preferences.getString(vaultNotesKey) != encoded) throw StateError('Could not verify migrated Vault data; startup is retryable.');
+    _activeTransactions++;
+    _diag('sqlite-transaction', 'vault-finalization transaction ENTER activeTransactions=$_activeTransactions');
+    try {
     await db.transaction((txn) async {
       await txn.update('migration_state', {'value': 'complete'}, where: 'key = ?', whereArgs: [_legacyMigrationKey]);
       await txn.delete('migration_state', where: 'key = ?', whereArgs: [_legacyVaultPendingKey]);
     });
+    _diag('sqlite-transaction', 'vault-finalization transaction commit returned');
+    } finally {
+      _activeTransactions--;
+      _diag('sqlite-transaction', 'vault-finalization transaction EXIT activeTransactions=$_activeTransactions');
+    }
   }
 
   static Future<void> _createSchema(DatabaseExecutor db) async {
@@ -233,45 +261,54 @@ class OrahDatabase {
   static Future<T> trackOperation<T>(Future<T> Function() operation) async {
     if (_activeOperations == 0) _operationsDrained = Completer<void>();
     _activeOperations++;
-    try {
-      return await operation();
-    } finally {
+    _diag('repository-operations', 'trackOperation ENTER activeOperations=$_activeOperations');
+    try { return await operation(); }
+    finally {
       _activeOperations--;
+      _diag('repository-operations', 'trackOperation EXIT activeOperations=$_activeOperations');
       if (_activeOperations == 0 && !(_operationsDrained?.isCompleted ?? true)) {
         _operationsDrained!.complete();
+        _diag('repository-operations', 'drain completer completed');
       }
     }
   }
 
   static Future<void> waitForOperationsForTesting() async {
     final pending = _operationsDrained;
-    if (_activeOperations > 0 && pending != null) {
-      // Use the root zone's real timer: widget tests run in FakeAsync, where
-      // a normal Future.timeout will never fire unless the test clock advances.
-      await Zone.root.run(() => pending.future.timeout(const Duration(seconds: 15)));
+    _diag('repository-drain', 'ENTER activeOperations=$_activeOperations hasDrainCompleter=${pending != null}');
+    try {
+      if (_activeOperations > 0 && pending != null) await Zone.root.run(() => pending.future.timeout(const Duration(seconds: 12)));
+      _diag('repository-drain', 'EXIT activeOperations=$_activeOperations');
+    } catch (error, stackTrace) {
+      _diag('repository-drain', 'FAILED activeOperations=$_activeOperations error=$error');
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 
   /// Test-only reset. Production callers should never close/delete the database.
   static Future<void> closeForTesting() async {
-    print('[ORAH-DIAG] teardown: waiting for $_activeOperations repository operations');
-    await waitForOperationsForTesting();
-    print('[ORAH-DIAG] teardown: repository operations drained');
-    // A widget can start opening SQLite and then be disposed before the
-    // future completes. Never clear _opening while that open is still in
-    // flight: doing so permits a second connection to race the first one.
-    final pendingOpen = _opening;
-    if (pendingOpen != null) {
-      try {
-        await pendingOpen;
-      } catch (_) {
-        // Preserve the original open error; cleanup should still reset state.
+    _diag('database-close', 'closeForTesting ENTER activeOperations=$_activeOperations activeTransactions=$_activeTransactions openingPending=${_opening != null} instanceOpen=${_instance?.isOpen ?? false}');
+    try {
+      await waitForOperationsForTesting();
+      _diag('database-close', 'repository operations drained');
+      final pendingOpen = _opening;
+      if (pendingOpen != null) {
+        _diag('database-close', 'awaiting in-flight SQLite initialization');
+        await Zone.root.run(() => pendingOpen.timeout(const Duration(seconds: 12)));
+        _diag('database-close', 'in-flight SQLite initialization completed');
       }
+      final db = _instance;
+      _instance = null;
+      _opening = null;
+      if (db != null && db.isOpen) {
+        _diag('database-close', 'Database.close ENTER activeTransactions=$_activeTransactions');
+        await Zone.root.run(() => db.close().timeout(const Duration(seconds: 12)));
+        _diag('database-close', 'Database.close EXIT');
+      }
+      _diag('database-close', 'closeForTesting EXIT activeOperations=$_activeOperations activeTransactions=$_activeTransactions');
+    } catch (error, stackTrace) {
+      _diag('database-close', 'closeForTesting FAILED error=$error activeOperations=$_activeOperations activeTransactions=$_activeTransactions');
+      Error.throwWithStackTrace(error, stackTrace);
     }
-
-    final db = _instance;
-    _instance = null;
-    _opening = null;
-    if (db != null && db.isOpen) await db.close();
   }
 }

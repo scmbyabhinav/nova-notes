@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 import 'local_note_repository.dart';
@@ -40,12 +42,19 @@ class NoteRepositoryProvider {
     final repository = LocalNoteRepository(preferences);
     return repository;
   }
+  static void _diag(String message) => print('[ORAH-DIAG][utc=${DateTime.now().toUtc().toIso8601String()}][run=${Platform.environment['GITHUB_RUN_ID'] ?? 'local'}][phase=repository-reset] $message');
   @visibleForTesting
   static Future<void> resetForTesting() async {
+    _diag('NoteRepositoryProvider.resetForTesting ENTER generation=$_generation pending=${_pending != null}');
     _generation++;
     final pending = _pending;
-    if (pending != null) { try { await pending; } catch (_) {} }
+    if (pending != null) {
+      _diag('awaiting pending repository construction');
+      try { await pending; _diag('pending repository construction completed'); }
+      catch (error) { _diag('pending repository construction completed with error=$error'); }
+    }
     _repository = null;
     _pending = null;
+    _diag('NoteRepositoryProvider.resetForTesting EXIT');
   }
 }

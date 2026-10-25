@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -56,7 +57,9 @@ void main() {
       'orah_quick_capture_hint_dismissed': true,
       'orah_voice_hint_shown': true,
     });
-    print('[ORAH-DIAG] TEST: started');
+    OrahTestDiagnostics.setPhase('body');
+    OrahTestDiagnostics.log('testWidgets callback ENTER: quick capture opens a note immediately');
+    try {
     // Isolate capture/navigation from Home startup and post-editor repository I/O.
     await tester.pumpWidget(const OrahApp(
       skipRegistrationForTesting: true,
@@ -71,7 +74,7 @@ void main() {
     );
     print('[ORAH-DIAG] TEST: tapping quick capture');
     await tester.tap(quickCaptureFab);
-    print('[ORAH-DIAG] TEST: tap returned');
+    OrahTestDiagnostics.log('Quick Capture interaction completion: tester.tap returned');
     await tester.pump();
     print('[ORAH-DIAG] TEST: post-tap pump returned');
     await tester.pump(const Duration(milliseconds: 300));
@@ -81,12 +84,15 @@ void main() {
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Start writing...'), findsOneWidget);
-    print('[ORAH-DIAG] TEST: editor assertions passed');
+    OrahTestDiagnostics.log('Quick Capture interaction completion: editor assertions passed');
 
     await tester.pageBack();
     print('[ORAH-DIAG] TEST: pageBack returned');
     await tester.pump(const Duration(milliseconds: 300));
-    print('[ORAH-DIAG] TEST: teardown pump returned');
+    OrahTestDiagnostics.log('test body final pump returned');
+    } finally {
+      OrahTestDiagnostics.log('testWidgets callback EXIT from finally: quick capture opens a note immediately');
+    }
   });
 
   testWidgets('long-press quick capture opens checklist options', (tester) async {
