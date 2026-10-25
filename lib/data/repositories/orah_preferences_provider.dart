@@ -11,27 +11,31 @@ class OrahPreferencesProvider {
 
   static SharedPreferences? _instance;
   static Future<SharedPreferences>? _pending;
+  static int _generation = 0;
 
   static Future<SharedPreferences> instance() async {
-    print('[ORAH-DIAG] preferences.instance entered');
     final cached = _instance;
     if (cached != null) {
-      print('[ORAH-DIAG] preferences.instance using cached preferences');
       return cached;
     }
 
-    print('[ORAH-DIAG] preferences: calling SharedPreferences.getInstance');
+    final generation = _generation;
     final pending = _pending ??= SharedPreferences.getInstance()
         .timeout(const Duration(seconds: 8));
     try {
       final preferences = await pending;
-      print('[ORAH-DIAG] preferences: SharedPreferences ready');
-      _instance = preferences;
+      if (generation == _generation) _instance = preferences;
       return preferences;
     } catch (error, stackTrace) {
-      print('[ORAH-DIAG] preferences initialization failed: $error\n$stackTrace');
       if (identical(_pending, pending)) _pending = null;
       rethrow;
     }
+  }
+  static Future<void> resetForTesting() async {
+    _generation++;
+    final pending = _pending;
+    if (pending != null) { try { await pending; } catch (_) {} }
+    _instance = null;
+    _pending = null;
   }
 }

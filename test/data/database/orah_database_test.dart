@@ -76,7 +76,9 @@ void main() {
 
     expect(prefs.getString(OrahDatabase.legacyNotesKey), legacy);
     expect(prefs.getString(OrahDatabase.legacyBackupKey), legacy);
-    expect(prefs.getBool(OrahDatabase.migrationMarkerKey), isTrue);
+    expect(await db.getVersion(), OrahDatabase.schemaVersion);
+    final migrationState = await db.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: ['legacy_json_v1']);
+    expect(migrationState.single['value'], 'complete');
     final vault = jsonDecode(prefs.getString(OrahDatabase.vaultNotesKey)!) as List;
     expect(vault.map((item) => item['id']), containsAll(['locked-1', 'pre-existing-vault']));
 
@@ -126,12 +128,55 @@ void main() {
     expect(await dao.count(), 0);
   });
 
+  test('recovers a committed pending Vault migration on next initialization', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final seed = await databaseFactoryFfi.openDatabase('${databaseDirectory.path}/orah_notes.db');
+    await seed.execute('CREATE TABLE migration_state (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)');
+    await seed.insert('migration_state', {'key': 'legacy_json_v1', 'value': 'vault_pending'});
+    await seed.insert('migration_state', {'key': 'legacy_vault_pending_v1', 'value': jsonEncode([note(id: 'vault-recovery', locked: true)])});
+    await seed.execute('PRAGMA user_version = 2');
+    await seed.close();
+    final recovered = await OrahDatabase.open(prefs);
+    expect(prefs.getString(OrahDatabase.vaultNotesKey), contains('vault-recovery'));
+    final state = await recovered.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: ['legacy_json_v1']);
+    expect(state.single['value'], 'complete');
+    expect(await recovered.query('migration_state', where: 'key = ?', whereArgs: ['legacy_vault_pending_v1']), isEmpty);
+  });
+
+  test('concurrent initialization shares one database and migrates once', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final legacy = jsonEncode([note(), note(id: 'note-2', title: 'Second')]);
+    await prefs.setString(OrahDatabase.legacyNotesKey, legacy);
+    final databases = await Future.wait(List.generate(8, (_) => OrahDatabase.open(prefs)));
+    expect(databases.every((db) => identical(db, databases.first)), isTrue);
+    expect(await databases.first.query('notes'), hasLength(2));
+    expect(await databases.first.getVersion(), OrahDatabase.schemaVersion);
+    final state = await databases.first.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: ['legacy_json_v1']);
+    expect(state.single['value'], 'complete');
+    expect(prefs.getString(OrahDatabase.legacyNotesKey), legacy);
+  });
+
+  test('repeated initialization preserves stable IDs and trash metadata', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final trashed = note(id: 'trash-1')..['isTrashed'] = true;
+    final legacy = jsonEncode([trashed]);
+    await prefs.setString(OrahDatabase.legacyNotesKey, legacy);
+    final first = await OrahDatabase.open(prefs);
+    expect(await first.query('notes'), hasLength(1));
+    await OrahDatabase.closeForTesting();
+    final second = await OrahDatabase.open(prefs);
+    final stored = OrahDatabase.mapFromRow((await second.query('notes')).single);
+    expect(stored['id'], 'trash-1');
+    expect(stored['isTrashed'], isTrue);
+    expect(prefs.getString(OrahDatabase.legacyNotesKey), legacy);
+  });
+
   test('malformed legacy JSON fails without overwriting source data', () async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(OrahDatabase.legacyNotesKey, '{not-json');
 
     await expectLater(OrahDatabase.open(prefs), throwsA(anything));
     expect(prefs.getString(OrahDatabase.legacyNotesKey), '{not-json');
-    expect(prefs.getBool(OrahDatabase.migrationMarkerKey), isNot(true));
+    expect(prefs.getString(OrahDatabase.legacyNotesKey), '{not-json');
   });
 }

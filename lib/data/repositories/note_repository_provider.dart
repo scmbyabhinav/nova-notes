@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'local_note_repository.dart';
 import 'orah_preferences_provider.dart';
 
@@ -12,24 +14,21 @@ class NoteRepositoryProvider {
 
   static LocalNoteRepository? _repository;
   static Future<LocalNoteRepository>? _pending;
+  static int _generation = 0;
 
   static Future<LocalNoteRepository> instance() async {
-    print('[ORAH-DIAG] repository.instance entered');
     final cached = _repository;
     if (cached != null) {
-      print('[ORAH-DIAG] repository.instance using cached repository');
       return cached;
     }
 
-    print('[ORAH-DIAG] repository.instance awaiting construction');
+    final generation = _generation;
     final pending = _pending ??= _createRepository();
     try {
       final repository = await pending;
-      print('[ORAH-DIAG] repository.instance construction completed');
-      _repository = repository;
+      if (generation == _generation) _repository = repository;
       return repository;
     } catch (error, stackTrace) {
-      print('[ORAH-DIAG] repository.instance failed: $error\n$stackTrace');
       // A failed initialization must not poison future retry attempts.
       if (identical(_pending, pending)) _pending = null;
       rethrow;
@@ -37,11 +36,16 @@ class NoteRepositoryProvider {
   }
 
   static Future<LocalNoteRepository> _createRepository() async {
-    print('[ORAH-DIAG] repository construction: requesting preferences');
     final preferences = await OrahPreferencesProvider.instance();
-    print('[ORAH-DIAG] repository construction: preferences ready');
     final repository = LocalNoteRepository(preferences);
-    print('[ORAH-DIAG] repository construction: LocalNoteRepository created');
     return repository;
+  }
+  @visibleForTesting
+  static Future<void> resetForTesting() async {
+    _generation++;
+    final pending = _pending;
+    if (pending != null) { try { await pending; } catch (_) {} }
+    _repository = null;
+    _pending = null;
   }
 }

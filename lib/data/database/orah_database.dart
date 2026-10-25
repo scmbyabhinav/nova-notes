@@ -5,6 +5,12 @@ import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
+class _LegacyMigrationPlan {
+  const _LegacyMigrationPlan({required this.ordinaryNotes, required this.vaultNotes});
+  final List<Map<String, dynamic>> ordinaryNotes;
+  final List<Map<String, dynamic>> vaultNotes;
+}
+
 /// Versioned local database. The legacy JSON is retained as a recovery backup
 /// and is never deleted by the migration.
 class OrahDatabase {
@@ -14,25 +20,20 @@ class OrahDatabase {
   static const legacyNotesKey = 'nova_notes_v1';
   static const legacyBackupKey = 'orah_legacy_notes_backup_v1';
   static const vaultNotesKey = 'orah_vault_notes_v1';
-  static const migrationMarkerKey = 'orah_sqlite_migration_v2_complete';
   static Database? _instance;
   static Future<Database>? _opening;
 
   static Future<Database> open(SharedPreferences preferences) async {
-    print('[ORAH-DIAG] sqlite.open entered');
     final existing = _instance;
     if (existing != null && existing.isOpen) {
-      print('[ORAH-DIAG] sqlite.open using cached database');
       return existing;
     }
     final pending = _opening;
     if (pending != null) return pending;
-    print('[ORAH-DIAG] sqlite.open starting open/migration');
     final future = _openAndMigrate(preferences);
     _opening = future;
     try {
       final db = await future;
-      print('[ORAH-DIAG] sqlite.open completed');
       _instance = db;
       return db;
     } finally {
@@ -40,50 +41,107 @@ class OrahDatabase {
     }
   }
 
-  static Future<Database> _openAndMigrate(SharedPreferences preferences) async {
-    print('[ORAH-DIAG] sqlite: resolving database directory');
-    final root = await getDatabasesPath();
-    print('[ORAH-DIAG] sqlite: database directory resolved to $root');
-    print('[ORAH-DIAG] sqlite: calling openDatabase');
-    final db = await openDatabase(
-      p.join(root, 'orah_notes.db'),
-      version: schemaVersion,
-      onCreate: (db, version) async => _createSchema(db),
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) await _createSchema(db);
-      },
-    );
-    print('[ORAH-DIAG] sqlite: openDatabase returned; checking migration marker');
+  static const _legacyMigrationKey = 'legacy_json_v1';
+  static const _legacyVaultPendingKey = 'legacy_vault_pending_v1';
 
-    // Migration is idempotent and transactional. Do not mark completion until
-    // every valid record has been inserted and the Vault split has succeeded.
-    final done = preferences.getBool(migrationMarkerKey) == true;
-    print('[ORAH-DIAG] sqlite: migration marker read done=$done');
-    if (!done) {
-      final legacy = preferences.getString(legacyNotesKey);
-      print('[ORAH-DIAG] sqlite: legacy payload present=${legacy != null && legacy.isNotEmpty}');
-      if (legacy != null && legacy.isNotEmpty) {
-        print('[ORAH-DIAG] sqlite: legacy migration starting length=${legacy.length}');
-        await _migrateLegacyJson(db, preferences, legacy);
-        print('[ORAH-DIAG] sqlite: legacy migration completed');
+  static Future<Database> _openAndMigrate(SharedPreferences preferences) async {
+    final root = await getDatabasesPath();
+    final db = await openDatabase(p.join(root, 'orah_notes.db'));
+    try {
+      final table = await db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='migration_state'");
+      String? existingState;
+      if (table.isNotEmpty) {
+        final rows = await db.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: [_legacyMigrationKey], limit: 1);
+        if (rows.isNotEmpty) existingState = rows.single['value'] as String;
       }
-      // The marker is an idempotency optimization, not part of the SQLite
-      // transaction. Do not let a stalled preferences-store write keep the
-      // database unavailable after schema creation and migration have succeeded.
-      // If it does not persist, the next launch safely retries the idempotent
-      // migration (ordinary note inserts use ConflictAlgorithm.ignore).
-      print('[ORAH-DIAG] sqlite: scheduling migration marker write');
-      unawaited(preferences.setBool(migrationMarkerKey, true).then<void>(
-        (saved) {
-          print('[ORAH-DIAG] sqlite: migration marker write completed result=$saved');
-        },
-        onError: (Object error, StackTrace stackTrace) {
-          print('[ORAH-DIAG] sqlite: migration marker write failed: $error');
-        },
-      ));
+      final legacy = preferences.getString(legacyNotesKey);
+      final plan = existingState == null && legacy != null && legacy.isNotEmpty
+          ? await _prepareLegacyMigration(preferences, legacy) : null;
+      await db.transaction((txn) async {
+        final versionRows = await txn.rawQuery('PRAGMA user_version');
+        final currentVersion = (versionRows.single['user_version'] as int?) ?? 0;
+        await _createSchema(txn);
+        await txn.execute('CREATE TABLE IF NOT EXISTS migration_state (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)');
+        final stateRows = await txn.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: [_legacyMigrationKey], limit: 1);
+        final state = stateRows.isEmpty ? null : stateRows.single['value'] as String;
+        if (state == null) {
+          if (plan == null) {
+            await txn.insert('migration_state', {'key': _legacyMigrationKey, 'value': 'complete'});
+          } else {
+            for (final map in plan.ordinaryNotes) {
+              await txn.insert('notes', rowFor(map), conflictAlgorithm: ConflictAlgorithm.ignore);
+            }
+            for (final map in plan.ordinaryNotes) {
+              final rows = await txn.query('notes', columns: ['id', 'payload'], where: 'id = ?', whereArgs: [map['id']], limit: 1);
+              if (rows.length != 1) throw StateError('Legacy note ${map['id']} was not persisted.');
+              final stored = jsonDecode(rows.single['payload'] as String);
+              if (stored is! Map || stored['id'] != map['id']) throw StateError('Legacy note ${map['id']} failed verification.');
+            }
+            await txn.insert('migration_state', {'key': _legacyMigrationKey, 'value': 'vault_pending'});
+            await txn.insert('migration_state', {'key': _legacyVaultPendingKey, 'value': jsonEncode(plan.vaultNotes)});
+          }
+        } else if (state != 'complete' && state != 'vault_pending') {
+          throw StateError('Unknown legacy migration state: $state');
+        }
+        if (currentVersion < schemaVersion) await txn.execute('PRAGMA user_version = $schemaVersion');
+      });
+      await _finishPendingVaultMigration(db, preferences);
+      final version = await db.getVersion();
+      if (version < schemaVersion) throw StateError('Database schema version $version is below $schemaVersion.');
+      return db;
+    } catch (_) {
+      if (db.isOpen) await db.close();
+      rethrow;
     }
-    print('[ORAH-DIAG] sqlite: database initialization finished');
-    return db;
+  }
+
+  static Future<_LegacyMigrationPlan> _prepareLegacyMigration(SharedPreferences preferences, String legacy) async {
+    final decoded = jsonDecode(legacy);
+    if (decoded is! List) throw const FormatException('Legacy notes storage is not a JSON list; original data was preserved.');
+    final ordinary = <String, Map<String, dynamic>>{};
+    final locked = <String, Map<String, dynamic>>{};
+    for (final entry in decoded) {
+      if (entry is! Map) throw const FormatException('Legacy notes contain a malformed record; original data was preserved.');
+      final map = Map<String, dynamic>.from(entry);
+      final id = map['id'];
+      if (id is! String || id.trim().isEmpty) throw const FormatException('A legacy note has no stable ID; original data was preserved.');
+      if (map['isLocked'] == true) { locked.putIfAbsent(id, () => map); } else { ordinary.putIfAbsent(id, () => map); }
+    }
+    if (preferences.getString(legacyBackupKey) == null) {
+      final saved = await preferences.setString(legacyBackupKey, legacy);
+      if (!saved || preferences.getString(legacyBackupKey) != legacy) throw StateError('Could not verify the legacy notes recovery backup.');
+    }
+    final vaultRaw = preferences.getString(vaultNotesKey);
+    final vault = <String, Map<String, dynamic>>{};
+    if (vaultRaw != null && vaultRaw.isNotEmpty) {
+      final decodedVault = jsonDecode(vaultRaw);
+      if (decodedVault is! List) throw const FormatException('Vault storage is malformed; SQLite migration stopped without replacing it.');
+      for (final entry in decodedVault) {
+        if (entry is! Map || entry['id'] is! String) throw const FormatException('Vault storage contains a malformed record; it was not replaced.');
+        final map = Map<String, dynamic>.from(entry);
+        vault[map['id'] as String] = map;
+      }
+    }
+    for (final entry in locked.entries) { vault.putIfAbsent(entry.key, () => entry.value); }
+    return _LegacyMigrationPlan(ordinaryNotes: ordinary.values.toList(growable: false), vaultNotes: vault.values.toList(growable: false));
+  }
+
+  static Future<void> _finishPendingVaultMigration(Database db, SharedPreferences preferences) async {
+    final stateRows = await db.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: [_legacyMigrationKey], limit: 1);
+    if (stateRows.isEmpty || stateRows.single['value'] == 'complete') return;
+    if (stateRows.single['value'] != 'vault_pending') throw StateError('Unexpected legacy migration state: ${stateRows.single['value']}');
+    final pendingRows = await db.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: [_legacyVaultPendingKey], limit: 1);
+    if (pendingRows.length != 1) throw StateError('Pending Vault migration payload is missing.');
+    final decoded = jsonDecode(pendingRows.single['value'] as String);
+    if (decoded is! List || decoded.any((item) => item is! Map || item['id'] is! String)) throw const FormatException('Pending Vault migration payload is malformed.');
+    final pendingVault = decoded.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+    final encoded = jsonEncode(pendingVault);
+    final saved = await preferences.setString(vaultNotesKey, encoded);
+    if (!saved || preferences.getString(vaultNotesKey) != encoded) throw StateError('Could not verify migrated Vault data; startup is retryable.');
+    await db.transaction((txn) async {
+      await txn.update('migration_state', {'value': 'complete'}, where: 'key = ?', whereArgs: [_legacyMigrationKey]);
+      await txn.delete('migration_state', where: 'key = ?', whereArgs: [_legacyVaultPendingKey]);
+    });
   }
 
   static Future<void> _createSchema(DatabaseExecutor db) async {
@@ -120,63 +178,6 @@ class OrahDatabase {
         streak INTEGER NOT NULL DEFAULT 0
       )
     ''');
-  }
-
-  static Future<void> _migrateLegacyJson(
-    Database db,
-    SharedPreferences preferences,
-    String legacy,
-  ) async {
-    final decoded = jsonDecode(legacy);
-    if (decoded is! List) {
-      throw const FormatException('Legacy notes storage is not a JSON list; original data was preserved.');
-    }
-
-    final ordinary = <Map<String, dynamic>>[];
-    final locked = <Map<String, dynamic>>[];
-    for (final entry in decoded) {
-      if (entry is! Map) continue;
-      final map = Map<String, dynamic>.from(entry);
-      if (map['isLocked'] == true) {
-        locked.add(map);
-      } else {
-        ordinary.add(map);
-      }
-    }
-
-    // Keep an explicit immutable copy in addition to the untouched legacy key.
-    if (preferences.getString(legacyBackupKey) == null) {
-      await preferences.setString(legacyBackupKey, legacy);
-    }
-
-    final existingVaultRaw = preferences.getString(vaultNotesKey);
-    final vaultById = <String, Map<String, dynamic>>{};
-    if (existingVaultRaw != null && existingVaultRaw.isNotEmpty) {
-      final vaultDecoded = jsonDecode(existingVaultRaw);
-      if (vaultDecoded is! List) {
-        throw const FormatException('Vault storage is malformed; SQLite migration stopped without replacing it.');
-      }
-      for (final entry in vaultDecoded) {
-        if (entry is Map && entry['id'] is String) {
-          vaultById[entry['id'] as String] = Map<String, dynamic>.from(entry);
-        }
-      }
-    }
-    for (final entry in locked) {
-      if (entry['id'] is String) vaultById[entry['id'] as String] = entry;
-    }
-
-    await db.transaction((txn) async {
-      for (final map in ordinary) {
-        final id = map['id'];
-        if (id is! String || id.trim().isEmpty) continue;
-        await txn.insert('notes', rowFor(map), conflictAlgorithm: ConflictAlgorithm.ignore);
-      }
-    });
-
-    // Only update Vault after SQLite's transaction commits. The original JSON
-    // is retained for recovery if this write or the completion marker fails.
-    await preferences.setString(vaultNotesKey, jsonEncode(vaultById.values.toList()));
   }
 
   static Map<String, Object?> rowFor(Map<String, dynamic> map) => {
