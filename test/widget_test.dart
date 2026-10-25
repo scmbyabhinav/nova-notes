@@ -52,8 +52,7 @@ void main() {
 
   testWidgets('quick capture opens a note immediately', (tester) async {
     print('[ORAH-DIAG] TEST: started');
-    // Isolate the capture action from Home's independent initial snapshot and
-    // scheduled-reflection work; the editor still initializes the repository.
+    // Isolate capture/navigation from Home startup and post-editor repository I/O.
     await tester.pumpWidget(const OrahApp(
       skipRegistrationForTesting: true,
       skipHomeRepositoryLoadForTesting: true,

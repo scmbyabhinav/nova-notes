@@ -365,15 +365,16 @@ class _NovaShellState extends State<NovaShell> {
     );
 
     print('[ORAH-DIAG] editor: route returned');
-    // Refresh in the background. Future.timeout leaves a timer alive when
-    // repository.refresh() is still pending as the route is disposed, which
-    // trips Flutter's fake-async widget-test invariant and adds no user value.
-    unawaited(repository.refresh().then<void>(
-      (_) {},
-      onError: (Object error, StackTrace stackTrace) {
-        debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
-      },
-    ));
+    // A focused Quick Capture test deliberately suppresses all Home-originated
+    // repository I/O. The dedicated repository/database tests cover refresh.
+    if (!widget.skipHomeRepositoryLoadForTesting) {
+      unawaited(repository.refresh().then<void>(
+        (_) {},
+        onError: (Object error, StackTrace stackTrace) {
+          debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
+        },
+      ));
+    }
   }
 
   Future<void> _openStatistics() async {
