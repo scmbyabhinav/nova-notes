@@ -246,13 +246,17 @@ class OrahDatabase {
   static Future<void> waitForOperationsForTesting() async {
     final pending = _operationsDrained;
     if (_activeOperations > 0 && pending != null) {
-      await pending.future.timeout(const Duration(seconds: 15));
+      // Use the root zone's real timer: widget tests run in FakeAsync, where
+      // a normal Future.timeout will never fire unless the test clock advances.
+      await Zone.root.run(() => pending.future.timeout(const Duration(seconds: 15)));
     }
   }
 
   /// Test-only reset. Production callers should never close/delete the database.
   static Future<void> closeForTesting() async {
+    print('[ORAH-DIAG] teardown: waiting for $_activeOperations repository operations');
     await waitForOperationsForTesting();
+    print('[ORAH-DIAG] teardown: repository operations drained');
     // A widget can start opening SQLite and then be disposed before the
     // future completes. Never clear _opening while that open is still in
     // flight: doing so permits a second connection to race the first one.
