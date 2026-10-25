@@ -300,24 +300,33 @@ class _NovaShellState extends State<NovaShell> {
     await prefs.setBool(_quickCaptureHintDismissedKey, true);
   }
 
-  List<Widget> get _pages => [
-        HomeScreen(
-          isActive: _index == 0,
-          loadNotesOnStart: !widget.skipHomeRepositoryLoadForTesting,
-          onNewNote: () => _openEditor(NoteType.text),
-          onVoiceCapture: _openVoiceEditor,
-          onChecklist: () => _openEditor(NoteType.checklist),
-          onSettings: () => setState(() => _index = 3),
-          onNotes: () => setState(() => _index = 0),
-          onFolders: () => setState(() => _index = 1),
-          onFavorites: () => setState(() => _index = 2),
-          onStatistics: _openStatistics,
-          onCalendarHistory: _openCalendarHistory,
-        ),
-        const FoldersScreen(),
-        const FavoritesScreen(),
-        SettingsScreen(themeController: widget.themeController),
-      ];
+  List<Widget> get _pages {
+    final home = HomeScreen(
+      isActive: _index == 0,
+      loadNotesOnStart: !widget.skipHomeRepositoryLoadForTesting,
+      onNewNote: () => _openEditor(NoteType.text),
+      onVoiceCapture: _openVoiceEditor,
+      onChecklist: () => _openEditor(NoteType.checklist),
+      onSettings: () => setState(() => _index = 3),
+      onNotes: () => setState(() => _index = 0),
+      onFolders: () => setState(() => _index = 1),
+      onFavorites: () => setState(() => _index = 2),
+      onStatistics: _openStatistics,
+      onCalendarHistory: _openCalendarHistory,
+    );
+
+    // The launch smoke test validates shell rendering, not the repositories.
+    // Keep other tabs unmounted there so their eager IndexedStack initState
+    // methods cannot start unrelated SQLite opens during the startup test.
+    if (widget.skipHomeRepositoryLoadForTesting) return [home];
+
+    return [
+      home,
+      const FoldersScreen(),
+      const FavoritesScreen(),
+      SettingsScreen(themeController: widget.themeController),
+    ];
+  }
 
   Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
     final LocalNoteRepository repository;
