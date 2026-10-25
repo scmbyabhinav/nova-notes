@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:orah_notes/data/database/orah_database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/data/repositories/local_note_repository.dart';
@@ -121,6 +122,9 @@ void main() {
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: pump after final transcript');
     await tester.pump(const Duration(milliseconds: 700));
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: 700ms autosave pump');
+    OrahTestDiagnostics.log('VOICE checkpoint ENTER: wait for repository operations to drain');
+    await OrahDatabase.waitForOperationsForTesting();
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: repository operations drained');
     OrahTestDiagnostics.log('VOICE checkpoint ENTER: repository.getNotes');
     final notes = await state.repository.getNotes();
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: repository.getNotes count=${notes.length}');

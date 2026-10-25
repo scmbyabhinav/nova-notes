@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -53,6 +54,22 @@ void main() {
           {'id': 'check-1', 'text': 'Keep me', 'isDone': true}
         ],
       };
+
+  test('operation drain waits for overlapping work and returns at zero', () async {
+    final first = Completer<void>();
+    final second = Completer<void>();
+    final firstOperation = OrahDatabase.trackOperation(() => first.future);
+    final secondOperation = OrahDatabase.trackOperation(() => second.future);
+    final drain = OrahDatabase.waitForOperationsForTesting();
+
+    first.complete();
+    await firstOperation;
+    expect(OrahDatabase.waitForOperationsForTesting(), isA<Future<void>>());
+    second.complete();
+    await secondOperation;
+    await drain;
+    await OrahDatabase.waitForOperationsForTesting();
+  });
 
   test('migrates JSON notes once and preserves source JSON and metadata', () async {
     final prefs = await SharedPreferences.getInstance();

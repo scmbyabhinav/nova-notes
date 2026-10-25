@@ -274,10 +274,30 @@ class OrahDatabase {
   }
 
   static Future<void> waitForOperationsForTesting() async {
-    final pending = _operationsDrained;
-    _diag('repository-drain', 'ENTER activeOperations=$_activeOperations hasDrainCompleter=${pending != null}');
+    final deadline = DateTime.now().add(const Duration(seconds: 12));
+    _diag('repository-drain', 'ENTER activeOperations=$_activeOperations hasDrainCompleter=${_operationsDrained != null}');
     try {
-      if (_activeOperations > 0 && pending != null) await Zone.root.run(() => pending.future.timeout(const Duration(seconds: 12)));
+      // The counter is authoritative. A waiter can capture a completed drain
+      // completer just as another operation starts, so always re-check the
+      // live count after each wake-up rather than trusting one Future forever.
+      while (_activeOperations > 0) {
+        final remaining = deadline.difference(DateTime.now());
+        if (remaining <= Duration.zero) {
+          throw TimeoutException(
+            'Repository operations did not drain; activeOperations=$_activeOperations',
+            const Duration(seconds: 12),
+          );
+        }
+        final pending = _operationsDrained;
+        if (pending != null && !pending.isCompleted) {
+          await Zone.root.run(() => Future.any<void>([
+                pending.future,
+                Future<void>.delayed(const Duration(milliseconds: 1)),
+              ]).timeout(remaining));
+        } else {
+          await Zone.root.run(() => Future<void>.delayed(const Duration(milliseconds: 1)).timeout(remaining));
+        }
+      }
       _diag('repository-drain', 'EXIT activeOperations=$_activeOperations');
     } catch (error, stackTrace) {
       _diag('repository-drain', 'FAILED activeOperations=$_activeOperations error=$error');
