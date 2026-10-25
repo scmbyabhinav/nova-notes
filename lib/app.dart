@@ -329,10 +329,13 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
+    print('[ORAH-DIAG] editor: entered');
     final LocalNoteRepository repository;
     try {
+      print('[ORAH-DIAG] editor: requesting repository');
       repository = await NoteRepositoryProvider.instance()
           .timeout(const Duration(seconds: 6));
+      print('[ORAH-DIAG] editor: repository ready');
     } catch (error, stackTrace) {
       debugPrint('ORAH could not open note editor: $error\\n$stackTrace');
       if (!mounted) return;
@@ -348,6 +351,7 @@ class _NovaShellState extends State<NovaShell> {
     if (!mounted) {
       return;
     }
+    print('[ORAH-DIAG] editor: pushing route');
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NoteEditorScreen(
@@ -360,6 +364,7 @@ class _NovaShellState extends State<NovaShell> {
       ),
     );
 
+    print('[ORAH-DIAG] editor: route returned');
     // Refresh in the background. Future.timeout leaves a timer alive when
     // repository.refresh() is still pending as the route is disposed, which
     // trips Flutter's fake-async widget-test invariant and adds no user value.

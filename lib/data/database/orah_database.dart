@@ -48,8 +48,11 @@ class OrahDatabase {
 
   static Future<Database> _openAndMigrate(SharedPreferences preferences) async {
     final root = await getDatabasesPath();
+    print('[ORAH-DIAG] db: before openDatabase');
     final db = await openDatabase(p.join(root, 'orah_notes.db'));
+    print('[ORAH-DIAG] db: openDatabase returned');
     try {
+      print('[ORAH-DIAG] db: checking migration_state table');
       final table = await db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='migration_state'");
       String? existingState;
       if (table.isNotEmpty) {
@@ -57,12 +60,16 @@ class OrahDatabase {
         if (rows.isNotEmpty) existingState = rows.single['value'] as String;
       }
       final legacy = preferences.getString(legacyNotesKey);
+      print('[ORAH-DIAG] db: state preflight complete state=$existingState legacy=${legacy != null && legacy.isNotEmpty}');
       final plan = existingState == null && legacy != null && legacy.isNotEmpty
           ? await _prepareLegacyMigration(preferences, legacy) : null;
+      print('[ORAH-DIAG] db: migration plan prepared=${plan != null}');
       await db.transaction((txn) async {
+        print('[ORAH-DIAG] db: transaction entered');
         final versionRows = await txn.rawQuery('PRAGMA user_version');
         final currentVersion = (versionRows.single['user_version'] as int?) ?? 0;
         await _createSchema(txn);
+        print('[ORAH-DIAG] db: schema created');
         await txn.execute('CREATE TABLE IF NOT EXISTS migration_state (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)');
         final stateRows = await txn.query('migration_state', columns: ['value'], where: 'key = ?', whereArgs: [_legacyMigrationKey], limit: 1);
         final state = stateRows.isEmpty ? null : stateRows.single['value'] as String;
@@ -85,10 +92,15 @@ class OrahDatabase {
         } else if (state != 'complete' && state != 'vault_pending') {
           throw StateError('Unknown legacy migration state: $state');
         }
+        print('[ORAH-DIAG] db: migration state staged currentVersion=$currentVersion');
         if (currentVersion < schemaVersion) await txn.execute('PRAGMA user_version = $schemaVersion');
+        print('[ORAH-DIAG] db: user_version write complete');
       });
+      print('[ORAH-DIAG] db: transaction committed');
       await _finishPendingVaultMigration(db, preferences);
+      print('[ORAH-DIAG] db: pending Vault migration finalized');
       final version = await db.getVersion();
+      print('[ORAH-DIAG] db: final version=$version');
       if (version < schemaVersion) throw StateError('Database schema version $version is below $schemaVersion.');
       return db;
     } catch (_) {
