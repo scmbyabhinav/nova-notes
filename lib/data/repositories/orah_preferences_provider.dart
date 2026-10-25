@@ -27,6 +27,9 @@ class OrahPreferencesProvider {
     try {
       final preferences = await pending;
       if (generation == _generation) _instance = preferences;
+      // Do not retain a completed platform-preferences future. Test teardown
+      // can reset the cached instance without re-awaiting stale initialization.
+      if (identical(_pending, pending)) _pending = null;
       return preferences;
     } catch (_) {
       if (identical(_pending, pending)) _pending = null;
