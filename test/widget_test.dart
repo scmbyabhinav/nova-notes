@@ -39,7 +39,10 @@ void main() {
   });
 
   testWidgets('Orah launches', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(const OrahApp(
+      skipRegistrationForTesting: true,
+      skipHomeRepositoryLoadForTesting: true,
+    ));
     await tester.pump();
 
     // The brand is rendered as a gradient OrahWordmark, not a plain Text('Orah').
