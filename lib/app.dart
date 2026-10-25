@@ -245,6 +245,13 @@ class _NovaShellState extends State<NovaShell> {
     }
   }
 
+  @override
+  void dispose() {
+    _quickCaptureLongPressTimer?.cancel();
+    _quickCaptureLongPressTimer = null;
+    super.dispose();
+  }
+
   Future<void> _greetUserAtStartup() async {
     var voiceEnabled = true;
     try {
