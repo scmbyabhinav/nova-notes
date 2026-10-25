@@ -22,9 +22,10 @@ import 'orah_features_screen.dart';
 import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.loadNotesOnStart = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
 
   final bool isActive;
+  final bool loadNotesOnStart;
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
   final Future<void> Function()? onChecklist;
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
-    _loadNotes();
+    if (widget.loadNotesOnStart) _loadNotes();
     // Widget tests and inactive app routes should not keep a periodic timer
     // alive. Scheduled reflections are checked when Home becomes active/resumes.
     if (widget.isActive) {
