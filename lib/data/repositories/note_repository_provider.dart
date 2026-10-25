@@ -29,6 +29,10 @@ class NoteRepositoryProvider {
     try {
       final repository = await pending;
       if (generation == _generation) _repository = repository;
+      // Do not retain a completed construction future. Test teardown must not
+      // re-await stale initialization state after callers already received the
+      // repository; future callers use the cached instance above.
+      if (identical(_pending, pending)) _pending = null;
       return repository;
     } catch (_) {
       // A failed initialization must not poison future retry attempts.
