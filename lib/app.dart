@@ -336,11 +336,15 @@ class _NovaShellState extends State<NovaShell> {
       ),
     );
 
-    try {
-      await repository.refresh().timeout(const Duration(seconds: 5));
-    } catch (error, stackTrace) {
-      debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
-    }
+    // Refresh in the background. Future.timeout leaves a timer alive when
+    // repository.refresh() is still pending as the route is disposed, which
+    // trips Flutter's fake-async widget-test invariant and adds no user value.
+    unawaited(repository.refresh().then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {
+        debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
+      },
+    ));
   }
 
   Future<void> _openStatistics() async {
