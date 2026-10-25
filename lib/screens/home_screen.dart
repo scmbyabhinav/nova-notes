@@ -150,6 +150,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   }
 
   Future<void> _loadNotes() async {
+    // In focused widget tests this flag suppresses every Home-originated
+    // repository read, including RouteAware callbacks after the editor closes.
+    if (!widget.loadNotesOnStart || !mounted) return;
     final loadGeneration = ++_notesLoadGeneration;
     try {
       final repository = await NoteRepositoryProvider.instance()
