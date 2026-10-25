@@ -57,13 +57,18 @@ class OrahDatabase {
     // Migration is idempotent and transactional. Do not mark completion until
     // every valid record has been inserted and the Vault split has succeeded.
     final done = preferences.getBool(migrationMarkerKey) == true;
+    print('[ORAH-DIAG] sqlite: migration marker read done=$done');
     if (!done) {
       final legacy = preferences.getString(legacyNotesKey);
+      print('[ORAH-DIAG] sqlite: legacy payload present=${legacy != null && legacy.isNotEmpty}');
       if (legacy != null && legacy.isNotEmpty) {
+        print('[ORAH-DIAG] sqlite: legacy migration starting length=${legacy.length}');
         await _migrateLegacyJson(db, preferences, legacy);
+        print('[ORAH-DIAG] sqlite: legacy migration completed');
       }
-      await preferences.setBool(migrationMarkerKey, true);
-      print('[ORAH-DIAG] sqlite: migration marker persisted');
+      print('[ORAH-DIAG] sqlite: writing migration marker');
+      final markerSaved = await preferences.setBool(migrationMarkerKey, true);
+      print('[ORAH-DIAG] sqlite: migration marker write completed result=$markerSaved');
     }
     print('[ORAH-DIAG] sqlite: database initialization finished');
     return db;
