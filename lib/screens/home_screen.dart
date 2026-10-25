@@ -72,7 +72,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         (_) => _checkScheduledReflection(),
       );
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
+    if (widget.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
+    }
   }
 
 
