@@ -1,13 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:orah_notes/data/database/orah_database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:orah_notes/data/repositories/local_note_repository.dart';
+import 'package:orah_notes/data/repositories/note_repository.dart';
+import 'package:orah_notes/models/note.dart';
+import 'package:orah_notes/models/search_filter.dart';
 import 'package:orah_notes/screens/note_editor_screen.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
+
+class _MemoryNoteRepository implements NoteRepository {
+  final List<Note> _notes = [];
+  final StreamController<List<Note>> _controller =
+      StreamController<List<Note>>.broadcast();
+
+  @override
+  Stream<List<Note>> watchNotes() => _controller.stream;
+
+  @override
+  Future<List<Note>> getNotes() async => List<Note>.unmodifiable(_notes);
+
+  @override
+  Future<Note?> getNote(String id) async {
+    for (final note in _notes) {
+      if (note.id == id) return note;
+    }
+    return null;
+  }
+
+  @override
+  Future<void> saveNote(Note note) async {
+    final index = _notes.indexWhere((item) => item.id == note.id);
+    if (index == -1) {
+      _notes.add(note);
+    } else {
+      _notes[index] = note;
+    }
+    _controller.add(List<Note>.unmodifiable(_notes));
+  }
+
+  @override
+  Future<void> deleteNote(String id) async {
+    _notes.removeWhere((note) => note.id == id);
+    _controller.add(List<Note>.unmodifiable(_notes));
+  }
+
+  @override
+  Future<List<Note>> searchNotes(String query) => search(query);
+
+  @override
+  Future<List<Note>> search(
+    String query, {
+    SearchFilter filter = const SearchFilter(),
+  }) async {
+    final normalized = query.trim().toLowerCase();
+    return _notes.where((note) {
+      if (filter.favoritesOnly && !note.isFavorite) return false;
+      if (filter.pinnedOnly && !note.isPinned) return false;
+      if (filter.archivedOnly && !note.isArchived) return false;
+      if (!filter.archivedOnly && note.isArchived) return false;
+      if (filter.folderId != null && note.folderId != filter.folderId) return false;
+      if (filter.noteType != null && note.type != filter.noteType) return false;
+      if (normalized.isEmpty) return true;
+      return '${note.title} ${note.content}'.toLowerCase().contains(normalized);
+    }).toList();
+  }
+
+  Future<void> dispose() => _controller.close();
+}
 
 class _FakeVoiceSpeechService implements VoiceSpeechService {
   SpeechResultCallback? _onResult;
@@ -58,11 +118,9 @@ class _FakeVoiceSpeechService implements VoiceSpeechService {
   }
 }
 
-Future<({WidgetTester tester, _FakeVoiceSpeechService speech, LocalNoteRepository repository})>
+Future<({WidgetTester tester, _FakeVoiceSpeechService speech, _MemoryNoteRepository repository})>
     _pumpEditor(WidgetTester tester) async {
-  SharedPreferences.setMockInitialValues({});
-  final preferences = await SharedPreferences.getInstance();
-  final repository = LocalNoteRepository(preferences);
+  final repository = _MemoryNoteRepository();
   final speech = _FakeVoiceSpeechService();
 
   await tester.pumpWidget(
@@ -123,7 +181,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 700));
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: 700ms autosave pump');
     OrahTestDiagnostics.log('VOICE checkpoint ENTER: wait for repository operations to drain');
-    await OrahDatabase.waitForOperationsForTesting();
+    await tester.pump();
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: repository operations drained');
     OrahTestDiagnostics.log('VOICE checkpoint ENTER: repository.getNotes');
     final notes = await state.repository.getNotes();
