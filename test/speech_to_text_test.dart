@@ -195,7 +195,7 @@ void main() {
     );
     expect(
       editorField.controller!.text,
-      'Existing note\\nremember the supplier tomorrow',
+      'Existing note\nremember the supplier tomorrow',
       reason: 'The final transcript must reach the editor before autosave.',
     );
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: transcript visible in editor');
