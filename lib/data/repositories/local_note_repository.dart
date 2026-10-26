@@ -17,6 +17,23 @@ class LocalNoteRepository implements NoteRepository {
   final NovaSecurityService _security = NovaSecurityService();
   final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
 
+  // Serialize complete read-modify-write operations. A SQLite transaction
+  // protects each replaceAll call, but without this queue two autosaves can
+  // both read the same snapshot and the later replacement can erase the other.
+  Future<void> _mutationTail = Future<void>.value();
+
+  Future<T> _serializeMutation<T>(Future<T> Function() mutation) {
+    final result = Completer<T>();
+    _mutationTail = _mutationTail.then((_) async {
+      try {
+        result.complete(await mutation());
+      } catch (error, stackTrace) {
+        result.completeError(error, stackTrace);
+      }
+    });
+    return result.future;
+  }
+
   static const _storageKey = 'nova_notes_v1';
   static const _vaultStorageKey = 'orah_vault_notes_v1';
 
@@ -82,22 +99,22 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<void> saveNote(Note note) => OrahDatabase.trackOperation(() async {
+  Future<void> saveNote(Note note) => _serializeMutation(() => OrahDatabase.trackOperation(() async {
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
     if (note.id.trim().isEmpty) throw const FormatException('Note ID cannot be empty.');
     if (index == -1) { notes.add(note); } else { notes[index] = note; }
     await _write(notes);
     _publish(await getNotes());
-  }, name: 'LocalNoteRepository.saveNote');
+  }, name: 'LocalNoteRepository.saveNote'));
 
   @override
-  Future<void> deleteNote(String id) => OrahDatabase.trackOperation(() async {
+  Future<void> deleteNote(String id) => _serializeMutation(() => OrahDatabase.trackOperation(() async {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
     _publish(notes);
-  }, name: 'LocalNoteRepository.deleteNote');
+  }, name: 'LocalNoteRepository.deleteNote'));
 
   @override
   Future<List<Note>> searchNotes(String query) => search(query);
@@ -225,7 +242,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Moves an authenticated Vault note back into ordinary note storage.
-  Future<void> unlockVaultNote(String id) => OrahDatabase.trackOperation(() async {
+  Future<void> unlockVaultNote(String id) => _serializeMutation(() => OrahDatabase.trackOperation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
@@ -253,7 +270,7 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
     await _write(ordinary);
     _publish(await getNotes());
-  }, name: 'LocalNoteRepository.unlockVaultNote');
+  }, name: 'LocalNoteRepository.unlockVaultNote'));
 
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
