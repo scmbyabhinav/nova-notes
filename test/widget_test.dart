@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:orah_notes/data/database/orah_database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/app.dart';
@@ -12,8 +15,25 @@ import 'package:orah_notes/screens/orah_templates_screen.dart';
 import 'package:orah_notes/screens/orah_registration_screen.dart' as registration;
 
 void main() {
-  setUp(() {
+  late Directory databaseDirectory;
+
+  setUpAll(() {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  });
+
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
+    await OrahDatabase.closeForTesting();
+    databaseDirectory = await Directory.systemTemp.createTemp('orah_widget_test_');
+    await databaseFactoryFfi.setDatabasesPath(databaseDirectory.path);
+  });
+
+  tearDown(() async {
+    await OrahDatabase.closeForTesting();
+    if (await databaseDirectory.exists()) {
+      await databaseDirectory.delete(recursive: true);
+    }
   });
   testWidgets('registration form requires name and email fields', (tester) async {
     await tester.pumpWidget(MaterialApp(
