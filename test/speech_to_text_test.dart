@@ -173,11 +173,28 @@ void main() {
     await tester.tap(find.byType(FloatingActionButton));
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: microphone tap');
     await tester.pump();
-    OrahTestDiagnostics.log('VOICE checkpoint EXIT: pump after microphone');
+    // The FAB handler first awaits SharedPreferences before it starts the
+    // speech service. Do not emit a fake transcript until the editor has
+    // actually subscribed to the service result callback.
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byTooltip('Stop voice input'), findsOneWidget);
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: speech listener ready');
     OrahTestDiagnostics.log('VOICE checkpoint ENTER: emit final transcript');
     state.speech.emitFinal('remember the supplier tomorrow');
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: emit final transcript');
     await tester.pump();
+    final editorField = tester.widget<TextField>(
+      find.byWidgetPredicate(
+        (widget) => widget is TextField &&
+            widget.decoration?.hintText == 'Start writing...',
+      ),
+    );
+    expect(
+      editorField.controller!.text,
+      'Existing note\\nremember the supplier tomorrow',
+      reason: 'The final transcript must reach the editor before autosave.',
+    );
+    OrahTestDiagnostics.log('VOICE checkpoint EXIT: transcript visible in editor');
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: pump after final transcript');
     await tester.pump(const Duration(milliseconds: 700));
     OrahTestDiagnostics.log('VOICE checkpoint EXIT: 700ms autosave pump');
