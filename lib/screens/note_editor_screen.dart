@@ -71,6 +71,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
   Timer? _saveTimer;
+  Future<void> _saveTail = Future<void>.value();
+  int _changeVersion = 0;
   late final DateTime _createdAt;
   late String _noteId;
   late NoteType _noteType;
@@ -324,7 +326,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               }
             }
             _saveDiag('VOICE_FINAL_TRANSCRIPT length=${nextText.length} launching _save unawaited=true');
-            _hasChanges = true;
+            _markChanged();
             _isListening = false;
             _voiceProcessing = false;
             unawaited(_save());
@@ -365,7 +367,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _voiceSessionActive = false;
     _voiceBaseText = _contentController.text;
     _voiceTranscript = '';
-    _hasChanges = true;
+    _markChanged();
     setState(() => _voiceProcessing = false);
     await _save();
     if (mounted) {
@@ -425,7 +427,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _isListening = false;
     });
     if (!hasPartialText) return;
-    _hasChanges = true;
+    _markChanged();
     await _save();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -457,7 +459,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
-    setState(() { _checklistItems = [..._checklistItems, ChecklistItem(id: _newId(), text: text.trim())]; _hasChanges = true; });
+    setState(() { _checklistItems = [..._checklistItems, ChecklistItem(id: _newId(), text: text.trim())]; _markChanged(); });
     await _save();
   }
 
@@ -469,19 +471,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     ));
     controller.dispose();
     if (text == null || text.trim().isEmpty) return;
-    setState(() { _checklistItems[index] = _checklistItems[index].copyWith(text: text.trim()); _hasChanges = true; });
+    setState(() { _checklistItems[index] = _checklistItems[index].copyWith(text: text.trim()); _markChanged(); });
     await _save();
   }
 
   Future<void> _toggleChecklistItem(int index, bool value) async {
-    setState(() { _checklistItems[index] = _checklistItems[index].copyWith(isDone: value); _hasChanges = true; });
+    setState(() { _checklistItems[index] = _checklistItems[index].copyWith(isDone: value); _markChanged(); });
     await _save();
   }
 
   Future<void> _removeChecklistItem(int index) async {
     final removed = _checklistItems[index];
     await OrahReminderService.instance.cancel('checklist:${removed.id}');
-    setState(() { _checklistItems.removeAt(index); _hasChanges = true; });
+    setState(() { _checklistItems.removeAt(index); _markChanged(); });
     await _save();
   }
 
@@ -490,7 +492,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (newIndex > oldIndex) newIndex -= 1;
       final item = _checklistItems.removeAt(oldIndex);
       _checklistItems.insert(newIndex, item);
-      _hasChanges = true;
+      _markChanged();
     });
     await _save();
   }
@@ -729,7 +731,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     setState(() {
       _isLocked = true;
       _privateUnlocked = true;
-      _hasChanges = true;
+      _markChanged();
     });
     await _save();
     if (!mounted) return;
@@ -744,7 +746,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     setState(() {
       _isLocked = false;
       _privateUnlocked = true;
-      _hasChanges = true;
+      _markChanged();
     });
     await _save();
     if (!mounted) return;
@@ -758,9 +760,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   void _saveDiag(String message) => debugPrint('[ORAH-SAVE-DIAG][${DateTime.now().toUtc().toIso8601String()}][note=$_noteId][mounted=$mounted] $message');
 
+  void _markChanged() {
+    _changeVersion++;
+    _hasChanges = true;
+  }
+
   void _onChanged() {
     _saveDiag('TEXT_CHANGED schedule debounce; existingTimer=${_saveTimer != null}');
-    _hasChanges = true;
+    _markChanged();
     // Coalesce controller notifications (especially enterText and speech
     // transcripts) into one write. Every keystroke previously started an
     // overlapping read/replace/refresh transaction against the same database.
@@ -774,7 +781,18 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     });
   }
 
-  Future<void> _save() async {
+  Future<void> _save() {
+    _saveTimer?.cancel();
+    _saveTimer = null;
+    final queuedSave = _saveTail.then((_) => _performSave());
+    // Keep the queue usable after an unexpected failure while returning the
+    // original future to the caller so explicit saves still surface errors.
+    _saveTail = queuedSave.catchError((Object _) {});
+    return queuedSave;
+  }
+
+  Future<void> _performSave() async {
+    final versionAtStart = _changeVersion;
     final saveClock = Stopwatch()..start();
     _saveDiag('SAVE_ENTER hasChanges=$_hasChanges existingNote=${widget.note != null} timerPending=${_saveTimer != null}');
     _saveTimer?.cancel();
@@ -900,14 +918,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     } catch (_) {
       // Reminder plugins may be unavailable in widget tests; note persistence must still succeed.
     }
-    _hasChanges = false;
-    _saveDiag('SAVE_SUCCESS elapsedMs=${saveClock.elapsedMilliseconds}');
+    _hasChanges = _changeVersion != versionAtStart;
+    _saveDiag('SAVE_SUCCESS elapsedMs=${saveClock.elapsedMilliseconds} changesRemain=$_hasChanges versionAtStart=$versionAtStart currentVersion=$_changeVersion');
 
     if (mounted) setState(() => _saving = false);
     } catch (error, stackTrace) {
       _saveDiag('SAVE_FAILURE elapsedMs=${saveClock.elapsedMilliseconds} error=$error stack=$stackTrace');
       debugPrint('ORAH note save failed: $error\\n$stackTrace');
-      _hasChanges = true;
+      _markChanged();
       _saveFailed = true;
       if (mounted) {
         setState(() => _saving = false);
@@ -925,9 +943,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _close() async {
     _saveTimer?.cancel();
-    await _save();
+    _saveTimer = null;
+    // Await all saves already queued by debounce/voice input, then persist the
+    // latest editor state before allowing the route to close.
+    await _saveTail;
+    if (_hasChanges || widget.note == null) await _save();
+    await _saveTail;
 
-    if (!mounted || _saveFailed) return;
+    if (!mounted || _saveFailed || _hasChanges) return;
     Navigator.of(context).pop();
   }
 
@@ -957,7 +980,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     setState(() {
       _folderId = result.folderId;
       _tags = result.tags;
-      _hasChanges = true;
+      _markChanged();
     });
 
     await _save();
@@ -989,7 +1012,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   Future<void> _setNoteColor(Color? color) async {
     setState(() {
       _noteColor = color?.value;
-      _hasChanges = true;
+      _markChanged();
     });
     await _save();
   }
@@ -1038,11 +1061,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (picked == null || !mounted) return;
     final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
     if (time == null) return;
-    setState(() { _dueAt = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute); _hasChanges = true; });
+    setState(() { _dueAt = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute); _markChanged(); });
     await _save();
   }
 
-  Future<void> _clearDueDate() async { setState(() { _dueAt = null; _hasChanges = true; }); await _save(); }
+  Future<void> _clearDueDate() async { setState(() { _dueAt = null; _markChanged(); }); await _save(); }
 
   Future<void> _showTemplates() async {
     final templates = <String, List<String>>{'Meeting notes':['Agenda','Decisions','Action items'],'Daily plan':['Top priority','Important','If time allows'],'Shopping list':['Milk','Vegetables','Household'],'Travel plan':['Dates','Bookings','Places to visit']};
@@ -1063,7 +1086,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       );
       if (replace != true || !mounted) return;
     }
-    setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _hasChanges = true; });
+    setState(() { _titleController.text = choice; _contentController.text = templates[choice]!.map((item) => '- $item').join('\n'); _markChanged(); });
     await _save();
   }
 
@@ -1076,7 +1099,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (pinned != null) _isPinned = pinned;
       if (favorite != null) _isFavorite = favorite;
       if (archived != null) _isArchived = archived;
-      _hasChanges = true;
+      _markChanged();
     });
 
     await _save();
@@ -1158,7 +1181,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       setState(() {
         _attachments = [..._attachments, path];
         _imagePath ??= path;
-        _hasChanges = true;
+        _markChanged();
       });
       await _save();
     } catch (e) {
@@ -1184,7 +1207,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (imported.isEmpty) return;
       setState(() {
         _attachments = [..._attachments, ...imported];
-        _hasChanges = true;
+        _markChanged();
       });
       await _save();
     } catch (e) {
@@ -1200,7 +1223,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await const NovaAttachmentService().delete(path);
     setState(() {
       _attachments = _attachments.where((item) => item != path).toList();
-      _hasChanges = true;
+      _markChanged();
     });
     await _save();
   }
@@ -1268,7 +1291,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final renamed = await const NovaAttachmentService().rename(path, name.trim());
       setState(() {
         _attachments = _attachments.map((item) => item == path ? renamed : item).toList();
-        _hasChanges = true;
+        _markChanged();
       });
       await _save();
     } catch (e) {
@@ -1851,7 +1874,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           onSelected: (mood) async {
                             setState(() {
                               _mood = mood;
-                              _hasChanges = true;
+                              _markChanged();
                             });
                             await _save();
                           },
@@ -1965,7 +1988,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             _noteType = _noteType == NoteType.checklist
                                 ? NoteType.text
                                 : NoteType.checklist;
-                            _hasChanges = true;
+                            _markChanged();
                           });
                           _save();
                         },
