@@ -168,7 +168,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM --kill-after=15s 35m flutter test --concurrency=1 --reporter expanded
+          # The test bootstrap resets global SQLite/provider state between tests.
+          # Run each test file in its own Flutter test process so parallel test-suite
+          # workers cannot reset the database while widget tests are using it.
+          timeout --signal=TERM --kill-after=15s 35m bash -c '
+            set +e
+            overall_status=0
+            while IFS= read -r test_file; do
+              echo "::group::Flutter tests: $test_file"
+              timeout --signal=TERM --kill-after=5s 5m flutter test "$test_file" --concurrency=1 --reporter expanded
+              test_status=$?
+              echo "::endgroup::"
+              if [ "$test_status" -ne 0 ]; then
+                echo "::error::Flutter tests failed for $test_file (exit $test_status)"
+                overall_status=1
+              fi
+            done < <(find test -type f -name "*_test.dart" | sort)
+            exit "$overall_status"
+          '
       - name: Configure Android JVM compatibility
         run: |
           mkdir -p ~/.gradle
