@@ -125,7 +125,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Running only the Quick Capture widget test with a 5-minute wall-clock limit."
-          timeout --signal=TERM --kill-after=10s 5m flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --reporter expanded
+          timeout --signal=TERM --kill-after=10s 5m flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --concurrency=1 --reporter expanded
       - name: Repeat Quick Capture stability check (10 runs)
         timeout-minutes: 17
         shell: bash
@@ -133,7 +133,7 @@ jobs:
           set -euo pipefail
           for attempt in {1..10}; do
             echo "Quick Capture stability run $attempt/10"
-            timeout --signal=TERM --kill-after=5s 90s flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --reporter expanded
+            timeout --signal=TERM --kill-after=5s 90s flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --concurrency=1 --reporter expanded
           done
       - name: Diagnose voice autosave in isolation
         id: focused_voice
@@ -168,7 +168,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          timeout --signal=TERM --kill-after=15s 35m flutter test --reporter expanded
+          timeout --signal=TERM --kill-after=15s 35m flutter test --concurrency=1 --reporter expanded
       - name: Configure Android JVM compatibility
         run: |
           mkdir -p ~/.gradle
