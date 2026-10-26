@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/data/repositories/note_repository.dart';
 import 'package:orah_notes/models/note.dart';
@@ -121,6 +122,9 @@ class _FakeVoiceSpeechService implements VoiceSpeechService {
 
 Future<({WidgetTester tester, _FakeVoiceSpeechService speech, _MemoryNoteRepository repository})>
     _pumpEditor(WidgetTester tester) async {
+  // The editor reads and writes its voice-hint preference during startup
+  // and microphone taps. Keep that plugin deterministic in widget tests.
+  SharedPreferences.setMockInitialValues({});
   final repository = _MemoryNoteRepository();
   final speech = _FakeVoiceSpeechService();
 
