@@ -169,10 +169,17 @@ class LocalNoteRepository implements NoteRepository {
     return ranked.map((item) => item.note).toList();
   }
 
+  void _writeDiag(String message) => print('[ORAH-WRITE-DIAG][${DateTime.now().toUtc().toIso8601String()}] $message');
+
   Future<void> _write(List<Note> notes) => OrahDatabase.trackOperation(() async {
+    _writeDiag('WRITE_ENTER noteCount=${notes.length}');
+    _writeDiag('OPEN_ENTER');
     final db = await OrahDatabase.open(_preferences);
+    _writeDiag('OPEN_EXIT isOpen=${db.isOpen}');
     final vaultById = <String, Map<String, dynamic>>{};
+    _writeDiag('VAULT_PREF_READ_ENTER');
     final existingVaultRaw = _preferences.getString(_vaultStorageKey);
+    _writeDiag('VAULT_PREF_READ_EXIT hasValue=${existingVaultRaw != null && existingVaultRaw.isNotEmpty}');
     if (existingVaultRaw != null && existingVaultRaw.isNotEmpty) {
       final decoded = jsonDecode(existingVaultRaw);
       if (decoded is! List) throw const FormatException('Vault storage could not be read safely.');
@@ -182,15 +189,22 @@ class LocalNoteRepository implements NoteRepository {
     }
     final ordinaryPayloads = <Map<String, dynamic>>[];
     for (final note in notes) {
+      _writeDiag('TO_MAP_ENTER id=${note.id} locked=${note.isLocked}');
       final encoded = await _toMap(note);
+      _writeDiag('TO_MAP_EXIT id=${note.id}');
       if (note.isLocked) { vaultById[note.id] = encoded; } else {
         ordinaryPayloads.add(encoded);
         vaultById.remove(note.id);
       }
     }
+    _writeDiag('DAO_REPLACE_ALL_ENTER ordinaryCount=${ordinaryPayloads.length}');
     await NoteDao(db).replaceAll(ordinaryPayloads);
-    await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()))
+    _writeDiag('DAO_REPLACE_ALL_EXIT');
+    _writeDiag('VAULT_PREF_WRITE_ENTER');
+    final vaultSaved = await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()))
         .timeout(const Duration(seconds: 5));
+    _writeDiag('VAULT_PREF_WRITE_EXIT saved=$vaultSaved');
+    _writeDiag('WRITE_EXIT');
   }, name: 'LocalNoteRepository._write');
 
   /// Returns encrypted Vault records only. Callers must authenticate before

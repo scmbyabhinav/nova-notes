@@ -268,7 +268,7 @@ class OrahDatabase {
     final id = ++_nextOperationId;
     final startedAt = DateTime.now();
     final clock = Stopwatch()..start();
-    final callSite = StackTrace.current.toString().split('\\n').skip(1).take(5).join(' | ');
+    final callSite = StackTrace.current.toString().split('\n').skip(1).take(5).join(' | ');
     _activeOperations++;
     _activeOperationDetails[id] = {
       'id': id,

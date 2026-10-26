@@ -26,20 +26,29 @@ class NoteDao {
   }
 
   Future<void> replaceAll(Iterable<Map<String, dynamic>> payloads) async {
+    final rows = payloads.toList(growable: false);
+    print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] REPLACE_ALL_ENTER count=${rows.length} dbOpen=${_database.isOpen}');
+    print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] TRANSACTION_AWAIT_ENTER');
     await _database.transaction((txn) async {
+      print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] TRANSACTION_CALLBACK_ENTER');
       await txn.delete('notes');
-      for (final payload in payloads) {
+      print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] DELETE_EXIT');
+      for (final payload in rows) {
         final id = payload['id'];
         if (id is! String || id.trim().isEmpty) {
           throw const FormatException('Note ID cannot be empty.');
         }
+        print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] INSERT_ENTER id=$id');
         await txn.insert(
           'notes',
           OrahDatabase.rowFor(payload),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
+        print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] INSERT_EXIT id=$id');
       }
+      print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] TRANSACTION_CALLBACK_EXIT');
     });
+    print('[ORAH-DAO-DIAG][${DateTime.now().toUtc().toIso8601String()}] TRANSACTION_AWAIT_EXIT');
   }
 
   Future<void> delete(String id) async {
