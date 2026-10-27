@@ -70,7 +70,7 @@ void main() {
   });
 
   testWidgets('Orah launches', (tester) async {
-    await tester.pumpWidget(const OrahApp(
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), 
       skipRegistrationForTesting: true,
       skipHomeRepositoryLoadForTesting: true,
     ));
@@ -91,7 +91,7 @@ void main() {
     OrahTestDiagnostics.log('testWidgets callback ENTER: quick capture opens a note immediately');
     try {
     // Isolate capture/navigation from Home startup and post-editor repository I/O.
-    await tester.pumpWidget(const OrahApp(
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), 
       skipRegistrationForTesting: true,
       skipHomeRepositoryLoadForTesting: true,
     ));
@@ -129,7 +129,7 @@ void main() {
     OrahTestDiagnostics.log('LONG_PRESS_TEST body ENTER');
     try {
     OrahTestDiagnostics.log('LONG_PRESS checkpoint ENTER: pumpWidget');
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), skipRegistrationForTesting: true));
     OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: pumpWidget');
     await tester.pump();
     OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: initial pump');
@@ -168,7 +168,7 @@ void main() {
   });
 
   testWidgets('new note appears in home list immediately after editor closes', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -192,7 +192,7 @@ void main() {
 
   testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
     final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
