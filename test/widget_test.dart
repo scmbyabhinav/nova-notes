@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,11 +10,17 @@ import 'package:orah_notes/app.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
+import 'package:orah_notes/screens/note_editor_screen.dart';
 import 'package:orah_notes/screens/orah_registration_screen.dart' as registration;
 
 Future<void> _closeEditor(WidgetTester tester) async {
-  final backButton = find.byTooltip('Back');
-  if (backButton.evaluate().isEmpty) return;
+  final editor = find.byType(NoteEditorScreen);
+  if (editor.evaluate().isEmpty) return;
+  final backButton = find.descendant(
+    of: editor,
+    matching: find.byTooltip('Back'),
+  );
+  expect(backButton, findsOneWidget);
 
   // Exercise the same awaited close path users take, rather than forcing a
   // Navigator pop that can dispose the editor while autosave is still active.
@@ -26,12 +33,16 @@ Future<void> _closeEditor(WidgetTester tester) async {
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
     );
     await tester.pump();
-    if (backButton.evaluate().isEmpty) return;
+    if (editor.evaluate().isEmpty) return;
   }
   fail('Editor did not finish saving and close within five seconds of real time.');
 }
 
 void main() {
+  setUpAll(() {
+    // Tests must not depend on network access to fonts.gstatic.com.
+    GoogleFonts.config.allowRuntimeFetching = false;
+  });
   // SQLite FFI initialization and per-test database isolation are provided by
   // test/flutter_test_config.dart. Keep only this file's preference mock here.
   setUp(() {
