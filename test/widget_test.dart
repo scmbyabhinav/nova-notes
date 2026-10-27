@@ -19,10 +19,16 @@ Future<void> _closeEditor(WidgetTester tester) async {
   // Navigator pop that can dispose the editor while autosave is still active.
   await tester.tap(backButton);
   for (var attempt = 0; attempt < 50; attempt++) {
-    await tester.pump(const Duration(milliseconds: 100));
+    // Database/plugin futures use real asynchronous I/O. Advancing only fake
+    // widget time can exhaust this loop before SQLite has finished opening.
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump();
     if (backButton.evaluate().isEmpty) return;
   }
-  fail('Editor did not finish saving and close within five seconds.');
+  fail('Editor did not finish saving and close within five seconds of real time.');
 }
 
 void main() {
