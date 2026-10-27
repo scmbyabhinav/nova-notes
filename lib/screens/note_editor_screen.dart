@@ -20,6 +20,8 @@ import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
 import 'organization_picker_screen.dart';
+import '../controllers/study_kanban_controller.dart';
+import 'study_kanban_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
@@ -450,6 +452,28 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   String _checklistContent() => _checklistItems.map((item) => (item.isDone ? '[x] ' : '[ ] ') + item.text).join('\n');
+
+  Future<void> _openStudyKanban() async {
+    final repository = widget.repository;
+    if (repository is! LocalNoteRepository) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Study Kanban requires local SQLite storage.')),
+      );
+      return;
+    }
+    final controller = StudyKanbanController(
+      repository: repository,
+      loadStatuses: repository.getStudyTaskStatuses,
+      persistStatus: repository.updateStudyTaskStatus,
+    );
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => StudyKanbanScreen(controller: controller),
+      ),
+    );
+    controller.dispose();
+  }
 
   Future<void> _addChecklistItem() async {
     final controller = TextEditingController();
@@ -1533,6 +1557,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Study Kanban',
+            onPressed: _openStudyKanban,
+            icon: const Icon(Icons.view_kanban_outlined),
+          ),
           IconButton(
             tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
             onPressed: () => setState(() => _isZenMode = !_isZenMode),

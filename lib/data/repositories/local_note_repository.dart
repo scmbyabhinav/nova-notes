@@ -108,6 +108,18 @@ class LocalNoteRepository implements NoteRepository {
     _publish(await getNotes());
   }, name: 'LocalNoteRepository.saveNote'));
 
+  /// Reads Study Kanban statuses from the local SQLite sidecar table.
+  Future<Map<String, String>> getStudyTaskStatuses(String noteId) async {
+    final db = await OrahDatabase.open(_preferences);
+    return NoteDao(db).getStudyTaskStatuses(noteId);
+  }
+
+  /// Persists Study Kanban status without rewriting the note payload.
+  Future<void> updateStudyTaskStatus(String noteId, String taskId, String status) async {
+    final db = await OrahDatabase.open(_preferences);
+    await NoteDao(db).updateStudyTaskStatus(noteId, taskId, status);
+  }
+
   @override
   Future<void> deleteNote(String id) => _serializeMutation(() => OrahDatabase.trackOperation(() async {
     final notes = await getNotes();
