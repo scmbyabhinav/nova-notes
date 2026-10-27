@@ -1,3 +1,4 @@
+// ORAH-F04 persistence regression tests; kept independent of note payload serialization.
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
