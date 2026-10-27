@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import '../database/note_dao.dart';
+import '../database/orah_database.dart';
 
 import '../../models/note.dart';
 import '../../core/services/nova_security_service.dart';
@@ -65,65 +67,17 @@ class LocalNoteRepository implements NoteRepository {
 
   @override
   Future<List<Note>> getNotes() async {
-    final raw = _preferences.getString(_storageKey);
-    if (raw == null || raw.isEmpty) return [];
-
-    // One-time migration: older versions kept encrypted private notes in the
-    // ordinary note list. Move their encrypted records into the Vault store.
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is List) {
-        final ordinary = <dynamic>[];
-        final locked = <dynamic>[];
-        for (final item in decoded) {
-          if (item is Map && item['isLocked'] == true) {
-            locked.add(item);
-          } else {
-            ordinary.add(item);
-          }
-        }
-        if (locked.isNotEmpty) {
-          final vaultRaw = _preferences.getString(_vaultStorageKey);
-          final existing = vaultRaw == null || vaultRaw.isEmpty
-              ? <dynamic>[]
-              : (jsonDecode(vaultRaw) as List);
-          final byId = <String, dynamic>{};
-          for (final item in existing) {
-            if (item is Map && item['id'] is String) byId[item['id'] as String] = item;
-          }
-          for (final item in locked) {
-            if (item is Map && item['id'] is String) byId[item['id'] as String] = item;
-          }
-          await _preferences.setString(_vaultStorageKey, jsonEncode(byId.values.toList())).timeout(const Duration(seconds: 3));
-          await _preferences.setString(_storageKey, jsonEncode(ordinary)).timeout(const Duration(seconds: 3));
-        }
+    final db = await OrahDatabase.open(_preferences);
+    final rows = await NoteDao(db).getAllRows();
+    final notes = <Note>[];
+    for (final row in rows) {
+      try {
+        notes.add(_fromMap(row));
+      } catch (_) {
+        // Skip a corrupt row without hiding otherwise valid notes.
       }
-    } catch (_) {
-      // The normal tolerant parser below handles malformed storage.
     }
-    final refreshedRaw = _preferences.getString(_storageKey);
-    if (refreshedRaw == null || refreshedRaw.isEmpty) return [];
-
-    try {
-      final decoded = jsonDecode(refreshedRaw);
-      if (decoded is! List) return [];
-      final seen = <String>{};
-      final notes = <Note>[];
-      for (final item in decoded) {
-        if (item is! Map) continue;
-        try {
-          final note = _fromMap(Map<String, dynamic>.from(item));
-          if (note.id.trim().isNotEmpty && seen.add(note.id)) notes.add(note);
-        } catch (_) {
-          // Skip one malformed record without hiding otherwise valid notes.
-        }
-      }
-
-      notes.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-      return notes;
-    } catch (_) {
-      return [];
-    }
+    return notes;
   }
 
   @override
@@ -232,38 +186,37 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   Future<void> _write(List<Note> notes) async {
-    final ordinary = <Map<String, dynamic>>[];
-    final vault = <Map<String, dynamic>>[];
+    final db = await OrahDatabase.open(_preferences);
+    final vaultById = <String, Map<String, dynamic>>{};
     final existingVaultRaw = _preferences.getString(_vaultStorageKey);
     if (existingVaultRaw != null && existingVaultRaw.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(existingVaultRaw);
-        if (decoded is List) {
-          for (final item in decoded) {
-            if (item is Map) vault.add(Map<String, dynamic>.from(item));
-          }
-        }
-      } catch (_) {
+      final decoded = jsonDecode(existingVaultRaw);
+      if (decoded is! List) {
         throw const FormatException('Vault storage could not be read safely.');
       }
+      for (final item in decoded) {
+        if (item is Map && item['id'] is String) {
+          vaultById[item['id'] as String] = Map<String, dynamic>.from(item);
+        }
+      }
     }
-    final vaultById = <String, Map<String, dynamic>>{
-      for (final item in vault)
-        if (item['id'] is String) item['id'] as String: item,
-    };
+
+    final ordinaryPayloads = <Map<String, dynamic>>[];
     for (final note in notes) {
       final encoded = await _toMap(note);
       if (note.isLocked) {
         vaultById[note.id] = encoded;
       } else {
-        ordinary.add(encoded);
+        ordinaryPayloads.add(encoded);
         vaultById.remove(note.id);
       }
     }
-    // Persist both snapshots before publishing. Vault records never enter the
-    // ordinary notes JSON array.
-    await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList())).timeout(const Duration(seconds: 5));
-    await _preferences.setString(_storageKey, jsonEncode(ordinary)).timeout(const Duration(seconds: 5));
+
+    // Keep the Vault in its existing preference store; ordinary notes are
+    // replaced atomically in SQLite so a failed write cannot leave a partial list.
+    await NoteDao(db).replaceAll(ordinaryPayloads);
+    await _preferences.setString(_vaultStorageKey, jsonEncode(vaultById.values.toList()))
+        .timeout(const Duration(seconds: 5));
   }
 
   /// Returns encrypted Vault records only. Callers must authenticate before
@@ -414,6 +367,7 @@ class LocalNoteRepository implements NoteRepository {
       'createdAt': note.createdAt.toIso8601String(),
       'updatedAt': note.updatedAt.toIso8601String(),
       'folderId': note.folderId,
+      'vaultFolderId': note.vaultFolderId,
       'tags': note.tags,
       'color': note.color,
       'isPinned': note.isPinned,
@@ -424,6 +378,8 @@ class LocalNoteRepository implements NoteRepository {
       'dueAt': note.dueAt?.toIso8601String(),
       'attachments': note.attachments,
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
+      'mood': note.mood,
+      'imagePath': note.imagePath,
     };
   }
 
@@ -441,6 +397,7 @@ class LocalNoteRepository implements NoteRepository {
       createdAt: createdAt,
       updatedAt: updatedAt,
       folderId: map['folderId'] as String?,
+      vaultFolderId: map['vaultFolderId'] as String?,
       tags: (map['tags'] is List) ? List<String>.from((map['tags'] as List).whereType<String>()) : const [],
       color: map['color'] as int?,
       isPinned: map['isPinned'] as bool? ?? false,
@@ -451,6 +408,7 @@ class LocalNoteRepository implements NoteRepository {
       dueAt: map['dueAt'] is String ? DateTime.tryParse(map['dueAt'] as String) : null,
       attachments: (map['attachments'] is List) ? List<String>.from((map['attachments'] as List).whereType<String>()) : const [],
       checklistItems: _checklistItemsFromMap(map),
+      mood: map['mood'] as String?,
       imagePath: map['imagePath'] as String?,
     );
   }
