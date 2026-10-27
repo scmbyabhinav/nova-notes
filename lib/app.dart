@@ -27,9 +27,12 @@ import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false, this.themeOverride});
 
   final VoiceSpeechService? speechService;
+  /// Optional theme injection for deterministic widget tests and embedders.
+  /// Production uses the branded Google Fonts themes when no override is set.
+  final ThemeData? themeOverride;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
   final bool skipHomeRepositoryLoadForTesting;
@@ -59,8 +62,10 @@ class _OrahAppState extends State<OrahApp> {
 
   @override
   Widget build(BuildContext context) {
-    final light = NovaTheme.light(seed: Color(_theme.accent));
-    final dark = NovaTheme.dark(seed: Color(_theme.accent));
+    // Keep test/embedded themes lazy: when supplied, don't initialize the
+    // branded Google Fonts themes (which otherwise need a network font fetch).
+    final light = widget.themeOverride ?? NovaTheme.light(seed: Color(_theme.accent));
+    final dark = widget.themeOverride ?? NovaTheme.dark(seed: Color(_theme.accent));
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
