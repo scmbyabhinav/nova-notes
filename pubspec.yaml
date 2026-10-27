@@ -1,0 +1,70 @@
+name: orah_notes
+description: Orah — a fast, private, offline-first note-taking app.
+publish_to: "none"
+version: 1.0.0+1
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  shared_preferences: ^2.5.3
+  sqflite: ^2.4.2
+  flutter_secure_storage: ^11.2.0
+  local_auth: ^2.3.0
+  crypto: ^3.0.6
+  cryptography: ^2.9.0
+  cryptography_flutter: ^2.3.4
+  intl: ^0.20.3
+  google_fonts: ^6.3.2
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  share_plus: ^13.3.0
+  screenshot: ^3.0.0
+  http: ^1.6.0
+  pdf: ^3.11.3
+  archive: ^4.0.7
+  flutter_markdown_plus: ^1.0.12
+  flutter_svg: ^2.2.0
+  image_picker: ^1.2.3
+  google_mlkit_text_recognition: ^0.15.0
+  file_picker: ^13.1.0
+  flutter_local_notifications: ^22.3.1
+  timezone: ^0.11.1
+  in_app_purchase: ^3.3.1
+  in_app_review: ^2.0.9
+  home_widget: ^0.10.0
+  quick_actions: ^1.1.1
+  speech_to_text: ^7.4.0
+  permission_handler: ^12.0.1
+  flutter_tts: ^4.2.3
+  receive_sharing_intent: 1.8.1
+  fl_chart: ^0.68.0
+  firebase_core: ^4.2.1
+  firebase_analytics: ^12.0.3
+  table_calendar: ^3.1.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  sqflite_common_ffi: ^2.3.6
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/developer_signature.png
+    - assets/orah_app_icon.svg
+    - assets/orah_logo.svg
+    - assets/orah_header_icon.svg
+    - assets/daily_reflection_icon.svg
+    - assets/appearance_icon.svg
+    - assets/calendar_icon.svg
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/app_icon.png"
+  adaptive_icon_background: "#F0FDF6"
+  adaptive_icon_foreground: "assets/app_icon.png"
