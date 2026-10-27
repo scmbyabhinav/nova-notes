@@ -11,6 +11,20 @@ import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
 import 'package:orah_notes/screens/orah_registration_screen.dart' as registration;
 
+Future<void> _closeEditor(WidgetTester tester) async {
+  final backButton = find.byTooltip('Back');
+  if (backButton.evaluate().isEmpty) return;
+
+  // Exercise the same awaited close path users take, rather than forcing a
+  // Navigator pop that can dispose the editor while autosave is still active.
+  await tester.tap(backButton);
+  for (var attempt = 0; attempt < 50; attempt++) {
+    await tester.pump(const Duration(milliseconds: 100));
+    if (backButton.evaluate().isEmpty) return;
+  }
+  fail('Editor did not finish saving and close within five seconds.');
+}
+
 void main() {
   // SQLite FFI initialization and per-test database isolation are provided by
   // test/flutter_test_config.dart. Keep only this file's preference mock here.
@@ -88,9 +102,8 @@ void main() {
     expect(find.text('Start writing...'), findsOneWidget);
     OrahTestDiagnostics.log('Quick Capture interaction completion: editor assertions passed');
 
-    await tester.pageBack();
-    print('[ORAH-DIAG] TEST: pageBack returned');
-    await tester.pump(const Duration(milliseconds: 300));
+    await _closeEditor(tester);
+    print('[ORAH-DIAG] TEST: awaited editor close returned');
     OrahTestDiagnostics.log('test body final pump returned');
     } finally {
       OrahTestDiagnostics.log('testWidgets callback EXIT from finally: quick capture opens a note immediately');
@@ -134,6 +147,7 @@ void main() {
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
+    await _closeEditor(tester);
     } finally {
       OrahTestDiagnostics.log('LONG_PRESS_TEST body EXIT from finally');
     }
@@ -157,8 +171,7 @@ void main() {
     await tester.enterText(titleField, 'Reactive note test');
     await tester.pump(const Duration(milliseconds: 700));
 
-    await tester.pageBack();
-    await tester.pump();
+    await _closeEditor(tester);
 
     expect(find.text('Reactive note test'), findsAtLeastNWidgets(1));
   });
@@ -193,6 +206,7 @@ void main() {
 
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getBool('orah_voice_hint_shown'), isTrue);
+    await _closeEditor(tester);
   });
 
   testWidgets('templates list all starter templates and inserts selected content', (tester) async {
@@ -228,6 +242,7 @@ void main() {
     expect(content, contains('Ingredients'));
     expect(content, contains('Steps'));
     expect(content, contains('Notes'));
+    await _closeEditor(tester);
   });
 
 
