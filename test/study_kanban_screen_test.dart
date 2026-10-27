@@ -93,8 +93,8 @@ void main() {
       loadStatuses: (_) async => const {},
       persistStatus: (_, taskId, status) async { writes.add('$taskId:$status'); },
     );
-    await tester.view.setPhysicalSize(const Size(1200, 900));
-    await tester.view.setDevicePixelRatio(1);
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
     await tester.pumpWidget(MaterialApp(home: StudyKanbanScreen(controller: controller)));
     await tester.pumpAndSettle();
     final task = find.text('Drag me');
@@ -109,7 +109,7 @@ void main() {
     expect(controller.tasks.single.studyStatus, 'learning');
     await tester.pumpWidget(const SizedBox.shrink());
     controller.dispose();
-    await tester.view.resetPhysicalSize();
-    await tester.view.resetDevicePixelRatio();
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
   });
 }
