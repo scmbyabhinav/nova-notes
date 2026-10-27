@@ -1031,7 +1031,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               if (recent.isEmpty)
                 SliverFillRemaining(
                   hasScrollBody: false,
-                  child: _EmptyState(theme: theme),
+                  child: _EmptyState(theme: theme, useBrandedFonts: widget.useBrandedFonts),
                 )
               else
                 SliverPadding(
@@ -1643,9 +1643,10 @@ class _NoteText extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.theme});
+  const _EmptyState({required this.theme, required this.useBrandedFonts});
 
   final ThemeData theme;
+  final bool useBrandedFonts;
 
   @override
   Widget build(BuildContext context) {
@@ -1671,7 +1672,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               'No notes yet.',
               textAlign: TextAlign.center,
-              style: widget.useBrandedFonts
+              style: useBrandedFonts
                   ? GoogleFonts.plusJakartaSans(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
@@ -1687,7 +1688,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               'Tap the + button to capture your first thought.',
               textAlign: TextAlign.center,
-              style: widget.useBrandedFonts
+              style: useBrandedFonts
                   ? GoogleFonts.plusJakartaSans(
                       fontSize: 14,
                       height: 1.5,
