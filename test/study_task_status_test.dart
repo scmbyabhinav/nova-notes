@@ -95,6 +95,21 @@ void main() {
     ]);
   });
 
+  test('upgrades a schema-v2 database by creating the sidecar table', () async {
+    final existing = await OrahDatabase.open(preferences);
+    await existing.execute('DROP TABLE study_task_status');
+    await existing.setVersion(2);
+    await OrahDatabase.closeForTesting();
+
+    final upgraded = await OrahDatabase.open(preferences);
+    expect(await upgraded.getVersion(), 3);
+    final table = await upgraded.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+      ['study_task_status'],
+    );
+    expect(table, hasLength(1));
+  });
+
   test('status updates reject missing tasks and invalid status values', () async {
     await dao.upsert(note());
 
