@@ -22,10 +22,11 @@ import 'orah_features_screen.dart';
 import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.loadNotesOnStart = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.loadNotesOnStart = true, this.useBrandedFonts = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
 
   final bool isActive;
   final bool loadNotesOnStart;
+  final bool useBrandedFonts;
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
   final Future<void> Function()? onChecklist;
@@ -827,13 +828,19 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       prompt.text,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.lora(
-                                        textStyle: theme.textTheme.titleMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.35,
-                                        ),
-                                      ),
+                                      style: widget.useBrandedFonts
+                                          ? GoogleFonts.lora(
+                                              textStyle: theme.textTheme.titleMedium?.copyWith(
+                                                color: theme.colorScheme.onSurface,
+                                                fontWeight: FontWeight.w600,
+                                                height: 1.35,
+                                              ),
+                                            )
+                                          : theme.textTheme.titleMedium?.copyWith(
+                                              color: theme.colorScheme.onSurface,
+                                              fontWeight: FontWeight.w600,
+                                              height: 1.35,
+                                            ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
@@ -1664,21 +1671,33 @@ class _EmptyState extends StatelessWidget {
             Text(
               'No notes yet.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF1D4D37),
-              ),
+              style: widget.useBrandedFonts
+                  ? GoogleFonts.plusJakartaSans(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1D4D37),
+                    )
+                  : Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1D4D37),
+                    ),
             ),
             const SizedBox(height: 8),
             Text(
               'Tap the + button to capture your first thought.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 14,
-                height: 1.5,
-                color: const Color(0xFF6A9A84),
-              ),
+              style: widget.useBrandedFonts
+                  ? GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: const Color(0xFF6A9A84),
+                    )
+                  : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: const Color(0xFF6A9A84),
+                    ),
             ),
           ],
         ),
