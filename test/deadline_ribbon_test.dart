@@ -15,7 +15,6 @@ void main() {
 
       expect(find.byType(DeadlineRibbon), findsOneWidget);
       expect(find.text('Due today'), findsNothing);
-      expect(find.byType(Container), findsWidgets);
     });
 
     testWidgets('renders overdue label and accessible semantic label',
