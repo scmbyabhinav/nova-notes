@@ -63,7 +63,7 @@ void main() {
     dao = NoteDao(reopened);
 
     expect(await dao.getStudyTaskStatuses('note-1'), {'task-1': 'learning'});
-    final stored = OrahDatabase.mapFromRow((await dao.getAllRows()).single);
+    final stored = (await dao.getAllRows()).single;
     expect(stored['content'], 'Keep note content unchanged');
     expect(stored['checklistItems'], [
       {'id': 'task-1', 'text': 'Revise algebra', 'isDone': false},
@@ -89,7 +89,7 @@ void main() {
     ]);
 
     expect(await dao.getStudyTaskStatuses('note-1'), {'task-1': 'learning'});
-    final stored = OrahDatabase.mapFromRow((await dao.getAllRows()).single);
+    final stored = (await dao.getAllRows()).single;
     expect(stored['content'], 'Autosaved updated note content');
     expect(stored['checklistItems'], [
       {'id': 'task-1', 'text': 'Revise algebra', 'isDone': false},
