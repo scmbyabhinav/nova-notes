@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'support/orah_test_diagnostics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,7 +27,9 @@ Future<void> _closeEditor(WidgetTester tester) async {
   for (var attempt = 0; attempt < 50; attempt++) {
     // Database/plugin futures use real asynchronous I/O. Advancing only fake
     // widget time can exhaust this loop before SQLite has finished opening.
-    await tester.pump();
+    // Advance route animations in fake time, then let SQLite/plugin I/O
+    // make progress in real time before pumping the resulting microtasks.
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
     );
@@ -39,10 +40,6 @@ Future<void> _closeEditor(WidgetTester tester) async {
 }
 
 void main() {
-  setUpAll(() {
-    // Tests must not depend on network access to fonts.gstatic.com.
-    GoogleFonts.config.allowRuntimeFetching = false;
-  });
   // SQLite FFI initialization and per-test database isolation are provided by
   // test/flutter_test_config.dart. Keep only this file's preference mock here.
   setUp(() {
