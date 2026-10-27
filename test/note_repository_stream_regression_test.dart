@@ -33,21 +33,17 @@ void main() {
     repository = await createRepository();
     final note = makeNote('save-stream-test');
 
-    final event = expectLater(
-      repository.watchNotes().skip(1),
-      emits(
-        predicate<List<Note>>(
-          (notes) =>
-              notes.length == 1 &&
-              notes.single.id == note.id &&
-              notes.single.title == note.title &&
-              notes.single.isTrashed == false,
-        ),
-      ),
+    // The stream may seed from storage or deliver the live write first. Wait
+    // for the event that proves persistence instead of assuming a fixed event
+    // count and accidentally skipping the update.
+    final event = repository.watchNotes().firstWhere(
+      (notes) => notes.length == 1 && notes.single.id == note.id,
     );
 
     await repository.saveNote(note);
-    await event;
+    final notes = await event;
+    expect(notes.single.title, note.title);
+    expect(notes.single.isTrashed, isFalse);
   });
 
   test('deleteNote publishes the updated list to watchNotes immediately', () async {
@@ -55,15 +51,9 @@ void main() {
     final note = makeNote('delete-stream-test');
     await repository.saveNote(note);
 
-    final event = expectLater(
-      repository.watchNotes().skip(1),
-      emits(
-        predicate<List<Note>>((notes) => notes.isEmpty),
-      ),
-    );
-
+    final event = repository.watchNotes().firstWhere((notes) => notes.isEmpty);
     await repository.deleteNote(note.id);
-    await event;
+    expect(await event, isEmpty);
   });
 
   test('saveNote publishes trash/restore state changes immediately', () async {
@@ -71,26 +61,20 @@ void main() {
     final note = makeNote('trash-restore-stream-test');
     await repository.saveNote(note);
 
-    final trashEvent = expectLater(
-      repository.watchNotes().skip(1),
-      emits(
-        predicate<List<Note>>(
-          (notes) => notes.length == 1 && notes.single.isTrashed,
-        ),
-      ),
+    final trashEvent = repository.watchNotes().firstWhere(
+      (notes) => notes.length == 1 && notes.single.isTrashed,
     );
-    await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now()));
-    await trashEvent;
+    await repository.saveNote(
+      note.copyWith(isTrashed: true, updatedAt: DateTime.now()),
+    );
+    expect((await trashEvent).single.isTrashed, isTrue);
 
-    final restoreEvent = expectLater(
-      repository.watchNotes().skip(1),
-      emits(
-        predicate<List<Note>>(
-          (notes) => notes.length == 1 && !notes.single.isTrashed,
-        ),
-      ),
+    final restoreEvent = repository.watchNotes().firstWhere(
+      (notes) => notes.length == 1 && !notes.single.isTrashed,
     );
-    await repository.saveNote(note.copyWith(isTrashed: false, updatedAt: DateTime.now()));
-    await restoreEvent;
+    await repository.saveNote(
+      note.copyWith(isTrashed: false, updatedAt: DateTime.now()),
+    );
+    expect((await restoreEvent).single.isTrashed, isFalse);
   });
 }
