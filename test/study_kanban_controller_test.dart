@@ -75,6 +75,7 @@ void main() {
     final controller = StudyKanbanController(
       repository: repository,
       loadStatuses: (noteId) async => {'task-1': 'mastered'},
+      persistStatus: (noteId, taskId, status) async {},
     );
     addTearDown(controller.dispose);
 
@@ -104,6 +105,7 @@ void main() {
       loadStatuses: (noteId) async => {
         'task-2': 'unknown-status',
       },
+      persistStatus: (noteId, taskId, status) async {},
     );
     addTearDown(controller.dispose);
 
@@ -122,6 +124,7 @@ void main() {
         ]),
       ]),
       loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) async {},
     );
     addTearDown(controller.dispose);
 
@@ -138,6 +141,7 @@ void main() {
     final controller = StudyKanbanController(
       repository: repository,
       loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) async {},
     );
     addTearDown(controller.dispose);
 
@@ -160,6 +164,7 @@ void main() {
         _note(items: const [ChecklistItem(id: 'task-1', text: 'Task')]),
       ]),
       loadStatuses: (noteId) async => throw StateError('SQLite read failed'),
+      persistStatus: (noteId, taskId, status) async {},
     );
     addTearDown(controller.dispose);
 
@@ -170,10 +175,130 @@ void main() {
     expect(controller.tasks, isEmpty);
   });
 
+
+  test('moves a task optimistically and persists the exact status', () async {
+    final persisted = <List<String>>[];
+    final completer = Completer<void>();
+    final controller = StudyKanbanController(
+      repository: _FakeNoteRepository([
+        _note(items: const [ChecklistItem(id: 'task-1', text: 'Read chapter')]),
+      ]),
+      loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) {
+        persisted.add([noteId, taskId, status]);
+        return completer.future;
+      },
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    final moving = controller.moveTask('note-1', 'task-1', 'learning');
+    await Future<void>.delayed(Duration.zero);
+    expect(controller.tasks.single.studyStatus, 'learning');
+    expect(persisted, [['note-1', 'task-1', 'learning']]);
+
+    completer.complete();
+    await moving;
+    expect(controller.tasks.single.studyStatus, 'learning');
+  });
+
+  test('rejects a missing task without writing status', () async {
+    var writes = 0;
+    final controller = StudyKanbanController(
+      repository: _FakeNoteRepository([
+        _note(items: const [ChecklistItem(id: 'task-1', text: 'Read chapter')]),
+      ]),
+      loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) async { writes++; },
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    await expectLater(
+      controller.moveTask('note-1', 'missing-task', 'learning'),
+      throwsA(isA<StateError>()),
+    );
+    expect(writes, 0);
+    expect(controller.tasks.single.studyStatus, 'new');
+  });
+
+  test('rolls back optimistic status when persistence fails', () async {
+    final controller = StudyKanbanController(
+      repository: _FakeNoteRepository([
+        _note(items: const [ChecklistItem(id: 'task-1', text: 'Read chapter')]),
+      ]),
+      loadStatuses: (noteId) async => {'task-1': 'learning'},
+      persistStatus: (noteId, taskId, status) async {
+        throw StateError('SQLite write failed');
+      },
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    await expectLater(
+      controller.moveTask('note-1', 'task-1', 'mastered'),
+      throwsA(isA<StateError>()),
+    );
+    expect(controller.tasks.single.studyStatus, 'learning');
+  });
+
+  test('serializes rapid moves and leaves the latest status persisted', () async {
+    final firstWrite = Completer<void>();
+    final writes = <String>[];
+    final controller = StudyKanbanController(
+      repository: _FakeNoteRepository([
+        _note(items: const [ChecklistItem(id: 'task-1', text: 'Read chapter')]),
+      ]),
+      loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) {
+        writes.add(status);
+        if (status == 'learning') return firstWrite.future;
+        return Future<void>.value();
+      },
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    final first = controller.moveTask('note-1', 'task-1', 'learning');
+    await Future<void>.delayed(Duration.zero);
+    final second = controller.moveTask('note-1', 'task-1', 'mastered');
+    await Future<void>.delayed(Duration.zero);
+
+    expect(controller.tasks.single.studyStatus, 'mastered');
+    expect(writes, ['learning']);
+
+    firstWrite.complete();
+    await Future.wait([first, second]);
+
+    expect(writes, ['learning', 'mastered']);
+    expect(controller.tasks.single.studyStatus, 'mastered');
+  });
+
+  test('rejects unsupported statuses before any state or database change', () async {
+    var writes = 0;
+    final controller = StudyKanbanController(
+      repository: _FakeNoteRepository([
+        _note(items: const [ChecklistItem(id: 'task-1', text: 'Read chapter')]),
+      ]),
+      loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) async { writes++; },
+    );
+    addTearDown(controller.dispose);
+    await controller.load();
+
+    await expectLater(
+      controller.moveTask('note-1', 'task-1', 'done'),
+      throwsA(isA<FormatException>()),
+    );
+    expect(writes, 0);
+    expect(controller.tasks.single.studyStatus, 'new');
+  });
+
   test('empty state is distinct from loading and errors', () async {
     final controller = StudyKanbanController(
       repository: _FakeNoteRepository([_note()]),
       loadStatuses: (noteId) async => const {},
+      persistStatus: (noteId, taskId, status) async {},
     );
     addTearDown(controller.dispose);
 
