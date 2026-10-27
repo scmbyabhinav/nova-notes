@@ -20,13 +20,15 @@ class StudyKanbanController extends ChangeNotifier {
 
   List<StudyTask> _tasks = const [];
   bool _isLoading = false;
+  bool _hasLoaded = false;
   Object? _error;
 
   List<StudyTask> get tasks => List.unmodifiable(_tasks);
   bool get isLoading => _isLoading;
   Object? get error => _error;
   bool get hasError => _error != null;
-  bool get isEmpty => !_isLoading && _error == null && _tasks.isEmpty;
+  bool get hasLoaded => _hasLoaded;
+  bool get isEmpty => _hasLoaded && !_isLoading && _error == null && _tasks.isEmpty;
 
   /// Reloads notes and maps valid checklist entries to immutable view models.
   ///
@@ -80,6 +82,7 @@ class StudyKanbanController extends ChangeNotifier {
       _tasks = const [];
     } finally {
       _isLoading = false;
+      _hasLoaded = true;
       notifyListeners();
     }
   }
