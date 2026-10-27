@@ -27,9 +27,12 @@ import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false, this.themeOverride});
 
   final VoiceSpeechService? speechService;
+  /// Optional theme injection for deterministic widget tests and embedders.
+  /// Production uses the branded Google Fonts themes when no override is set.
+  final ThemeData? themeOverride;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
   final bool skipHomeRepositoryLoadForTesting;
@@ -59,8 +62,10 @@ class _OrahAppState extends State<OrahApp> {
 
   @override
   Widget build(BuildContext context) {
-    final light = NovaTheme.light(seed: Color(_theme.accent));
-    final dark = NovaTheme.dark(seed: Color(_theme.accent));
+    // Keep test/embedded themes lazy: when supplied, don't initialize the
+    // branded Google Fonts themes (which otherwise need a network font fetch).
+    final light = widget.themeOverride ?? NovaTheme.light(seed: Color(_theme.accent));
+    final dark = widget.themeOverride ?? NovaTheme.dark(seed: Color(_theme.accent));
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
@@ -71,19 +76,20 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting, skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting, skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting, useBrandedFonts: widget.themeOverride == null),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false, this.useBrandedFonts = true});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
   final bool skipHomeRepositoryLoadForTesting;
+  final bool useBrandedFonts;
 
   @override
   State<OrahEntryGate> createState() => _OrahEntryGateState();
@@ -157,6 +163,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         requestMicrophonePermission: widget.requestMicrophonePermission,
         enableStartupGreeting: false,
         skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting,
+        useBrandedFonts: widget.useBrandedFonts,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
@@ -213,12 +220,13 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
       speechService: widget.speechService,
       profile: profile,
       skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting,
+      useBrandedFonts: widget.useBrandedFonts,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true, this.skipHomeRepositoryLoadForTesting = false});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true, this.skipHomeRepositoryLoadForTesting = false, this.useBrandedFonts = true});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
@@ -226,6 +234,7 @@ class NovaShell extends StatefulWidget {
   final OrahUserProfile profile;
   final bool enableStartupGreeting;
   final bool skipHomeRepositoryLoadForTesting;
+  final bool useBrandedFonts;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -304,6 +313,7 @@ class _NovaShellState extends State<NovaShell> {
     final home = HomeScreen(
       isActive: _index == 0,
       loadNotesOnStart: !widget.skipHomeRepositoryLoadForTesting,
+      useBrandedFonts: widget.useBrandedFonts,
       onNewNote: () => _openEditor(NoteType.text),
       onVoiceCapture: _openVoiceEditor,
       onChecklist: () => _openEditor(NoteType.checklist),

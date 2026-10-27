@@ -78,6 +78,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   late NoteType _noteType;
   bool _saving = false;
   bool _saveFailed = false;
+  bool _closing = false;
   bool _hasChanges = false;
   bool _hasHapticSaved = false;
   bool _reviewCounted = false;
@@ -809,6 +810,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final content = _noteType == NoteType.checklist ? _checklistContent() : _contentController.text;
 
     if (title.isEmpty && content.trim().isEmpty && _mood == null && _attachments.isEmpty && _checklistItems.isEmpty) {
+      // An untouched quick-capture draft is intentionally not persisted. Mark
+      // that exact version clean so the close flow can safely discard it.
+      _hasChanges = _changeVersion != versionAtStart;
       if (mounted) setState(() => _saving = false);
       return;
     }
@@ -942,16 +946,38 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _close() async {
+    if (_closing) return;
+    _closing = true;
     _saveTimer?.cancel();
     _saveTimer = null;
-    // Await all saves already queued by debounce/voice input, then persist the
-    // latest editor state before allowing the route to close.
-    await _saveTail;
-    if (_hasChanges || widget.note == null) await _save();
-    await _saveTail;
 
-    if (!mounted || _saveFailed || _hasChanges) return;
-    Navigator.of(context).pop();
+    try {
+      // Await all saves already queued by debounce/voice input, then persist
+      // the latest editor state before allowing the route to close.
+      await _saveTail;
+      if (_hasChanges || widget.note == null) await _save();
+      await _saveTail;
+
+      if (!mounted) return;
+      if (_saveFailed || _hasChanges) {
+        // Keep the editor open so the user can retry a failed save.
+        _closing = false;
+        return;
+      }
+      Navigator.of(context).pop();
+    } catch (error, stackTrace) {
+      _saveDiag('CLOSE_FAILED error=$error stack=$stackTrace');
+      _saveFailed = true;
+      _closing = false;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Orah could not finish saving this note. Your editor is still open; retry Save before leaving.'),
+            duration: Duration(seconds: 6),
+          ),
+        );
+      }
+    }
   }
 
   Future<List<NoteFolder>> _folders() async {

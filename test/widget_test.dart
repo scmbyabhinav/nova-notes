@@ -9,7 +9,35 @@ import 'package:orah_notes/app.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
+import 'package:orah_notes/screens/note_editor_screen.dart';
 import 'package:orah_notes/screens/orah_registration_screen.dart' as registration;
+
+Future<void> _closeEditor(WidgetTester tester) async {
+  final editor = find.byType(NoteEditorScreen);
+  if (editor.evaluate().isEmpty) return;
+  final backButton = find.descendant(
+    of: editor,
+    matching: find.byTooltip('Back'),
+  );
+  expect(backButton, findsOneWidget);
+
+  // Exercise the same awaited close path users take, rather than forcing a
+  // Navigator pop that can dispose the editor while autosave is still active.
+  await tester.tap(backButton);
+  for (var attempt = 0; attempt < 50; attempt++) {
+    // Database/plugin futures use real asynchronous I/O. Advancing only fake
+    // widget time can exhaust this loop before SQLite has finished opening.
+    // Advance route animations in fake time, then let SQLite/plugin I/O
+    // make progress in real time before pumping the resulting microtasks.
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump();
+    if (editor.evaluate().isEmpty) return;
+  }
+  fail('Editor did not finish saving and close within five seconds of real time.');
+}
 
 void main() {
   // SQLite FFI initialization and per-test database isolation are provided by
@@ -42,7 +70,7 @@ void main() {
   });
 
   testWidgets('Orah launches', (tester) async {
-    await tester.pumpWidget(const OrahApp(
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), 
       skipRegistrationForTesting: true,
       skipHomeRepositoryLoadForTesting: true,
     ));
@@ -63,7 +91,7 @@ void main() {
     OrahTestDiagnostics.log('testWidgets callback ENTER: quick capture opens a note immediately');
     try {
     // Isolate capture/navigation from Home startup and post-editor repository I/O.
-    await tester.pumpWidget(const OrahApp(
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), 
       skipRegistrationForTesting: true,
       skipHomeRepositoryLoadForTesting: true,
     ));
@@ -88,9 +116,8 @@ void main() {
     expect(find.text('Start writing...'), findsOneWidget);
     OrahTestDiagnostics.log('Quick Capture interaction completion: editor assertions passed');
 
-    await tester.pageBack();
-    print('[ORAH-DIAG] TEST: pageBack returned');
-    await tester.pump(const Duration(milliseconds: 300));
+    await _closeEditor(tester);
+    print('[ORAH-DIAG] TEST: awaited editor close returned');
     OrahTestDiagnostics.log('test body final pump returned');
     } finally {
       OrahTestDiagnostics.log('testWidgets callback EXIT from finally: quick capture opens a note immediately');
@@ -102,7 +129,7 @@ void main() {
     OrahTestDiagnostics.log('LONG_PRESS_TEST body ENTER');
     try {
     OrahTestDiagnostics.log('LONG_PRESS checkpoint ENTER: pumpWidget');
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), skipRegistrationForTesting: true));
     OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: pumpWidget');
     await tester.pump();
     OrahTestDiagnostics.log('LONG_PRESS checkpoint EXIT: initial pump');
@@ -134,13 +161,14 @@ void main() {
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
+    await _closeEditor(tester);
     } finally {
       OrahTestDiagnostics.log('LONG_PRESS_TEST body EXIT from finally');
     }
   });
 
   testWidgets('new note appears in home list immediately after editor closes', (tester) async {
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -157,15 +185,14 @@ void main() {
     await tester.enterText(titleField, 'Reactive note test');
     await tester.pump(const Duration(milliseconds: 700));
 
-    await tester.pageBack();
-    await tester.pump();
+    await _closeEditor(tester);
 
     expect(find.text('Reactive note test'), findsAtLeastNWidgets(1));
   });
 
   testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
     final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(themeOverride: ThemeData(), speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -193,6 +220,7 @@ void main() {
 
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getBool('orah_voice_hint_shown'), isTrue);
+    await _closeEditor(tester);
   });
 
   testWidgets('templates list all starter templates and inserts selected content', (tester) async {
@@ -228,6 +256,7 @@ void main() {
     expect(content, contains('Ingredients'));
     expect(content, contains('Steps'));
     expect(content, contains('Notes'));
+    await _closeEditor(tester);
   });
 
 
