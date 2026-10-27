@@ -38,6 +38,9 @@ void main() {
   tearDown(() { HttpOverrides.global = previous; });
 
   testWidgets('renders three columns, task counts and empty column messages', (tester) async {
+    // Use a wide viewport so all three responsive columns are mounted together.
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
     final controller = StudyKanbanController(
       repository: _FakeRepo([_note(items: const [ChecklistItem(id: 'a', text: 'Read cell biology'), ChecklistItem(id: 'b', text: 'Practice genetics')])]),
       loadStatuses: (_) async => {'a': 'new', 'b': 'mastered'},
@@ -53,6 +56,8 @@ void main() {
     expect(find.text('No learning tasks'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
     controller.dispose();
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
   });
 
   testWidgets('Move to menu persists status and preserves checklist state', (tester) async {
