@@ -3,9 +3,17 @@ name: Orah Android Build
 
 on:
   push:
-    branches: [main, reconcile-main, 'feature/**', 'release/**']
+    branches:
+      - main
+      - reconcile-main
+      - 'feature/**'
+      - 'release/**'
+      - integration/sqlite-foundation
+      - 'fix/**'
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - integration/sqlite-foundation
   workflow_dispatch:
     inputs:
       production_release:
