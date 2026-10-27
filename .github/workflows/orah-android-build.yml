@@ -3,7 +3,7 @@ name: Orah Android Build
 
 on:
   push:
-    branches: [main, reconcile-main, 'feature/**', 'release/**']
+    branches: [main, reconcile-main, 'feature/**', 'feat/**', 'fix/**', 'release/**']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -20,7 +20,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 65
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v5
@@ -119,8 +119,73 @@ jobs:
         run: flutter gen-l10n
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
-      - name: Test
-        run: flutter test
+      - name: Diagnose Quick Capture (bounded)
+        timeout-minutes: 7
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Running only the Quick Capture widget test with a 5-minute wall-clock limit."
+          timeout --signal=TERM --kill-after=10s 5m flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --concurrency=1 --reporter expanded
+      - name: Repeat Quick Capture stability check (10 runs)
+        timeout-minutes: 17
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in {1..10}; do
+            echo "Quick Capture stability run $attempt/10"
+            timeout --signal=TERM --kill-after=5s 90s flutter test test/widget_test.dart --plain-name "quick capture opens a note immediately" --concurrency=1 --reporter expanded
+          done
+      - name: Diagnose voice autosave in isolation
+        id: focused_voice
+        continue-on-error: true
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=10s 120s flutter test test/speech_to_text_test.dart --plain-name "final voice transcript is inserted and autosaved" --concurrency=1 --reporter expanded
+      - name: Diagnose Quick Capture long-press in isolation
+        id: focused_longpress
+        continue-on-error: true
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=10s 120s flutter test test/widget_test.dart --plain-name "long-press quick capture opens checklist options" --concurrency=1 --reporter expanded
+      - name: Require isolated diagnostics to pass before full suite
+        if: always()
+        shell: bash
+        env:
+          VOICE_OUTCOME: ${{ steps.focused_voice.outcome }}
+          LONGPRESS_OUTCOME: ${{ steps.focused_longpress.outcome }}
+        run: |
+          set -euo pipefail
+          echo "focused voice test outcome: $VOICE_OUTCOME"
+          echo "focused long-press test outcome: $LONGPRESS_OUTCOME"
+          test "$VOICE_OUTCOME" = success
+          test "$LONGPRESS_OUTCOME" = success
+      - name: Full test suite
+        timeout-minutes: 37
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The test bootstrap resets global SQLite/provider state between tests.
+          # Run each test file in its own Flutter test process so parallel test-suite
+          # workers cannot reset the database while widget tests are using it.
+          timeout --signal=TERM --kill-after=15s 35m bash -c '
+            set +e
+            overall_status=0
+            while IFS= read -r test_file; do
+              echo "::group::Flutter tests: $test_file"
+              timeout --signal=TERM --kill-after=5s 5m flutter test "$test_file" --concurrency=1 --reporter expanded
+              test_status=$?
+              echo "::endgroup::"
+              if [ "$test_status" -ne 0 ]; then
+                echo "::error::Flutter tests failed for $test_file (exit $test_status)"
+                overall_status=1
+              fi
+            done < <(find test -type f -name "*_test.dart" | sort)
+            exit "$overall_status"
+          '
       - name: Configure Android JVM compatibility
         run: |
           mkdir -p ~/.gradle

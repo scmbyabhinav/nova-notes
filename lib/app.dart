@@ -27,11 +27,15 @@ import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false, this.themeOverride});
 
   final VoiceSpeechService? speechService;
+  /// Optional theme injection for deterministic widget tests and embedders.
+  /// Production uses the branded Google Fonts themes when no override is set.
+  final ThemeData? themeOverride;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final bool skipHomeRepositoryLoadForTesting;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -58,8 +62,10 @@ class _OrahAppState extends State<OrahApp> {
 
   @override
   Widget build(BuildContext context) {
-    final light = NovaTheme.light(seed: Color(_theme.accent));
-    final dark = NovaTheme.dark(seed: Color(_theme.accent));
+    // Keep test/embedded themes lazy: when supplied, don't initialize the
+    // branded Google Fonts themes (which otherwise need a network font fetch).
+    final light = widget.themeOverride ?? NovaTheme.light(seed: Color(_theme.accent));
+    final dark = widget.themeOverride ?? NovaTheme.dark(seed: Color(_theme.accent));
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
@@ -70,18 +76,20 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting, skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting, useBrandedFonts: widget.themeOverride == null),
     );
   }
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.skipHomeRepositoryLoadForTesting = false, this.useBrandedFonts = true});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final bool skipHomeRepositoryLoadForTesting;
+  final bool useBrandedFonts;
 
   @override
   State<OrahEntryGate> createState() => _OrahEntryGateState();
@@ -154,6 +162,8 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         speechService: widget.speechService,
         requestMicrophonePermission: widget.requestMicrophonePermission,
         enableStartupGreeting: false,
+        skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting,
+        useBrandedFonts: widget.useBrandedFonts,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
       );
     }
@@ -209,18 +219,22 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
       themeController: widget.themeController,
       speechService: widget.speechService,
       profile: profile,
+      skipHomeRepositoryLoadForTesting: widget.skipHomeRepositoryLoadForTesting,
+      useBrandedFonts: widget.useBrandedFonts,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true, this.skipHomeRepositoryLoadForTesting = false, this.useBrandedFonts = true});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
   final bool enableStartupGreeting;
+  final bool skipHomeRepositoryLoadForTesting;
+  final bool useBrandedFonts;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -243,6 +257,13 @@ class _NovaShellState extends State<NovaShell> {
     if (widget.enableStartupGreeting) {
       _greetUserAtStartup();
     }
+  }
+
+  @override
+  void dispose() {
+    _quickCaptureLongPressTimer?.cancel();
+    _quickCaptureLongPressTimer = null;
+    super.dispose();
   }
 
   Future<void> _greetUserAtStartup() async {
@@ -288,29 +309,44 @@ class _NovaShellState extends State<NovaShell> {
     await prefs.setBool(_quickCaptureHintDismissedKey, true);
   }
 
-  List<Widget> get _pages => [
-        HomeScreen(
-          isActive: _index == 0,
-          onNewNote: () => _openEditor(NoteType.text),
-          onVoiceCapture: _openVoiceEditor,
-          onChecklist: () => _openEditor(NoteType.checklist),
-          onSettings: () => setState(() => _index = 3),
-          onNotes: () => setState(() => _index = 0),
-          onFolders: () => setState(() => _index = 1),
-          onFavorites: () => setState(() => _index = 2),
-          onStatistics: _openStatistics,
-          onCalendarHistory: _openCalendarHistory,
-        ),
-        const FoldersScreen(),
-        const FavoritesScreen(),
-        SettingsScreen(themeController: widget.themeController),
-      ];
+  List<Widget> get _pages {
+    final home = HomeScreen(
+      isActive: _index == 0,
+      loadNotesOnStart: !widget.skipHomeRepositoryLoadForTesting,
+      useBrandedFonts: widget.useBrandedFonts,
+      onNewNote: () => _openEditor(NoteType.text),
+      onVoiceCapture: _openVoiceEditor,
+      onChecklist: () => _openEditor(NoteType.checklist),
+      onSettings: () => setState(() => _index = 3),
+      onNotes: () => setState(() => _index = 0),
+      onFolders: () => setState(() => _index = 1),
+      onFavorites: () => setState(() => _index = 2),
+      onStatistics: _openStatistics,
+      onCalendarHistory: _openCalendarHistory,
+    );
+
+    // The launch smoke test validates shell rendering, not the repositories.
+    // Keep other tabs unmounted there so their eager IndexedStack initState
+    // methods cannot start unrelated SQLite opens during the startup test.
+    if (widget.skipHomeRepositoryLoadForTesting) return [home];
+
+    return [
+      home,
+      const FoldersScreen(),
+      const FavoritesScreen(),
+      SettingsScreen(themeController: widget.themeController),
+    ];
+  }
 
   Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
+    print('[ORAH-DIAG] editor: entered');
     final LocalNoteRepository repository;
     try {
-      repository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 6));
+      print('[ORAH-DIAG] editor: requesting repository');
+      // The provider bounds its own preferences initialization. Avoid a
+      // second Future.timeout timer in widget-test FakeAsync zones.
+      repository = await NoteRepositoryProvider.instance();
+      print('[ORAH-DIAG] editor: repository ready');
     } catch (error, stackTrace) {
       debugPrint('ORAH could not open note editor: $error\\n$stackTrace');
       if (!mounted) return;
@@ -323,7 +359,10 @@ class _NovaShellState extends State<NovaShell> {
       return;
     }
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
+    print('[ORAH-DIAG] editor: pushing route');
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NoteEditorScreen(
@@ -336,10 +375,16 @@ class _NovaShellState extends State<NovaShell> {
       ),
     );
 
-    try {
-      await repository.refresh().timeout(const Duration(seconds: 5));
-    } catch (error, stackTrace) {
-      debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
+    print('[ORAH-DIAG] editor: route returned');
+    // A focused Quick Capture test deliberately suppresses all Home-originated
+    // repository I/O. The dedicated repository/database tests cover refresh.
+    if (!widget.skipHomeRepositoryLoadForTesting) {
+      unawaited(repository.refresh().then<void>(
+        (_) {},
+        onError: (Object error, StackTrace stackTrace) {
+          debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
+        },
+      ));
     }
   }
 

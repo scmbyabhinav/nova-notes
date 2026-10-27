@@ -22,9 +22,11 @@ import 'orah_features_screen.dart';
 import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.loadNotesOnStart = true, this.useBrandedFonts = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
 
   final bool isActive;
+  final bool loadNotesOnStart;
+  final bool useBrandedFonts;
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
   final Future<void> Function()? onChecklist;
@@ -55,15 +57,25 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Timer? _trashSnackBarTimer;
   Timer? _reflectionCheckTimer;
   bool _openingScheduledReflection = false;
+  bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadPreferences();
-    _loadNotes();
-    _reflectionCheckTimer = Timer.periodic(const Duration(minutes: 1), (_) => _checkScheduledReflection());
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
+    if (widget.loadNotesOnStart) _loadNotes();
+    // Widget tests and inactive app routes should not keep a periodic timer
+    // alive. Scheduled reflections are checked when Home becomes active/resumes.
+    if (widget.isActive) {
+      _reflectionCheckTimer = Timer.periodic(
+        const Duration(minutes: 1),
+        (_) => _checkScheduledReflection(),
+      );
+    }
+    if (widget.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkScheduledReflection());
+    }
   }
 
 
@@ -74,6 +86,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     // not fire when switching tabs, so refresh preferences when Home returns.
     if (!oldWidget.isActive && widget.isActive) {
       _loadPreferences();
+      _reflectionCheckTimer ??= Timer.periodic(
+        const Duration(minutes: 1),
+        (_) => _checkScheduledReflection(),
+      );
+      _checkScheduledReflection();
+    } else if (oldWidget.isActive && !widget.isActive) {
+      _reflectionCheckTimer?.cancel();
+      _reflectionCheckTimer = null;
     }
   }
 
@@ -102,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (state == AppLifecycleState.resumed) {
       // Reconcile persisted state after Android suspends/resumes the app.
       _loadNotes();
+      if (widget.isActive) _checkScheduledReflection();
     }
   }
 
@@ -130,10 +151,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   }
 
   Future<void> _loadNotes() async {
+    // In focused widget tests this flag suppresses every Home-originated
+    // repository read, including RouteAware callbacks after the editor closes.
+    if (!widget.loadNotesOnStart || !mounted) return;
     final loadGeneration = ++_notesLoadGeneration;
     try {
       final repository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
+          ;
 
       // Keep one live subscription for the lifetime of HomeScreen.
       _notesSubscription ??= repository.watchNotes().listen(
@@ -143,10 +167,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         },
       );
 
-      await repository.refresh().timeout(const Duration(seconds: 8));
+      await repository.refresh();
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
       final notes = await repository.getNotes()
-          .timeout(const Duration(seconds: 8));
+          ;
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
       setState(() => _loadError = null);
       _applyNotes(notes);
@@ -200,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   }
 
   Future<void> _checkScheduledReflection() async {
-    if (!mounted || !widget.isActive || _openingScheduledReflection) return;
+    if (_disposed || !mounted || !widget.isActive || _openingScheduledReflection) return;
     final prefs = await SharedPreferences.getInstance();
     if (!(prefs.getBool('orah_daily_reflection_enabled') ?? false)) return;
     final hour = prefs.getInt('orah_daily_reflection_hour') ?? 20;
@@ -220,6 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
     _notesSubscription?.cancel();
+    _disposed = true;
     _trashSnackBarTimer?.cancel();
     _reflectionCheckTimer?.cancel();
     super.dispose();
@@ -415,6 +440,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         // extend action-bearing SnackBars beyond their configured duration.
         _trashSnackBarTimer = Timer(const Duration(seconds: 3), () {
           if (mounted) trashSnackBar.close();
+          _trashSnackBarTimer = null;
         });
         return;
     }
@@ -802,13 +828,19 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       prompt.text,
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.lora(
-                                        textStyle: theme.textTheme.titleMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.35,
-                                        ),
-                                      ),
+                                      style: widget.useBrandedFonts
+                                          ? GoogleFonts.lora(
+                                              textStyle: theme.textTheme.titleMedium?.copyWith(
+                                                color: theme.colorScheme.onSurface,
+                                                fontWeight: FontWeight.w600,
+                                                height: 1.35,
+                                              ),
+                                            )
+                                          : theme.textTheme.titleMedium?.copyWith(
+                                              color: theme.colorScheme.onSurface,
+                                              fontWeight: FontWeight.w600,
+                                              height: 1.35,
+                                            ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
@@ -999,7 +1031,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               if (recent.isEmpty)
                 SliverFillRemaining(
                   hasScrollBody: false,
-                  child: _EmptyState(theme: theme),
+                  child: _EmptyState(theme: theme, useBrandedFonts: widget.useBrandedFonts),
                 )
               else
                 SliverPadding(
@@ -1611,9 +1643,10 @@ class _NoteText extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.theme});
+  const _EmptyState({required this.theme, required this.useBrandedFonts});
 
   final ThemeData theme;
+  final bool useBrandedFonts;
 
   @override
   Widget build(BuildContext context) {
@@ -1639,21 +1672,33 @@ class _EmptyState extends StatelessWidget {
             Text(
               'No notes yet.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF1D4D37),
-              ),
+              style: useBrandedFonts
+                  ? GoogleFonts.plusJakartaSans(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1D4D37),
+                    )
+                  : Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1D4D37),
+                    ),
             ),
             const SizedBox(height: 8),
             Text(
               'Tap the + button to capture your first thought.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 14,
-                height: 1.5,
-                color: const Color(0xFF6A9A84),
-              ),
+              style: useBrandedFonts
+                  ? GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: const Color(0xFF6A9A84),
+                    )
+                  : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: const Color(0xFF6A9A84),
+                    ),
             ),
           ],
         ),

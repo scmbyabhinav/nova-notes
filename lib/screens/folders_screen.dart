@@ -36,13 +36,13 @@ class _FoldersScreenState extends State<FoldersScreen> {
   Future<void> _load() async {
     try {
       final folderRepository = await FolderRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
+          ;
       final noteRepository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
+          ;
       final folders = await folderRepository.getFolders()
-          .timeout(const Duration(seconds: 8));
+          ;
       final notes = await noteRepository.getNotes()
-          .timeout(const Duration(seconds: 8));
+          ;
 
       final counts = <String, int>{};
       for (final note in notes) {
@@ -190,7 +190,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
 
     try {
       final repository = await FolderRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
+          ;
       await repository.saveFolder(
         NoteFolder(
           id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
@@ -198,7 +198,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
           createdAt: DateTime.now(),
           folderCoverImagePath: draft.imagePath,
         ),
-      ).timeout(const Duration(seconds: 8));
+      );
 
       if (!mounted) return;
       await _load();
