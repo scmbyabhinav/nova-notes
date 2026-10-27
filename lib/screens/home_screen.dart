@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/orah_wordmark.dart';
 import '../core/widgets/orah_asset_icon.dart';
+import '../core/widgets/deadline_ribbon.dart';
 import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository_provider.dart';
@@ -1799,6 +1800,10 @@ class _NoteCard extends StatelessWidget {
                   ],
                 ],
               ),
+              if (!note.isLocked && note.dueAt != null) ...[
+                const SizedBox(height: 8),
+                DeadlineRibbon(dueAt: note.dueAt),
+              ],
               if (body.isNotEmpty) ...[
                 const SizedBox(height: 7),
                 Text(
