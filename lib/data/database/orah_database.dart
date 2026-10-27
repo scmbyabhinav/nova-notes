@@ -17,7 +17,7 @@ class _LegacyMigrationPlan {
 class OrahDatabase {
   OrahDatabase._();
 
-  static const schemaVersion = 2;
+  static const schemaVersion = 3;
   static const legacyNotesKey = 'nova_notes_v1';
   static const legacyBackupKey = 'orah_legacy_notes_backup_v1';
   static const vaultNotesKey = 'orah_vault_notes_v1';
@@ -214,6 +214,19 @@ class OrahDatabase {
       )
     ''');
     await db.execute('CREATE INDEX IF NOT EXISTS idx_note_versions_note_saved ON note_versions(note_id, saved_at)');
+
+    // v3: Keep study progress separate from the serialized note payload.
+    // This avoids competing read-modify-write operations with editor autosave.
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS study_task_status (
+        note_id TEXT NOT NULL,
+        task_id TEXT NOT NULL,
+        study_status TEXT NOT NULL DEFAULT 'new'
+          CHECK (study_status IN ('new', 'learning', 'mastered')),
+        updated_at TEXT NOT NULL,
+        PRIMARY KEY (note_id, task_id)
+      )
+    ''');
     await db.execute('''
       CREATE TABLE IF NOT EXISTS habits (
         id TEXT PRIMARY KEY NOT NULL,
