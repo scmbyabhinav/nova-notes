@@ -456,6 +456,13 @@ class _NovaShellState extends State<NovaShell> {
   }
 
   @override
+  void dispose() {
+    // The long-press timer belongs to this state and must not outlive it.
+    _cancelQuickCaptureLongPress();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
