@@ -84,7 +84,8 @@ void main() {
     expect(find.byType(FloatingActionButton), findsOneWidget);
 
     final micButton = find.byWidgetPredicate(
-      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
+      (widget) =>
+          widget is FloatingActionButton && widget.tooltip == 'Voice input',
     );
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
@@ -106,7 +107,8 @@ void main() {
       'Existing note',
     );
     final micButton = find.byWidgetPredicate(
-      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
+      (widget) =>
+          widget is FloatingActionButton && widget.tooltip == 'Voice input',
     );
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
@@ -128,7 +130,8 @@ void main() {
     final state = await _pumpEditor(tester);
 
     final micButton = find.byWidgetPredicate(
-      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
+      (widget) =>
+          widget is FloatingActionButton && widget.tooltip == 'Voice input',
     );
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
