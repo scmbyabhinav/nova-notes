@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:orah_notes/data/database/orah_database.dart';
+import 'package:orah_notes/data/repositories/local_note_repository.dart';
 
 /// Initialize SQLite FFI and give each test an isolated on-disk database.
 ///
@@ -17,6 +18,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 
   Directory? databaseDirectory;
   setUp(() async {
+    await LocalNoteRepository.drainForTesting();
     await OrahDatabase.closeForTesting();
     databaseDirectory =
         await Directory.systemTemp.createTemp('orah_test_db_');
@@ -24,6 +26,8 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   });
 
   tearDown(() async {
+    // Let any save/read already started by a widget finish before SQLite closes.
+    await LocalNoteRepository.drainForTesting();
     await OrahDatabase.closeForTesting();
     final directory = databaseDirectory;
     if (directory != null && await directory.exists()) {
