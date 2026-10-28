@@ -83,9 +83,8 @@ void main() {
 
     expect(find.byType(FloatingActionButton), findsOneWidget);
 
-    final micButton = find.descendant(
-      of: find.byTooltip('Voice input'),
-      matching: find.byType(IconButton),
+    final micButton = find.byWidgetPredicate(
+      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
     );
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
@@ -106,9 +105,8 @@ void main() {
       find.byWidgetPredicate((widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...'),
       'Existing note',
     );
-    final micButton = find.descendant(
-      of: find.byTooltip('Voice input'),
-      matching: find.byType(IconButton),
+    final micButton = find.byWidgetPredicate(
+      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
     );
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
@@ -129,9 +127,8 @@ void main() {
   testWidgets('voice input does not change the note type', (tester) async {
     final state = await _pumpEditor(tester);
 
-    final micButton = find.descendant(
-      of: find.byTooltip('Voice input'),
-      matching: find.byType(IconButton),
+    final micButton = find.byWidgetPredicate(
+      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
     );
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
