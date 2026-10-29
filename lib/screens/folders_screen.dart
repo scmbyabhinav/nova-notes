@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../core/widgets/orah_asset_icon.dart';
+import '../l10n/app_localizations.dart';
 import '../core/utils/lifecycle_timeout.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/note_repository_provider.dart';
@@ -11,6 +12,7 @@ import '../models/folder.dart';
 import '../models/note.dart';
 import '../services/nova_attachment_service.dart';
 import 'note_editor_screen.dart';
+import 'kanban_screen.dart';
 
 class FoldersScreen extends StatefulWidget {
   const FoldersScreen({super.key});
@@ -361,6 +363,20 @@ class _FoldersScreenState extends State<FoldersScreen> {
     super.dispose();
   }
 
+  Widget _kanbanEntry(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        leading: const CircleAvatar(child: Icon(Icons.view_kanban_outlined)),
+        title: Text(l.kanban),
+        subtitle: Text(l.kanbanBoard),
+        trailing: const Icon(Icons.chevron_right_rounded),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const KanbanScreen())),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -381,6 +397,14 @@ class _FoldersScreenState extends State<FoldersScreen> {
               : 'Folders',
         ),
         actions: [
+          if (!_selectionMode)
+            IconButton(
+              tooltip: 'Kanban',
+              icon: const Icon(Icons.view_kanban_outlined),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const KanbanScreen()),
+              ),
+            ),
           if (_selectionMode)
             IconButton(
               tooltip: 'Delete selected folders',
@@ -427,13 +451,17 @@ class _FoldersScreenState extends State<FoldersScreen> {
                   ),
                 )
               : _folders.isEmpty
-                  ? _EmptyFolders(onCreate: _addFolder)
+                  ? Column(children: [
+                      Padding(padding: const EdgeInsets.fromLTRB(16, 12, 16, 4), child: _kanbanEntry(context)),
+                      Expanded(child: _EmptyFolders(onCreate: _addFolder)),
+                    ])
                   : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
-                  itemCount: _folders.length,
+                  itemCount: _folders.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final folder = _folders[index];
+                    if (index == 0) return _kanbanEntry(context);
+                    final folder = _folders[index - 1];
                     final selected = _selectedFolderIds.contains(folder.id);
                     final count = _counts[folder.id] ?? 0;
 

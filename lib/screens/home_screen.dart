@@ -23,7 +23,7 @@ import 'orah_features_screen.dart';
 import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onKanban});
 
   final bool isActive;
   final Future<void> Function()? onNewNote;
@@ -35,6 +35,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback? onFavorites;
   final VoidCallback? onStatistics;
   final VoidCallback? onCalendarHistory;
+  final VoidCallback? onKanban;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -644,6 +645,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   spacing: 8,
                                   runSpacing: 8,
                                   children: [
+                                    ActionChip(
+                                      avatar: const Icon(Icons.view_kanban_outlined, size: 18),
+                                      label: Text(AppLocalizations.of(context)!.kanban),
+                                      onPressed: widget.onKanban,
+                                    ),
                                     ActionChip(
                                       avatar: const Icon(Icons.note_alt_outlined, size: 18),
                                       label: const Text('Notes'),
