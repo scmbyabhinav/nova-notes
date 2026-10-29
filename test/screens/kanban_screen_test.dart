@@ -36,32 +36,44 @@ Future<Database> _memoryDatabase() async {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  sqfliteFfiInit();
 
   testWidgets('tablet board shows all three columns at once', (tester) async {
+    print('KANBAN_TABLET: start test');
     SharedPreferences.setMockInitialValues({});
     tester.view.physicalSize = const Size(1200, 900);
     tester.view.devicePixelRatio = 1;
+    print('KANBAN_TABLET: opening in-memory database');
     final db = await _memoryDatabase();
+    print('KANBAN_TABLET: database ready');
     final repo = KanbanRepository(db);
 
+    print('KANBAN_TABLET: before pumpWidget');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: KanbanScreen(repository: repo),
     ));
+    print('KANBAN_TABLET: pumpWidget complete');
     await tester.pump();
+    print('KANBAN_TABLET: first pump complete');
     await tester.pump(const Duration(milliseconds: 500));
+    print('KANBAN_TABLET: settle pump complete');
 
     expect(find.text('To Do (0)'), findsOneWidget);
     expect(find.text('In Progress (0)'), findsOneWidget);
     expect(find.text('Done (0)'), findsOneWidget);
+    print('KANBAN_TABLET: assertions passed');
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
     await Future<void>.delayed(Duration.zero);
     tester.view.resetPhysicalSize();
+    print('KANBAN_TABLET: widget unmounted; disposing repository');
     await repo.dispose();
+    print('KANBAN_TABLET: repository disposed; closing database');
     await db.close();
+    print('KANBAN_TABLET: cleanup complete');
   });
 
   testWidgets('goal board shows all three columns and only linked cards', (tester) async {
