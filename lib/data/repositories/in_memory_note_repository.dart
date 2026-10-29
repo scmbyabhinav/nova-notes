@@ -61,7 +61,7 @@ class InMemoryNoteRepository extends LocalNoteRepository {
   }) async {
     final normalized = query.trim().toLowerCase();
     final terms = normalized
-        .split(RegExp(r'\\s+'))
+        .split(RegExp(r'\s+'))
         .where((term) => term.isNotEmpty)
         .toList();
     return _snapshot().where((note) {
