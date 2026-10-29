@@ -399,7 +399,7 @@ class _FoldersScreenState extends State<FoldersScreen> {
         actions: [
           if (!_selectionMode)
             IconButton(
-              tooltip: 'Kanban',
+              tooltip: AppLocalizations.of(context)!.kanban,
               icon: const Icon(Icons.view_kanban_outlined),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const KanbanScreen()),
