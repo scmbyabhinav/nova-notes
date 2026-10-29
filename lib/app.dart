@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'l10n/app_localizations.dart';
 
 import 'core/theme/nova_theme.dart';
+import 'core/utils/lifecycle_timeout.dart';
 import 'core/theme/orah_theme_controller.dart';
 import 'core/widgets/orah_asset_icon.dart';
 import 'data/repositories/note_repository_provider.dart';
@@ -39,6 +40,7 @@ class OrahApp extends StatefulWidget {
 
 class _OrahAppState extends State<OrahApp> {
   final OrahThemeController _theme = OrahThemeController();
+  final LifecycleTimeout _profileTimeout = LifecycleTimeout();
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _OrahAppState extends State<OrahApp> {
 
   @override
   void dispose() {
+    _profileTimeout.dispose();
     _theme.removeListener(_onThemeChanged);
     _theme.dispose();
     super.dispose();
@@ -110,15 +113,10 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
     try {
       // Secure-storage and preference platform calls can fail or stall on
       // some Android installs. Bound them and give the user a recovery path.
-      final profile = await OrahUserProfileService.instance
-          .loadProfile()
-          .timeout(const Duration(seconds: 10));
-      final prefs = await SharedPreferences.getInstance()
-          .timeout(const Duration(seconds: 10));
+      final profile = await _profileTimeout.run(OrahUserProfileService.instance.loadProfile(), const Duration(seconds: 10));
+      final prefs = await _profileTimeout.run(SharedPreferences.getInstance(), const Duration(seconds: 10));
       if (profile != null && prefs.getString('user_name') == null) {
-        await prefs
-            .setString('user_name', profile.fullName)
-            .timeout(const Duration(seconds: 5));
+        await _profileTimeout.run(prefs.setString('user_name', profile.fullName), const Duration(seconds: 5));
       }
       final userName = prefs.getString('user_name') ?? 'Friend';
       final showWelcome =
@@ -232,6 +230,7 @@ class _NovaShellState extends State<NovaShell> {
   bool _quickCaptureLongPressTriggered = false;
   bool _showQuickCaptureHint = false;
   final GlobalKey<TooltipState> _quickCaptureHintKey = GlobalKey<TooltipState>();
+  final LifecycleTimeout _shellTimeout = LifecycleTimeout();
 
   static const _quickCaptureHintDismissedKey = 'orah_quick_capture_hint_dismissed';
   static const _quickCaptureHintVisitsKey = 'orah_quick_capture_hint_visits';
@@ -248,18 +247,14 @@ class _NovaShellState extends State<NovaShell> {
   Future<void> _greetUserAtStartup() async {
     var voiceEnabled = true;
     try {
-      voiceEnabled = await OrahUserProfileService.instance
-          .voiceGreetingEnabled()
-          .timeout(const Duration(seconds: 3));
+      voiceEnabled = await _shellTimeout.run(OrahUserProfileService.instance.voiceGreetingEnabled(), const Duration(seconds: 3));
     } catch (error, stackTrace) {
       debugPrint('ORAH voice preference read failed: $error\\n$stackTrace');
       // The greeting defaults to enabled when the preference store is unavailable.
     }
     if (!mounted || !voiceEnabled) return;
     try {
-      await OrahUserProfileService.instance
-          .speakGreeting(widget.profile.fullName)
-          .timeout(const Duration(seconds: 10));
+      await _shellTimeout.run(OrahUserProfileService.instance.speakGreeting(widget.profile.fullName), const Duration(seconds: 10));
     } catch (error, stackTrace) {
       debugPrint('ORAH startup voice greeting failed: $error\\n$stackTrace');
       // TTS failure is non-fatal and must not affect note editing.
@@ -309,8 +304,7 @@ class _NovaShellState extends State<NovaShell> {
   Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
     final LocalNoteRepository repository;
     try {
-      repository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 6));
+      repository = await _shellTimeout.run(NoteRepositoryProvider.instance(), const Duration(seconds: 6));
     } catch (error, stackTrace) {
       debugPrint('ORAH could not open note editor: $error\\n$stackTrace');
       if (!mounted) return;
@@ -337,7 +331,7 @@ class _NovaShellState extends State<NovaShell> {
     );
 
     try {
-      await repository.refresh().timeout(const Duration(seconds: 5));
+      await _shellTimeout.run(repository.refresh(), const Duration(seconds: 5));
     } catch (error, stackTrace) {
       debugPrint('ORAH note list refresh failed: $error\\n$stackTrace');
     }
@@ -459,6 +453,7 @@ class _NovaShellState extends State<NovaShell> {
   void dispose() {
     // The long-press timer belongs to this state and must not outlive it.
     _cancelQuickCaptureLongPress();
+    _shellTimeout.dispose();
     super.dispose();
   }
 
