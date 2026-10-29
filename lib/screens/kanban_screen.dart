@@ -474,7 +474,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
     final title = status == KanbanStatus.todo ? l.kanbanTodo : status == KanbanStatus.inProgress ? l.kanbanInProgress : l.kanbanDone;
     return DragTarget<KanbanCard>(
       onAcceptWithDetails: (details) => _moveCardWithUndo(details.data, status),
-      builder: (context, candidates, rejected) => Container(
+      builder: (context, candidates, rejected) {
+        debugPrint('KANBAN_DROP: builder enter $status candidates=${candidates.length}');
+        final child = Container(
         margin: const EdgeInsets.all(6), padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerLow, borderRadius: BorderRadius.circular(14)),
         child: Column(children: [
@@ -557,7 +559,10 @@ class _KanbanScreenState extends State<KanbanScreen> {
             )).toList(),
           )),
         ]),
-      ),
+      );
+        debugPrint('KANBAN_DROP: builder exit $status');
+        return child;
+      },
     );
   }
 }
