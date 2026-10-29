@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:orah_notes/data/repositories/local_note_repository.dart';
+import 'package:orah_notes/data/repositories/in_memory_note_repository.dart';
 import 'package:orah_notes/screens/note_editor_screen.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 
@@ -56,11 +56,11 @@ class _FakeVoiceSpeechService implements VoiceSpeechService {
   }
 }
 
-Future<({WidgetTester tester, _FakeVoiceSpeechService speech, LocalNoteRepository repository})>
+Future<({WidgetTester tester, _FakeVoiceSpeechService speech, InMemoryNoteRepository repository})>
     _pumpEditor(WidgetTester tester) async {
   SharedPreferences.setMockInitialValues({});
   final preferences = await SharedPreferences.getInstance();
-  final repository = LocalNoteRepository(preferences);
+  final repository = InMemoryNoteRepository(preferences);
   final speech = _FakeVoiceSpeechService();
 
   await tester.pumpWidget(
@@ -86,6 +86,7 @@ void main() {
     final micButton = find.byWidgetPredicate(
       (widget) => widget is IconButton && widget.tooltip == 'Voice input',
     );
+    if (micButton.evaluate().isEmpty) debugDumpApp();
     expect(micButton, findsOneWidget);
     await tester.tap(micButton);
     await tester.pump();
