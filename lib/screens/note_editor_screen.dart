@@ -1871,8 +1871,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 top: false,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  // Reserve trailing space for the endFloat voice FAB above this
+                  // row so the last toolbar controls can scroll clear of its hit area.
+                  padding: const EdgeInsets.fromLTRB(14, 8, 116, 8),
                   child: Row(
                     children: [
                       _ToolButton(
