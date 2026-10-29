@@ -77,19 +77,26 @@ Future<({WidgetTester tester, _FakeVoiceSpeechService speech, InMemoryNoteReposi
   return (tester: tester, speech: speech, repository: repository);
 }
 
+Future<void> _tapMicrophone(WidgetTester tester) async {
+  final micButton = find.byWidgetPredicate(
+    (widget) => widget is IconButton && widget.tooltip == 'Voice input',
+  );
+  if (micButton.evaluate().isEmpty) debugDumpApp();
+  expect(micButton, findsOneWidget);
+  // The toolbar is horizontally scrollable; bring the real IconButton into
+  // the viewport before tapping rather than tapping its tooltip overlay.
+  await tester.ensureVisible(micButton);
+  await tester.tap(micButton);
+  await tester.pump();
+}
+
 void main() {
   testWidgets('voice input starts from the editor microphone control', (tester) async {
     final state = await _pumpEditor(tester);
 
     expect(find.byType(FloatingActionButton), findsOneWidget);
 
-    final micButton = find.byWidgetPredicate(
-      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
-    );
-    if (micButton.evaluate().isEmpty) debugDumpApp();
-    expect(micButton, findsOneWidget);
-    await tester.tap(micButton);
-    await tester.pump();
+    await _tapMicrophone(tester);
 
     expect(find.byTooltip('Stop voice input'), findsOneWidget);
 
@@ -106,12 +113,7 @@ void main() {
       find.byWidgetPredicate((widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...'),
       'Existing note',
     );
-    final micButton = find.byWidgetPredicate(
-      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
-    );
-    expect(micButton, findsOneWidget);
-    await tester.tap(micButton);
-    await tester.pump();
+    await _tapMicrophone(tester);
 
     state.speech.emitFinal('remember the supplier tomorrow');
     await tester.pump();
@@ -128,12 +130,7 @@ void main() {
   testWidgets('voice input does not change the note type', (tester) async {
     final state = await _pumpEditor(tester);
 
-    final micButton = find.byWidgetPredicate(
-      (widget) => widget is IconButton && widget.tooltip == 'Voice input',
-    );
-    expect(micButton, findsOneWidget);
-    await tester.tap(micButton);
-    await tester.pump();
+    await _tapMicrophone(tester);
     state.speech.emitFinal('a text note');
     await tester.pump();
 
