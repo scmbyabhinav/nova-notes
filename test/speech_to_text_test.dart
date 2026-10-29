@@ -86,23 +86,14 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   expect(micButton, findsOneWidget);
   expect(tester.widget<IconButton>(micButton).onPressed, isNotNull);
 
-  // Scroll the toolbar itself so the microphone button is not underneath the
-  // separate floating voice FAB on the narrow default widget-test viewport.
-  final toolbarScroll = find.ancestor(
-    of: micButton,
-    matching: find.byWidgetPredicate(
-      (widget) =>
-          widget is SingleChildScrollView &&
-          widget.scrollDirection == Axis.horizontal,
-    ),
-  );
-  expect(toolbarScroll, findsOneWidget);
-  await tester.drag(toolbarScroll, const Offset(-440, 0));
-  // Let the horizontal scroll activity finish before interacting with its
-  // child; Scrollable ignores pointer events while its position is moving.
-  await tester.pump(const Duration(milliseconds: 500));
+  // Give the editor a realistic phone viewport; the toolbar must be
+  // interactable without overlapping its independent voice FAB.
+  tester.view.physicalSize = const Size(400, 900);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  await tester.pump();
   await tester.ensureVisible(micButton);
-  await tester.pump(const Duration(milliseconds: 500));
   await tester.tap(micButton);
   await tester.pump();
 }
