@@ -453,8 +453,15 @@ class _KanbanScreenState extends State<KanbanScreen> {
           final viewportWidth = MediaQuery.sizeOf(context).width;
           debugPrint('KANBAN_LAYOUT: viewportWidth=$viewportWidth cards=${cards.length}');
           if (viewportWidth >= 840) {
+            // Temporary render-phase bisect: preserve the real screen and
+            // bounded three-column Row while replacing each column subtree.
             final columns = statuses
-                .map((s) => Expanded(child: _column(s, cards, l)))
+                .map((s) => Expanded(
+                      child: ColoredBox(
+                        color: Theme.of(context).colorScheme.surface,
+                        child: const SizedBox.expand(),
+                      ),
+                    ))
                 .toList(growable: false);
             return Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
