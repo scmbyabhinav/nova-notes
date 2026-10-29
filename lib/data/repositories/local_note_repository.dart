@@ -267,7 +267,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Moves an authenticated Vault note back into ordinary note storage.
-  Future<void> unlockVaultNote(String id) async {
+  Future<void> unlockVaultNote(String id) => _trackOperation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
@@ -302,7 +302,7 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
     await _write(ordinary);
     _publish(await getNotes());
-  }
+  });
 
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
@@ -484,7 +484,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Imports a NOVA backup and merges notes by stable ID.
-  Future<int> importJson(String raw) async {
+  Future<int> importJson(String raw) => _trackOperation(() async {
     final decoded = jsonDecode(raw);
     if (decoded is! Map || decoded['format'] != 'nova_notes_backup') {
       throw const FormatException('Invalid NOVA Notes backup.');
@@ -528,6 +528,6 @@ class LocalNoteRepository implements NoteRepository {
     await _write(merged);
     _publish(merged);
     return imported.length;
-  }
+  });
 
 }
