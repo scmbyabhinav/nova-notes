@@ -443,6 +443,11 @@ class _KanbanScreenState extends State<KanbanScreen> {
                 title: Text(card.title),
                 subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
                   if (card.description.isNotEmpty) Text(card.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  if (card.colorLabel != null) Padding(padding: const EdgeInsets.only(bottom: 4), child: Chip(
+                    label: Text(card.colorLabel!), visualDensity: VisualDensity.compact,
+                  )),
+                  if (card.dueDate != null) Text(l.kanbanDueDate + ': ' + card.dueDate!.toLocal().toIso8601String().substring(0, 10)),
+                  if (card.checklist.isNotEmpty) Text(l.kanbanChecklistHint + ': ' + card.checklist.length.toString()),
                   Text(l.kanbanPriority + ': ' + (card.priority == KanbanPriority.low ? l.kanbanLow : card.priority == KanbanPriority.medium ? l.kanbanMedium : l.kanbanHigh)),
                   FutureBuilder<List<Map<String, Object?>>>(
                     future: _repo!.getLinks('card', card.id),
