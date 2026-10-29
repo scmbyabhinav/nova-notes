@@ -84,15 +84,16 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
     (widget) => widget is IconButton && widget.tooltip == 'Voice input',
   );
   expect(micButton, findsOneWidget);
+
+  // The editor starts speech-service initialization asynchronously. Wait for
+  // the actual toolbar control to become enabled instead of invoking a
+  // disabled callback or suppressing pointer-hit-test failures.
+  await tester.pumpAndSettle();
   final button = tester.widget<IconButton>(micButton);
-  expect(button.onPressed, isNotNull);
-  // Invoke the same callback that the real toolbar button uses. This avoids
-  // a screen-coordinate tap that is obscured by the editor's floating voice
-  // FAB on the test's narrow viewport, without suppressing hit-test warnings.
+  expect(button.onPressed, isNotNull,
+      reason: 'Voice input must be enabled before the user can tap it.');
   await tester.ensureVisible(micButton);
-  await tester.runAsync(() async {
-    button.onPressed!.call();
-  });
+  await tester.tap(micButton);
   await tester.pump();
 }
 
