@@ -5,14 +5,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:orah_notes/app.dart';
+import 'package:orah_notes/data/repositories/in_memory_note_repository.dart';
+import 'package:orah_notes/data/repositories/note_repository_provider.dart';
 import 'package:orah_notes/core/widgets/orah_wordmark.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 import 'package:orah_notes/screens/orah_templates_screen.dart';
 import 'package:orah_notes/screens/orah_registration_screen.dart' as registration;
 
 void main() {
-  setUp(() {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
+    final preferences = await SharedPreferences.getInstance();
+    NoteRepositoryProvider.overrideForTesting(
+      InMemoryNoteRepository(preferences),
+    );
   });
   testWidgets('registration form requires name and email fields', (tester) async {
     await tester.pumpWidget(MaterialApp(
@@ -75,22 +81,15 @@ void main() {
     );
     final quickCaptureCenter = tester.getCenter(quickCaptureFab);
     await tester.longPressAt(quickCaptureCenter);
-    debugPrint('LONG PRESS AFTER GESTURE: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
     await tester.pump();
-    debugPrint('LONG PRESS AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
     await tester.pump(const Duration(milliseconds: 300));
-    debugPrint('LONG PRESS AFTER PUMP 300MS: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
     await tester.pump();
-    debugPrint('LONG PRESS AFTER PUMP 2: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
 
     expect(find.text('Quick checklist'), findsOneWidget);
     await tester.tap(find.text('Quick checklist'));
     await tester.pump();
-    debugPrint('CHECKLIST TAP AFTER PUMP 1: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
     await tester.pump(const Duration(milliseconds: 300));
-    debugPrint('CHECKLIST TAP AFTER PUMP 300MS: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
     await tester.pump();
-    debugPrint('CHECKLIST TAP AFTER PUMP 2: ${tester.allWidgets.map((w) => w.runtimeType).toList()}');
 
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Your checklist is empty'), findsOneWidget);
