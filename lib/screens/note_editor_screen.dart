@@ -1489,7 +1489,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: AppLocalizations.of(context)!.kanbanLinkedItems,
+            tooltip: AppLocalizations.of(context)?.kanbanLinkedItems ?? 'Linked items',
             onPressed: _showKanbanBacklinks,
             icon: const Icon(Icons.link_outlined),
           ),
