@@ -90,7 +90,14 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   await tester.ensureVisible(micButton);
   // Finish the known 300 ms editor/toolbar entrance animation before the tap.
   await tester.pump(const Duration(milliseconds: 300));
-  await tester.tap(micButton);
+  try {
+    await tester.tap(micButton);
+  } catch (error, stackTrace) {
+    // Temporary diagnostic: the hit-test failure must be explained by the tree,
+    // not hidden by suppressing WidgetController's warning.
+    debugDumpApp();
+    Error.throwWithStackTrace(error, stackTrace);
+  }
   await tester.pump();
 }
 
