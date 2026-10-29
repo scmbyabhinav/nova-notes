@@ -98,8 +98,11 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   );
   expect(toolbarScroll, findsOneWidget);
   await tester.drag(toolbarScroll, const Offset(-300, 0));
-  await tester.pump();
+  // Let the horizontal scroll activity finish before interacting with its
+  // child; Scrollable ignores pointer events while its position is moving.
+  await tester.pump(const Duration(milliseconds: 500));
   await tester.ensureVisible(micButton);
+  await tester.pump(const Duration(milliseconds: 500));
   await tester.tap(micButton);
   await tester.pump();
 }
