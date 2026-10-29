@@ -440,7 +440,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
             )).toList(),
           );
         })),
-        Expanded(child: StreamBuilder<List<KanbanCard>>(stream: _cards, builder: (context, snap) {
+        Expanded(child: StreamBuilder<List<KanbanCard>>(stream: _cards, initialData: const <KanbanCard>[], builder: (context, snap) {
           debugPrint('KANBAN_CHILD: cards stream builder hasData=${snap.hasData} hasError=${snap.hasError}');
           if (_byGoal && _goalId == null) return Center(child: Text(l.kanbanChooseGoal));
           if (snap.hasError) return Center(child: Text(snap.error.toString()));
