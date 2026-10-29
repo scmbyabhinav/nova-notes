@@ -28,6 +28,10 @@ class _KanbanScreenState extends State<KanbanScreen> {
   bool _byGoal = false;
   bool _allowMultipleTimers = false;
   bool _ownsRepo = false;
+  Future<int>? _todaySecondsFuture;
+  final Map<String, Future<List<Map<String, Object?>>>> _cardLinksFutures = {};
+  final Map<String, Future<int>> _cardSecondsFutures = {};
+  final Map<String, Future<bool>> _cardRunningFutures = {};
   bool _loading = true;
   String? _error;
 
@@ -56,6 +60,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
         _allowMultipleTimers = prefs.getBool('orah_kanban_allow_multiple_timers') ?? false;
         _cards = repo.watchCards(goalId: _goalId);
         _goals = repo.watchGoals();
+        _todaySecondsFuture = repo.totalSecondsToday();
         _loading = false;
       });
     } catch (error) {
@@ -63,6 +68,18 @@ class _KanbanScreenState extends State<KanbanScreen> {
       setState(() { _error = error.toString(); _loading = false; });
     }
   }
+
+  Future<List<Map<String, Object?>>> _linksForCard(String id) =>
+      _cardLinksFutures.putIfAbsent(id, () => _repo!.getLinks('card', id));
+
+  Future<int> _secondsForCard(String id) =>
+      _cardSecondsFutures.putIfAbsent(id, () => _repo!.totalSecondsForCard(id));
+
+  Future<bool> _isCardTimerRunning(String id) =>
+      _cardRunningFutures.putIfAbsent(id, () => _repo!.database
+          .query('time_entries', where: 'card_id = ? AND ended_at IS NULL AND deleted_at IS NULL',
+              whereArgs: [id], limit: 1)
+          .then((rows) => rows.isNotEmpty));
 
   Future<bool> _pro(OrahFeature feature) => OrahPremiumGate.check(context, feature);
 
@@ -385,7 +402,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
             setState(() { _byGoal = v.first; _goalId = null; _cards = _repo!.watchCards(); });
           },
         )),
-        FutureBuilder<int>(future: _repo!.totalSecondsToday(), builder: (context, snap) {
+        FutureBuilder<int>(future: _todaySecondsFuture, builder: (context, snap) {
           final seconds = snap.data ?? 0;
           return Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: Align(alignment: Alignment.centerLeft, child: Text(l.kanbanTodayTime + ': ' + (seconds ~/ 3600).toString() + 'h ' + ((seconds % 3600) ~/ 60).toString() + 'm', style: Theme.of(context).textTheme.labelMedium)));
         }),
@@ -462,7 +479,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
                   if (card.checklist.isNotEmpty) Text(l.kanbanChecklistHint + ': ' + card.checklist.length.toString()),
                   Text(l.kanbanPriority + ': ' + (card.priority == KanbanPriority.low ? l.kanbanLow : card.priority == KanbanPriority.medium ? l.kanbanMedium : l.kanbanHigh)),
                   FutureBuilder<List<Map<String, Object?>>>(
-                    future: _repo!.getLinks('card', card.id),
+                    future: _linksForCard(card.id),
                     builder: (context, snapshot) {
                       final links = snapshot.data ?? const <Map<String, Object?>>[];
                       if (links.isEmpty) return const SizedBox.shrink();
@@ -473,7 +490,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
                       )).toList()));
                     },
                   ),
-                  FutureBuilder<int>(future: _repo!.totalSecondsForCard(card.id), builder: (context, snapshot) {
+                  FutureBuilder<int>(future: _secondsForCard(card.id), builder: (context, snapshot) {
                     final seconds = snapshot.data ?? 0;
                     if (seconds <= 0) return const SizedBox.shrink();
                     return Text(l.kanbanTotalTime + ': ' + (seconds ~/ 3600).toString() + 'h ' + ((seconds % 3600) ~/ 60).toString() + 'm');
@@ -483,7 +500,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
                 onTap: () => _showCardLinks(card),
                 trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                   FutureBuilder<bool>(
-                    future: _repo!.database.query('time_entries', where: 'card_id = ? AND ended_at IS NULL AND deleted_at IS NULL', whereArgs: [card.id], limit: 1).then((rows) => rows.isNotEmpty),
+                    future: _isCardTimerRunning(card.id),
                     builder: (context, snapshot) => snapshot.data == true
                       ? const Icon(Icons.timer, color: Colors.green)
                       : const SizedBox.shrink(),
