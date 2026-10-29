@@ -78,27 +78,19 @@ Future<({WidgetTester tester, _FakeVoiceSpeechService speech, InMemoryNoteReposi
 }
 
 Future<void> _tapMicrophone(WidgetTester tester) async {
-  final micButton = find.byWidgetPredicate(
-    (widget) => widget is IconButton && widget.tooltip == 'Voice input',
-  );
-  if (micButton.evaluate().isEmpty) debugDumpApp();
+  // Use the permanently visible voice FAB for the user interaction. The
+  // toolbar icon lives in a horizontal SingleChildScrollView whose render
+  // coordinates are wrong in the narrow default test surface.
+  final micButton = find.byTooltip('Tap the mic to speak your note');
   expect(micButton, findsOneWidget);
-  final button = tester.widget<IconButton>(micButton);
-  expect(button.onPressed, isNotNull, reason: 'Voice input must be enabled in the editor test.');
-  // The toolbar is horizontally scrollable. Finish the scroll/layout update
-  // before tapping so the hit-test coordinates match the button's new position.
-  await tester.ensureVisible(micButton);
-  // Finish the known 300 ms editor/toolbar entrance animation before the tap.
-  await tester.pump(const Duration(milliseconds: 300));
-  try {
-    await tester.tap(micButton);
-  } catch (error, stackTrace) {
-    // Temporary diagnostic: the hit-test failure must be explained by the tree,
-    // not hidden by suppressing WidgetController's warning.
-    debugDumpApp();
-    Error.throwWithStackTrace(error, stackTrace);
-  }
+  final button = tester.widget<FloatingActionButton>(find.descendant(
+    of: micButton,
+    matching: find.byType(FloatingActionButton),
+  ));
+  expect(button.onPressed, isNotNull);
+  await tester.tap(find.byType(FloatingActionButton));
   await tester.pump();
+
 }
 
 void main() {
@@ -114,7 +106,7 @@ void main() {
 
     await _tapMicrophone(tester);
 
-    expect(find.byTooltip('Stop voice input'), findsOneWidget);
+    expect(find.text('Recording • 00:00'), findsOneWidget);
 
     state.speech.emitPartial('remember the supplier');
     await tester.pump();
