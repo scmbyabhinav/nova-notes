@@ -51,13 +51,21 @@ class _KanbanScreenState extends State<KanbanScreen> {
 
   Future<void> _init() async {
     try {
-      final repo = widget.repository ?? await openKanbanRepository();
-      final prefs = await SharedPreferences.getInstance();
+      final injectedRepo = widget.repository;
+      final repo = injectedRepo ?? await openKanbanRepository();
+      // A supplied repository is used by widget tests and embedded screens. Do
+      // not wait on the platform preferences plugin before binding its streams:
+      // that can stall the first frame under Flutter's fake-async test clock.
+      final allowMultipleTimers = injectedRepo == null
+          ? (await SharedPreferences.getInstance())
+                  .getBool('orah_kanban_allow_multiple_timers') ??
+              false
+          : false;
       if (!mounted) return;
       setState(() {
         _repo = repo;
-        _ownsRepo = widget.repository == null;
-        _allowMultipleTimers = prefs.getBool('orah_kanban_allow_multiple_timers') ?? false;
+        _ownsRepo = injectedRepo == null;
+        _allowMultipleTimers = allowMultipleTimers;
         _cards = repo.watchCards(goalId: _goalId);
         _goals = repo.watchGoals();
         _todaySecondsFuture = repo.totalSecondsToday();
