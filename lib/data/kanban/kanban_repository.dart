@@ -116,8 +116,8 @@ class KanbanRepository {
   KanbanRepository(this.database);
 
   final Database database;
-  final _cardsChanges = StreamController<void>.broadcast(sync: true);
-  final _goalsChanges = StreamController<void>.broadcast(sync: true);
+  final _cardsChanges = StreamController<void>.broadcast();
+  final _goalsChanges = StreamController<void>.broadcast();
 
   Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) async* {
     yield await getCards(goalId: goalId, includeArchived: includeArchived);
