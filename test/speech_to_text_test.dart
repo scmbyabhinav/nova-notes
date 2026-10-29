@@ -58,7 +58,9 @@ class _FakeVoiceSpeechService implements VoiceSpeechService {
 
 Future<({WidgetTester tester, _FakeVoiceSpeechService speech, InMemoryNoteRepository repository})>
     _pumpEditor(WidgetTester tester) async {
-  SharedPreferences.setMockInitialValues({});
+  // Disable the one-time voice FAB tooltip. Its OverlayPortal otherwise intercepts
+  // hit testing over the toolbar and makes the microphone tap miss the IconButton.
+  SharedPreferences.setMockInitialValues({'orah_voice_hint_shown': true});
   final preferences = await SharedPreferences.getInstance();
   final repository = InMemoryNoteRepository(preferences);
   final speech = _FakeVoiceSpeechService();
@@ -78,17 +80,15 @@ Future<({WidgetTester tester, _FakeVoiceSpeechService speech, InMemoryNoteReposi
 }
 
 Future<void> _tapMicrophone(WidgetTester tester) async {
-  // Use the permanently visible voice FAB for the user interaction. The
-  // toolbar icon lives in a horizontal SingleChildScrollView whose render
-  // coordinates are wrong in the narrow default test surface.
-  final micButton = find.byTooltip('Tap the mic to speak your note');
+  final micButton = find.byWidgetPredicate(
+    (widget) => widget is IconButton && widget.tooltip == 'Voice input',
+  );
   expect(micButton, findsOneWidget);
-  final button = tester.widget<FloatingActionButton>(find.descendant(
-    of: micButton,
-    matching: find.byType(FloatingActionButton),
-  ));
+  final button = tester.widget<IconButton>(micButton);
   expect(button.onPressed, isNotNull);
-  await tester.tap(find.byType(FloatingActionButton));
+  await tester.ensureVisible(micButton);
+  await tester.pump();
+  await tester.tap(micButton);
   await tester.pump();
 
 }
@@ -106,7 +106,7 @@ void main() {
 
     await _tapMicrophone(tester);
 
-    expect(find.text('Recording • 00:00'), findsOneWidget);
+    expect(find.byTooltip('Stop voice input'), findsOneWidget);
 
     state.speech.emitPartial('remember the supplier');
     await tester.pump();
