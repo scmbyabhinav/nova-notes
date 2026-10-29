@@ -49,7 +49,8 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: KanbanScreen(repository: repo),
     ));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('To Do (0)'), findsOneWidget);
     expect(find.text('In Progress (0)'), findsOneWidget);
@@ -75,7 +76,8 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: KanbanScreen(repository: repo, initialGoalId: goal.id),
     ));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('To Do (1)'), findsOneWidget);
     expect(find.text('In Progress (0)'), findsOneWidget);
@@ -101,12 +103,15 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: KanbanScreen(repository: repo),
     ));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     await tester.tap(find.byIcon(Icons.more_vert).first);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
     await tester.tap(find.text('Done').last);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Done (1)'), findsOneWidget);
     expect(find.text('To Do (0)'), findsOneWidget);
@@ -131,11 +136,13 @@ void main() {
       supportedLocales: AppLocalizations.supportedLocales,
       home: KanbanScreen(repository: repo),
     ));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Linked card'), findsOneWidget);
     await tester.tap(find.text('Linked card'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text('Target item'), findsNWidgets(2));
 
