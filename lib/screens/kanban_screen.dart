@@ -485,6 +485,29 @@ class _KanbanScreenState extends State<KanbanScreen> {
     final l = AppLocalizations.of(context)!;
     final cards = all.where((c) => c.status == status).toList();
     final title = status == KanbanStatus.todo ? l.kanbanTodo : status == KanbanStatus.inProgress ? l.kanbanInProgress : l.kanbanDone;
+
+    // Empty columns need no drag/reorder machinery. Keeping the empty state
+    // as a simple bounded subtree also avoids mounting nested flex/drag widgets
+    // before there is a card to interact with.
+    if (cards.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.all(6),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('$title (0)', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            Center(child: Text(l.kanbanNoCards)),
+          ],
+        ),
+      );
+    }
+
     return DragTarget<KanbanCard>(
       onAcceptWithDetails: (details) => _moveCardWithUndo(details.data, status),
       builder: (context, candidates, rejected) {
