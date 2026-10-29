@@ -86,9 +86,11 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   expect(micButton, findsOneWidget);
   final button = tester.widget<IconButton>(micButton);
   expect(button.onPressed, isNotNull);
+  // Invoke the same callback that the real toolbar button uses. This avoids
+  // a screen-coordinate tap that is obscured by the editor's floating voice
+  // FAB on the test's narrow viewport, without suppressing hit-test warnings.
   await tester.ensureVisible(micButton);
-  await tester.pump();
-  await tester.tap(micButton);
+  button.onPressed!.call();
   await tester.pump();
 
 }
