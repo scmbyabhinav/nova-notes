@@ -90,9 +90,10 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   // a screen-coordinate tap that is obscured by the editor's floating voice
   // FAB on the test's narrow viewport, without suppressing hit-test warnings.
   await tester.ensureVisible(micButton);
-  button.onPressed!.call();
+  await tester.runAsync(() async {
+    button.onPressed!.call();
+  });
   await tester.pump();
-
 }
 
 void main() {
