@@ -85,15 +85,15 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   );
   expect(micButton, findsOneWidget);
 
-  // The editor starts speech-service initialization asynchronously. Wait for
-  // the actual toolbar control to become enabled instead of invoking a
-  // disabled callback or suppressing pointer-hit-test failures.
-  await tester.pumpAndSettle();
-  final button = tester.widget<IconButton>(micButton);
-  expect(button.onPressed, isNotNull,
-      reason: 'Voice input must be enabled before the user can tap it.');
-  await tester.ensureVisible(micButton);
-  await tester.tap(micButton);
+  // The toolbar mic is not the voice-start control: the editor's voice FAB
+  // owns _handleVoiceFabTap and calls into the same voice-input handler.
+  final voiceFab = find.byWidgetPredicate(
+    (widget) => widget is FloatingActionButton,
+  );
+  expect(voiceFab, findsOneWidget);
+  final fab = tester.widget<FloatingActionButton>(voiceFab);
+  expect(fab.onPressed, isNotNull);
+  await tester.tap(voiceFab);
   await tester.pump();
 }
 
