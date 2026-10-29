@@ -84,16 +84,23 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
     (widget) => widget is IconButton && widget.tooltip == 'Voice input',
   );
   expect(micButton, findsOneWidget);
+  expect(tester.widget<IconButton>(micButton).onPressed, isNotNull);
 
-  // The toolbar mic is not the voice-start control: the editor's voice FAB
-  // owns _handleVoiceFabTap and calls into the same voice-input handler.
-  final voiceFab = find.byWidgetPredicate(
-    (widget) => widget is FloatingActionButton,
+  // Scroll the toolbar itself so the microphone button is not underneath the
+  // separate floating voice FAB on the narrow default widget-test viewport.
+  final toolbarScroll = find.ancestor(
+    of: micButton,
+    matching: find.byWidgetPredicate(
+      (widget) =>
+          widget is SingleChildScrollView &&
+          widget.scrollDirection == Axis.horizontal,
+    ),
   );
-  expect(voiceFab, findsOneWidget);
-  final fab = tester.widget<FloatingActionButton>(voiceFab);
-  expect(fab.onPressed, isNotNull);
-  await tester.tap(voiceFab);
+  expect(toolbarScroll, findsOneWidget);
+  await tester.drag(toolbarScroll, const Offset(-300, 0));
+  await tester.pump();
+  await tester.ensureVisible(micButton);
+  await tester.tap(micButton);
   await tester.pump();
 }
 
