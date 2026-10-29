@@ -56,6 +56,7 @@ void main() {
     expect(find.text('In Progress (0)'), findsOneWidget);
     expect(find.text('Done (0)'), findsOneWidget);
 
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
@@ -85,6 +86,7 @@ void main() {
     expect(find.text('Goal card'), findsOneWidget);
     expect(find.text('Unlinked card'), findsNothing);
 
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
@@ -116,6 +118,7 @@ void main() {
     expect(find.text('Done (1)'), findsOneWidget);
     expect(find.text('To Do (0)'), findsOneWidget);
 
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
@@ -146,6 +149,7 @@ void main() {
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text('Target item'), findsNWidgets(2));
 
+    await tester.pumpWidget(const SizedBox.shrink());
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
