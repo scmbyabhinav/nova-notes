@@ -40,7 +40,6 @@ class OrahApp extends StatefulWidget {
 
 class _OrahAppState extends State<OrahApp> {
   final OrahThemeController _theme = OrahThemeController();
-  final LifecycleTimeout _profileTimeout = LifecycleTimeout();
 
   @override
   void initState() {
@@ -53,7 +52,6 @@ class _OrahAppState extends State<OrahApp> {
 
   @override
   void dispose() {
-    _profileTimeout.dispose();
     _theme.removeListener(_onThemeChanged);
     _theme.dispose();
     super.dispose();
@@ -91,6 +89,7 @@ class OrahEntryGate extends StatefulWidget {
 }
 
 class _OrahEntryGateState extends State<OrahEntryGate> {
+  final LifecycleTimeout _profileTimeout = LifecycleTimeout();
   OrahUserProfile? _profile;
   bool _loading = true;
   String? _loadError;
@@ -142,6 +141,12 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         _loadError = null;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _profileTimeout.dispose();
+    super.dispose();
   }
 
   @override
