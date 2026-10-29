@@ -88,7 +88,8 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   // The toolbar is horizontally scrollable. Finish the scroll/layout update
   // before tapping so the hit-test coordinates match the button's new position.
   await tester.ensureVisible(micButton);
-  await tester.pump();
+  // Finish the known 300 ms editor/toolbar entrance animation before the tap.
+  await tester.pump(const Duration(milliseconds: 300));
   await tester.tap(micButton);
   await tester.pump();
 }
