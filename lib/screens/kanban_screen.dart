@@ -409,7 +409,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
         IconButton(tooltip: l.kanbanAddCard, onPressed: _byGoal && _goalId == null ? null : _addCard, icon: const Icon(Icons.add_rounded)),
       ]),
       body: Column(children: [
-        Padding(padding: const EdgeInsets.all(8), child: SegmentedButton<bool>(
+        Builder(builder: (context) { debugPrint('KANBAN_CHILD: building filter control'); return Padding(padding: const EdgeInsets.all(8), child: SegmentedButton<bool>(
           segments: [ButtonSegment(value: false, label: Text(l.kanbanAllCards)), ButtonSegment(value: true, label: Text(l.kanbanByGoal))],
           selected: {_byGoal},
           onSelectionChanged: (v) async {
@@ -417,8 +417,8 @@ class _KanbanScreenState extends State<KanbanScreen> {
             if (!mounted) return;
             setState(() { _byGoal = v.first; _goalId = null; _cards = _repo!.watchCards(); });
           },
-        )),
-        FutureBuilder<int>(future: _todaySecondsFuture, builder: (context, snap) {
+        )); }),
+        FutureBuilder<int>(future: _todaySecondsFuture, builder: (context, snap) { debugPrint('KANBAN_CHILD: building today-time summary');
           final seconds = snap.data ?? 0;
           return Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: Align(alignment: Alignment.centerLeft, child: Text(l.kanbanTodayTime + ': ' + (seconds ~/ 3600).toString() + 'h ' + ((seconds % 3600) ~/ 60).toString() + 'm', style: Theme.of(context).textTheme.labelMedium)));
         }),
@@ -441,13 +441,18 @@ class _KanbanScreenState extends State<KanbanScreen> {
           );
         })),
         Expanded(child: StreamBuilder<List<KanbanCard>>(stream: _cards, builder: (context, snap) {
+          debugPrint('KANBAN_CHILD: cards stream builder hasData=${snap.hasData} hasError=${snap.hasError}');
           if (_byGoal && _goalId == null) return Center(child: Text(l.kanbanChooseGoal));
           if (snap.hasError) return Center(child: Text(snap.error.toString()));
           if (!snap.hasData) return const Center(child: CircularProgressIndicator());
           final cards = snap.data!;
           final statuses = KanbanStatus.values;
           return LayoutBuilder(builder: (context, constraints) {
-            if (constraints.maxWidth >= 840) return Row(children: statuses.map((s) => Expanded(child: _column(s, cards))).toList());
+            debugPrint('KANBAN_LAYOUT: board maxWidth=${constraints.maxWidth} maxHeight=${constraints.maxHeight} cards=${cards.length}');
+            if (constraints.maxWidth >= 840) {
+              debugPrint('KANBAN_LAYOUT: entering tablet Row');
+              return Row(children: statuses.map((s) { debugPrint('KANBAN_LAYOUT: constructing column $s'); return Expanded(child: _column(s, cards)); }).toList());
+            }
             return DefaultTabController(length: 3, child: Column(children: [
               TabBar(tabs: [Tab(text: l.kanbanTodo + ' (' + _count(cards, KanbanStatus.todo).toString() + ')'),
                 Tab(text: l.kanbanInProgress + ' (' + _count(cards, KanbanStatus.inProgress).toString() + ')'),
@@ -463,6 +468,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
   int _count(List<KanbanCard> cards, KanbanStatus s) => cards.where((c) => c.status == s).length;
 
   Widget _column(KanbanStatus status, List<KanbanCard> all) {
+    debugPrint('KANBAN_COLUMN: enter $status');
     final l = AppLocalizations.of(context)!;
     final cards = all.where((c) => c.status == status).toList();
     final title = status == KanbanStatus.todo ? l.kanbanTodo : status == KanbanStatus.inProgress ? l.kanbanInProgress : l.kanbanDone;
