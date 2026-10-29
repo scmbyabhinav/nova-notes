@@ -1873,7 +1873,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   scrollDirection: Axis.horizontal,
                   // Reserve trailing space for the endFloat voice FAB above this
                   // row so the last toolbar controls can scroll clear of its hit area.
-                  padding: const EdgeInsets.fromLTRB(14, 8, 116, 8),
+                  padding: const EdgeInsets.fromLTRB(14, 8, 180, 8),
                   child: Row(
                     children: [
                       _ToolButton(
