@@ -352,7 +352,7 @@ class KanbanRepository {
   }
 
   Future<int> totalSecondsForGoal(String goalId, {DateTime? now}) async {
-    final cards = await database.query('kanban_cards', columns: ['id'], where: 'goal_id = ? AND deleted_at IS NULL', whereArgs: [goalId]);
+    final cards = await database.query('kanban_cards', columns: ['id'], where: 'goal_id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [goalId]);
     var total = 0;
     for (final card in cards) {
       total += await totalSecondsForCard(card['id']! as String, now: now);
