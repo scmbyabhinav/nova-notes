@@ -452,6 +452,8 @@ class _KanbanScreenState extends State<KanbanScreen> {
           // constraints. This avoids a layout callback in the tablet test path.
           final viewportWidth = MediaQuery.sizeOf(context).width;
           debugPrint('KANBAN_LAYOUT: viewportWidth=$viewportWidth cards=${cards.length}');
+          // Temporary bisect: bypass tablet/phone board subtree entirely.
+          return const SizedBox.shrink();
           if (viewportWidth >= 840) {
             // Temporary render-phase bisect: preserve the real screen and
             // bounded three-column Row while replacing each column subtree.
