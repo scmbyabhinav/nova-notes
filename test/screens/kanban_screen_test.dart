@@ -38,6 +38,32 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
 
+  testWidgets('minimal tablet scaffold with three columns renders', (tester) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Minimal tablet board')),
+        body: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: const [
+            Expanded(child: ColoredBox(color: Colors.white, child: Center(child: Text('To Do (0)')))),
+            Expanded(child: ColoredBox(color: Colors.white, child: Center(child: Text('In Progress (0)')))),
+            Expanded(child: ColoredBox(color: Colors.white, child: Center(child: Text('Done (0)')))),
+          ],
+        ),
+      ),
+    ));
+
+    expect(find.text('To Do (0)'), findsOneWidget);
+    expect(find.text('In Progress (0)'), findsOneWidget);
+    expect(find.text('Done (0)'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    tester.view.resetPhysicalSize();
+  });
+
   testWidgets('tablet board shows all three columns at once', (tester) async {
     print('KANBAN_TABLET: start test');
     SharedPreferences.setMockInitialValues({});
