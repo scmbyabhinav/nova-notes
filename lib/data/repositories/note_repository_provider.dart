@@ -6,6 +6,15 @@ class NoteRepositoryProvider {
 
   static LocalNoteRepository? _repository;
 
+  /// Replaces persistent storage with a test repository before pumping widgets.
+  static void overrideForTesting(LocalNoteRepository repository) {
+    _repository = repository;
+  }
+
+  static void resetForTesting() {
+    _repository = null;
+  }
+
   static Future<LocalNoteRepository> instance() async {
     if (_repository != null) return _repository!;
 
