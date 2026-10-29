@@ -188,14 +188,17 @@ class _FoldersScreenState extends State<FoldersScreen> {
 
     try {
       final repository = await _loadTimeout.run(FolderRepositoryProvider.instance(), const Duration(seconds: 8));
-      await _loadTimeout.run(repository.saveFolder(
-        NoteFolder(
-          id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
-          name: draft.name,
-          createdAt: DateTime.now(),
-          folderCoverImagePath: draft.imagePath,
+      await _loadTimeout.run(
+        repository.saveFolder(
+          NoteFolder(
+            id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
+            name: draft.name,
+            createdAt: DateTime.now(),
+            folderCoverImagePath: draft.imagePath,
+          ),
         ),
-      )), const Duration(seconds: 8));
+        const Duration(seconds: 8),
+      );
 
       if (!mounted) return;
       await _load();
