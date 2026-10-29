@@ -10,7 +10,7 @@ import 'local_note_repository.dart';
 /// no SQLite or platform-channel I/O; real persistence is covered by database
 /// and repository tests using [LocalNoteRepository].
 class InMemoryNoteRepository extends LocalNoteRepository {
-  InMemoryNoteRepository(super.preferences);
+  InMemoryNoteRepository(SharedPreferences preferences) : super(preferences);
 
   final Map<String, Note> _notes = <String, Note>{};
   final StreamController<List<Note>> _changes =
