@@ -3,8 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/data/repositories/local_note_repository.dart';
 import 'package:orah_notes/models/note.dart';
+import 'support/isolated_sqlite_test_setup.dart';
 
 void main() {
+  setUpIsolatedSqliteTestDatabase();
   late LocalNoteRepository repository;
 
   setUp(() {
