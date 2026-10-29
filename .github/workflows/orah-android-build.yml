@@ -3,9 +3,17 @@ name: Orah Android Build
 
 on:
   push:
-    branches: [main, reconcile-main, 'feature/**', 'fix/**', 'release/**']
+    branches:
+      - main
+      - reconcile-main
+      - 'feature/**'
+      - 'release/**'
+      - integration/sqlite-foundation
+      - 'fix/**'
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - integration/sqlite-foundation
   workflow_dispatch:
     inputs:
       production_release:
@@ -20,8 +28,8 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # This job also builds and uploads the production release APK/AAB.
-    # Bound the test step itself so a hang cannot consume the release build window.
+    # This job also builds and uploads release APK/AAB validation artifacts.
+    # Bound the test step so a hanging test cannot consume the full build window.
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
