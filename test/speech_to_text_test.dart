@@ -83,14 +83,22 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   );
   if (micButton.evaluate().isEmpty) debugDumpApp();
   expect(micButton, findsOneWidget);
-  // The toolbar is horizontally scrollable; bring the real IconButton into
-  // the viewport before tapping rather than tapping its tooltip overlay.
+  final button = tester.widget<IconButton>(micButton);
+  expect(button.onPressed, isNotNull, reason: 'Voice input must be enabled in the editor test.');
+  // The toolbar is horizontally scrollable. Finish the scroll/layout update
+  // before tapping so the hit-test coordinates match the button's new position.
   await tester.ensureVisible(micButton);
+  await tester.pump();
   await tester.tap(micButton);
   await tester.pump();
 }
 
 void main() {
+  setUpAll(() {
+    // Treat missed taps as real test failures instead of allowing false greens.
+    WidgetController.hitTestWarningShouldBeFatal = true;
+  });
+
   testWidgets('voice input starts from the editor microphone control', (tester) async {
     final state = await _pumpEditor(tester);
 
