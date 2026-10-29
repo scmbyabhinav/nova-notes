@@ -34,6 +34,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
   final Map<String, Future<bool>> _cardRunningFutures = {};
   bool _loading = true;
   String? _error;
+  int _debugBuildCount = 0;
 
   @override
   void initState() {
@@ -62,6 +63,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
               false
           : false;
       if (!mounted) return;
+      debugPrint('KANBAN_INIT: repository ready; configuring streams');
       setState(() {
         _repo = repo;
         _ownsRepo = injectedRepo == null;
@@ -71,6 +73,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
         _todaySecondsFuture = repo.totalSecondsToday();
         _loading = false;
       });
+      debugPrint('KANBAN_INIT: state configured');
     } catch (error) {
       if (!mounted) return;
       setState(() { _error = error.toString(); _loading = false; });
@@ -375,9 +378,14 @@ class _KanbanScreenState extends State<KanbanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (++_debugBuildCount > 500) {
+      throw StateError('KanbanScreen build loop detected after $_debugBuildCount builds');
+    }
+    debugPrint('KANBAN_BUILD: #$_debugBuildCount loading=$_loading error=$_error');
     final l = AppLocalizations.of(context)!;
     if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     if (_error != null) return Scaffold(appBar: AppBar(title: Text(l.kanban)), body: Center(child: Text(_error!)));
+    debugPrint('KANBAN_BUILD: constructing board scaffold');
     return Scaffold(
       appBar: AppBar(title: Text(l.kanbanBoard), actions: [
         PopupMenuButton<String>(
