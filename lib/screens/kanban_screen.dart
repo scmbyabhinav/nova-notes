@@ -447,38 +447,33 @@ class _KanbanScreenState extends State<KanbanScreen> {
           if (!snap.hasData) return const Center(child: CircularProgressIndicator());
           final cards = snap.data!;
           final statuses = KanbanStatus.values;
-          return LayoutBuilder(builder: (context, constraints) {
-            debugPrint('KANBAN_LAYOUT: board maxWidth=${constraints.maxWidth} maxHeight=${constraints.maxHeight} cards=${cards.length}');
-            if (constraints.maxWidth >= 840) {
-              debugPrint('KANBAN_LAYOUT: entering tablet Row');
-              // Give each tablet column explicit finite width. This avoids flex
-              // negotiation across nested scroll/drop-target subtrees.
-              final columnWidth = constraints.maxWidth / statuses.length;
-              final columns = statuses.map((s) {
-                debugPrint('KANBAN_LAYOUT: constructing bounded column $s width=$columnWidth');
-                final column = _column(s, cards);
-                debugPrint('KANBAN_LAYOUT: column widget returned for $s');
-                return SizedBox(width: columnWidth, child: column);
-              }).toList(growable: false);
-              debugPrint('KANBAN_LAYOUT: all column widgets materialized');
-              final board = SizedBox(
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: columns,
-                ),
-              );
-              debugPrint('KANBAN_LAYOUT: tablet board widget materialized');
-              return board;
-            }
-            return DefaultTabController(length: 3, child: Column(children: [
-              TabBar(tabs: [Tab(text: l.kanbanTodo + ' (' + _count(cards, KanbanStatus.todo).toString() + ')'),
-                Tab(text: l.kanbanInProgress + ' (' + _count(cards, KanbanStatus.inProgress).toString() + ')'),
-                Tab(text: l.kanbanDone + ' (' + _count(cards, KanbanStatus.done).toString() + ')')]),
-              Expanded(child: TabBarView(children: statuses.map((s) => _column(s, cards)).toList())),
-            ]));
-          });
+          // Use the viewport width directly instead of a nested LayoutBuilder.
+          // The board is already inside Expanded, so its parent supplies finite
+          // constraints. This avoids a layout callback in the tablet test path.
+          final viewportWidth = MediaQuery.sizeOf(context).width;
+          debugPrint('KANBAN_LAYOUT: viewportWidth=$viewportWidth cards=${cards.length}');
+          if (viewportWidth >= 840) {
+            final columns = statuses
+                .map((s) => Expanded(child: _column(s, cards)))
+                .toList(growable: false);
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: columns,
+            );
+          }
+          return DefaultTabController(
+            length: 3,
+            child: Column(
+              children: [
+                TabBar(tabs: [
+                  Tab(text: l.kanbanTodo + ' (' + _count(cards, KanbanStatus.todo).toString() + ')'),
+                  Tab(text: l.kanbanInProgress + ' (' + _count(cards, KanbanStatus.inProgress).toString() + ')'),
+                  Tab(text: l.kanbanDone + ' (' + _count(cards, KanbanStatus.done).toString() + ')'),
+                ]),
+                Expanded(child: TabBarView(children: statuses.map((s) => _column(s, cards)).toList())),
+              ],
+            ),
+          );
         })),
       ]),
     );
