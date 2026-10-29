@@ -392,8 +392,20 @@ class _KanbanScreenState extends State<KanbanScreen> {
         if (_byGoal) SizedBox(height: 56, child: StreamBuilder<List<KanbanGoal>>(stream: _goals, builder: (context, snap) {
           final goals = snap.data ?? const <KanbanGoal>[];
           if (goals.isEmpty) return Center(child: Text(l.kanbanNoGoals));
-          return ListView(scrollDirection: Axis.horizontal, children: goals.map((g) => Padding(padding: const EdgeInsets.all(4),
-            child: ChoiceChip(label: Text(g.title), selected: _goalId == g.id, onSelected: (_) => setState(() { _goalId = g.id; _cards = _repo!.watchCards(goalId: g.id); }))).toList());
+          return ListView(
+            scrollDirection: Axis.horizontal,
+            children: goals.map((g) => Padding(
+              padding: const EdgeInsets.all(4),
+              child: ChoiceChip(
+                label: Text(g.title),
+                selected: _goalId == g.id,
+                onSelected: (_) => setState(() {
+                  _goalId = g.id;
+                  _cards = _repo!.watchCards(goalId: g.id);
+                }),
+              ),
+            )).toList(),
+          );
         })),
         Expanded(child: StreamBuilder<List<KanbanCard>>(stream: _cards, builder: (context, snap) {
           if (_byGoal && _goalId == null) return Center(child: Text(l.kanbanChooseGoal));

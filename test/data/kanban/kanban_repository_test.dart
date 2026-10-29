@@ -111,6 +111,6 @@ void main() {
     final note = await database.query('notes', where: 'id = ?', whereArgs: ['legacy-note-1']);
     expect(note.single['title'], 'Keep me');
     expect(note.single['content'], 'Original content');
-    expect(await database.getVersion(), OrahDatabase.schemaVersion);
+    expect((await database.rawQuery('PRAGMA user_version')).single['user_version'], OrahDatabase.schemaVersion);
   });
 }

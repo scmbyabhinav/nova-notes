@@ -39,8 +39,8 @@ void main() {
 
   testWidgets('tablet board shows all three columns at once', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    await tester.view.setPhysicalSize(const Size(1200, 900));
-    await tester.view.setDevicePixelRatio(1);
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
     final db = await _memoryDatabase();
     final repo = KanbanRepository(db);
 
@@ -55,15 +55,15 @@ void main() {
     expect(find.text('In Progress (0)'), findsOneWidget);
     expect(find.text('Done (0)'), findsOneWidget);
 
-    await tester.view.resetPhysicalSize();
+    tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
   });
 
   testWidgets('goal board shows all three columns and only linked cards', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    await tester.view.setPhysicalSize(const Size(1200, 900));
-    await tester.view.setDevicePixelRatio(1);
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
     final db = await _memoryDatabase();
     final repo = KanbanRepository(db);
     final goal = await repo.createGoal(title: 'Launch ORAH');
@@ -83,15 +83,15 @@ void main() {
     expect(find.text('Goal card'), findsOneWidget);
     expect(find.text('Unlinked card'), findsNothing);
 
-    await tester.view.resetPhysicalSize();
+    tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
   });
 
   testWidgets('card can be moved to Done with the quick-move menu', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    await tester.view.setPhysicalSize(const Size(1200, 900));
-    await tester.view.setDevicePixelRatio(1);
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
     final db = await _memoryDatabase();
     final repo = KanbanRepository(db);
     await repo.createCard(title: 'Ship Kanban');
@@ -111,15 +111,15 @@ void main() {
     expect(find.text('Done (1)'), findsOneWidget);
     expect(find.text('To Do (0)'), findsOneWidget);
 
-    await tester.view.resetPhysicalSize();
+    tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
   });
 
   testWidgets('linked card chip opens the linked item', (tester) async {
     SharedPreferences.setMockInitialValues({});
-    await tester.view.setPhysicalSize(const Size(1200, 900));
-    await tester.view.setDevicePixelRatio(1);
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
     final db = await _memoryDatabase();
     final repo = KanbanRepository(db);
     final source = await repo.createCard(title: 'Source item');
@@ -139,7 +139,7 @@ void main() {
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(find.text('Target item'), findsNWidgets(2));
 
-    await tester.view.resetPhysicalSize();
+    tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
   });

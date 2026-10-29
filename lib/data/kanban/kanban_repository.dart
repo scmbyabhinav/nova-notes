@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'database/orah_database.dart';
+import '../database/orah_database.dart';
 
 enum KanbanStatus { todo, inProgress, done }
 enum KanbanPriority { low, medium, high }
