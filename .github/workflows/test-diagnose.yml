@@ -1,0 +1,39 @@
+name: Test diagnose
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  per-file:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Prepare Android, brand assets, dependencies, and localizations
+        run: |
+          flutter create --platforms=android --org com.orah --project-name orah_notes --no-pub .
+          python3 tool/prepare_android_host.py
+          python3 -m pip install --disable-pip-version-check CairoSVG
+          python3 tool/prepare_brand_assets.py
+          flutter pub get
+          flutter gen-l10n
+      - name: Run each test file alone
+        shell: bash
+        run: |
+          set +e
+          : > "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r f; do
+            echo "::group::$f"
+            timeout --signal=TERM --kill-after=10s 150s \
+              flutter test "$f" --reporter expanded --concurrency=1 2>&1 | tail -n 60
+            rc=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            printf '%s %s\n' "$rc" "$f" | tee -a "$GITHUB_STEP_SUMMARY"
+          done < <(find test -name '*_test.dart' | sort)

@@ -20,6 +20,36 @@ class LocalNoteRepository implements NoteRepository {
   static const _storageKey = 'nova_notes_v1';
   static const _vaultStorageKey = 'orah_vault_notes_v1';
 
+  // Tracks repository operations so test teardown never closes SQLite while
+  // a save/read is still using it. This is deliberately a drain, not a timeout.
+  static int _activeOperations = 0;
+  static Completer<void>? _operationsDrained;
+
+  static Future<T> _trackOperation<T>(Future<T> Function() operation) async {
+    if (_activeOperations == 0) {
+      _operationsDrained = Completer<void>();
+    }
+    _activeOperations++;
+    try {
+      return await operation();
+    } finally {
+      _activeOperations--;
+      if (_activeOperations == 0) {
+        final drained = _operationsDrained;
+        _operationsDrained = null;
+        if (drained != null && !drained.isCompleted) drained.complete();
+      }
+    }
+  }
+
+  /// Waits for in-flight repository I/O before test-only database cleanup.
+  static Future<void> drainForTesting() async {
+    while (_activeOperations > 0) {
+      final drained = _operationsDrained;
+      if (drained != null) await drained.future;
+    }
+  }
+
   @override
   Stream<List<Note>> watchNotes() {
     return Stream.multi(
@@ -66,7 +96,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<List<Note>> getNotes() async {
+  Future<List<Note>> getNotes() => _trackOperation(() async {
     final db = await OrahDatabase.open(_preferences);
     final rows = await NoteDao(db).getAllRows();
     final notes = <Note>[];
@@ -78,7 +108,7 @@ class LocalNoteRepository implements NoteRepository {
       }
     }
     return notes;
-  }
+  });
 
   @override
   Future<Note?> getNote(String id) async {
@@ -90,7 +120,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<void> saveNote(Note note) async {
+  Future<void> saveNote(Note note) => _trackOperation(() async {
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
 
@@ -105,15 +135,15 @@ class LocalNoteRepository implements NoteRepository {
     // Publish the persisted snapshot, not the pre-write working list. This
     // guarantees every subscriber receives exactly what is now on disk.
     _publish(await getNotes());
-  }
+  });
 
   @override
-  Future<void> deleteNote(String id) async {
+  Future<void> deleteNote(String id) => _trackOperation(() async {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
     _publish(notes);
-  }
+  });
 
   @override
   Future<List<Note>> searchNotes(String query) => search(query);
@@ -237,7 +267,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Moves an authenticated Vault note back into ordinary note storage.
-  Future<void> unlockVaultNote(String id) async {
+  Future<void> unlockVaultNote(String id) => _trackOperation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
@@ -272,7 +302,7 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
     await _write(ordinary);
     _publish(await getNotes());
-  }
+  });
 
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
@@ -454,7 +484,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Imports a NOVA backup and merges notes by stable ID.
-  Future<int> importJson(String raw) async {
+  Future<int> importJson(String raw) => _trackOperation(() async {
     final decoded = jsonDecode(raw);
     if (decoded is! Map || decoded['format'] != 'nova_notes_backup') {
       throw const FormatException('Invalid NOVA Notes backup.');
@@ -498,6 +528,6 @@ class LocalNoteRepository implements NoteRepository {
     await _write(merged);
     _publish(merged);
     return imported.length;
-  }
+  });
 
 }

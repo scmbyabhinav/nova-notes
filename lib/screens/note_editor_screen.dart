@@ -27,6 +27,7 @@ import '../services/orah_reminder_service.dart';
 import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
+import '../core/utils/lifecycle_timeout.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
 import '../core/services/nova_security_service.dart';
@@ -68,6 +69,7 @@ class NoteEditorScreen extends StatefulWidget {
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final FocusNode _contentFocus = FocusNode();
+  final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
   Timer? _saveTimer;
@@ -831,7 +833,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             imagePath: _imagePath,
           );
 
-    await widget.repository.saveNote(note).timeout(const Duration(seconds: 10));
+    await _saveTimeout.run(widget.repository.saveNote(note), const Duration(seconds: 10));
     if (!_hasHapticSaved) {
       _hasHapticSaved = true;
       unawaited(HapticFeedback.lightImpact());
@@ -845,7 +847,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // This makes the save-to-list handoff deterministic even if a stream
     // emission raced with route navigation.
     if (widget.repository is LocalNoteRepository) {
-      await (widget.repository as LocalNoteRepository).refresh().timeout(const Duration(seconds: 5));
+      await _saveTimeout.run((widget.repository as LocalNoteRepository).refresh(), const Duration(seconds: 5));
     }
     try {
       for (final item in _checklistItems) {
@@ -1356,6 +1358,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   @override
   void dispose() {
+    _saveTimeout.dispose();
     _speechService.dispose();
     _voiceDurationTimer?.cancel();
     _saveTimer?.cancel();
@@ -1868,8 +1871,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 top: false,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  // Reserve trailing space for the endFloat voice FAB above this
+                  // row so the last toolbar controls can scroll clear of its hit area.
+                  padding: EdgeInsets.fromLTRB(
+                    14,
+                    8,
+                    MediaQuery.sizeOf(context).width < 500 ? 260 : 116,
+                    8,
+                  ),
                   child: Row(
                     children: [
                       _ToolButton(

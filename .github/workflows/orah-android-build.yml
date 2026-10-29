@@ -28,6 +28,8 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # This job also builds and uploads release APK/AAB validation artifacts.
+    # Bound the test step so a hanging test cannot consume the full build window.
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -128,7 +130,7 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
       - name: Test
-        run: flutter test
+        run: timeout --signal=TERM --kill-after=10s 5m flutter test --reporter expanded --concurrency=1 --timeout 60s
       - name: Configure Android JVM compatibility
         run: |
           mkdir -p ~/.gradle
