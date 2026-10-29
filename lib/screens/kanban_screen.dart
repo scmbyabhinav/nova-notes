@@ -454,7 +454,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
           debugPrint('KANBAN_LAYOUT: viewportWidth=$viewportWidth cards=${cards.length}');
           if (viewportWidth >= 840) {
             final columns = statuses
-                .map((s) => Expanded(child: _column(s, cards)))
+                .map((s) => Expanded(child: _column(s, cards, l)))
                 .toList(growable: false);
             return Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -470,7 +470,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
                   Tab(text: l.kanbanInProgress + ' (' + _count(cards, KanbanStatus.inProgress).toString() + ')'),
                   Tab(text: l.kanbanDone + ' (' + _count(cards, KanbanStatus.done).toString() + ')'),
                 ]),
-                Expanded(child: TabBarView(children: statuses.map((s) => _column(s, cards)).toList())),
+                Expanded(child: TabBarView(children: statuses.map((s) => _column(s, cards, l)).toList())),
               ],
             ),
           );
@@ -481,16 +481,18 @@ class _KanbanScreenState extends State<KanbanScreen> {
 
   int _count(List<KanbanCard> cards, KanbanStatus s) => cards.where((c) => c.status == s).length;
 
-  Widget _column(KanbanStatus status, List<KanbanCard> all) {
+  Widget _column(KanbanStatus status, List<KanbanCard> all, AppLocalizations l) {
     debugPrint('KANBAN_COLUMN: enter $status');
-    final l = AppLocalizations.of(context)!;
+    debugPrint('KANBAN_COLUMN: localization supplied for $status');
     final cards = all.where((c) => c.status == status).toList();
+    debugPrint('KANBAN_COLUMN: filtered ${cards.length} cards for $status');
     final title = status == KanbanStatus.todo ? l.kanbanTodo : status == KanbanStatus.inProgress ? l.kanbanInProgress : l.kanbanDone;
 
     // Empty columns need no drag/reorder machinery. Keeping the empty state
     // as a simple bounded subtree also avoids mounting nested flex/drag widgets
     // before there is a card to interact with.
     if (cards.isEmpty) {
+      debugPrint('KANBAN_COLUMN: returning simple empty state for $status');
       return Container(
         margin: const EdgeInsets.all(6),
         padding: const EdgeInsets.all(8),
