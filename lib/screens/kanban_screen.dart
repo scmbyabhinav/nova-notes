@@ -454,17 +454,23 @@ class _KanbanScreenState extends State<KanbanScreen> {
               // Give each tablet column explicit finite width. This avoids flex
               // negotiation across nested scroll/drop-target subtrees.
               final columnWidth = constraints.maxWidth / statuses.length;
-              return SizedBox(
+              final columns = statuses.map((s) {
+                debugPrint('KANBAN_LAYOUT: constructing bounded column $s width=$columnWidth');
+                final column = _column(s, cards);
+                debugPrint('KANBAN_LAYOUT: column widget returned for $s');
+                return SizedBox(width: columnWidth, child: column);
+              }).toList(growable: false);
+              debugPrint('KANBAN_LAYOUT: all column widgets materialized');
+              final board = SizedBox(
                 width: constraints.maxWidth,
                 height: constraints.maxHeight,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: statuses.map((s) {
-                    debugPrint('KANBAN_LAYOUT: constructing bounded column $s width=$columnWidth');
-                    return SizedBox(width: columnWidth, child: _column(s, cards));
-                  }).toList(),
+                  children: columns,
                 ),
               );
+              debugPrint('KANBAN_LAYOUT: tablet board widget materialized');
+              return board;
             }
             return DefaultTabController(length: 3, child: Column(children: [
               TabBar(tabs: [Tab(text: l.kanbanTodo + ' (' + _count(cards, KanbanStatus.todo).toString() + ')'),
