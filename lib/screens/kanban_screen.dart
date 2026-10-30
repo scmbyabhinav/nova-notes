@@ -387,7 +387,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
     debugPrint('KANBAN_BUILD: after localization lookup');
     // Temporary isolation: bypass the entire Kanban screen subtree, not just
     // the board body, to identify whether the hang is in the surrounding Scaffold.
-    return Scaffold(appBar: AppBar(title: Text(l.kanbanBoard)), body: const SizedBox.shrink());
+    final minimalScaffold = Scaffold(appBar: AppBar(title: Text(l.kanbanBoard)), body: const SizedBox.shrink());
+    debugPrint('KANBAN_BUILD: minimal scaffold object constructed');
+    return minimalScaffold;
     if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     if (_error != null) return Scaffold(appBar: AppBar(title: Text(l.kanban)), body: Center(child: Text(_error!)));
     debugPrint('KANBAN_BUILD: constructing board scaffold');
