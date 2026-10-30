@@ -382,7 +382,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
       throw StateError('KanbanScreen build loop detected after $_debugBuildCount builds');
     }
     debugPrint('KANBAN_BUILD: #$_debugBuildCount loading=$_loading error=$_error');
+    debugPrint('KANBAN_BUILD: before localization lookup');
     final l = AppLocalizations.of(context)!;
+    debugPrint('KANBAN_BUILD: after localization lookup');
     // Temporary isolation: bypass the entire Kanban screen subtree, not just
     // the board body, to identify whether the hang is in the surrounding Scaffold.
     return Scaffold(appBar: AppBar(title: Text(l.kanbanBoard)), body: const SizedBox.shrink());
