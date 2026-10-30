@@ -152,7 +152,7 @@ jobs:
       - name: Free runner disk before release builds
         run: |
           rm -rf build android/.gradle ~/.gradle/caches ~/.gradle/daemon
-          sudo rm -rf /usr/local/lib/android/sdk/ndk/* || true
+          # Keep the installed NDK: deleting it here forces Gradle to redownload a large SDK package.
           sudo rm -rf /usr/local/lib/android/sdk/cmdline-tools/latest/cache/* || true
           sudo rm -rf /usr/local/lib/android/sdk/cmake/* || true
           df -h /
@@ -180,6 +180,34 @@ jobs:
       - name: Configure production signing in Gradle
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
+      - name: Ensure Android NDK is installed (retry transient SDK failures)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          NDK_DIR="$ANDROID_HOME/ndk/28.2.13676358"
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "sdkmanager not found at $SDKMANAGER"
+            exit 1
+          fi
+          if [ ! -f "$NDK_DIR/source.properties" ]; then
+            rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+            installed=false
+            for attempt in 1 2 3; do
+              echo "Installing NDK 28.2.13676358 (attempt $attempt/3)"
+              if yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 && "$SDKMANAGER" --install "ndk;28.2.13676358"; then
+                installed=true
+                break
+              fi
+              rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+              sleep $((attempt * 5))
+            done
+            if [ "$installed" != true ] || [ ! -f "$NDK_DIR/source.properties" ]; then
+              echo "NDK installation failed after 3 attempts"
+              exit 1
+            fi
+          fi
+          grep -E 'Pkg.Revision|Pkg.Desc' "$NDK_DIR/source.properties" || true
       - name: Build release APK
         run: flutter build apk --release --tree-shake-icons
       - name: Build release AAB
@@ -304,6 +332,34 @@ jobs:
             }
           }
           GRADLE
+      - name: Ensure Android NDK is installed (retry transient SDK failures)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          NDK_DIR="$ANDROID_HOME/ndk/28.2.13676358"
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "sdkmanager not found at $SDKMANAGER"
+            exit 1
+          fi
+          if [ ! -f "$NDK_DIR/source.properties" ]; then
+            rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+            installed=false
+            for attempt in 1 2 3; do
+              echo "Installing NDK 28.2.13676358 (attempt $attempt/3)"
+              if yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 && "$SDKMANAGER" --install "ndk;28.2.13676358"; then
+                installed=true
+                break
+              fi
+              rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+              sleep $((attempt * 5))
+            done
+            if [ "$installed" != true ] || [ ! -f "$NDK_DIR/source.properties" ]; then
+              echo "NDK installation failed after 3 attempts"
+              exit 1
+            fi
+          fi
+          grep -E 'Pkg.Revision|Pkg.Desc' "$NDK_DIR/source.properties" || true
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Upload debug APK
