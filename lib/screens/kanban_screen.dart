@@ -38,24 +38,45 @@ class _KanbanScreenState extends State<KanbanScreen> {
   final Map<String, Future<bool>> _cardRunningFutures = {};
   bool _loading = true;
   String? _error;
-  int _debugBuildCount = 0;
 
   @override
   void initState() {
     super.initState();
     _goalId = widget.initialGoalId;
     _byGoal = widget.initialGoalId != null;
-    if (widget.skipInitializationForTest) {
-      debugPrint('KANBAN_LIFECYCLE: initialization deliberately skipped by isolation test');
+
+    // An injected repository is already available synchronously. Configure it
+    // during initState rather than scheduling an async post-frame setState;
+    // this keeps widget tests deterministic and avoids a lifecycle race.
+    if (widget.repository != null) {
+      if (!widget.skipInitializationForTest) {
+        _configureRepository(
+          widget.repository!,
+          allowMultipleTimers: false,
+          ownsRepo: false,
+        );
+      }
       return;
     }
-    debugPrint('KANBAN_LIFECYCLE: scheduling _init after first frame');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        debugPrint('KANBAN_LIFECYCLE: first frame completed; starting _init');
-        unawaited(_init());
-      }
-    });
+    if (widget.skipInitializationForTest) return;
+    unawaited(_init());
+  }
+
+  void _configureRepository(
+    KanbanRepository repo, {
+    required bool allowMultipleTimers,
+    required bool ownsRepo,
+  }) {
+    _repo = repo;
+    _ownsRepo = ownsRepo;
+    _allowMultipleTimers = allowMultipleTimers;
+    _cards = repo.watchCards(goalId: _goalId);
+    _goals = repo.watchGoals();
+    _todaySecondsFuture = widget.skipTodaySummaryForTest
+        ? Future<int>.value(0)
+        : repo.totalSecondsToday();
+    _loading = false;
+    _error = null;
   }
 
   @override
@@ -65,42 +86,28 @@ class _KanbanScreenState extends State<KanbanScreen> {
   }
 
   Future<void> _init() async {
-    debugPrint('KANBAN_LIFECYCLE: _init entered');
     try {
-      final injectedRepo = widget.repository;
-      final repo = injectedRepo ?? await openKanbanRepository();
-      // A supplied repository is used by widget tests and embedded screens. Do
-      // not wait on the platform preferences plugin before binding its streams:
-      // that can stall the first frame under Flutter's fake-async test clock.
-      debugPrint('KANBAN_LIFECYCLE: repository acquisition complete injected=${injectedRepo != null}');
-      final allowMultipleTimers = injectedRepo == null
-          ? (await SharedPreferences.getInstance())
-                  .getBool('orah_kanban_allow_multiple_timers') ??
-              false
-          : false;
-      if (!mounted) return;
-      debugPrint('KANBAN_LIFECYCLE: preferences decision complete; mounted=$mounted');
-      debugPrint('KANBAN_INIT: repository ready; configuring streams');
+      final repo = await openKanbanRepository();
+      final preferences = await SharedPreferences.getInstance();
+      final allowMultipleTimers =
+          preferences.getBool('orah_kanban_allow_multiple_timers') ?? false;
+      if (!mounted) {
+        await repo.dispose();
+        return;
+      }
       setState(() {
-        _repo = repo;
-        _ownsRepo = injectedRepo == null;
-        _allowMultipleTimers = allowMultipleTimers;
-        _cards = repo.watchCards(goalId: _goalId);
-        _goals = repo.watchGoals();
-        if (widget.skipTodaySummaryForTest) {
-          debugPrint('KANBAN_ISOLATION: skipping totalSecondsToday for bisection');
-          _todaySecondsFuture = Future<int>.value(0);
-        } else {
-          debugPrint('KANBAN_LIFECYCLE: before totalSecondsToday');
-          _todaySecondsFuture = repo.totalSecondsToday();
-          debugPrint('KANBAN_LIFECYCLE: after totalSecondsToday invocation');
-        }
-        _loading = false;
+        _configureRepository(
+          repo,
+          allowMultipleTimers: allowMultipleTimers,
+          ownsRepo: true,
+        );
       });
-      debugPrint('KANBAN_INIT: state configured');
     } catch (error) {
       if (!mounted) return;
-      setState(() { _error = error.toString(); _loading = false; });
+      setState(() {
+        _error = error.toString();
+        _loading = false;
+      });
     }
   }
 
@@ -402,18 +409,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (++_debugBuildCount > 500) {
-      throw StateError('KanbanScreen build loop detected after $_debugBuildCount builds');
-    }
-    debugPrint('KANBAN_BUILD: #$_debugBuildCount loading=$_loading error=$_error');
-    debugPrint('KANBAN_BUILD: before localization lookup');
     final l = AppLocalizations.of(context)!;
-    debugPrint('KANBAN_BUILD: after localization lookup');
-    // Temporary isolation: bypass the entire Kanban screen subtree, not just
-    // the board body, to identify whether the hang is in the surrounding Scaffold.
-    final minimalScaffold = Scaffold(appBar: AppBar(title: Text(l.kanbanBoard)), body: const SizedBox.shrink());
-    debugPrint('KANBAN_BUILD: minimal scaffold object constructed');
-    return minimalScaffold;
     if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     if (_error != null) return Scaffold(appBar: AppBar(title: Text(l.kanban)), body: Center(child: Text(_error!)));
     debugPrint('KANBAN_BUILD: constructing board scaffold');
@@ -472,7 +468,6 @@ class _KanbanScreenState extends State<KanbanScreen> {
           );
         })),
         Expanded(child: StreamBuilder<List<KanbanCard>>(stream: _cards, initialData: const <KanbanCard>[], builder: (context, snap) {
-          debugPrint('KANBAN_CHILD: cards stream builder hasData=${snap.hasData} hasError=${snap.hasError}');
           if (_byGoal && _goalId == null) return Center(child: Text(l.kanbanChooseGoal));
           if (snap.hasError) return Center(child: Text(snap.error.toString()));
           if (!snap.hasData) return const Center(child: CircularProgressIndicator());
@@ -482,19 +477,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
           // The board is already inside Expanded, so its parent supplies finite
           // constraints. This avoids a layout callback in the tablet test path.
           final viewportWidth = MediaQuery.sizeOf(context).width;
-          debugPrint('KANBAN_LAYOUT: viewportWidth=$viewportWidth cards=${cards.length}');
-          // Temporary bisect: bypass tablet/phone board subtree entirely.
-          return const SizedBox.shrink();
           if (viewportWidth >= 840) {
-            // Temporary render-phase bisect: preserve the real screen and
-            // bounded three-column Row while replacing each column subtree.
             final columns = statuses
-                .map((s) => Expanded(
-                      child: ColoredBox(
-                        color: Theme.of(context).colorScheme.surface,
-                        child: const SizedBox.expand(),
-                      ),
-                    ))
+                .map((s) => Expanded(child: _column(s, cards, l)))
                 .toList(growable: false);
             return Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
