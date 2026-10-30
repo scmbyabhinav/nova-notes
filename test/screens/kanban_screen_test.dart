@@ -108,7 +108,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: KanbanScreen(repository: repo, skipTodaySummaryForTest: true),
+      home: KanbanScreen(repository: repo, skipInitializationForTest: true, skipTodaySummaryForTest: true),
     ));
     print('KANBAN_TABLET: pumpWidget complete');
     await tester.pump();
