@@ -12,9 +12,11 @@ import '../services/orah_premium_gate.dart';
 import 'kanban_goals_screen.dart';
 
 class KanbanScreen extends StatefulWidget {
-  const KanbanScreen({super.key, this.repository, this.initialGoalId});
+  const KanbanScreen({super.key, this.repository, this.initialGoalId, this.skipInitializationForTest = false});
   final KanbanRepository? repository;
   final String? initialGoalId;
+  @visibleForTesting
+  final bool skipInitializationForTest;
 
   @override
   State<KanbanScreen> createState() => _KanbanScreenState();
@@ -41,6 +43,11 @@ class _KanbanScreenState extends State<KanbanScreen> {
     super.initState();
     _goalId = widget.initialGoalId;
     _byGoal = widget.initialGoalId != null;
+    if (widget.skipInitializationForTest) {
+      debugPrint('KANBAN_LIFECYCLE: initialization deliberately skipped by isolation test');
+      return;
+    }
+    debugPrint('KANBAN_LIFECYCLE: initState entering _init');
     _init();
   }
 
@@ -51,18 +58,21 @@ class _KanbanScreenState extends State<KanbanScreen> {
   }
 
   Future<void> _init() async {
+    debugPrint('KANBAN_LIFECYCLE: _init entered');
     try {
       final injectedRepo = widget.repository;
       final repo = injectedRepo ?? await openKanbanRepository();
       // A supplied repository is used by widget tests and embedded screens. Do
       // not wait on the platform preferences plugin before binding its streams:
       // that can stall the first frame under Flutter's fake-async test clock.
+      debugPrint('KANBAN_LIFECYCLE: repository acquisition complete injected=${injectedRepo != null}');
       final allowMultipleTimers = injectedRepo == null
           ? (await SharedPreferences.getInstance())
                   .getBool('orah_kanban_allow_multiple_timers') ??
               false
           : false;
       if (!mounted) return;
+      debugPrint('KANBAN_LIFECYCLE: preferences decision complete; mounted=$mounted');
       debugPrint('KANBAN_INIT: repository ready; configuring streams');
       setState(() {
         _repo = repo;
@@ -70,7 +80,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
         _allowMultipleTimers = allowMultipleTimers;
         _cards = repo.watchCards(goalId: _goalId);
         _goals = repo.watchGoals();
+        debugPrint('KANBAN_LIFECYCLE: before totalSecondsToday');
         _todaySecondsFuture = repo.totalSecondsToday();
+        debugPrint('KANBAN_LIFECYCLE: after totalSecondsToday invocation');
         _loading = false;
       });
       debugPrint('KANBAN_INIT: state configured');
