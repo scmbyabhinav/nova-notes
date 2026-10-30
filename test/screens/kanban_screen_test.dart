@@ -69,9 +69,9 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const Scaffold(
-        appBar: AppBar(title: Text('Localized minimal board')),
-        body: SizedBox.shrink(),
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Localized minimal board')),
+        body: const SizedBox.shrink(),
       ),
     ));
     print('KANBAN_ISOLATION: localized scaffold pump complete');
