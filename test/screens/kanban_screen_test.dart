@@ -64,6 +64,22 @@ void main() {
     tester.view.resetPhysicalSize();
   });
 
+  testWidgets('localized minimal scaffold renders with ORAH delegates', (tester) async {
+    print('KANBAN_ISOLATION: localized scaffold test start');
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const Scaffold(
+        appBar: AppBar(title: Text('Localized minimal board')),
+        body: SizedBox.shrink(),
+      ),
+    ));
+    print('KANBAN_ISOLATION: localized scaffold pump complete');
+    expect(find.text('Localized minimal board'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    print('KANBAN_ISOLATION: localized scaffold disposed');
+  });
+
   testWidgets('tablet board shows all three columns at once', (tester) async {
     print('KANBAN_TABLET: start test');
     SharedPreferences.setMockInitialValues({});
