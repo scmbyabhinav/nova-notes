@@ -124,6 +124,13 @@ void main() {
     await repo.createCard(title: 'Goal card', goalId: goal.id);
     await repo.createCard(title: 'Unlinked card');
 
+    print('KANBAN_PROBE: before cards stream first');
+    final streamCards = await repo.watchCards(goalId: goal.id).first.timeout(const Duration(seconds: 5));
+    print('KANBAN_PROBE: cards stream first completed count=${streamCards.length}');
+    print('KANBAN_PROBE: before goals stream first');
+    final streamGoals = await repo.watchGoals().first.timeout(const Duration(seconds: 5));
+    print('KANBAN_PROBE: goals stream first completed count=${streamGoals.length}');
+
     print('KANBAN_BISECT: goal test before pumpWidget');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
