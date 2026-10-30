@@ -124,6 +124,12 @@ void main() {
     await repo.createCard(title: 'Goal card', goalId: goal.id);
     await repo.createCard(title: 'Unlinked card');
 
+    print('KANBAN_PROBE: before direct getCards(goalId)');
+    final directCards = await repo.getCards(goalId: goal.id).timeout(const Duration(seconds: 5));
+    print('KANBAN_PROBE: direct getCards completed count=${directCards.length}');
+    print('KANBAN_PROBE: before raw filtered query');
+    final rawCards = await db.query('kanban_cards', where: 'deleted_at IS NULL AND archived_at IS NULL AND goal_id = ?', whereArgs: [goal.id], orderBy: "CASE status WHEN 'todo' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, sort_order ASC, created_at ASC").timeout(const Duration(seconds: 5));
+    print('KANBAN_PROBE: raw filtered query completed count=${rawCards.length}');
     print('KANBAN_PROBE: before cards stream first');
     final streamCards = await repo.watchCards(goalId: goal.id).first.timeout(const Duration(seconds: 5));
     print('KANBAN_PROBE: cards stream first completed count=${streamCards.length}');
