@@ -195,7 +195,8 @@ jobs:
             installed=false
             for attempt in 1 2 3; do
               echo "Installing NDK 28.2.13676358 (attempt $attempt/3)"
-              if yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 && "$SDKMANAGER" --install "ndk;28.2.13676358"; then
+              yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+              if "$SDKMANAGER" --install "ndk;28.2.13676358"; then
                 installed=true
                 break
               fi
@@ -347,7 +348,8 @@ jobs:
             installed=false
             for attempt in 1 2 3; do
               echo "Installing NDK 28.2.13676358 (attempt $attempt/3)"
-              if yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 && "$SDKMANAGER" --install "ndk;28.2.13676358"; then
+              yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+              if "$SDKMANAGER" --install "ndk;28.2.13676358"; then
                 installed=true
                 break
               fi
