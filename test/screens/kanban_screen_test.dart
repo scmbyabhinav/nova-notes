@@ -80,6 +80,20 @@ void main() {
     print('KANBAN_ISOLATION: localized scaffold disposed');
   });
 
+
+  testWidgets('KanbanScreen lifecycle mounts without repository initialization', (tester) async {
+    print('KANBAN_ISOLATION: screen lifecycle test start');
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const KanbanScreen(skipInitializationForTest: true),
+    ));
+    print('KANBAN_ISOLATION: screen lifecycle pump complete');
+    expect(find.byType(KanbanScreen), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    print('KANBAN_ISOLATION: screen lifecycle disposed');
+  });
+
   testWidgets('tablet board shows all three columns at once', (tester) async {
     print('KANBAN_TABLET: start test');
     SharedPreferences.setMockInitialValues({});
