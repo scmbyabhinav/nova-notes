@@ -127,7 +127,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: KanbanScreen(repository: repo, initialGoalId: goal.id),
+      home: KanbanScreen(repository: repo, initialGoalId: goal.id, skipTodaySummaryForTest: true),
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
