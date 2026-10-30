@@ -124,13 +124,17 @@ void main() {
     await repo.createCard(title: 'Goal card', goalId: goal.id);
     await repo.createCard(title: 'Unlinked card');
 
+    print('KANBAN_BISECT: goal test before pumpWidget');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: KanbanScreen(repository: repo, initialGoalId: goal.id, skipTodaySummaryForTest: true),
     ));
+    print('KANBAN_BISECT: goal test pumpWidget returned');
     await tester.pump();
+    print('KANBAN_BISECT: goal test first pump returned');
     await tester.pump(const Duration(milliseconds: 500));
+    print('KANBAN_BISECT: goal test 500ms pump returned');
 
     expect(find.text('To Do (1)'), findsOneWidget);
     expect(find.text('In Progress (0)'), findsOneWidget);
