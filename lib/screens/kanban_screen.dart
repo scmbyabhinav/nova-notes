@@ -12,11 +12,13 @@ import '../services/orah_premium_gate.dart';
 import 'kanban_goals_screen.dart';
 
 class KanbanScreen extends StatefulWidget {
-  const KanbanScreen({super.key, this.repository, this.initialGoalId, this.skipInitializationForTest = false});
+  const KanbanScreen({super.key, this.repository, this.initialGoalId, this.skipInitializationForTest = false, this.skipTodaySummaryForTest = false});
   final KanbanRepository? repository;
   final String? initialGoalId;
   @visibleForTesting
   final bool skipInitializationForTest;
+  @visibleForTesting
+  final bool skipTodaySummaryForTest;
 
   @override
   State<KanbanScreen> createState() => _KanbanScreenState();
@@ -80,9 +82,14 @@ class _KanbanScreenState extends State<KanbanScreen> {
         _allowMultipleTimers = allowMultipleTimers;
         _cards = repo.watchCards(goalId: _goalId);
         _goals = repo.watchGoals();
-        debugPrint('KANBAN_LIFECYCLE: before totalSecondsToday');
-        _todaySecondsFuture = repo.totalSecondsToday();
-        debugPrint('KANBAN_LIFECYCLE: after totalSecondsToday invocation');
+        if (widget.skipTodaySummaryForTest) {
+          debugPrint('KANBAN_ISOLATION: skipping totalSecondsToday for bisection');
+          _todaySecondsFuture = Future<int>.value(0);
+        } else {
+          debugPrint('KANBAN_LIFECYCLE: before totalSecondsToday');
+          _todaySecondsFuture = repo.totalSecondsToday();
+          debugPrint('KANBAN_LIFECYCLE: after totalSecondsToday invocation');
+        }
         _loading = false;
       });
       debugPrint('KANBAN_INIT: state configured');
