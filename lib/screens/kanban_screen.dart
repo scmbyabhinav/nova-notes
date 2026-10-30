@@ -49,8 +49,13 @@ class _KanbanScreenState extends State<KanbanScreen> {
       debugPrint('KANBAN_LIFECYCLE: initialization deliberately skipped by isolation test');
       return;
     }
-    debugPrint('KANBAN_LIFECYCLE: initState entering _init');
-    _init();
+    debugPrint('KANBAN_LIFECYCLE: scheduling _init after first frame');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        debugPrint('KANBAN_LIFECYCLE: first frame completed; starting _init');
+        unawaited(_init());
+      }
+    });
   }
 
   @override
