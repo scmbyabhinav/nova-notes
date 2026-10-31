@@ -15,6 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
+import '../data/kanban/kanban_repository.dart';
+import '../l10n/app_localizations.dart';
+import 'kanban_screen.dart';
 import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
@@ -1368,6 +1371,47 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     super.dispose();
   }
 
+  Future<void> _showKanbanBacklinks() async {
+    final l = AppLocalizations.of(context)!;
+    final repo = await openKanbanRepository();
+    final links = await repo.database.query('links',
+      where: 'target_type = ? AND target_id = ? AND deleted_at IS NULL',
+      whereArgs: ['note', _noteId],
+      orderBy: 'created_at DESC');
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(title: Text(l.kanbanLinkedItems), leading: const Icon(Icons.view_kanban_outlined)),
+          if (links.isEmpty) ListTile(title: Text(l.kanbanNoNotesToLink)),
+          for (final link in links)
+            ListTile(
+              leading: Icon(link['source_type'] == 'goal' ? Icons.flag_outlined : Icons.view_kanban_outlined),
+              title: Text(l.kanbanOpenLinkedItem),
+              subtitle: Text(link['source_id'] as String),
+              onTap: () async {
+                final type = link['source_type'] as String;
+                final id = link['source_id'] as String;
+                final exists = type == 'goal'
+                  ? await repo.database.query('goals', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1)
+                  : await repo.database.query('kanban_cards', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1);
+                if (!sheetContext.mounted) return;
+                Navigator.pop(sheetContext);
+                if (exists.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.kanbanUnavailable)));
+                } else {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => KanbanScreen(repository: repo, initialGoalId: type == 'goal' ? id : null)));
+                }
+              },
+            ),
+        ],
+      )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1444,6 +1488,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: AppLocalizations.of(context)?.kanbanLinkedItems ?? 'Linked items',
+            onPressed: _showKanbanBacklinks,
+            icon: const Icon(Icons.link_outlined),
+          ),
           IconButton(
             tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
             onPressed: () => setState(() => _isZenMode = !_isZenMode),
