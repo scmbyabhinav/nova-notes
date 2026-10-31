@@ -124,18 +124,28 @@ class KanbanRepository {
     // This makes the initial snapshot independent of cancellation of the
     // broadcast change subscription (notably with sqflite_common_ffi in tests).
     return Stream<List<KanbanCard>>.multi((controller) {
+      print('KANBAN_STREAM: cards onListen goalId=$goalId');
       var cancelled = false;
       var pending = Future<void>.value();
 
       void enqueueSnapshot() {
+        print('KANBAN_STREAM: cards enqueue requested cancelled=$cancelled');
         pending = pending.then((_) async {
+          print('KANBAN_STREAM: cards pending callback started cancelled=$cancelled');
           if (cancelled) return;
+          print('KANBAN_STREAM: cards before getCards');
           final cards = await getCards(
             goalId: goalId,
             includeArchived: includeArchived,
           );
-          if (!cancelled) controller.add(cards);
+          print('KANBAN_STREAM: cards getCards completed count=${cards.length} cancelled=$cancelled');
+          if (!cancelled) {
+            print('KANBAN_STREAM: cards before controller.add');
+            controller.add(cards);
+            print('KANBAN_STREAM: cards controller.add returned');
+          }
         }).catchError((Object error, StackTrace stack) {
+          print('KANBAN_STREAM: cards snapshot error=$error');
           if (!cancelled) controller.addError(error, stack);
         });
       }
@@ -145,8 +155,10 @@ class KanbanRepository {
         onError: controller.addError,
       );
       controller.onCancel = () async {
+        print('KANBAN_STREAM: cards onCancel');
         cancelled = true;
         await subscription.cancel();
+        print('KANBAN_STREAM: cards subscription cancelled');
       };
       enqueueSnapshot();
     });
