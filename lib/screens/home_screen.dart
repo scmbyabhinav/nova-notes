@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import '../core/utils/lifecycle_timeout.dart';
+import '../core/utils/note_tag_filter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/orah_wordmark.dart';
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   String? _loadError;
   String _sort = 'updated';
   String _activeFilter = 'all';
+  String? _activeTagFilter;
   List<Note> _notes = const [];
   String? _selectedNoteId;
   StreamSubscription<List<Note>>? _notesSubscription;
@@ -163,8 +165,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
   void _applyNotes(List<Note> notes) {
     if (!mounted) return;
+    final availableTags = collectNoteTags(
+      notes.where((note) => !note.isLocked && !note.isTrashed),
+    );
     setState(() {
       _notes = notes.where((note) => !note.isLocked && !note.isTrashed).toList();
+      if (_activeTagFilter != null &&
+          !availableTags.any((tag) => tag.toLowerCase() == _activeTagFilter!.trim().toLowerCase())) {
+        _activeTagFilter = null;
+      }
       _loading = false;
       if (_selectedNoteId != null && !_notes.any((note) => note.id == _selectedNoteId)) {
         _selectedNoteId = null;
@@ -476,10 +485,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         note.tags.any((tag) => tag.toLowerCase() == 'reflection') ||
         note.title.trim().toLowerCase() == 'daily reflection';
 
-    final pinned = _notes
+    final tagFilteredNotes = filterNotesByTag(_notes, _activeTagFilter);
+    final pinned = tagFilteredNotes
         .where((note) => note.isPinned && !note.isArchived && !isDailyReflection(note))
         .toList();
-    final recent = _notes.where((note) {
+    final recent = tagFilteredNotes.where((note) {
       final reflection = isDailyReflection(note);
       switch (_activeFilter) {
         case 'pinned':
@@ -507,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       builder: (context, constraints) {
         if (constraints.maxWidth >= 1100) {
           return _DesktopNotesLayout(
-            notes: _notes,
+            notes: tagFilteredNotes,
             loading: _loading,
             selectedNoteId: _selectedNoteId,
             onSelect: _selectNote,
@@ -898,6 +908,38 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 ),
               ),
             ),
+            if (_notes.any((note) => note.tags.any((tag) => tag.trim().isNotEmpty)))
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 44,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: const Text('All tags'),
+                          selected: _activeTagFilter == null,
+                          onSelected: (_) => setState(() => _activeTagFilter = null),
+                        ),
+                      ),
+                      for (final tag in collectNoteTags(_notes))
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            avatar: const Icon(Icons.sell_outlined, size: 15),
+                            label: Text(tag),
+                            selected: _activeTagFilter?.toLowerCase() == tag.toLowerCase(),
+                            onSelected: (_) => setState(() {
+                              _activeTagFilter = _activeTagFilter?.toLowerCase() == tag.toLowerCase() ? null : tag;
+                            }),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
             if (_loading)
               const SliverFillRemaining(
                 hasScrollBody: false,
