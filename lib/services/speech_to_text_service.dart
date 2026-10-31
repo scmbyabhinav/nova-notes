@@ -55,7 +55,7 @@ class SpeechToTextService implements VoiceSpeechService {
     required SpeechResultCallback onResult,
   }) async {
     await _speechToText.listen(
-      onDevice: true,
+      options: SpeechListenOptions(onDevice: true),
       onResult: (SpeechRecognitionResult result) {
         onResult(result.recognizedWords, result.finalResult);
       },
