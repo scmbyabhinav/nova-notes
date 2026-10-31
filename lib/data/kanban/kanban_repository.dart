@@ -119,14 +119,40 @@ class KanbanRepository {
   final _cardsChanges = StreamController<void>.broadcast();
   final _goalsChanges = StreamController<void>.broadcast();
 
-  Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) async* {
-    // Use an async generator for the initial snapshot. This avoids the
-    // Stream.multi first-event cancellation path that stalls in CI.
-    yield await getCards(goalId: goalId, includeArchived: includeArchived);
+  Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) {
+    // Use an explicit controller so cancellation of Stream.first cannot keep
+    // an async* generator suspended while it waits for the change stream.
+    late final StreamController<List<KanbanCard>> controller;
+    StreamSubscription<void>? changes;
+    var active = true;
 
-    await for (final _ in _cardsChanges.stream) {
-      yield await getCards(goalId: goalId, includeArchived: includeArchived);
+    Future<void> emitSnapshot() async {
+      try {
+        final snapshot = await getCards(
+          goalId: goalId,
+          includeArchived: includeArchived,
+        );
+        if (active && !controller.isClosed) controller.add(snapshot);
+      } catch (error, stackTrace) {
+        if (active && !controller.isClosed) {
+          controller.addError(error, stackTrace);
+        }
+      }
     }
+
+    controller = StreamController<List<KanbanCard>>(
+      onListen: () {
+        changes = _cardsChanges.stream.listen((_) {
+          emitSnapshot();
+        });
+        emitSnapshot();
+      },
+      onCancel: () async {
+        active = false;
+        await changes?.cancel();
+      },
+    );
+    return controller.stream;
   }
 
   Future<List<KanbanCard>> getCards({String? goalId, bool includeArchived = false}) async {
@@ -142,12 +168,37 @@ class KanbanRepository {
     return rows.map(KanbanCard.fromRow).toList(growable: false);
   }
 
-  Stream<List<KanbanGoal>> watchGoals() async* {
-    yield await getGoals();
+  Stream<List<KanbanGoal>> watchGoals() {
+    // Mirror watchCards: deliver an explicit initial snapshot and keep
+    // subscription cancellation independent from async* generator cleanup.
+    late final StreamController<List<KanbanGoal>> controller;
+    StreamSubscription<void>? changes;
+    var active = true;
 
-    await for (final _ in _goalsChanges.stream) {
-      yield await getGoals();
+    Future<void> emitSnapshot() async {
+      try {
+        final snapshot = await getGoals();
+        if (active && !controller.isClosed) controller.add(snapshot);
+      } catch (error, stackTrace) {
+        if (active && !controller.isClosed) {
+          controller.addError(error, stackTrace);
+        }
+      }
     }
+
+    controller = StreamController<List<KanbanGoal>>(
+      onListen: () {
+        changes = _goalsChanges.stream.listen((_) {
+          emitSnapshot();
+        });
+        emitSnapshot();
+      },
+      onCancel: () async {
+        active = false;
+        await changes?.cancel();
+      },
+    );
+    return controller.stream;
   }
 
   Future<List<KanbanGoal>> getGoals({bool includeArchived = false}) async {
