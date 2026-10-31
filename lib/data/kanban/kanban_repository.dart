@@ -119,36 +119,45 @@ class KanbanRepository {
   final _cardsChanges = StreamController<void>.broadcast();
   final _goalsChanges = StreamController<void>.broadcast();
 
+  /// Reliable watch stream: always emits an initial snapshot when a listener
+  /// attaches, then re-emits on every change notification.
   Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) {
-    return Stream.multi((controller) {
-      var closed = false;
+    late final StreamController<List<KanbanCard>> controller;
+    StreamSubscription<void>? changeSub;
 
-      Future<void> emit() async {
-        if (closed) return;
-        try {
-          final snapshot = await getCards(
-            goalId: goalId,
-            includeArchived: includeArchived,
-          );
-          if (!closed && !controller.isClosed) {
-            controller.add(snapshot);
-          }
-        } catch (error, stackTrace) {
-          if (!closed && !controller.isClosed) {
-            controller.addError(error, stackTrace);
-          }
+    Future<void> emit() async {
+      if (controller.isClosed) return;
+      try {
+        final snapshot = await getCards(
+          goalId: goalId,
+          includeArchived: includeArchived,
+        );
+        if (!controller.isClosed) {
+          controller.add(snapshot);
+        }
+      } catch (error, stackTrace) {
+        if (!controller.isClosed) {
+          controller.addError(error, stackTrace);
         }
       }
+    }
 
-      // Seed the initial snapshot independently of stream subscription timing.
-      emit();
+    controller = StreamController<List<KanbanCard>>.broadcast(
+      onListen: () {
+        // Seed immediately when a listener attaches.
+        unawaited(emit());
+        changeSub ??= _cardsChanges.stream.listen((_) => unawaited(emit()));
+      },
+      onCancel: () {
+        // Stop listening to changes when the last listener cancels.
+        if (!controller.hasListener) {
+          changeSub?.cancel();
+          changeSub = null;
+        }
+      },
+    );
 
-      final subscription = _cardsChanges.stream.listen((_) => emit());
-      controller.onCancel = () {
-        closed = true;
-        subscription.cancel();
-      };
-    }, isBroadcast: true);
+    return controller.stream;
   }
 
   Future<List<KanbanCard>> getCards({String? goalId, bool includeArchived = false}) async {
@@ -159,43 +168,58 @@ class KanbanRepository {
       where.add('goal_id = ?');
       args.add(goalId);
     }
-    final rows = await database.query('kanban_cards', where: where.join(' AND '), whereArgs: args,
-      orderBy: "CASE status WHEN 'todo' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, sort_order ASC, created_at ASC");
+    final rows = await database.query(
+      'kanban_cards',
+      where: where.join(' AND '),
+      whereArgs: args,
+      orderBy:
+          "CASE status WHEN 'todo' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, sort_order ASC, created_at ASC",
+    );
     return rows.map(KanbanCard.fromRow).toList(growable: false);
   }
 
   Stream<List<KanbanGoal>> watchGoals() {
-    return Stream.multi((controller) {
-      var closed = false;
+    late final StreamController<List<KanbanGoal>> controller;
+    StreamSubscription<void>? changeSub;
 
-      Future<void> emit() async {
-        if (closed) return;
-        try {
-          final snapshot = await getGoals();
-          if (!closed && !controller.isClosed) {
-            controller.add(snapshot);
-          }
-        } catch (error, stackTrace) {
-          if (!closed && !controller.isClosed) {
-            controller.addError(error, stackTrace);
-          }
+    Future<void> emit() async {
+      if (controller.isClosed) return;
+      try {
+        final snapshot = await getGoals();
+        if (!controller.isClosed) {
+          controller.add(snapshot);
+        }
+      } catch (error, stackTrace) {
+        if (!controller.isClosed) {
+          controller.addError(error, stackTrace);
         }
       }
+    }
 
-      emit();
+    controller = StreamController<List<KanbanGoal>>.broadcast(
+      onListen: () {
+        unawaited(emit());
+        changeSub ??= _goalsChanges.stream.listen((_) => unawaited(emit()));
+      },
+      onCancel: () {
+        if (!controller.hasListener) {
+          changeSub?.cancel();
+          changeSub = null;
+        }
+      },
+    );
 
-      final subscription = _goalsChanges.stream.listen((_) => emit());
-      controller.onCancel = () {
-        closed = true;
-        subscription.cancel();
-      };
-    }, isBroadcast: true);
+    return controller.stream;
   }
 
   Future<List<KanbanGoal>> getGoals({bool includeArchived = false}) async {
-    final rows = await database.query('goals',
-      where: includeArchived ? 'deleted_at IS NULL' : 'deleted_at IS NULL AND archived_at IS NULL',
-      orderBy: 'sort_order ASC, created_at ASC');
+    final rows = await database.query(
+      'goals',
+      where: includeArchived
+          ? 'deleted_at IS NULL'
+          : 'deleted_at IS NULL AND archived_at IS NULL',
+      orderBy: 'sort_order ASC, created_at ASC',
+    );
     return rows.map(KanbanGoal.fromRow).toList(growable: false);
   }
 
@@ -211,14 +235,26 @@ class KanbanRepository {
   }) async {
     final now = DateTime.now().toUtc();
     final id = _uuid();
-    final siblings = await database.query('kanban_cards', columns: ['sort_order'],
-      where: 'status = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [status.dbValue],
-      orderBy: 'sort_order DESC', limit: 1);
+    final siblings = await database.query(
+      'kanban_cards',
+      columns: ['sort_order'],
+      where: 'status = ? AND deleted_at IS NULL AND archived_at IS NULL',
+      whereArgs: [status.dbValue],
+      orderBy: 'sort_order DESC',
+      limit: 1,
+    );
     await database.insert('kanban_cards', {
-      'id': id, 'title': title.trim(), 'description': description, 'status': status.dbValue,
-      'priority': priority.name, 'due_date': dueDate?.toUtc().toIso8601String(),
-      'color_label': colorLabel, 'checklist_json': jsonEncode(checklist), 'goal_id': goalId,
-      'created_at': now.toIso8601String(), 'updated_at': now.toIso8601String(),
+      'id': id,
+      'title': title.trim(),
+      'description': description,
+      'status': status.dbValue,
+      'priority': priority.name,
+      'due_date': dueDate?.toUtc().toIso8601String(),
+      'color_label': colorLabel,
+      'checklist_json': jsonEncode(checklist),
+      'goal_id': goalId,
+      'created_at': now.toIso8601String(),
+      'updated_at': now.toIso8601String(),
       'sort_order': siblings.isEmpty ? 0 : (siblings.single['sort_order'] as int) + 1,
     });
     _cardsChanges.add(null);
@@ -226,7 +262,8 @@ class KanbanRepository {
     return (await getCards()).firstWhere((card) => card.id == id);
   }
 
-  Future<void> updateCard(KanbanCard card, {
+  Future<void> updateCard(
+    KanbanCard card, {
     String? title,
     String? description,
     KanbanStatus? status,
@@ -239,7 +276,9 @@ class KanbanRepository {
     String? goalId,
     bool clearGoal = false,
   }) async {
-    final values = <String, Object?>{'updated_at': DateTime.now().toUtc().toIso8601String()};
+    final values = <String, Object?>{
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    };
     if (title != null) values['title'] = title.trim();
     if (description != null) values['description'] = description;
     if (status != null) values['status'] = status.dbValue;
@@ -251,20 +290,38 @@ class KanbanRepository {
     if (checklist != null) values['checklist_json'] = jsonEncode(checklist);
     if (goalId != null) values['goal_id'] = goalId;
     if (clearGoal) values['goal_id'] = null;
-    await database.update('kanban_cards', values, where: 'id = ? AND deleted_at IS NULL', whereArgs: [card.id]);
+    await database.update(
+      'kanban_cards',
+      values,
+      where: 'id = ? AND deleted_at IS NULL',
+      whereArgs: [card.id],
+    );
     _cardsChanges.add(null);
     _goalsChanges.add(null);
   }
 
   Future<void> moveCard(KanbanCard card, KanbanStatus status, {int? sortOrder}) async {
-    final siblings = await database.query('kanban_cards', columns: ['sort_order'],
+    final siblings = await database.query(
+      'kanban_cards',
+      columns: ['sort_order'],
       where: 'status = ? AND id != ? AND deleted_at IS NULL AND archived_at IS NULL',
-      whereArgs: [status.dbValue, card.id], orderBy: 'sort_order DESC', limit: 1);
-    final nextOrder = sortOrder ?? (siblings.isEmpty ? 0 : (siblings.single['sort_order'] as int) + 1);
+      whereArgs: [status.dbValue, card.id],
+      orderBy: 'sort_order DESC',
+      limit: 1,
+    );
+    final nextOrder =
+        sortOrder ?? (siblings.isEmpty ? 0 : (siblings.single['sort_order'] as int) + 1);
     await database.transaction((txn) async {
-      await txn.update('kanban_cards', {
-        'status': status.dbValue, 'sort_order': nextOrder, 'updated_at': DateTime.now().toUtc().toIso8601String(),
-      }, where: 'id = ? AND deleted_at IS NULL', whereArgs: [card.id]);
+      await txn.update(
+        'kanban_cards',
+        {
+          'status': status.dbValue,
+          'sort_order': nextOrder,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        },
+        where: 'id = ? AND deleted_at IS NULL',
+        whereArgs: [card.id],
+      );
       if (status == KanbanStatus.done) await _stopTimerIn(txn, card.id);
     });
     _cardsChanges.add(null);
@@ -272,17 +329,27 @@ class KanbanRepository {
   }
 
   Future<void> reorderCard(KanbanCard card, int sortOrder) async {
-    await database.update('kanban_cards', {
-      'sort_order': sortOrder, 'updated_at': DateTime.now().toUtc().toIso8601String(),
-    }, where: 'id = ? AND deleted_at IS NULL', whereArgs: [card.id]);
+    await database.update(
+      'kanban_cards',
+      {
+        'sort_order': sortOrder,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      },
+      where: 'id = ? AND deleted_at IS NULL',
+      whereArgs: [card.id],
+    );
     _cardsChanges.add(null);
     _goalsChanges.add(null);
   }
 
   Future<void> archiveCard(String id) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await database.update('kanban_cards', {'archived_at': now, 'updated_at': now},
-      where: 'id = ? AND deleted_at IS NULL', whereArgs: [id]);
+    await database.update(
+      'kanban_cards',
+      {'archived_at': now, 'updated_at': now},
+      where: 'id = ? AND deleted_at IS NULL',
+      whereArgs: [id],
+    );
     await stopTimer(id);
     _cardsChanges.add(null);
     _goalsChanges.add(null);
@@ -290,8 +357,12 @@ class KanbanRepository {
 
   Future<void> restoreCard(String id) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await database.update('kanban_cards', {'archived_at': null, 'updated_at': now},
-      where: 'id = ? AND deleted_at IS NULL', whereArgs: [id]);
+    await database.update(
+      'kanban_cards',
+      {'archived_at': null, 'updated_at': now},
+      where: 'id = ? AND deleted_at IS NULL',
+      whereArgs: [id],
+    );
     _cardsChanges.add(null);
     _goalsChanges.add(null);
   }
@@ -299,26 +370,47 @@ class KanbanRepository {
   Future<void> deleteCardPermanently(String id) async {
     await database.transaction((txn) async {
       await _stopTimerIn(txn, id);
-      await txn.update('links', {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-        where: '(source_type = ? AND source_id = ?) OR (target_type = ? AND target_id = ?)',
-        whereArgs: ['card', id, 'card', id]);
-      await txn.update('time_entries', {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-        where: 'card_id = ?', whereArgs: [id]);
+      await txn.update(
+        'links',
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where:
+            '(source_type = ? AND source_id = ?) OR (target_type = ? AND target_id = ?)',
+        whereArgs: ['card', id, 'card', id],
+      );
+      await txn.update(
+        'time_entries',
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where: 'card_id = ?',
+        whereArgs: [id],
+      );
       await txn.delete('kanban_cards', where: 'id = ?', whereArgs: [id]);
     });
     _cardsChanges.add(null);
     _goalsChanges.add(null);
   }
 
-  Future<KanbanGoal> createGoal({required String title, String description = '', DateTime? targetDate}) async {
+  Future<KanbanGoal> createGoal({
+    required String title,
+    String description = '',
+    DateTime? targetDate,
+  }) async {
     final now = DateTime.now().toUtc();
     final id = _uuid();
-    final rows = await database.query('goals', columns: ['sort_order'], where: 'deleted_at IS NULL AND archived_at IS NULL',
-      orderBy: 'sort_order DESC', limit: 1);
+    final rows = await database.query(
+      'goals',
+      columns: ['sort_order'],
+      where: 'deleted_at IS NULL AND archived_at IS NULL',
+      orderBy: 'sort_order DESC',
+      limit: 1,
+    );
     await database.insert('goals', {
-      'id': id, 'title': title.trim(), 'description': description,
-      'target_date': targetDate?.toUtc().toIso8601String(), 'created_at': now.toIso8601String(),
-      'updated_at': now.toIso8601String(), 'sort_order': rows.isEmpty ? 0 : (rows.single['sort_order'] as int) + 1,
+      'id': id,
+      'title': title.trim(),
+      'description': description,
+      'target_date': targetDate?.toUtc().toIso8601String(),
+      'created_at': now.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+      'sort_order': rows.isEmpty ? 0 : (rows.single['sort_order'] as int) + 1,
     });
     _goalsChanges.add(null);
     return (await getGoals()).firstWhere((goal) => goal.id == id);
@@ -326,47 +418,83 @@ class KanbanRepository {
 
   Future<void> archiveGoal(String id) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await database.update('goals', {'archived_at': now, 'updated_at': now},
-      where: 'id = ? AND deleted_at IS NULL', whereArgs: [id]);
+    await database.update(
+      'goals',
+      {'archived_at': now, 'updated_at': now},
+      where: 'id = ? AND deleted_at IS NULL',
+      whereArgs: [id],
+    );
     _goalsChanges.add(null);
   }
 
   Future<void> restoreGoal(String id) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await database.update('goals', {'archived_at': null, 'updated_at': now},
-      where: 'id = ? AND deleted_at IS NULL', whereArgs: [id]);
+    await database.update(
+      'goals',
+      {'archived_at': null, 'updated_at': now},
+      where: 'id = ? AND deleted_at IS NULL',
+      whereArgs: [id],
+    );
     _goalsChanges.add(null);
   }
 
   Future<void> deleteGoalPermanently(String id) async {
     await database.transaction((txn) async {
-      await txn.update('kanban_cards', {'goal_id': null, 'updated_at': DateTime.now().toUtc().toIso8601String()},
-        where: 'goal_id = ?', whereArgs: [id]);
-      await txn.update('links', {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-        where: '(source_type = ? AND source_id = ?) OR (target_type = ? AND target_id = ?)',
-        whereArgs: ['goal', id, 'goal', id]);
+      await txn.update(
+        'kanban_cards',
+        {
+          'goal_id': null,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        },
+        where: 'goal_id = ?',
+        whereArgs: [id],
+      );
+      await txn.update(
+        'links',
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where:
+            '(source_type = ? AND source_id = ?) OR (target_type = ? AND target_id = ?)',
+        whereArgs: ['goal', id, 'goal', id],
+      );
       await txn.delete('goals', where: 'id = ?', whereArgs: [id]);
     });
     _goalsChanges.add(null);
     _cardsChanges.add(null);
-    _goalsChanges.add(null);
   }
 
   Future<void> startTimer(String cardId, {bool allowMultiple = false}) async {
     final now = DateTime.now().toUtc().toIso8601String();
     await database.transaction((txn) async {
       if (!allowMultiple) {
-        final active = await txn.query('time_entries', where: 'ended_at IS NULL AND deleted_at IS NULL AND card_id != ?', whereArgs: [cardId]);
+        final active = await txn.query(
+          'time_entries',
+          where: 'ended_at IS NULL AND deleted_at IS NULL AND card_id != ?',
+          whereArgs: [cardId],
+        );
         for (final entry in active) {
-          await txn.update('time_entries', {'ended_at': now, 'updated_at': now},
-            where: 'id = ?', whereArgs: [entry['id']]);
+          await txn.update(
+            'time_entries',
+            {'ended_at': now, 'updated_at': now},
+            where: 'id = ?',
+            whereArgs: [entry['id']],
+          );
         }
       }
-      final existing = await txn.query('time_entries', where: 'card_id = ? AND ended_at IS NULL AND deleted_at IS NULL',
-        whereArgs: [cardId], limit: 1);
+      final existing = await txn.query(
+        'time_entries',
+        where: 'card_id = ? AND ended_at IS NULL AND deleted_at IS NULL',
+        whereArgs: [cardId],
+        limit: 1,
+      );
       if (existing.isEmpty) {
-        await txn.insert('time_entries', {'id': _uuid(), 'card_id': cardId, 'started_at': now,
-          'ended_at': null, 'created_at': now, 'updated_at': now});
+        await txn.insert('time_entries', {
+          'id': _uuid(),
+          'card_id': cardId,
+          'started_at': now,
+          'ended_at': null,
+          'created_at': now,
+          'updated_at': now,
+        });
       }
     });
     _cardsChanges.add(null);
@@ -381,24 +509,39 @@ class KanbanRepository {
 
   Future<void> _stopTimerIn(DatabaseExecutor db, String cardId) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await db.update('time_entries', {'ended_at': now, 'updated_at': now},
-      where: 'card_id = ? AND ended_at IS NULL AND deleted_at IS NULL', whereArgs: [cardId]);
+    await db.update(
+      'time_entries',
+      {'ended_at': now, 'updated_at': now},
+      where: 'card_id = ? AND ended_at IS NULL AND deleted_at IS NULL',
+      whereArgs: [cardId],
+    );
   }
 
   Future<int> totalSecondsForCard(String cardId, {DateTime? now}) async {
     final reference = (now ?? DateTime.now()).toUtc();
-    final rows = await database.query('time_entries', where: 'card_id = ? AND deleted_at IS NULL', whereArgs: [cardId]);
+    final rows = await database.query(
+      'time_entries',
+      where: 'card_id = ? AND deleted_at IS NULL',
+      whereArgs: [cardId],
+    );
     var total = 0;
     for (final row in rows) {
       final start = DateTime.parse(row['started_at']! as String).toUtc();
-      final end = row['ended_at'] == null ? reference : DateTime.parse(row['ended_at']! as String).toUtc();
+      final end = row['ended_at'] == null
+          ? reference
+          : DateTime.parse(row['ended_at']! as String).toUtc();
       total += max(0, end.difference(start).inSeconds);
     }
     return total;
   }
 
   Future<int> totalSecondsForGoal(String goalId, {DateTime? now}) async {
-    final cards = await database.query('kanban_cards', columns: ['id'], where: 'goal_id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [goalId]);
+    final cards = await database.query(
+      'kanban_cards',
+      columns: ['id'],
+      where: 'goal_id = ? AND deleted_at IS NULL AND archived_at IS NULL',
+      whereArgs: [goalId],
+    );
     var total = 0;
     for (final card in cards) {
       total += await totalSecondsForCard(card['id']! as String, now: now);
@@ -410,15 +553,23 @@ class KanbanRepository {
     final local = now ?? DateTime.now();
     final start = DateTime(local.year, local.month, local.day).toUtc();
     final end = start.add(const Duration(days: 1));
-    final rows = await database.query('time_entries', where: 'deleted_at IS NULL AND started_at < ? AND (ended_at IS NULL OR ended_at > ?)',
-      whereArgs: [end.toIso8601String(), start.toIso8601String()]);
+    final rows = await database.query(
+      'time_entries',
+      where:
+          'deleted_at IS NULL AND started_at < ? AND (ended_at IS NULL OR ended_at > ?)',
+      whereArgs: [end.toIso8601String(), start.toIso8601String()],
+    );
     var total = 0;
     for (final row in rows) {
       final sessionStart = DateTime.parse(row['started_at']! as String).toUtc();
-      final sessionEnd = row['ended_at'] == null ? local.toUtc() : DateTime.parse(row['ended_at']! as String).toUtc();
+      final sessionEnd = row['ended_at'] == null
+          ? local.toUtc()
+          : DateTime.parse(row['ended_at']! as String).toUtc();
       final clippedStart = sessionStart.isAfter(start) ? sessionStart : start;
       final clippedEnd = sessionEnd.isBefore(end) ? sessionEnd : end;
-      if (clippedEnd.isAfter(clippedStart)) total += clippedEnd.difference(clippedStart).inSeconds;
+      if (clippedEnd.isAfter(clippedStart)) {
+        total += clippedEnd.difference(clippedStart).inSeconds;
+      }
     }
     return total;
   }
@@ -431,15 +582,29 @@ class KanbanRepository {
     String linkKind = 'related',
   }) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await database.insert('links', {
-      'id': _uuid(), 'source_type': sourceType, 'source_id': sourceId, 'target_type': targetType,
-      'target_id': targetId, 'link_kind': linkKind, 'created_at': now, 'updated_at': now,
-    }, conflictAlgorithm: ConflictAlgorithm.ignore);
+    await database.insert(
+      'links',
+      {
+        'id': _uuid(),
+        'source_type': sourceType,
+        'source_id': sourceId,
+        'target_type': targetType,
+        'target_id': targetId,
+        'link_kind': linkKind,
+        'created_at': now,
+        'updated_at': now,
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
   }
 
   Future<List<Map<String, Object?>>> getLinks(String sourceType, String sourceId) =>
-      database.query('links', where: 'source_type = ? AND source_id = ? AND deleted_at IS NULL',
-        whereArgs: [sourceType, sourceId], orderBy: 'created_at ASC');
+      database.query(
+        'links',
+        where: 'source_type = ? AND source_id = ? AND deleted_at IS NULL',
+        whereArgs: [sourceType, sourceId],
+        orderBy: 'created_at ASC',
+      );
 
   Future<void> dispose() async {
     await _cardsChanges.close();
