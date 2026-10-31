@@ -65,7 +65,6 @@ void main() {
   });
 
   testWidgets('localized minimal scaffold renders with ORAH delegates', (tester) async {
-    print('KANBAN_ISOLATION: localized scaffold test start');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -74,44 +73,34 @@ void main() {
         body: const SizedBox.shrink(),
       ),
     ));
-    print('KANBAN_ISOLATION: localized scaffold pump complete');
     expect(find.text('Localized minimal board'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
-    print('KANBAN_ISOLATION: localized scaffold disposed');
   });
 
-
   testWidgets('KanbanScreen lifecycle mounts without repository initialization', (tester) async {
-    print('KANBAN_ISOLATION: screen lifecycle test start');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const KanbanScreen(skipInitializationForTest: true),
     ));
-    print('KANBAN_ISOLATION: screen lifecycle pump complete');
     expect(find.byType(KanbanScreen), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
-    print('KANBAN_ISOLATION: screen lifecycle disposed');
   });
 
   testWidgets('KanbanScreen mounts at tablet viewport without repository', (tester) async {
-    print('KANBAN_ISOLATION: tablet screen test start');
     tester.view.physicalSize = const Size(1200, 900);
     tester.view.devicePixelRatio = 1;
 
-    print('KANBAN_ISOLATION: before tablet pumpWidget');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const KanbanScreen(skipInitializationForTest: true),
     ));
-    print('KANBAN_ISOLATION: tablet pumpWidget complete');
     expect(find.byType(KanbanScreen), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
     tester.view.resetPhysicalSize();
-    print('KANBAN_ISOLATION: tablet screen disposed');
   });
 
   testWidgets('goal board shows all three columns and only linked cards', (tester) async {
@@ -124,30 +113,26 @@ void main() {
     await repo.createCard(title: 'Goal card', goalId: goal.id);
     await repo.createCard(title: 'Unlinked card');
 
-    print('KANBAN_PROBE: before direct getCards(goalId)');
-    final directCards = await repo.getCards(goalId: goal.id).timeout(const Duration(seconds: 5));
-    print('KANBAN_PROBE: direct getCards completed count=${directCards.length}');
-    print('KANBAN_PROBE: before raw filtered query');
-    final rawCards = await db.query('kanban_cards', where: 'deleted_at IS NULL AND archived_at IS NULL AND goal_id = ?', whereArgs: [goal.id], orderBy: "CASE status WHEN 'todo' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, sort_order ASC, created_at ASC").timeout(const Duration(seconds: 5));
-    print('KANBAN_PROBE: raw filtered query completed count=${rawCards.length}');
-    print('KANBAN_PROBE: before cards stream first');
-    final streamCards = await repo.watchCards(goalId: goal.id).first.timeout(const Duration(seconds: 5));
-    print('KANBAN_PROBE: cards stream first completed count=${streamCards.length}');
-    print('KANBAN_PROBE: before goals stream first');
-    final streamGoals = await repo.watchGoals().first.timeout(const Duration(seconds: 5));
-    print('KANBAN_PROBE: goals stream first completed count=${streamGoals.length}');
+    // Verify data layer without touching the watch stream (which has caused
+    // hangs on .first in CI). The widget below exercises the same stream via
+    // StreamBuilder the same way production does.
+    final directCards = await repo.getCards(goalId: goal.id);
+    expect(directCards, hasLength(1));
+    expect(directCards.single.title, 'Goal card');
 
-    print('KANBAN_BISECT: goal test before pumpWidget');
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: KanbanScreen(repository: repo, initialGoalId: goal.id, skipTodaySummaryForTest: true),
+      home: KanbanScreen(
+        repository: repo,
+        initialGoalId: goal.id,
+        skipTodaySummaryForTest: true,
+      ),
     ));
-    print('KANBAN_BISECT: goal test pumpWidget returned');
     await tester.pump();
-    print('KANBAN_BISECT: goal test first pump returned');
-    await tester.pump(const Duration(milliseconds: 500));
-    print('KANBAN_BISECT: goal test 500ms pump returned');
+    // Allow the StreamBuilder / async snapshot to settle.
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('To Do (1)'), findsOneWidget);
     expect(find.text('In Progress (0)'), findsOneWidget);
@@ -157,7 +142,6 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
-    await Future<void>.delayed(Duration.zero);
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
@@ -191,7 +175,6 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
-    await Future<void>.delayed(Duration.zero);
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
@@ -205,7 +188,12 @@ void main() {
     final repo = KanbanRepository(db);
     final source = await repo.createCard(title: 'Source item');
     final target = await repo.createCard(title: 'Target item');
-    await repo.addLink(sourceType: 'card', sourceId: source.id, targetType: 'card', targetId: target.id);
+    await repo.addLink(
+      sourceType: 'card',
+      sourceId: source.id,
+      targetType: 'card',
+      targetId: target.id,
+    );
 
     await tester.pumpWidget(MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -224,7 +212,6 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
-    await Future<void>.delayed(Duration.zero);
     tester.view.resetPhysicalSize();
     await repo.dispose();
     await db.close();
