@@ -23,10 +23,10 @@ class _NoteVersionHistorySheetState extends State<NoteVersionHistorySheet> {
 
   String _preview(Note note) {
     final title = note.title.trim().isEmpty ? 'Untitled note' : note.title.trim();
-    final body = note.content.trim().replaceAll(RegExp(r'\\s+'), ' ');
+    final body = note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
     if (body.isEmpty) return title;
     final preview = body.length > 100 ? '${body.substring(0, 100)}…' : body;
-    return '$title\\n$preview';
+    return '$title\n$preview';
   }
 
   Future<void> _restore(NoteVersion version) async {
