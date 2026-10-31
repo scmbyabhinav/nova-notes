@@ -13,7 +13,13 @@ class NoteVersionHistorySheet extends StatefulWidget {
 }
 
 class _NoteVersionHistorySheetState extends State<NoteVersionHistorySheet> {
-  late final Future<List<NoteVersion>> _versions = widget.repository.getNoteVersions(widget.noteId);
+  late final Future<List<NoteVersion>> _versions;
+
+  @override
+  void initState() {
+    super.initState();
+    _versions = widget.repository.getNoteVersions(widget.noteId);
+  }
 
   String _preview(Note note) {
     final title = note.title.trim().isEmpty ? 'Untitled note' : note.title.trim();
