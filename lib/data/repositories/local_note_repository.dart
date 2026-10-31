@@ -6,6 +6,7 @@ import '../database/note_dao.dart';
 import '../database/orah_database.dart';
 
 import '../../models/note.dart';
+import '../../models/note_version.dart';
 import '../../core/services/nova_security_service.dart';
 import '../../models/search_filter.dart';
 import 'note_repository.dart';
@@ -128,6 +129,8 @@ class LocalNoteRepository implements NoteRepository {
     if (index == -1) {
       notes.add(note);
     } else {
+      final previous = notes[index];
+      await _recordVersionIfChanged(previous, note);
       notes[index] = note;
     }
 
@@ -136,6 +139,59 @@ class LocalNoteRepository implements NoteRepository {
     // guarantees every subscriber receives exactly what is now on disk.
     _publish(await getNotes());
   });
+
+  /// Returns up to 50 prior snapshots, newest first. Vault notes are excluded.
+  Future<List<NoteVersion>> getNoteVersions(String noteId) async {
+    final note = await getNote(noteId);
+    if (note == null || note.isLocked) return const [];
+    final db = await OrahDatabase.open(_preferences);
+    final rows = await db.query(
+      'note_versions',
+      columns: ['id', 'content', 'saved_at'],
+      where: 'note_id = ?',
+      whereArgs: [noteId],
+      orderBy: 'saved_at DESC, id DESC',
+      limit: 50,
+    );
+    final versions = <NoteVersion>[];
+    for (final row in rows) {
+      try {
+        final decoded = jsonDecode(row['content'] as String);
+        if (decoded is! Map) continue;
+        final snapshot = Note.fromMap(Map<String, dynamic>.from(decoded));
+        if (!snapshot.isLocked) {
+          versions.add(NoteVersion(
+            id: row['id'] as int,
+            noteId: noteId,
+            savedAt: DateTime.tryParse(row['saved_at'] as String) ?? snapshot.updatedAt,
+            note: snapshot,
+          ));
+        }
+      } catch (_) {
+        // Ignore one damaged snapshot rather than hiding the remaining history.
+      }
+    }
+    return versions;
+  }
+
+  Future<void> _recordVersionIfChanged(Note previous, Note next) async {
+    if (previous.isLocked || next.isLocked) return;
+    final before = previous.toMap();
+    final after = next.toMap();
+    const fields = ['title', 'content', 'type', 'tags', 'attachments', 'checklistItems', 'imagePath'];
+    if (!fields.any((field) => jsonEncode(before[field]) != jsonEncode(after[field]))) return;
+    final db = await OrahDatabase.open(_preferences);
+    await db.insert('note_versions', {
+      'note_id': previous.id,
+      'content': jsonEncode(before),
+      'saved_at': DateTime.now().toIso8601String(),
+    });
+    await db.execute(
+      'DELETE FROM note_versions WHERE note_id = ? AND id NOT IN '
+      '(SELECT id FROM note_versions WHERE note_id = ? ORDER BY saved_at DESC, id DESC LIMIT 50)',
+      [previous.id, previous.id],
+    );
+  }
 
   @override
   Future<void> deleteNote(String id) => _trackOperation(() async {
