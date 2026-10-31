@@ -120,39 +120,35 @@ class KanbanRepository {
   final _goalsChanges = StreamController<void>.broadcast();
 
   Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) {
-    // Use an explicit controller so cancellation of Stream.first cannot keep
-    // an async* generator suspended while it waits for the change stream.
-    late final StreamController<List<KanbanCard>> controller;
-    StreamSubscription<void>? changes;
-    var active = true;
+    return Stream.multi((controller) {
+      var closed = false;
 
-    Future<void> emitSnapshot() async {
-      try {
-        final snapshot = await getCards(
-          goalId: goalId,
-          includeArchived: includeArchived,
-        );
-        if (active && !controller.isClosed) controller.add(snapshot);
-      } catch (error, stackTrace) {
-        if (active && !controller.isClosed) {
-          controller.addError(error, stackTrace);
+      Future<void> emit() async {
+        if (closed) return;
+        try {
+          final snapshot = await getCards(
+            goalId: goalId,
+            includeArchived: includeArchived,
+          );
+          if (!closed && !controller.isClosed) {
+            controller.add(snapshot);
+          }
+        } catch (error, stackTrace) {
+          if (!closed && !controller.isClosed) {
+            controller.addError(error, stackTrace);
+          }
         }
       }
-    }
 
-    controller = StreamController<List<KanbanCard>>(
-      onListen: () {
-        changes = _cardsChanges.stream.listen((_) {
-          emitSnapshot();
-        });
-        emitSnapshot();
-      },
-      onCancel: () async {
-        active = false;
-        await changes?.cancel();
-      },
-    );
-    return controller.stream;
+      // Seed the initial snapshot independently of stream subscription timing.
+      emit();
+
+      final subscription = _cardsChanges.stream.listen((_) => emit());
+      controller.onCancel = () {
+        closed = true;
+        subscription.cancel();
+      };
+    }, isBroadcast: true);
   }
 
   Future<List<KanbanCard>> getCards({String? goalId, bool includeArchived = false}) async {
@@ -169,36 +165,31 @@ class KanbanRepository {
   }
 
   Stream<List<KanbanGoal>> watchGoals() {
-    // Mirror watchCards: deliver an explicit initial snapshot and keep
-    // subscription cancellation independent from async* generator cleanup.
-    late final StreamController<List<KanbanGoal>> controller;
-    StreamSubscription<void>? changes;
-    var active = true;
+    return Stream.multi((controller) {
+      var closed = false;
 
-    Future<void> emitSnapshot() async {
-      try {
-        final snapshot = await getGoals();
-        if (active && !controller.isClosed) controller.add(snapshot);
-      } catch (error, stackTrace) {
-        if (active && !controller.isClosed) {
-          controller.addError(error, stackTrace);
+      Future<void> emit() async {
+        if (closed) return;
+        try {
+          final snapshot = await getGoals();
+          if (!closed && !controller.isClosed) {
+            controller.add(snapshot);
+          }
+        } catch (error, stackTrace) {
+          if (!closed && !controller.isClosed) {
+            controller.addError(error, stackTrace);
+          }
         }
       }
-    }
 
-    controller = StreamController<List<KanbanGoal>>(
-      onListen: () {
-        changes = _goalsChanges.stream.listen((_) {
-          emitSnapshot();
-        });
-        emitSnapshot();
-      },
-      onCancel: () async {
-        active = false;
-        await changes?.cancel();
-      },
-    );
-    return controller.stream;
+      emit();
+
+      final subscription = _goalsChanges.stream.listen((_) => emit());
+      controller.onCancel = () {
+        closed = true;
+        subscription.cancel();
+      };
+    }, isBroadcast: true);
   }
 
   Future<List<KanbanGoal>> getGoals({bool includeArchived = false}) async {
