@@ -198,9 +198,9 @@ class KanbanRepository {
         (_) => unawaited(enqueueSnapshot()),
         onError: controller.addError,
       );
-      controller.onCancel = () async {
+      controller.onCancel = () {
         cancelled = true;
-        await subscription.cancel();
+        unawaited(subscription.cancel());
       };
       unawaited(enqueueSnapshot());
     });
