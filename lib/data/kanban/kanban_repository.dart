@@ -150,9 +150,12 @@ class KanbanRepository {
         (_) => unawaited(enqueueSnapshot()),
         onError: controller.addError,
       );
-      controller.onCancel = () async {
+      controller.onCancel = () {
         cancelled = true;
-        await subscription.cancel();
+        // Do not make delivery of the first snapshot wait for cancellation of
+        // the invalidation listener. Some sqflite FFI test subscriptions can
+        // stall while Stream.first is cancelling its subscription.
+        unawaited(subscription.cancel());
       };
       unawaited(enqueueSnapshot());
     });
