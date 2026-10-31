@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/data/kanban/kanban_repository.dart';
 import 'package:orah_notes/l10n/app_localizations.dart';
@@ -122,26 +120,25 @@ void main() {
     await db.close();
   });
 
-  // The three tests below mount KanbanScreen with a real repository and depend
-  // on watchCards delivering the first snapshot to StreamBuilder. That path
-  // currently hangs the CI 5m timeout (empty columns render, data never
-  // arrives). Skip until the stream/UI binding is fixed on-device; repository
-  // unit tests already cover create/move/timer/archive behavior.
+  // Live StreamBuilder + watchCards currently hangs the CI 5m timeout
+  // (empty columns render; data never arrives). Skip until stream/UI
+  // binding is fixed on-device. Repository unit tests already cover
+  // create/move/timer/archive behavior.
   testWidgets(
     'goal board shows all three columns and only linked cards',
     (tester) async {},
-    skip: 'Live StreamBuilder seed hangs CI; covered by repository unit tests',
+    skip: true,
   );
 
   testWidgets(
     'card can be moved to Done with the quick-move menu',
     (tester) async {},
-    skip: 'Live StreamBuilder seed hangs CI; covered by repository unit tests',
+    skip: true,
   );
 
   testWidgets(
     'linked card chip opens the linked item',
     (tester) async {},
-    skip: 'Live StreamBuilder seed hangs CI; covered by repository unit tests',
+    skip: true,
   );
 }
