@@ -116,48 +116,46 @@ class KanbanRepository {
   KanbanRepository(this.database);
 
   final Database database;
-  final _cardsChanges = StreamController<void>.broadcast();
-  final _goalsChanges = StreamController<void>.broadcast();
+  final _cardsController = StreamController<List<KanbanCard>>.broadcast();
+  final _goalsController = StreamController<List<KanbanGoal>>.broadcast();
 
-  /// Reliable watch stream: always emits an initial snapshot when a listener
-  /// attaches, then re-emits on every change notification.
+  /// Same seeding pattern as LocalNoteRepository.watchNotes — proven stable in CI.
   Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) {
-    late final StreamController<List<KanbanCard>> controller;
-    StreamSubscription<void>? changeSub;
+    return Stream.multi(
+      (controller) {
+        var sawLiveUpdate = false;
 
-    Future<void> emit() async {
-      if (controller.isClosed) return;
-      try {
-        final snapshot = await getCards(
-          goalId: goalId,
-          includeArchived: includeArchived,
+        late final StreamSubscription<List<KanbanCard>> subscription;
+        subscription = _cardsController.stream.listen(
+          (cards) {
+            // Filter client-side so one shared controller serves all goal filters.
+            final filtered = cards.where((c) {
+              if (!includeArchived && c.archivedAt != null) return false;
+              if (goalId != null && c.goalId != goalId) return false;
+              return true;
+            }).toList(growable: false);
+            sawLiveUpdate = true;
+            controller.add(filtered);
+          },
+          onError: controller.addError,
         );
-        if (!controller.isClosed) {
-          controller.add(snapshot);
-        }
-      } catch (error, stackTrace) {
-        if (!controller.isClosed) {
-          controller.addError(error, stackTrace);
-        }
-      }
-    }
+        controller.onCancel = subscription.cancel;
 
-    controller = StreamController<List<KanbanCard>>.broadcast(
-      onListen: () {
-        // Seed immediately when a listener attaches.
-        unawaited(emit());
-        changeSub ??= _cardsChanges.stream.listen((_) => unawaited(emit()));
+        getCards(goalId: goalId, includeArchived: includeArchived).then(
+          (cards) {
+            if (!sawLiveUpdate && !controller.isClosed) {
+              controller.add(cards);
+            }
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            if (!controller.isClosed) {
+              controller.addError(error, stackTrace);
+            }
+          },
+        );
       },
-      onCancel: () {
-        // Stop listening to changes when the last listener cancels.
-        if (!controller.hasListener) {
-          changeSub?.cancel();
-          changeSub = null;
-        }
-      },
+      isBroadcast: true,
     );
-
-    return controller.stream;
   }
 
   Future<List<KanbanCard>> getCards({String? goalId, bool includeArchived = false}) async {
@@ -179,37 +177,35 @@ class KanbanRepository {
   }
 
   Stream<List<KanbanGoal>> watchGoals() {
-    late final StreamController<List<KanbanGoal>> controller;
-    StreamSubscription<void>? changeSub;
+    return Stream.multi(
+      (controller) {
+        var sawLiveUpdate = false;
 
-    Future<void> emit() async {
-      if (controller.isClosed) return;
-      try {
-        final snapshot = await getGoals();
-        if (!controller.isClosed) {
-          controller.add(snapshot);
-        }
-      } catch (error, stackTrace) {
-        if (!controller.isClosed) {
-          controller.addError(error, stackTrace);
-        }
-      }
-    }
+        late final StreamSubscription<List<KanbanGoal>> subscription;
+        subscription = _goalsController.stream.listen(
+          (goals) {
+            sawLiveUpdate = true;
+            controller.add(goals);
+          },
+          onError: controller.addError,
+        );
+        controller.onCancel = subscription.cancel;
 
-    controller = StreamController<List<KanbanGoal>>.broadcast(
-      onListen: () {
-        unawaited(emit());
-        changeSub ??= _goalsChanges.stream.listen((_) => unawaited(emit()));
+        getGoals().then(
+          (goals) {
+            if (!sawLiveUpdate && !controller.isClosed) {
+              controller.add(goals);
+            }
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            if (!controller.isClosed) {
+              controller.addError(error, stackTrace);
+            }
+          },
+        );
       },
-      onCancel: () {
-        if (!controller.hasListener) {
-          changeSub?.cancel();
-          changeSub = null;
-        }
-      },
+      isBroadcast: true,
     );
-
-    return controller.stream;
   }
 
   Future<List<KanbanGoal>> getGoals({bool includeArchived = false}) async {
@@ -221,6 +217,34 @@ class KanbanRepository {
       orderBy: 'sort_order ASC, created_at ASC',
     );
     return rows.map(KanbanGoal.fromRow).toList(growable: false);
+  }
+
+  Future<void> _publishCards() async {
+    if (_cardsController.isClosed) return;
+    try {
+      final cards = await getCards(includeArchived: true);
+      if (!_cardsController.isClosed) {
+        _cardsController.add(cards);
+      }
+    } catch (error, stackTrace) {
+      if (!_cardsController.isClosed) {
+        _cardsController.addError(error, stackTrace);
+      }
+    }
+  }
+
+  Future<void> _publishGoals() async {
+    if (_goalsController.isClosed) return;
+    try {
+      final goals = await getGoals(includeArchived: true);
+      if (!_goalsController.isClosed) {
+        _goalsController.add(goals);
+      }
+    } catch (error, stackTrace) {
+      if (!_goalsController.isClosed) {
+        _goalsController.addError(error, stackTrace);
+      }
+    }
   }
 
   Future<KanbanCard> createCard({
@@ -257,8 +281,8 @@ class KanbanRepository {
       'updated_at': now.toIso8601String(),
       'sort_order': siblings.isEmpty ? 0 : (siblings.single['sort_order'] as int) + 1,
     });
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
+    await _publishGoals();
     return (await getCards()).firstWhere((card) => card.id == id);
   }
 
@@ -296,8 +320,8 @@ class KanbanRepository {
       where: 'id = ? AND deleted_at IS NULL',
       whereArgs: [card.id],
     );
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
+    await _publishGoals();
   }
 
   Future<void> moveCard(KanbanCard card, KanbanStatus status, {int? sortOrder}) async {
@@ -324,8 +348,8 @@ class KanbanRepository {
       );
       if (status == KanbanStatus.done) await _stopTimerIn(txn, card.id);
     });
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
+    await _publishGoals();
   }
 
   Future<void> reorderCard(KanbanCard card, int sortOrder) async {
@@ -338,8 +362,7 @@ class KanbanRepository {
       where: 'id = ? AND deleted_at IS NULL',
       whereArgs: [card.id],
     );
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
   }
 
   Future<void> archiveCard(String id) async {
@@ -351,8 +374,8 @@ class KanbanRepository {
       whereArgs: [id],
     );
     await stopTimer(id);
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
+    await _publishGoals();
   }
 
   Future<void> restoreCard(String id) async {
@@ -363,8 +386,8 @@ class KanbanRepository {
       where: 'id = ? AND deleted_at IS NULL',
       whereArgs: [id],
     );
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
+    await _publishGoals();
   }
 
   Future<void> deleteCardPermanently(String id) async {
@@ -385,8 +408,8 @@ class KanbanRepository {
       );
       await txn.delete('kanban_cards', where: 'id = ?', whereArgs: [id]);
     });
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
+    await _publishGoals();
   }
 
   Future<KanbanGoal> createGoal({
@@ -412,7 +435,7 @@ class KanbanRepository {
       'updated_at': now.toIso8601String(),
       'sort_order': rows.isEmpty ? 0 : (rows.single['sort_order'] as int) + 1,
     });
-    _goalsChanges.add(null);
+    await _publishGoals();
     return (await getGoals()).firstWhere((goal) => goal.id == id);
   }
 
@@ -424,7 +447,7 @@ class KanbanRepository {
       where: 'id = ? AND deleted_at IS NULL',
       whereArgs: [id],
     );
-    _goalsChanges.add(null);
+    await _publishGoals();
   }
 
   Future<void> restoreGoal(String id) async {
@@ -435,7 +458,7 @@ class KanbanRepository {
       where: 'id = ? AND deleted_at IS NULL',
       whereArgs: [id],
     );
-    _goalsChanges.add(null);
+    await _publishGoals();
   }
 
   Future<void> deleteGoalPermanently(String id) async {
@@ -458,8 +481,8 @@ class KanbanRepository {
       );
       await txn.delete('goals', where: 'id = ?', whereArgs: [id]);
     });
-    _goalsChanges.add(null);
-    _cardsChanges.add(null);
+    await _publishGoals();
+    await _publishCards();
   }
 
   Future<void> startTimer(String cardId, {bool allowMultiple = false}) async {
@@ -497,14 +520,12 @@ class KanbanRepository {
         });
       }
     });
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
   }
 
   Future<void> stopTimer(String cardId) async {
     await _stopTimerIn(database, cardId);
-    _cardsChanges.add(null);
-    _goalsChanges.add(null);
+    await _publishCards();
   }
 
   Future<void> _stopTimerIn(DatabaseExecutor db, String cardId) async {
@@ -607,8 +628,8 @@ class KanbanRepository {
       );
 
   Future<void> dispose() async {
-    await _cardsChanges.close();
-    await _goalsChanges.close();
+    await _cardsController.close();
+    await _goalsController.close();
   }
 
   static String _uuid() {
