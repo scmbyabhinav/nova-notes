@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
+import '../core/utils/lifecycle_timeout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/orah_wordmark.dart';
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Timer? _trashSnackBarTimer;
   Timer? _reflectionCheckTimer;
   bool _openingScheduledReflection = false;
+  final LifecycleTimeout _loadTimeout = LifecycleTimeout();
 
   @override
   void initState() {
@@ -132,8 +134,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Future<void> _loadNotes() async {
     final loadGeneration = ++_notesLoadGeneration;
     try {
-      final repository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
+      final repository = await _loadTimeout.run(NoteRepositoryProvider.instance(), const Duration(seconds: 8));
 
       // Keep one live subscription for the lifetime of HomeScreen.
       _notesSubscription ??= repository.watchNotes().listen(
@@ -143,10 +144,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         },
       );
 
-      await repository.refresh().timeout(const Duration(seconds: 8));
+      await _loadTimeout.run(repository.refresh(), const Duration(seconds: 8));
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
-      final notes = await repository.getNotes()
-          .timeout(const Duration(seconds: 8));
+      final notes = await _loadTimeout.run(repository.getNotes(), const Duration(seconds: 8));
       if (!mounted || loadGeneration != _notesLoadGeneration) return;
       setState(() => _loadError = null);
       _applyNotes(notes);
@@ -219,6 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     orahRouteObserver.unsubscribe(this);
+    _loadTimeout.dispose();
     _notesSubscription?.cancel();
     _trashSnackBarTimer?.cancel();
     _reflectionCheckTimer?.cancel();

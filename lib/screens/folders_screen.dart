@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../core/widgets/orah_asset_icon.dart';
+import '../core/utils/lifecycle_timeout.dart';
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/folder.dart';
@@ -19,6 +20,7 @@ class FoldersScreen extends StatefulWidget {
 }
 
 class _FoldersScreenState extends State<FoldersScreen> {
+  final LifecycleTimeout _loadTimeout = LifecycleTimeout();
   bool _loading = true;
   String? _loadError;
   List<NoteFolder> _folders = const [];
@@ -35,14 +37,10 @@ class _FoldersScreenState extends State<FoldersScreen> {
 
   Future<void> _load() async {
     try {
-      final folderRepository = await FolderRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
-      final noteRepository = await NoteRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
-      final folders = await folderRepository.getFolders()
-          .timeout(const Duration(seconds: 8));
-      final notes = await noteRepository.getNotes()
-          .timeout(const Duration(seconds: 8));
+      final folderRepository = await _loadTimeout.run(FolderRepositoryProvider.instance(), const Duration(seconds: 8));
+      final noteRepository = await _loadTimeout.run(NoteRepositoryProvider.instance(), const Duration(seconds: 8));
+      final folders = await _loadTimeout.run(folderRepository.getFolders(), const Duration(seconds: 8));
+      final notes = await _loadTimeout.run(noteRepository.getNotes(), const Duration(seconds: 8));
 
       final counts = <String, int>{};
       for (final note in notes) {
@@ -189,16 +187,18 @@ class _FoldersScreenState extends State<FoldersScreen> {
     if (draft == null) return;
 
     try {
-      final repository = await FolderRepositoryProvider.instance()
-          .timeout(const Duration(seconds: 8));
-      await repository.saveFolder(
-        NoteFolder(
-          id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
-          name: draft.name,
-          createdAt: DateTime.now(),
-          folderCoverImagePath: draft.imagePath,
+      final repository = await _loadTimeout.run(FolderRepositoryProvider.instance(), const Duration(seconds: 8));
+      await _loadTimeout.run(
+        repository.saveFolder(
+          NoteFolder(
+            id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
+            name: draft.name,
+            createdAt: DateTime.now(),
+            folderCoverImagePath: draft.imagePath,
+          ),
         ),
-      ).timeout(const Duration(seconds: 8));
+        const Duration(seconds: 8),
+      );
 
       if (!mounted) return;
       await _load();
@@ -353,6 +353,12 @@ class _FoldersScreenState extends State<FoldersScreen> {
     );
 
     if (mounted) await _load();
+  }
+
+  @override
+  void dispose() {
+    _loadTimeout.dispose();
+    super.dispose();
   }
 
   @override

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:orah_notes/data/repositories/local_note_repository.dart';
+import 'package:orah_notes/data/repositories/in_memory_note_repository.dart';
 import 'package:orah_notes/screens/note_editor_screen.dart';
 import 'package:orah_notes/services/speech_to_text_service.dart';
 
@@ -56,11 +56,13 @@ class _FakeVoiceSpeechService implements VoiceSpeechService {
   }
 }
 
-Future<({WidgetTester tester, _FakeVoiceSpeechService speech, LocalNoteRepository repository})>
+Future<({WidgetTester tester, _FakeVoiceSpeechService speech, InMemoryNoteRepository repository})>
     _pumpEditor(WidgetTester tester) async {
-  SharedPreferences.setMockInitialValues({});
+  // Disable the one-time voice FAB tooltip. Its OverlayPortal otherwise intercepts
+  // hit testing over the toolbar and makes the microphone tap miss the IconButton.
+  SharedPreferences.setMockInitialValues({'orah_voice_hint_shown': true});
   final preferences = await SharedPreferences.getInstance();
-  final repository = LocalNoteRepository(preferences);
+  final repository = InMemoryNoteRepository(preferences);
   final speech = _FakeVoiceSpeechService();
 
   await tester.pumpWidget(
@@ -77,14 +79,37 @@ Future<({WidgetTester tester, _FakeVoiceSpeechService speech, LocalNoteRepositor
   return (tester: tester, speech: speech, repository: repository);
 }
 
+Future<void> _tapMicrophone(WidgetTester tester) async {
+  final micButton = find.byWidgetPredicate(
+    (widget) => widget is IconButton && widget.tooltip == 'Voice input',
+  );
+  expect(micButton, findsOneWidget);
+  expect(tester.widget<IconButton>(micButton).onPressed, isNotNull);
+
+  // Give the editor a realistic phone viewport; the toolbar must be
+  // interactable without overlapping its independent voice FAB.
+  tester.view.physicalSize = const Size(400, 900);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  await tester.pump();
+  await tester.ensureVisible(micButton);
+  await tester.tap(micButton);
+  await tester.pump();
+}
+
 void main() {
+  setUpAll(() {
+    // Treat missed taps as real test failures instead of allowing false greens.
+    WidgetController.hitTestWarningShouldBeFatal = true;
+  });
+
   testWidgets('voice input starts from the editor microphone control', (tester) async {
     final state = await _pumpEditor(tester);
 
     expect(find.byType(FloatingActionButton), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Voice input'));
-    await tester.pump();
+    await _tapMicrophone(tester);
 
     expect(find.byTooltip('Stop voice input'), findsOneWidget);
 
@@ -101,8 +126,7 @@ void main() {
       find.byWidgetPredicate((widget) => widget is TextField && widget.decoration?.hintText == 'Start writing...'),
       'Existing note',
     );
-    await tester.tap(find.byTooltip('Voice input'));
-    await tester.pump();
+    await _tapMicrophone(tester);
 
     state.speech.emitFinal('remember the supplier tomorrow');
     await tester.pump();
@@ -119,8 +143,7 @@ void main() {
   testWidgets('voice input does not change the note type', (tester) async {
     final state = await _pumpEditor(tester);
 
-    await tester.tap(find.byTooltip('Voice input'));
-    await tester.pump();
+    await _tapMicrophone(tester);
     state.speech.emitFinal('a text note');
     await tester.pump();
 
