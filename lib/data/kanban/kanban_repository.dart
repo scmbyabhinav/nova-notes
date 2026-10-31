@@ -124,43 +124,37 @@ class KanbanRepository {
     // This makes the initial snapshot independent of cancellation of the
     // broadcast change subscription (notably with sqflite_common_ffi in tests).
     return Stream<List<KanbanCard>>.multi((controller) {
-      print('KANBAN_STREAM: cards onListen goalId=$goalId');
       var cancelled = false;
-      var pending = Future<void>.value();
+      var generation = 0;
 
-      void enqueueSnapshot() {
-        print('KANBAN_STREAM: cards enqueue requested cancelled=$cancelled');
-        pending = pending.then((_) async {
-          print('KANBAN_STREAM: cards pending callback started cancelled=$cancelled');
-          if (cancelled) return;
-          print('KANBAN_STREAM: cards before getCards');
+      Future<void> enqueueSnapshot() async {
+        final requestGeneration = ++generation;
+        if (cancelled) return;
+        try {
           final cards = await getCards(
             goalId: goalId,
             includeArchived: includeArchived,
           );
-          print('KANBAN_STREAM: cards getCards completed count=${cards.length} cancelled=$cancelled');
-          if (!cancelled) {
-            print('KANBAN_STREAM: cards before controller.add');
+          // Ignore an older query if a newer invalidation completed first.
+          if (!cancelled && requestGeneration == generation) {
             controller.add(cards);
-            print('KANBAN_STREAM: cards controller.add returned');
           }
-        }).catchError((Object error, StackTrace stack) {
-          print('KANBAN_STREAM: cards snapshot error=$error');
-          if (!cancelled) controller.addError(error, stack);
-        });
+        } catch (error, stack) {
+          if (!cancelled && requestGeneration == generation) {
+            controller.addError(error, stack);
+          }
+        }
       }
 
       final subscription = _cardsChanges.stream.listen(
-        (_) => enqueueSnapshot(),
+        (_) => unawaited(enqueueSnapshot()),
         onError: controller.addError,
       );
       controller.onCancel = () async {
-        print('KANBAN_STREAM: cards onCancel');
         cancelled = true;
         await subscription.cancel();
-        print('KANBAN_STREAM: cards subscription cancelled');
       };
-      enqueueSnapshot();
+      unawaited(enqueueSnapshot());
     });
   }
 
@@ -180,27 +174,32 @@ class KanbanRepository {
   Stream<List<KanbanGoal>> watchGoals() {
     return Stream<List<KanbanGoal>>.multi((controller) {
       var cancelled = false;
-      var pending = Future<void>.value();
+      var generation = 0;
 
-      void enqueueSnapshot() {
-        pending = pending.then((_) async {
-          if (cancelled) return;
+      Future<void> enqueueSnapshot() async {
+        final requestGeneration = ++generation;
+        if (cancelled) return;
+        try {
           final goals = await getGoals();
-          if (!cancelled) controller.add(goals);
-        }).catchError((Object error, StackTrace stack) {
-          if (!cancelled) controller.addError(error, stack);
-        });
+          if (!cancelled && requestGeneration == generation) {
+            controller.add(goals);
+          }
+        } catch (error, stack) {
+          if (!cancelled && requestGeneration == generation) {
+            controller.addError(error, stack);
+          }
+        }
       }
 
       final subscription = _goalsChanges.stream.listen(
-        (_) => enqueueSnapshot(),
+        (_) => unawaited(enqueueSnapshot()),
         onError: controller.addError,
       );
       controller.onCancel = () async {
         cancelled = true;
         await subscription.cancel();
       };
-      enqueueSnapshot();
+      unawaited(enqueueSnapshot());
     });
   }
 
