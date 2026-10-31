@@ -119,55 +119,14 @@ class KanbanRepository {
   final _cardsChanges = StreamController<void>.broadcast();
   final _goalsChanges = StreamController<void>.broadcast();
 
-  Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) {
-    return Stream<List<KanbanCard>>.multi((controller) {
-      var cancelled = false;
-      var generation = 0;
-      StreamSubscription<void>? subscription;
+  Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) async* {
+    // Use an async generator for the initial snapshot. This avoids the
+    // Stream.multi first-event cancellation path that stalls in CI.
+    yield await getCards(goalId: goalId, includeArchived: includeArchived);
 
-      controller.onCancel = () {
-        cancelled = true;
-        // Cancellation must never wait for a database-backed invalidation
-        // listener. The initial snapshot is delivered before that listener is
-        // installed, so Stream.first can complete without cancelling it.
-        final active = subscription;
-        subscription = null;
-        if (active != null) unawaited(active.cancel());
-      };
-
-      Future<void> emitSnapshot() async {
-        final requestGeneration = ++generation;
-        try {
-          final cards = await getCards(
-            goalId: goalId,
-            includeArchived: includeArchived,
-          );
-          if (cancelled || requestGeneration != generation) return;
-          controller.add(cards);
-
-          // Install invalidation listening only after the first event has
-          // reached the stream. A consumer such as Stream.first cancels in
-          // response to that event; it must not have an active inner
-          // subscription whose cancellation can stall the consumer.
-          if (subscription == null && !cancelled) {
-            scheduleMicrotask(() {
-              if (subscription == null && !cancelled) {
-                subscription = _cardsChanges.stream.listen(
-                  (_) => unawaited(emitSnapshot()),
-                  onError: controller.addError,
-                );
-              }
-            });
-          }
-        } catch (error, stack) {
-          if (!cancelled && requestGeneration == generation) {
-            controller.addError(error, stack);
-          }
-        }
-      }
-
-      unawaited(emitSnapshot());
-    });
+    await for (final _ in _cardsChanges.stream) {
+      yield await getCards(goalId: goalId, includeArchived: includeArchived);
+    }
   }
 
   Future<List<KanbanCard>> getCards({String? goalId, bool includeArchived = false}) async {
@@ -183,44 +142,12 @@ class KanbanRepository {
     return rows.map(KanbanCard.fromRow).toList(growable: false);
   }
 
-  Stream<List<KanbanGoal>> watchGoals() {
-    return Stream<List<KanbanGoal>>.multi((controller) {
-      var cancelled = false;
-      var generation = 0;
-      StreamSubscription<void>? subscription;
+  Stream<List<KanbanGoal>> watchGoals() async* {
+    yield await getGoals();
 
-      controller.onCancel = () {
-        cancelled = true;
-        final active = subscription;
-        subscription = null;
-        if (active != null) unawaited(active.cancel());
-      };
-
-      Future<void> emitSnapshot() async {
-        final requestGeneration = ++generation;
-        try {
-          final goals = await getGoals();
-          if (cancelled || requestGeneration != generation) return;
-          controller.add(goals);
-          if (subscription == null && !cancelled) {
-            scheduleMicrotask(() {
-              if (subscription == null && !cancelled) {
-                subscription = _goalsChanges.stream.listen(
-                  (_) => unawaited(emitSnapshot()),
-                  onError: controller.addError,
-                );
-              }
-            });
-          }
-        } catch (error, stack) {
-          if (!cancelled && requestGeneration == generation) {
-            controller.addError(error, stack);
-          }
-        }
-      }
-
-      unawaited(emitSnapshot());
-    });
+    await for (final _ in _goalsChanges.stream) {
+      yield await getGoals();
+    }
   }
 
   Future<List<KanbanGoal>> getGoals({bool includeArchived = false}) async {
