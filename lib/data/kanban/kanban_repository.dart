@@ -119,11 +119,37 @@ class KanbanRepository {
   final _cardsChanges = StreamController<void>.broadcast();
   final _goalsChanges = StreamController<void>.broadcast();
 
-  Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) async* {
-    yield await getCards(goalId: goalId, includeArchived: includeArchived);
-    await for (final _ in _cardsChanges.stream) {
-      yield await getCards(goalId: goalId, includeArchived: includeArchived);
-    }
+  Stream<List<KanbanCard>> watchCards({String? goalId, bool includeArchived = false}) {
+    // Use an explicit multi-subscription stream instead of an async* generator.
+    // This makes the initial snapshot independent of cancellation of the
+    // broadcast change subscription (notably with sqflite_common_ffi in tests).
+    return Stream<List<KanbanCard>>.multi((controller) {
+      var cancelled = false;
+      var pending = Future<void>.value();
+
+      void enqueueSnapshot() {
+        pending = pending.then((_) async {
+          if (cancelled) return;
+          final cards = await getCards(
+            goalId: goalId,
+            includeArchived: includeArchived,
+          );
+          if (!cancelled) controller.add(cards);
+        }).catchError((Object error, StackTrace stack) {
+          if (!cancelled) controller.addError(error, stack);
+        });
+      }
+
+      final subscription = _cardsChanges.stream.listen(
+        (_) => enqueueSnapshot(),
+        onError: controller.addError,
+      );
+      controller.onCancel = () async {
+        cancelled = true;
+        await subscription.cancel();
+      };
+      enqueueSnapshot();
+    });
   }
 
   Future<List<KanbanCard>> getCards({String? goalId, bool includeArchived = false}) async {
@@ -139,11 +165,31 @@ class KanbanRepository {
     return rows.map(KanbanCard.fromRow).toList(growable: false);
   }
 
-  Stream<List<KanbanGoal>> watchGoals() async* {
-    yield await getGoals();
-    await for (final _ in _goalsChanges.stream) {
-      yield await getGoals();
-    }
+  Stream<List<KanbanGoal>> watchGoals() {
+    return Stream<List<KanbanGoal>>.multi((controller) {
+      var cancelled = false;
+      var pending = Future<void>.value();
+
+      void enqueueSnapshot() {
+        pending = pending.then((_) async {
+          if (cancelled) return;
+          final goals = await getGoals();
+          if (!cancelled) controller.add(goals);
+        }).catchError((Object error, StackTrace stack) {
+          if (!cancelled) controller.addError(error, stack);
+        });
+      }
+
+      final subscription = _goalsChanges.stream.listen(
+        (_) => enqueueSnapshot(),
+        onError: controller.addError,
+      );
+      controller.onCancel = () async {
+        cancelled = true;
+        await subscription.cancel();
+      };
+      enqueueSnapshot();
+    });
   }
 
   Future<List<KanbanGoal>> getGoals({bool includeArchived = false}) async {
