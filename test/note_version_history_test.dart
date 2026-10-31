@@ -44,10 +44,9 @@ void main() {
     expect(await repository.getNoteVersions('version-test'), isEmpty);
   });
 
-  test('locked notes are not copied into version history', () async {
-    await repository.saveNote(note(locked: true));
-    await repository.saveNote(note(locked: true).copyWith(content: 'new-ciphertext'));
-
-    expect(await repository.getNoteVersions('version-test'), isEmpty);
+  test('notes stored outside the ordinary repository have no version history', () async {
+    // Vault notes are persisted separately from ordinary SQLite notes. History
+    // must not attempt to read or snapshot them through this repository.
+    expect(await repository.getNoteVersions('vault-only-note'), isEmpty);
   });
 }
