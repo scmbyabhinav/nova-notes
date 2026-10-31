@@ -22,6 +22,7 @@ import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
+import 'note_version_history_sheet.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
@@ -887,6 +888,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<void> _showVersionHistory() async {
+    if (_isLocked || widget.repository is! LocalNoteRepository) return;
+    await _save();
+    if (!mounted || _saveFailed) return;
+    final restored = await showModalBottomSheet<Note>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => NoteVersionHistorySheet(
+        repository: widget.repository as LocalNoteRepository,
+        noteId: _noteId,
+      ),
+    );
+    if (restored == null || !mounted) return;
+    setState(() {
+      _titleController.text = restored.title;
+      _contentController.text = restored.content;
+      _noteType = restored.type;
+      _tags = [...restored.tags];
+      _attachments = [...restored.attachments];
+      _checklistItems = [...restored.checklistItems];
+      _imagePath = restored.imagePath;
+      _folderId = restored.folderId;
+      _vaultFolderId = restored.vaultFolderId;
+      _isPinned = restored.isPinned;
+      _isFavorite = restored.isFavorite;
+      _isArchived = restored.isArchived;
+      _noteColor = restored.color;
+      _dueAt = restored.dueAt;
+      _mood = restored.mood;
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
   Future<void> _close() async {
     _saveTimer?.cancel();
     await _save();
@@ -1508,6 +1544,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             onPressed: () => _addImage(ImageSource.gallery),
             icon: const Icon(Icons.image_outlined),
           ),
+          if (widget.note != null && !_isLocked && widget.repository is LocalNoteRepository)
+            IconButton(
+              tooltip: 'Version history',
+              onPressed: _showVersionHistory,
+              icon: const Icon(Icons.history_rounded),
+            ),
           IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
