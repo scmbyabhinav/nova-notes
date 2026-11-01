@@ -2462,8 +2462,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: () => _insertPrefix('> '),
                       ),
                       _ToolButton(
-                        icon: Icons.link_rounded,
-                        label: 'Link',
+                        icon: Icons.insert_link_rounded,
+                        label: 'Insert web link',
                         onPressed: _insertLink,
                       ),
                       _ToolButton(
