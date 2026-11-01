@@ -1887,7 +1887,7 @@ class _NoteCard extends StatelessWidget {
         ? theme.colorScheme.surface
         : Color(note.color!);
 
-    return Card(
+    final card = Card(
       margin: EdgeInsets.zero,
       elevation: 1.5,
       shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.10),
@@ -1993,6 +1993,69 @@ class _NoteCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+    if (!note.isInbox) return card;
+    return Dismissible(
+      key: ValueKey('inbox-${note.id}'),
+      direction: DismissDirection.horizontal,
+      confirmDismiss: (direction) async {
+        final repository = await NoteRepositoryProvider.instance();
+        if (direction == DismissDirection.startToEnd) {
+          await repository.saveNote(note.copyWith(isInbox: false, updatedAt: DateTime.now()));
+          return true;
+        }
+        final controller = TextEditingController();
+        final tag = await showDialog<String>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Tag this note'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Tag',
+                hintText: 'e.g. Work, Ideas, Read later',
+              ),
+              onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+              FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()), child: const Text('Add tag')),
+            ],
+          ),
+        );
+        controller.dispose();
+        if (tag == null || tag.trim().isEmpty) return false;
+        final tags = [...note.tags];
+        if (!tags.any((value) => value.toLowerCase() == tag.trim().toLowerCase())) {
+          tags.add(tag.trim());
+        }
+        await repository.saveNote(note.copyWith(tags: tags, updatedAt: DateTime.now()));
+        return false;
+      },
+      onDismissed: (_) {},
+      background: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(color: Colors.green.shade700, borderRadius: BorderRadius.circular(16)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.drive_file_move_outline, color: Colors.white),
+          SizedBox(width: 8),
+          Text('File', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(16)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.sell_outlined, color: Colors.white),
+          SizedBox(width: 8),
+          Text('Tag', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      child: card,
     );
   }
 }
