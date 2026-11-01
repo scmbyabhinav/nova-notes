@@ -99,6 +99,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
+  bool _showSlashCommandMenu = false;
+  String _slashCommandQuery = '';
+  int? _slashCommandStart;
+
+  static const List<Map<String, String>> _slashCommands = [
+    {'title': 'Heading 1', 'command': '/heading', 'description': 'Large section heading', 'insert': '# '},
+    {'title': 'Heading 2', 'command': '/heading2', 'description': 'Medium section heading', 'insert': '## '},
+    {'title': 'Heading 3', 'command': '/heading3', 'description': 'Small section heading', 'insert': '### '},
+    {'title': 'To-do list', 'command': '/todo', 'description': 'Add an unchecked task', 'insert': '- [ ] '},
+    {'title': 'Bulleted list', 'command': '/bullet', 'description': 'Start a bullet point', 'insert': '- '},
+    {'title': 'Numbered list', 'command': '/numbered', 'description': 'Start a numbered list', 'insert': '1. '},
+    {'title': 'Quote', 'command': '/quote', 'description': 'Add a quote block', 'insert': '> '},
+    {'title': 'Code block', 'command': '/code', 'description': 'Insert a fenced code block', 'insert': '\u0060\u0060\u0060\n\n\u0060\u0060\u0060'},
+    {'title': 'Divider', 'command': '/divider', 'description': 'Add a horizontal divider', 'insert': '---\n'},
+  ];
   bool _isZenMode = false;
   bool _isCapturingNoteCard = false;
   bool _isLocked = false;
@@ -762,7 +777,131 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   void _onChanged() {
+    _updateSlashCommandMenu();
     _hasChanges = true;
+    _save();
+  }
+
+  void _updateSlashCommandMenu() {
+    if (!mounted || _isLocked || _previewMode || _noteType == NoteType.checklist) {
+      if (_showSlashCommandMenu) {
+        setState(() {
+          _showSlashCommandMenu = false;
+          _slashCommandQuery = '';
+          _slashCommandStart = null;
+        });
+      }
+      return;
+    }
+    final value = _contentController.value;
+    final selection = value.selection;
+    if (!selection.isValid || !selection.isCollapsed) {
+      if (_showSlashCommandMenu) {
+        setState(() {
+          _showSlashCommandMenu = false;
+          _slashCommandQuery = '';
+          _slashCommandStart = null;
+        });
+      }
+      return;
+    }
+    final cursor = selection.baseOffset;
+    final lineStart = value.text.lastIndexOf('\n', cursor > 0 ? cursor - 1 : 0) + 1;
+    final linePrefix = value.text.substring(lineStart, cursor);
+    final match = RegExp(r'^(\s*)/([a-zA-Z-]*)$').firstMatch(linePrefix);
+    if (match == null) {
+      if (_showSlashCommandMenu) {
+        setState(() {
+          _showSlashCommandMenu = false;
+          _slashCommandQuery = '';
+          _slashCommandStart = null;
+        });
+      }
+      return;
+    }
+    final query = match.group(2)!.toLowerCase();
+    final start = lineStart + match.group(1)!.length;
+    if (!_showSlashCommandMenu || _slashCommandQuery != query || _slashCommandStart != start) {
+      setState(() {
+        _showSlashCommandMenu = true;
+        _slashCommandQuery = query;
+        _slashCommandStart = start;
+      });
+    }
+  }
+
+  List<Map<String, String>> get _filteredSlashCommands {
+    if (_slashCommandQuery.isEmpty) return _slashCommands;
+    return _slashCommands.where((item) {
+      return item['title']!.toLowerCase().contains(_slashCommandQuery) ||
+          item['command']!.substring(1).contains(_slashCommandQuery) ||
+          item['description']!.toLowerCase().contains(_slashCommandQuery);
+    }).toList();
+  }
+
+  Widget _buildSlashCommandMenu(ThemeData theme) {
+    final commands = _filteredSlashCommands;
+    if (commands.isEmpty) return const SizedBox.shrink();
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 3,
+      clipBehavior: Clip.antiAlias,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 280),
+        child: ListView.separated(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          itemCount: commands.length,
+          separatorBuilder: (_, __) => const Divider(height: 1, indent: 52),
+          itemBuilder: (context, index) {
+            final item = commands[index];
+            final icon = switch (item['title']) {
+              'Heading 1' => Icons.title_rounded,
+              'Heading 2' => Icons.format_size_rounded,
+              'Heading 3' => Icons.text_fields_rounded,
+              'To-do list' => Icons.check_box_outlined,
+              'Bulleted list' => Icons.format_list_bulleted_rounded,
+              'Numbered list' => Icons.format_list_numbered_rounded,
+              'Quote' => Icons.format_quote_rounded,
+              'Code block' => Icons.code_rounded,
+              _ => Icons.horizontal_rule_rounded,
+            };
+            return ListTile(
+              dense: true,
+              leading: Icon(icon, color: theme.colorScheme.primary),
+              title: Text(item['title']!),
+              subtitle: Text(item['description']!),
+              trailing: Text(item['command']!, style: theme.textTheme.labelSmall),
+              onTap: () => _applySlashCommand(item),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _applySlashCommand(Map<String, String> command) {
+    final value = _contentController.value;
+    final selection = value.selection;
+    final start = _slashCommandStart;
+    if (start == null || !selection.isValid) return;
+    final insertion = command['insert']!;
+    final end = selection.baseOffset;
+    final replacement = value.text.replaceRange(start, end, insertion);
+    var caret = start + insertion.length;
+    if (command['title'] == 'Code block') caret = start + 4;
+    _contentController.value = TextEditingValue(
+      text: replacement,
+      selection: TextSelection.collapsed(offset: caret.clamp(0, replacement.length)),
+      composing: TextRange.empty,
+    );
+    setState(() {
+      _showSlashCommandMenu = false;
+      _slashCommandQuery = '';
+      _slashCommandStart = null;
+      _hasChanges = true;
+    });
+    _contentFocus.requestFocus();
     _save();
   }
   Future<void> _save() async {
@@ -1997,6 +2136,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           maxLines: 2,
                         ),
                         const SizedBox(height: 8),
+                        if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
+                          _buildSlashCommandMenu(theme),
                         if (_noteType == NoteType.checklist)
                           _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
                         else
