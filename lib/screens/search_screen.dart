@@ -425,7 +425,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
-      body: OrahContentFrame(child: body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : Column(
