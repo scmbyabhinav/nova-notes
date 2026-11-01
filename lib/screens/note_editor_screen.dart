@@ -1360,7 +1360,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             content: Text(
               imported.length == 1
                   ? 'Scanned document saved as JPG.'
-                  : '\${imported.length} scanned pages saved as JPG attachments.',
+                  : '${imported.length} scanned pages saved as JPG attachments.',
             ),
           ),
         );
