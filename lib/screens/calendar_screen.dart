@@ -92,7 +92,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
