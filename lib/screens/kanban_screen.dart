@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../core/widgets/nova_polish.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -309,7 +310,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
           ),
         ],
       ),
-      body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      body: OrahContentFrame(maxWidth: 1440, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
           child: Row(children: [
@@ -361,7 +362,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
             Expanded(child: TabBarView(children: [for (final s in statuses) _column(s, cards, l)])),
           ]));
         })),
-      ]),
+      ])),
       floatingActionButton: FloatingActionButton(onPressed: _byGoal && _goalId == null ? null : _addCard, tooltip: l.kanbanAddCard, child: const Icon(Icons.add)),
     );
   }

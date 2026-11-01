@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/nova_polish.dart';
 import 'package:intl/intl.dart';
 
 import '../data/repositories/note_repository_provider.dart';
@@ -84,14 +85,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final selectedNotes = _selectedDayNotes;
     final selectedLabel = DateFormat('EEEE, d MMMM y').format(_selectedDate);
 
-    return SafeArea(
+    return OrahContentFrame(child: SafeArea(
       child: RefreshIndicator(
         onRefresh: _loadNotes,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 12),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               sliver: SliverToBoxAdapter(
                 child: Row(
                   children: [
@@ -210,6 +211,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

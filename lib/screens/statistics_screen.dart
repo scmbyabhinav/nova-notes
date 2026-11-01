@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import '../core/widgets/nova_polish.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -46,9 +47,9 @@ class StatisticsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.light ? const Color(0xFFF8FAFC) : theme.colorScheme.surface,
       appBar: AppBar(title: const Text('Your Journey')),
-      body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
             Text('Small moments add up.', style: theme.textTheme.titleLarge?.copyWith(color: StatisticsScreen.indigo, fontWeight: FontWeight.w800)),
             const SizedBox(height: 5),
@@ -154,7 +155,7 @@ class StatisticsScreen extends StatelessWidget {
             Text('Your notes stay on this device. These insights are calculated from your saved notes.', textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
           ],
         ),
-      ),
+      )),
     );
   }
 }

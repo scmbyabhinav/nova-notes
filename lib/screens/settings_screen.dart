@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../core/widgets/nova_polish.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,9 +37,9 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return SafeArea(
+    return OrahContentFrame(child: SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
           Text(l10n.settings, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
@@ -208,7 +209,7 @@ class SettingsScreen extends StatelessWidget {
           Text('Think it. Write it. Keep it.', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
         ],
       ),
-    );
+    ));
   }
 
   Widget _sectionHeader(ThemeData theme, String title) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../core/widgets/nova_polish.dart';
 
 import 'package:flutter/material.dart';
 import '../core/services/nova_security_service.dart';
@@ -424,13 +425,13 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
-      body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: SearchBar(
                       controller: _controller,
                       focusNode: _focusNode,
@@ -450,7 +451,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     height: 48,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       children: [
                         _SavedSearchChip(label: 'All notes', selected: _quickChip.isEmpty, onSelected: () {
                           setState(() => _quickChip = '');
@@ -574,7 +575,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-      ),
+      )),
     );
   }
 }

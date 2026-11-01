@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../core/widgets/nova_polish.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -2122,7 +2123,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ],
       ),
-      body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: Column(
           children: [
             if (_isListening || _speechInitializing || _voiceProcessing)
@@ -2517,7 +2518,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
           ],
         ),
-        ),
+        )),
       ),
     );
   }
