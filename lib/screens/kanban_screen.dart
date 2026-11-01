@@ -310,7 +310,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
           ),
         ],
       ),
-      body: OrahContentFrame(maxWidth: 1440, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      body: OrahContentFrame(maxWidth: 1440, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
           child: Row(children: [
