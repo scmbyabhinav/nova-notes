@@ -442,50 +442,30 @@ class _SearchScreenState extends State<SearchScreen> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       children: [
-                        _SavedSearchChip(
-                          label: 'All notes',
-                          selected: _quickChip.isEmpty,
-                          onSelected: () => setState(() {
-                            _quickChip = '';
-                            _search();
-                          }),
-                        ),
+                        _SavedSearchChip(label: 'All notes', selected: _quickChip.isEmpty, onSelected: () {
+                          setState(() => _quickChip = '');
+                          _search();
+                        }),
                         const SizedBox(width: 8),
-                        _SavedSearchChip(
-                          label: 'Has voice',
-                          selected: _quickChip == 'voice',
-                          onSelected: () => setState(() {
-                            _quickChip = 'voice';
-                            _search();
-                          }),
-                        ),
+                        _SavedSearchChip(label: 'Has voice', selected: _quickChip == 'voice', onSelected: () {
+                          setState(() => _quickChip = 'voice');
+                          _search();
+                        }),
                         const SizedBox(width: 8),
-                        _SavedSearchChip(
-                          label: 'Has image',
-                          selected: _quickChip == 'image',
-                          onSelected: () => setState(() {
-                            _quickChip = 'image';
-                            _search();
-                          }),
-                        ),
+                        _SavedSearchChip(label: 'Has image', selected: _quickChip == 'image', onSelected: () {
+                          setState(() => _quickChip = 'image');
+                          _search();
+                        }),
                         const SizedBox(width: 8),
-                        _SavedSearchChip(
-                          label: 'Checklist only',
-                          selected: _quickChip == 'checklist',
-                          onSelected: () => setState(() {
-                            _quickChip = 'checklist';
-                            _search();
-                          }),
-                        ),
+                        _SavedSearchChip(label: 'Checklist only', selected: _quickChip == 'checklist', onSelected: () {
+                          setState(() => _quickChip = 'checklist');
+                          _search();
+                        }),
                         const SizedBox(width: 8),
-                        _SavedSearchChip(
-                          label: 'This week',
-                          selected: _quickChip == 'week',
-                          onSelected: () => setState(() {
-                            _quickChip = 'week';
-                            _search();
-                          }),
-                        ),
+                        _SavedSearchChip(label: 'This week', selected: _quickChip == 'week', onSelected: () {
+                          setState(() => _quickChip = 'week');
+                          _search();
+                        }),
                       ],
                     ),
                   ),
@@ -1242,16 +1222,14 @@ class _SavedSearchChip extends StatelessWidget {
   final VoidCallback onSelected;
 
   @override
-  Widget build(BuildContext context) {
-    return ChoiceChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => onSelected(),
-      showCheckmark: false,
-      labelStyle: TextStyle(
-        fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-    );
-  }
+  Widget build(BuildContext context) => ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => onSelected(),
+        showCheckmark: false,
+        labelStyle: TextStyle(
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+      );
 }
