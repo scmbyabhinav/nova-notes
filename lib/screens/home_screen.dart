@@ -734,9 +734,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       icon: const Icon(Icons.calendar_month_rounded, size: 24),
                     ),
                     if (!compactHeader) IconButton.filledTonal(
-                      tooltip: 'Statistics & insights',
+                      tooltip: 'Mood & insights',
                       onPressed: widget.onStatistics,
-                      icon: const Icon(Icons.bar_chart_rounded, size: 24),
+                      icon: const Icon(Icons.mood_rounded, size: 24),
                     ),
                     if (!compactHeader) IconButton.filledTonal(
                       tooltip: 'Daily Reflection',
@@ -748,6 +748,53 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         semanticsLabel: 'Daily Reflection',
                       ),
                     ),
+                    if (compactHeader)
+                      PopupMenuButton<String>(
+                        tooltip: 'Quick actions',
+                        icon: const Icon(Icons.more_horiz_rounded, size: 26),
+                        onSelected: (action) {
+                          switch (action) {
+                            case 'calendar':
+                              widget.onCalendarHistory?.call();
+                              break;
+                            case 'mood':
+                              widget.onStatistics?.call();
+                              break;
+                            case 'reflection':
+                              _openReflection();
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem<String>(
+                            value: 'calendar',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.calendar_month_rounded),
+                              title: Text('Calendar & history'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'mood',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.mood_rounded),
+                              title: Text('Mood & insights'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'reflection',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.auto_awesome_rounded),
+                              title: Text('Daily Reflection'),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (_showFeatures)
                       IconButton.filledTonal(
                         tooltip: 'Appearance',
