@@ -28,7 +28,7 @@ class OrahFeaturesScreen extends StatelessWidget {
         _Feature('Tags & Favourites', 'Label notes and keep important items close.', Icons.sell_outlined),
         _Feature('Archive & Trash', 'Archive notes, restore them, or remove them permanently.', Icons.archive_outlined),
         _Feature('Triage Inbox', 'Review incoming shared content and file or tag it.', Icons.inbox_outlined),
-        _Feature('Linked Notes & Merge', 'Connect related notes or combine note content.', Icons.link_rounded, status: _FeatureStatus.inDevelopment),
+        _Feature('Linked Notes & Merge', 'Connect related notes or combine note content.', Icons.link_rounded),
         _Feature('Kanban Boards', 'Organise work with cards, goals, due dates and checklists.', Icons.view_kanban_outlined),
       ],
     ),
