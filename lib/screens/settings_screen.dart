@@ -37,7 +37,7 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return OrahContentFrame(child: return SafeArea(
+    return OrahContentFrame(child: SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
