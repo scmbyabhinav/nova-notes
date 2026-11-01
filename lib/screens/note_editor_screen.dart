@@ -2123,7 +2123,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ],
       ),
-      body: OrahContentFrame(child: body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: Column(
           children: [
             if (_isListening || _speechInitializing || _voiceProcessing)
