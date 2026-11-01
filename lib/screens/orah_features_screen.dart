@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/widgets/nova_polish.dart';
 
 /// Product-facing feature catalogue. Status labels intentionally distinguish
 /// implemented functionality from work that is not yet ready to advertise.
@@ -95,7 +96,7 @@ class OrahFeaturesScreen extends StatelessWidget {
     final colors = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Orah Features')),
-      body: ListView(
+      body: OrahContentFrame(child: body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
         children: [
           Container(
@@ -169,7 +170,7 @@ class OrahFeaturesScreen extends StatelessWidget {
             style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
           ),
         ],
-      ),
+      )),
     );
   }
 }
