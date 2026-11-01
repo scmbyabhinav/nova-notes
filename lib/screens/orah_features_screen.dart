@@ -97,10 +97,10 @@ class OrahFeaturesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Orah Features')),
       body: OrahContentFrame(child: body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
