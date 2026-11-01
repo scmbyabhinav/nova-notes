@@ -85,7 +85,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final selectedNotes = _selectedDayNotes;
     final selectedLabel = DateFormat('EEEE, d MMMM y').format(_selectedDate);
 
-    return OrahContentFrame(child: return SafeArea(
+    return OrahContentFrame(child: SafeArea(
       child: RefreshIndicator(
         onRefresh: _loadNotes,
         child: CustomScrollView(
