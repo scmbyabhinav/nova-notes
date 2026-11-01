@@ -619,6 +619,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final recent = tagFilteredNotes.where((note) {
       final reflection = isDailyReflection(note);
       switch (_activeFilter) {
+        case 'inbox':
+          return note.isInbox && !note.isArchived && !reflection;
         case 'pinned':
           return note.isPinned && !note.isArchived && !reflection;
         case 'favorites':
@@ -992,6 +994,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   children: [
                     for (final filter in const [
                       ('all', 'All', Icons.notes_rounded),
+                      ('inbox', 'Inbox', Icons.inbox_outlined),
                       ('pinned', 'Pinned', Icons.push_pin_outlined),
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
                       ('checklists', 'Checklists', Icons.checklist_rounded),
@@ -1942,6 +1945,10 @@ class _NoteCard extends StatelessWidget {
                   ),
                 ),
               ],
+              if (note.dueAt != null) ...[
+                const SizedBox(height: 9),
+                _DeadlineCountdownRibbon(dueAt: note.dueAt!),
+              ],
               const SizedBox(height: 9),
               Row(
                 children: [
@@ -1984,6 +1991,64 @@ class _NoteCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class _DeadlineCountdownRibbon extends StatelessWidget {
+  const _DeadlineCountdownRibbon({required this.dueAt});
+
+  final DateTime dueAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dueDay = DateTime(dueAt.year, dueAt.month, dueAt.day);
+    final days = dueDay.difference(today).inDays;
+    final Color color;
+    final IconData icon;
+    final String label;
+    if (days < 0) {
+      color = Colors.red;
+      icon = Icons.warning_amber_rounded;
+      label = 'Overdue by ${days.abs()} day${days.abs() == 1 ? '' : 's'}';
+    } else if (days == 0) {
+      color = Colors.red;
+      icon = Icons.timer_outlined;
+      label = 'Due today';
+    } else if (days <= 2) {
+      color = Colors.deepOrange;
+      icon = Icons.hourglass_bottom_rounded;
+      label = 'Due in ${days} day${days == 1 ? '' : 's'}';
+    } else if (days <= 7) {
+      color = Colors.amber.shade800;
+      icon = Icons.hourglass_top_rounded;
+      label = 'Due in ${days} days';
+    } else {
+      color = Colors.green.shade700;
+      icon = Icons.event_available_rounded;
+      label = 'Due in ${days} days';
+    }
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w800)),
+          ],
         ),
       ),
     );
