@@ -33,11 +33,17 @@ void main() {
     expect(OrahFeatureGate.isPremium(OrahFeature.attachmentTools), isTrue);
     expect(OrahFeatureGate.isPremium(OrahFeature.encryptedBackup), isTrue);
     expect(OrahFeatureGate.isPremium(OrahFeature.futureSync), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.kanbanGoals), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.kanbanLinks), isTrue);
+    expect(OrahFeatureGate.isPremium(OrahFeature.kanbanTimers), isTrue);
   });
 
   test('feature labels are stable', () {
     expect(OrahFeatureGate.label(OrahFeature.ocr), 'OCR & smart capture');
     expect(OrahFeatureGate.label(OrahFeature.advancedSearch), 'Advanced search');
     expect(OrahFeatureGate.label(OrahFeature.futureSync), 'ORAH Sync');
+    expect(OrahFeatureGate.label(OrahFeature.kanbanGoals), 'Kanban goals');
+    expect(OrahFeatureGate.label(OrahFeature.kanbanLinks), 'Kanban links');
+    expect(OrahFeatureGate.label(OrahFeature.kanbanTimers), 'Kanban timers');
   });
 }

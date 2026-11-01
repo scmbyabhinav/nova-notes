@@ -15,7 +15,7 @@ class _LegacyMigrationPlan {
 class OrahDatabase {
   OrahDatabase._();
 
-  static const schemaVersion = 2;
+  static const schemaVersion = 3;
   static const legacyNotesKey = 'nova_notes_v1';
   static const legacyBackupKey = 'orah_legacy_notes_backup_v1';
   static const vaultNotesKey = 'orah_vault_notes_v1';
@@ -177,6 +177,69 @@ class OrahDatabase {
         streak INTEGER NOT NULL DEFAULT 0
       )
     ''');
+    // Additive Kanban migration. Existing note tables and payloads are untouched.
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS goals (
+        id TEXT PRIMARY KEY NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        target_date TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        deleted_at TEXT,
+        archived_at TEXT,
+        sort_order INTEGER NOT NULL DEFAULT 0
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS kanban_cards (
+        id TEXT PRIMARY KEY NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'todo' CHECK(status IN ('todo','in_progress','done')),
+        priority TEXT NOT NULL DEFAULT 'medium' CHECK(priority IN ('low','medium','high')),
+        due_date TEXT,
+        color_label TEXT,
+        checklist_json TEXT NOT NULL DEFAULT '[]',
+        goal_id TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        deleted_at TEXT,
+        archived_at TEXT,
+        sort_order INTEGER NOT NULL DEFAULT 0
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS links (
+        id TEXT PRIMARY KEY NOT NULL,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        target_type TEXT NOT NULL,
+        target_id TEXT NOT NULL,
+        link_kind TEXT NOT NULL DEFAULT 'related',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        deleted_at TEXT,
+        UNIQUE(source_type, source_id, target_type, target_id, link_kind)
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS time_entries (
+        id TEXT PRIMARY KEY NOT NULL,
+        card_id TEXT NOT NULL,
+        started_at TEXT NOT NULL,
+        ended_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        deleted_at TEXT
+      )
+    ''');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_kanban_cards_status_order ON kanban_cards(status, sort_order, deleted_at, archived_at)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_kanban_cards_goal ON kanban_cards(goal_id, status, deleted_at, archived_at)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_goals_order ON goals(sort_order, deleted_at, archived_at)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_links_source ON links(source_type, source_id, deleted_at)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_links_target ON links(target_type, target_id, deleted_at)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_time_entries_card_started ON time_entries(card_id, started_at, deleted_at)');
   }
 
   static Map<String, Object?> rowFor(Map<String, dynamic> map) => {

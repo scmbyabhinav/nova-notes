@@ -7,6 +7,7 @@ import '../core/navigation/orah_navigation.dart';
 import '../data/repositories/note_repository_provider.dart';
 import '../models/note.dart';
 import '../screens/note_editor_screen.dart';
+import '../screens/kanban_screen.dart';
 
 class OrahAndroidService {
   OrahAndroidService._();
@@ -24,6 +25,7 @@ class OrahAndroidService {
       ShortcutItem(type: 'new_note', localizedTitle: 'New note', localizedSubtitle: 'Capture a thought', icon: 'ic_launcher'),
       ShortcutItem(type: 'new_checklist', localizedTitle: 'New checklist', localizedSubtitle: 'Capture a task list', icon: 'ic_launcher'),
       ShortcutItem(type: 'search', localizedTitle: 'Search Orah', localizedSubtitle: 'Find a note', icon: 'ic_launcher'),
+      ShortcutItem(type: 'kanban', localizedTitle: 'Kanban board', localizedSubtitle: 'Manage tasks and goals', icon: 'ic_launcher'),
     ]);
 
     await HomeWidget.saveWidgetData<String>('orah_quick_action', 'new_note');
@@ -33,6 +35,11 @@ class OrahAndroidService {
   Future<void> _handleShortcut(String type) async {
     final navigator = orahNavigatorKey.currentState;
     if (navigator == null) return;
+
+    if (type == 'kanban') {
+      navigator.push(MaterialPageRoute(builder: (_) => const KanbanScreen()));
+      return;
+    }
 
     if (type == 'search') {
       navigator.popUntil((route) => route.isFirst);

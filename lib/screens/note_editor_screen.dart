@@ -15,10 +15,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
+import '../data/kanban/kanban_repository.dart';
+import '../l10n/app_localizations.dart';
+import 'kanban_screen.dart';
 import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
+import 'note_version_history_sheet.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
@@ -884,6 +888,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<void> _showVersionHistory() async {
+    if (_isLocked || widget.repository is! LocalNoteRepository) return;
+    await _save();
+    if (!mounted || _saveFailed) return;
+    final restored = await showModalBottomSheet<Note>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => NoteVersionHistorySheet(
+        repository: widget.repository as LocalNoteRepository,
+        noteId: _noteId,
+      ),
+    );
+    if (restored == null || !mounted) return;
+    setState(() {
+      _titleController.text = restored.title;
+      _contentController.text = restored.content;
+      _noteType = restored.type;
+      _tags = [...restored.tags];
+      _attachments = [...restored.attachments];
+      _checklistItems = [...restored.checklistItems];
+      _imagePath = restored.imagePath;
+      _folderId = restored.folderId;
+      _vaultFolderId = restored.vaultFolderId;
+      _isPinned = restored.isPinned;
+      _isFavorite = restored.isFavorite;
+      _isArchived = restored.isArchived;
+      _noteColor = restored.color;
+      _dueAt = restored.dueAt;
+      _mood = restored.mood;
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
   Future<void> _close() async {
     _saveTimer?.cancel();
     await _save();
@@ -1368,6 +1407,47 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     super.dispose();
   }
 
+  Future<void> _showKanbanBacklinks() async {
+    final l = AppLocalizations.of(context)!;
+    final repo = await openKanbanRepository();
+    final links = await repo.database.query('links',
+      where: 'target_type = ? AND target_id = ? AND deleted_at IS NULL',
+      whereArgs: ['note', _noteId],
+      orderBy: 'created_at DESC');
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(title: Text(l.kanbanLinkedItems), leading: const Icon(Icons.view_kanban_outlined)),
+          if (links.isEmpty) ListTile(title: Text(l.kanbanNoNotesToLink)),
+          for (final link in links)
+            ListTile(
+              leading: Icon(link['source_type'] == 'goal' ? Icons.flag_outlined : Icons.view_kanban_outlined),
+              title: Text(l.kanbanOpenLinkedItem),
+              subtitle: Text(link['source_id'] as String),
+              onTap: () async {
+                final type = link['source_type'] as String;
+                final id = link['source_id'] as String;
+                final exists = type == 'goal'
+                  ? await repo.database.query('goals', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1)
+                  : await repo.database.query('kanban_cards', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1);
+                if (!sheetContext.mounted) return;
+                Navigator.pop(sheetContext);
+                if (exists.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.kanbanUnavailable)));
+                } else {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => KanbanScreen(repository: repo, initialGoalId: type == 'goal' ? id : null)));
+                }
+              },
+            ),
+        ],
+      )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1445,6 +1525,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
         actions: [
           IconButton(
+            tooltip: AppLocalizations.of(context)?.kanbanLinkedItems ?? 'Linked items',
+            onPressed: _showKanbanBacklinks,
+            icon: const Icon(Icons.link_outlined),
+          ),
+          IconButton(
             tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
             onPressed: () => setState(() => _isZenMode = !_isZenMode),
             icon: const Icon(Icons.center_focus_strong),
@@ -1459,6 +1544,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             onPressed: () => _addImage(ImageSource.gallery),
             icon: const Icon(Icons.image_outlined),
           ),
+          if (widget.note != null && !_isLocked && widget.repository is LocalNoteRepository)
+            IconButton(
+              tooltip: 'Version history',
+              onPressed: _showVersionHistory,
+              icon: const Icon(Icons.history_rounded),
+            ),
           IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),

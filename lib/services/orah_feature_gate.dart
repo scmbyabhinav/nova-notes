@@ -10,6 +10,9 @@ enum OrahFeature {
   attachmentTools,
   encryptedBackup,
   futureSync,
+  kanbanGoals,
+  kanbanLinks,
+  kanbanTimers,
 }
 
 class OrahFeatureGate {
@@ -25,7 +28,10 @@ class OrahFeatureGate {
     OrahFeature.advancedExport ||
     OrahFeature.attachmentTools ||
     OrahFeature.encryptedBackup ||
-    OrahFeature.futureSync => true,
+    OrahFeature.futureSync ||
+    OrahFeature.kanbanGoals ||
+    OrahFeature.kanbanLinks ||
+    OrahFeature.kanbanTimers => true,
   };
 
   static bool allowed(OrahFeature feature) =>
@@ -44,5 +50,8 @@ class OrahFeatureGate {
     OrahFeature.attachmentTools => 'Attachment tools',
     OrahFeature.encryptedBackup => 'Encrypted backup',
     OrahFeature.futureSync => 'ORAH Sync',
+    OrahFeature.kanbanGoals => 'Kanban goals',
+    OrahFeature.kanbanLinks => 'Kanban links',
+    OrahFeature.kanbanTimers => 'Kanban timers',
   };
 }
