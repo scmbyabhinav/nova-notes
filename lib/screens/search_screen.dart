@@ -10,6 +10,7 @@ import '../models/note.dart';
 import '../models/search_filter.dart';
 import 'note_editor_screen.dart' show NoteEditorScreen;
 import '../services/orah_feature_gate.dart';
+import '../services/orah_universal_search_index.dart';
 import 'orah_pro_screen.dart';
 import 'vault_screen.dart';
 
@@ -30,6 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _loading = true;
   bool _advancedBlocked = false;
   List<NoteFolder> _folders = const [];
+  int _searchGeneration = 0;
 
   @override
   void initState() {
@@ -57,6 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _search() async {
     final rawQuery = _controller.text.trim().toLowerCase();
+    final generation = ++_searchGeneration;
     final tokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
     final hasAdvancedOperator = tokens.any((token) =>
         token.startsWith('is:') ||
@@ -83,6 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
     DateTime? before;
     DateTime? after;
     bool hasAttachment = false;
+    bool hasLinkedNote = false;
 
     final terms = <String>[];
     for (final token in tokens) {
@@ -93,6 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (token == 'is:active') { archived = false; continue; }
       if (token == 'has:reminder' || token == 'has:due') { reminder = true; continue; }
       if (token == 'has:attachment' || token == 'has:image' || token == 'has:file') { hasAttachment = true; continue; }
+      if (token == 'has:linked') { hasLinkedNote = true; continue; }
       if (token.startsWith('tag:')) { tagTerm = token.substring(4); continue; }
       if (token.startsWith('folder:')) { folderTerm = token.substring(7); continue; }
       if (token.startsWith('type:')) { typeTerm = token.substring(5); continue; }
@@ -102,6 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     final ranked = <({Note note, int score})>[];
+    final relatedTitles = OrahUniversalSearchIndex.relatedTitlesByNoteId(_allNotes);
 
     String folderName(String? id) {
       if (id == null) return '';
@@ -126,12 +132,14 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_filter.folderId != null && note.folderId != _filter.folderId) continue;
       if (locked == true && !note.isLocked) continue;
       if (note.isLocked && terms.isEmpty && locked != true) continue;
+      if (archived != true && !_filter.archivedOnly && note.isArchived) continue;
       if (pinned == true && !note.isPinned) continue;
       if (favorite == true && !note.isFavorite) continue;
       if (archived == true && !note.isArchived) continue;
       if (archived == false && note.isArchived) continue;
       if (reminder == true && note.dueAt == null && !note.checklistItems.any((item) => item.dueAt != null)) continue;
-      if (hasAttachment && note.attachments.isEmpty) continue;
+      if (hasAttachment && note.attachments.isEmpty && note.imagePath == null) continue;
+      if (hasLinkedNote && (note.linkedNoteIds.isEmpty && (relatedTitles[note.id]?.isEmpty ?? true))) continue;
       if (!typeMatches(note)) continue;
       if (before != null && !note.updatedAt.isBefore(before!)) continue;
       if (after != null && !note.updatedAt.isAfter(after!)) continue;
@@ -144,6 +152,8 @@ class _SearchScreenState extends State<SearchScreen> {
       var content = note.content.toLowerCase();
       var tags = note.tags.map((tag) => tag.toLowerCase()).toList();
       var checklist = note.checklistItems.map((item) => item.text.toLowerCase()).toList();
+      final linkedTitles = (relatedTitles[note.id] ?? const <String>[]).map((title) => title.toLowerCase()).toList();
+      final attachmentNames = OrahUniversalSearchIndex.attachmentNames(note);
 
       if (note.isLocked && terms.isNotEmpty) {
         try {
@@ -170,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
       final haystack = note.isLocked && terms.isEmpty
           ? 'locked note private note'
-          : [title, content, ...tags, ...checklist, noteFolder].join(' ');
+          : [title, content, ...tags, ...checklist, ...linkedTitles, ...attachmentNames, noteFolder, note.type.name, note.mood ?? ''].join(' ');
       if (terms.isNotEmpty && !terms.every(haystack.contains)) continue;
 
       var score = 0;
@@ -184,6 +194,8 @@ class _SearchScreenState extends State<SearchScreen> {
         if (tags.any((tag) => tag.contains(term))) score += 200;
         if (content.contains(term)) score += 100;
         if (checklist.any((item) => item.contains(term))) score += 125;
+        if (linkedTitles.any((title) => title.contains(term))) score += 175;
+        if (attachmentNames.any((name) => name.contains(term))) score += 80;
       }
       if (terms.isNotEmpty && title.startsWith(terms.join(' '))) score += 250;
       ranked.add((note: note, score: score));
@@ -195,7 +207,9 @@ class _SearchScreenState extends State<SearchScreen> {
       return b.note.updatedAt.compareTo(a.note.updatedAt);
     });
 
-    if (mounted) setState(() => _results = ranked.map((item) => item.note).toList());
+    if (mounted && generation == _searchGeneration) {
+      setState(() => _results = ranked.map((item) => item.note).toList());
+    }
   }
 
   Future<void> _open(Note note) async {
@@ -402,7 +416,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: SearchBar(
                       controller: _controller,
                       focusNode: _focusNode,
-                      hintText: 'Search title, content or tags...',
+                      hintText: 'Search notes, tags, folders, links, files and OCR text...',
                       leading: const OrahAssetIcon('search'),
                       trailing: [
                         if (query.isNotEmpty)
