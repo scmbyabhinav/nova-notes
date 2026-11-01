@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
 import '../data/kanban/kanban_repository.dart';
@@ -1313,6 +1314,72 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<void> _scanDocumentToJpg() async {
+    if (!Platform.isAndroid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Document scanning is currently available on Android.')),
+      );
+      return;
+    }
+    if (_isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unlock this note before adding a scanned document.')),
+      );
+      return;
+    }
+
+    final scanner = DocumentScanner(
+      options: DocumentScannerOptions(
+        documentFormats: const {DocumentFormat.jpeg},
+        mode: ScannerMode.full,
+        pageLimit: 20,
+        isGalleryImport: true,
+      ),
+    );
+
+    try {
+      final result = await scanner.scanDocument();
+      final scannedImages = result.images ?? const <String>[];
+      if (scannedImages.isEmpty) return;
+
+      final imported = <String>[];
+      for (final imagePath in scannedImages) {
+        imported.add(await const NovaAttachmentService().importFile(imagePath));
+      }
+      if (imported.isEmpty || !mounted) return;
+
+      setState(() {
+        _attachments = [..._attachments, ...imported];
+        _imagePath ??= imported.first;
+        _hasChanges = true;
+      });
+      await _save();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              imported.length == 1
+                  ? 'Scanned document saved as JPG.'
+                  : '\${imported.length} scanned pages saved as JPG attachments.',
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not scan document: $error')),
+        );
+      }
+    } finally {
+      try {
+        await scanner.close();
+      } catch (_) {
+        // The scanner may already have released its native resources.
+      }
+    }
+  }
+
   Future<void> _addFiles() async {
     try {
       final result = await FilePicker.pickFiles();
@@ -1497,6 +1564,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 _addImage(ImageSource.gallery);
               },
             ),
+            if (Platform.isAndroid)
+              ListTile(
+                leading: const Icon(Icons.document_scanner_outlined),
+                title: const Text('Scan document (save as JPG)'),
+                subtitle: const Text('Auto-detect edges, crop and enhance pages'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _scanDocumentToJpg();
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
               title: const Text('Take a photo'),
@@ -1771,6 +1848,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             onSelected: (value) async {
               switch (value) {
                 case 'add_image': await _addImage(ImageSource.gallery); return;
+                case 'scan_document': await _scanDocumentToJpg(); return;
                 case 'ocr': await _scanTextFromImage(); return;
                 case 'template': await _showTemplates(); return;
                 case 'reminder': await _setDueDate(); return;
@@ -1858,6 +1936,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 ),
               ),
               const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
+              if (Platform.isAndroid) const PopupMenuItem(value: 'scan_document', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan document (JPG)'))),
               const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
               const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
               PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
