@@ -607,55 +607,232 @@ class _KanbanCardEditorState extends State<_KanbanCardEditor> {
   @override
   void dispose() { _title.dispose(); _description.dispose(); _color.dispose(); _checklist.dispose(); super.dispose(); }
 
+  bool _showTitleError = false;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final dueLabel = _dueDate == null ? '—' : '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}';
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final dueLabel = _dueDate == null
+        ? 'No due date set'
+        : '\${_dueDate!.day}/\${_dueDate!.month}/\${_dueDate!.year}';
+    final fieldBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: colors.outlineVariant.withValues(alpha: 0.75)),
+    );
+    InputDecoration fieldDecoration(String label, {String? hint, Widget? prefixIcon, String? errorText}) {
+      return InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: prefixIcon,
+        errorText: errorText,
+        filled: true,
+        fillColor: colors.surfaceContainerLow,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        border: fieldBorder,
+        enabledBorder: fieldBorder,
+        focusedBorder: fieldBorder.copyWith(
+          borderSide: BorderSide(color: colors.primary, width: 1.6),
+        ),
+      );
+    }
+
+    Widget sectionTitle(String title, String subtitle, IconData icon) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: colors.primaryContainer,
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon, color: colors.onPrimaryContainer, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 3),
+                Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant)),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return AlertDialog(
-      title: Text(widget.title),
-      content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        TextField(controller: _title, autofocus: true, decoration: InputDecoration(labelText: l.kanbanCardTitle)),
-        TextField(controller: _description, minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: l.kanbanDescription)),
-        DropdownButtonFormField<KanbanPriority>(
-          value: _priority,
-          decoration: InputDecoration(labelText: l.kanbanPriority),
-          items: [
-            DropdownMenuItem(value: KanbanPriority.low, child: Text(l.kanbanLow)),
-            DropdownMenuItem(value: KanbanPriority.medium, child: Text(l.kanbanMedium)),
-            DropdownMenuItem(value: KanbanPriority.high, child: Text(l.kanbanHigh)),
-          ],
-          onChanged: (v) { if (v != null) setState(() => _priority = v); },
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+      contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+      actionsPadding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+      title: Row(
+        children: [
+          Expanded(child: Text(widget.title, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800))),
+          Icon(Icons.dashboard_customize_outlined, color: colors.primary),
+        ],
+      ),
+      content: SizedBox(
+        width: MediaQuery.sizeOf(context).width > 680
+            ? 560
+            : MediaQuery.sizeOf(context).width * 0.84,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              sectionTitle('Card details', 'Give the task a clear name and context.', Icons.edit_note_rounded),
+              const SizedBox(height: 18),
+              TextField(
+                controller: _title,
+                autofocus: true,
+                textCapitalization: TextCapitalization.sentences,
+                onChanged: (_) { if (_showTitleError) setState(() => _showTitleError = false); },
+                decoration: fieldDecoration(
+                  l.kanbanCardTitle,
+                  hint: 'What needs to get done?',
+                  prefixIcon: const Icon(Icons.title_rounded),
+                  errorText: _showTitleError ? 'A card title is required' : null,
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: _description,
+                textCapitalization: TextCapitalization.sentences,
+                minLines: 3,
+                maxLines: 5,
+                decoration: fieldDecoration(
+                  l.kanbanDescription,
+                  hint: 'Add details, links or useful context…',
+                  prefixIcon: const Icon(Icons.notes_rounded),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Divider(color: colors.outlineVariant.withValues(alpha: 0.65)),
+              const SizedBox(height: 18),
+              sectionTitle('Planning', 'Set priority, deadline and a visual label.', Icons.tune_rounded),
+              const SizedBox(height: 18),
+              DropdownButtonFormField<KanbanPriority>(
+                value: _priority,
+                isExpanded: true,
+                decoration: fieldDecoration(l.kanbanPriority, prefixIcon: const Icon(Icons.flag_outlined)),
+                items: [
+                  DropdownMenuItem(value: KanbanPriority.low, child: Text(l.kanbanLow)),
+                  DropdownMenuItem(value: KanbanPriority.medium, child: Text(l.kanbanMedium)),
+                  DropdownMenuItem(value: KanbanPriority.high, child: Text(l.kanbanHigh)),
+                ],
+                onChanged: (value) { if (value != null) setState(() => _priority = value); },
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.75)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(color: colors.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                      child: Icon(Icons.calendar_month_outlined, color: colors.primary),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l.kanbanDueDate, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 4),
+                          Text(dueLabel, style: theme.textTheme.bodyMedium?.copyWith(color: _dueDate == null ? colors.onSurfaceVariant : colors.onSurface)),
+                        ],
+                      ),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: 'Choose due date',
+                      onPressed: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _dueDate ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) setState(() { _dueDate = picked; _clearDueDate = false; });
+                      },
+                      icon: const Icon(Icons.edit_calendar_outlined),
+                    ),
+                    if (_dueDate != null) ...[
+                      const SizedBox(width: 6),
+                      IconButton(
+                        tooltip: 'Clear due date',
+                        onPressed: () => setState(() { _dueDate = null; _clearDueDate = true; }),
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: _color,
+                textCapitalization: TextCapitalization.words,
+                decoration: fieldDecoration(
+                  l.kanbanColorLabel,
+                  hint: 'e.g. Blue, Urgent, Client work',
+                  prefixIcon: const Icon(Icons.palette_outlined),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Divider(color: colors.outlineVariant.withValues(alpha: 0.65)),
+              const SizedBox(height: 18),
+              sectionTitle('Checklist', 'One task per line. You can add or edit these later.', Icons.checklist_rounded),
+              const SizedBox(height: 18),
+              TextField(
+                controller: _checklist,
+                minLines: 3,
+                maxLines: 6,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: fieldDecoration(
+                  l.kanbanChecklistHint,
+                  hint: 'Prepare brief\nReview details\nSend for approval',
+                  prefixIcon: const Icon(Icons.playlist_add_check_rounded),
+                ),
+              ),
+            ],
+          ),
         ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l.kanbanDueDate),
-          subtitle: Text(dueLabel),
-          trailing: Wrap(children: [
-            IconButton(icon: const Icon(Icons.calendar_month_outlined), onPressed: () async {
-              final picked = await showDatePicker(context: context, initialDate: _dueDate ?? DateTime.now(), firstDate: DateTime(2000), lastDate: DateTime(2100));
-              if (picked != null) setState(() { _dueDate = picked; _clearDueDate = false; });
-            }),
-            if (_dueDate != null) IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() { _dueDate = null; _clearDueDate = true; })),
-          ]),
-        ),
-        TextField(controller: _color, decoration: InputDecoration(labelText: l.kanbanColorLabel)),
-        TextField(controller: _checklist, minLines: 2, maxLines: 5, decoration: InputDecoration(labelText: l.kanbanChecklistHint)),
-      ])),
+      ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l.kanbanCancel)),
-        FilledButton(onPressed: () {
-          final title = _title.text.trim();
-          if (title.isEmpty) return;
-          Navigator.pop(context, _KanbanCardDraft(
-            title: title,
-            description: _description.text.trim(),
-            priority: _priority,
-            dueDate: _dueDate,
-            clearDueDate: _clearDueDate,
-            colorLabel: _color.text.trim().isEmpty ? null : _color.text.trim(),
-            checklist: _checklist.text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
-          ));
-        }, child: Text(widget.saveLabel)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.kanbanCancel),
+        ),
+        FilledButton.icon(
+          onPressed: () {
+            final title = _title.text.trim();
+            if (title.isEmpty) {
+              setState(() => _showTitleError = true);
+              return;
+            }
+            Navigator.pop(context, _KanbanCardDraft(
+              title: title,
+              description: _description.text.trim(),
+              priority: _priority,
+              dueDate: _dueDate,
+              clearDueDate: _clearDueDate,
+              colorLabel: _color.text.trim().isEmpty ? null : _color.text.trim(),
+              checklist: _checklist.text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
+            ));
+          },
+          icon: const Icon(Icons.check_rounded),
+          label: Text(widget.saveLabel),
+        ),
       ],
     );
   }

@@ -14,6 +14,7 @@ class NoteVersionHistorySheet extends StatefulWidget {
 
 class _NoteVersionHistorySheetState extends State<NoteVersionHistorySheet> {
   late final Future<List<NoteVersion>> _versions;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -79,22 +80,76 @@ class _NoteVersionHistorySheetState extends State<NoteVersionHistorySheet> {
                     ]),
                   ));
                 }
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: versions.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final version = versions[index];
-                    final date = MaterialLocalizations.of(context).formatMediumDate(version.savedAt);
-                    final time = MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(version.savedAt));
-                    return ListTile(
-                      leading: const CircleAvatar(child: Icon(Icons.history_rounded)),
-                      title: Text(_preview(version.note), maxLines: 3, overflow: TextOverflow.ellipsis),
-                      subtitle: Text('$date · $time'),
-                      trailing: const Icon(Icons.restore_rounded),
-                      onTap: () => _restore(version),
-                    );
-                  },
+                final selectedIndex = _selectedIndex.clamp(0, versions.length - 1);
+                final selected = versions[selectedIndex];
+                final selectedDate = MaterialLocalizations.of(context).formatMediumDate(selected.savedAt);
+                final selectedTime = MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(selected.savedAt));
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.timeline_rounded),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text('Version ${selectedIndex + 1} of ${versions.length}', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800))),
+                              Text('$selectedDate · $selectedTime', style: Theme.of(context).textTheme.labelSmall),
+                            ],
+                          ),
+                          Slider(
+                            value: selectedIndex.toDouble(),
+                            min: 0,
+                            max: (versions.length - 1).toDouble(),
+                            divisions: versions.length > 1 ? versions.length - 1 : null,
+                            label: 'Version ${selectedIndex + 1}',
+                            onChanged: versions.length < 2 ? null : (value) => setState(() => _selectedIndex = value.round()),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+                            ),
+                            child: Text(_preview(selected.note), maxLines: 5, overflow: TextOverflow.ellipsis),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              onPressed: () => _restore(selected),
+                              icon: const Icon(Icons.restore_rounded),
+                              label: const Text('Restore selected version'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    Expanded(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: versions.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final version = versions[index];
+                          final date = MaterialLocalizations.of(context).formatMediumDate(version.savedAt);
+                          final time = MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay.fromDateTime(version.savedAt));
+                          return ListTile(
+                            selected: index == selectedIndex,
+                            leading: CircleAvatar(child: Icon(index == selectedIndex ? Icons.radio_button_checked_rounded : Icons.history_rounded)),
+                            title: Text(_preview(version.note), maxLines: 2, overflow: TextOverflow.ellipsis),
+                            subtitle: Text('$date · $time'),
+                            onTap: () => setState(() => _selectedIndex = index),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 );
               },
             ),

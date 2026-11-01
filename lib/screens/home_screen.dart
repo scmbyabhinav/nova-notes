@@ -619,6 +619,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final recent = tagFilteredNotes.where((note) {
       final reflection = isDailyReflection(note);
       switch (_activeFilter) {
+        case 'inbox':
+          return note.isInbox && !note.isArchived && !reflection;
         case 'pinned':
           return note.isPinned && !note.isArchived && !reflection;
         case 'favorites':
@@ -992,6 +994,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   children: [
                     for (final filter in const [
                       ('all', 'All', Icons.notes_rounded),
+                      ('inbox', 'Inbox', Icons.inbox_outlined),
                       ('pinned', 'Pinned', Icons.push_pin_outlined),
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
                       ('checklists', 'Checklists', Icons.checklist_rounded),
@@ -1884,7 +1887,7 @@ class _NoteCard extends StatelessWidget {
         ? theme.colorScheme.surface
         : Color(note.color!);
 
-    return Card(
+    final card = Card(
       margin: EdgeInsets.zero,
       elevation: 1.5,
       shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.10),
@@ -1942,6 +1945,10 @@ class _NoteCard extends StatelessWidget {
                   ),
                 ),
               ],
+              if (note.dueAt != null) ...[
+                const SizedBox(height: 9),
+                _DeadlineCountdownRibbon(dueAt: note.dueAt!),
+              ],
               const SizedBox(height: 9),
               Row(
                 children: [
@@ -1984,6 +1991,127 @@ class _NoteCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+    if (!note.isInbox) return card;
+    return Dismissible(
+      key: ValueKey('inbox-${note.id}'),
+      direction: DismissDirection.horizontal,
+      confirmDismiss: (direction) async {
+        final repository = await NoteRepositoryProvider.instance();
+        if (direction == DismissDirection.startToEnd) {
+          await repository.saveNote(note.copyWith(isInbox: false, updatedAt: DateTime.now()));
+          return true;
+        }
+        final controller = TextEditingController();
+        final tag = await showDialog<String>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Tag this note'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Tag',
+                hintText: 'e.g. Work, Ideas, Read later',
+              ),
+              onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+              FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()), child: const Text('Add tag')),
+            ],
+          ),
+        );
+        controller.dispose();
+        if (tag == null || tag.trim().isEmpty) return false;
+        final tags = [...note.tags];
+        if (!tags.any((value) => value.toLowerCase() == tag.trim().toLowerCase())) {
+          tags.add(tag.trim());
+        }
+        await repository.saveNote(note.copyWith(tags: tags, updatedAt: DateTime.now()));
+        return false;
+      },
+      onDismissed: (_) {},
+      background: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(color: Colors.green.shade700, borderRadius: BorderRadius.circular(16)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.drive_file_move_outline, color: Colors.white),
+          SizedBox(width: 8),
+          Text('File', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(16)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.sell_outlined, color: Colors.white),
+          SizedBox(width: 8),
+          Text('Tag', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      child: card,
+    );
+  }
+}
+
+
+class _DeadlineCountdownRibbon extends StatelessWidget {
+  const _DeadlineCountdownRibbon({required this.dueAt});
+
+  final DateTime dueAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dueDay = DateTime(dueAt.year, dueAt.month, dueAt.day);
+    final days = dueDay.difference(today).inDays;
+    final Color color;
+    final IconData icon;
+    final String label;
+    if (days < 0) {
+      color = Colors.red;
+      icon = Icons.warning_amber_rounded;
+      label = 'Overdue by ${days.abs()} day${days.abs() == 1 ? '' : 's'}';
+    } else if (days == 0) {
+      color = Colors.red;
+      icon = Icons.timer_outlined;
+      label = 'Due today';
+    } else if (days <= 2) {
+      color = Colors.deepOrange;
+      icon = Icons.hourglass_bottom_rounded;
+      label = 'Due in ${days} day${days == 1 ? '' : 's'}';
+    } else if (days <= 7) {
+      color = Colors.amber.shade800;
+      icon = Icons.hourglass_top_rounded;
+      label = 'Due in ${days} days';
+    } else {
+      color = Colors.green.shade700;
+      icon = Icons.event_available_rounded;
+      label = 'Due in ${days} days';
+    }
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w800)),
+          ],
         ),
       ),
     );

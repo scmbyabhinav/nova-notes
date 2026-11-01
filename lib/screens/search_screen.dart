@@ -32,6 +32,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _advancedBlocked = false;
   List<NoteFolder> _folders = const [];
   int _searchGeneration = 0;
+  String _quickChip = '';
 
   @override
   void initState() {
@@ -125,6 +126,23 @@ class _SearchScreenState extends State<SearchScreen> {
 
     for (final note in _allNotes) {
       if (note.isTrashed) continue;
+      if (_quickChip == 'voice' && note.type != NoteType.voice) continue;
+      if (_quickChip == 'image' &&
+          note.imagePath == null &&
+          note.type != NoteType.image &&
+          !note.attachments.any(
+            (path) => RegExp(
+              r'\.(png|jpe?g|gif|webp|heic)$',
+              caseSensitive: false,
+            ).hasMatch(path),
+          )) {
+        continue;
+      }
+      if (_quickChip == 'checklist' && note.type != NoteType.checklist) continue;
+      if (_quickChip == 'week' &&
+          note.updatedAt.isBefore(DateTime.now().subtract(const Duration(days: 7)))) {
+        continue;
+      }
       if (_filter.favoritesOnly && !note.isFavorite) continue;
       if (_filter.pinnedOnly && !note.isPinned) continue;
       if (_filter.archivedOnly && !note.isArchived) continue;
@@ -428,6 +446,40 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: 48,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      children: [
+                        _SavedSearchChip(label: 'All notes', selected: _quickChip.isEmpty, onSelected: () {
+                          setState(() => _quickChip = '');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'Has voice', selected: _quickChip == 'voice', onSelected: () {
+                          setState(() => _quickChip = 'voice');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'Has image', selected: _quickChip == 'image', onSelected: () {
+                          setState(() => _quickChip = 'image');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'Checklist only', selected: _quickChip == 'checklist', onSelected: () {
+                          setState(() => _quickChip = 'checklist');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'This week', selected: _quickChip == 'week', onSelected: () {
+                          setState(() => _quickChip = 'week');
+                          _search();
+                        }),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
@@ -639,4 +691,29 @@ class _HighlightedText extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
   }
+}
+
+
+class _SavedSearchChip extends StatelessWidget {
+  const _SavedSearchChip({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context) => ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => onSelected(),
+        showCheckmark: false,
+        labelStyle: TextStyle(
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+      );
 }

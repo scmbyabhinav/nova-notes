@@ -48,15 +48,26 @@ class OrahShareIntakeService {
     final repository = await NoteRepositoryProvider.instance();
 
     if (fileItems.isEmpty) {
-      navigator.push(
-        MaterialPageRoute(
-          builder: (_) => NoteEditorScreen(
-            repository: repository,
-            initialTitle: textItems.isEmpty ? 'Shared from another app' : textItems.first.length > 60 ? '${textItems.first.substring(0, 60)}…' : textItems.first,
-            initialContent: textItems.join('\n\n'),
-          ),
-        ),
+      final now = DateTime.now();
+      final sharedText = textItems.join('\n\n');
+      final title = textItems.isEmpty
+          ? 'Shared from another app'
+          : (textItems.first.length > 60 ? '${textItems.first.substring(0, 60)}…' : textItems.first);
+      final note = Note(
+        id: '${now.microsecondsSinceEpoch}_inbox',
+        title: title,
+        content: sharedText,
+        type: NoteType.text,
+        createdAt: now,
+        updatedAt: now,
+        isInbox: true,
       );
+      await repository.saveNote(note);
+      if (orahNavigatorKey.currentState != null) {
+        navigator.push(MaterialPageRoute(
+          builder: (_) => NoteEditorScreen(repository: repository, note: note),
+        ));
+      }
       return;
     }
 
@@ -78,6 +89,7 @@ class OrahShareIntakeService {
       updatedAt: now,
       attachments: attachments,
       checklistItems: const [],
+      isInbox: true,
     );
     await repository.saveNote(note);
     if (orahNavigatorKey.currentState != null) {
