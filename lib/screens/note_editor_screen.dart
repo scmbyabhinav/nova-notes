@@ -1759,7 +1759,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
       );
       if (selected == null || !mounted) return;
-      await repo.addLink(sourceType: 'note', sourceId: _noteId, targetType: 'card', targetId: selected.id, linkKind: 'card');
+      await repo.addLink(sourceType: 'card', sourceId: selected.id, targetType: 'note', targetId: _noteId);
     } else {
       final goals = await repo.getGoals();
       if (!mounted) return;
@@ -1776,7 +1776,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ),
       );
       if (selected == null || !mounted) return;
-      await repo.addLink(sourceType: 'note', sourceId: _noteId, targetType: 'goal', targetId: selected.id, linkKind: 'goal');
+      await repo.addLink(sourceType: 'goal', sourceId: selected.id, targetType: 'note', targetId: _noteId);
     }
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
