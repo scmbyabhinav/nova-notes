@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nova_notes/models/note.dart';
+import 'package:orah_notes/models/note.dart';
 
 void main() {
   group('linked notes', () {
