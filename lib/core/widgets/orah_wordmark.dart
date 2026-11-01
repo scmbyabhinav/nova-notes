@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Gradient brand wordmark used anywhere the Orah name is presented as a logo.
 class OrahWordmark extends StatelessWidget {
-  const OrahWordmark({super.key, this.fontSize = 28, this.fontWeight = FontWeight.w500, this.textAlign = TextAlign.start});
+  const OrahWordmark({super.key, this.fontSize = 28, this.fontWeight = FontWeight.w600, this.textAlign = TextAlign.start});
 
   final double fontSize;
   final FontWeight fontWeight;
@@ -24,7 +24,7 @@ class OrahWordmark extends StatelessWidget {
           fontFamily: 'Inter',
           fontSize: fontSize,
           fontWeight: fontWeight,
-          letterSpacing: -fontSize * 0.055,
+          letterSpacing: -fontSize * 0.012,
           height: 1.05,
           color: Colors.white,
         ),
