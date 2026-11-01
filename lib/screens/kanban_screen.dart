@@ -808,7 +808,7 @@ class _KanbanCardEditorState extends State<_KanbanCardEditor> {
                 clearDueDate: _clearDueDate,
                 colorLabel: _color.text.trim().isEmpty ? null : _color.text.trim(),
                 checklist: _checklist.text
-                    .split('\\n')
+                    .split('\n')
                     .map((e) => e.trim())
                     .where((e) => e.isNotEmpty)
                     .toList(),
