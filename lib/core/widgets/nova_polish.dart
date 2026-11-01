@@ -122,3 +122,28 @@ class _NovaAnimatedPressState extends State<NovaAnimatedPress> {
     );
   }
 }
+
+
+/// Keeps long-form screens comfortably readable on tablets and desktop-sized
+/// windows while remaining edge-to-edge on phones. Colors are inherited from
+/// the active theme so light/dark appearances remain unchanged.
+class OrahContentFrame extends StatelessWidget {
+  const OrahContentFrame({
+    super.key,
+    required this.child,
+    this.maxWidth = 1040,
+  });
+
+  final Widget child;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: SizedBox(width: double.infinity, child: child),
+      ),
+    );
+  }
+}
