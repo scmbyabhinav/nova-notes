@@ -39,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
 
     return OrahContentFrame(child: return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
           Text(l10n.settings, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
