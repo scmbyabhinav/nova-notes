@@ -2230,7 +2230,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ),
                 ),
               ),
-            final visibleAttachments = _attachments.where((path) => path != _imagePath).toList();
+            final visibleAttachments = _attachments.toList();
             if (visibleAttachments.isNotEmpty)
               SizedBox(
                 height: 112,
