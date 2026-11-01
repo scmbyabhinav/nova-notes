@@ -2220,14 +2220,28 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             if (_imagePath != null && !_attachments.contains(_imagePath) && File(_imagePath!).existsSync())
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.file(
-                    File(_imagePath!),
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(_imagePath!),
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    if (!_isLocked)
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: IconButton.filledTonal(
+                          tooltip: 'Insert image into note body',
+                          onPressed: () => _insertImageIntoBody(_imagePath!),
+                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             if (_attachments.isNotEmpty)
