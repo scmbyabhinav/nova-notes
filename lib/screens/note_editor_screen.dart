@@ -1301,7 +1301,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final path = await const NovaAttachmentService().importXFile(picked);
       setState(() {
         _attachments = [..._attachments, path];
-        _imagePath ??= path;
         _hasChanges = true;
       });
       await _save();
@@ -1350,7 +1349,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
       setState(() {
         _attachments = [..._attachments, ...imported];
-        _imagePath ??= imported.first;
         _hasChanges = true;
       });
       await _save();
@@ -1530,13 +1528,44 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
+  void _insertImageIntoBody(String path) {
+    if (_isLocked || !File(path).existsSync()) return;
+    final value = _contentController.value;
+    final selection = value.selection;
+    final start = selection.isValid ? selection.start : value.text.length;
+    final end = selection.isValid ? selection.end : value.text.length;
+    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ')';
+    final prefix = start > 0 && value.text[start - 1] != '\n' ? '\n\n' : '';
+    final suffix = end < value.text.length && value.text.substring(end).startsWith('\n') ? '' : '\n\n';
+    _contentController.value = value.copyWith(
+      text: value.text.replaceRange(start, end, prefix + imageMarkdown + suffix),
+      selection: TextSelection.collapsed(offset: start + prefix.length + imageMarkdown.length + suffix.length),
+      composing: TextRange.empty,
+    );
+    _contentFocus.requestFocus();
+    _hasChanges = true;
+    _scheduleSave();
+  }
+
   void _showAttachmentActions(String path) {
+    final isImage = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.heic']
+        .contains(p.extension(path).toLowerCase());
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) => SafeArea(
         child: Wrap(
           children: [
+            if (isImage)
+              ListTile(
+                leading: const Icon(Icons.add_photo_alternate_outlined),
+                title: const Text('Insert image into note body'),
+                subtitle: const Text('Place the image at the current cursor position'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _insertImageIntoBody(path);
+                },
+              ),
             ListTile(leading: const Icon(Icons.visibility_outlined), title: const Text('Preview'), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
             ListTile(leading: const OrahAssetIcon('share'), title: const Text('Share'), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
             ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: const Text('Rename'), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
@@ -1685,12 +1714,83 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
+  Future<void> _linkToKanban() async {
+    if (_isLocked) return;
+    final repo = await openKanbanRepository();
+    if (!mounted) return;
+    final kind = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Text('Link this note to a Kanban item', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.view_kanban_outlined),
+            title: const Text('Kanban card'),
+            subtitle: const Text('Connect this note to a task card'),
+            onTap: () => Navigator.pop(sheetContext, 'card'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.flag_outlined),
+            title: const Text('Kanban goal'),
+            subtitle: const Text('Connect this note to a goal'),
+            onTap: () => Navigator.pop(sheetContext, 'goal'),
+          ),
+        ]),
+      ),
+    );
+    if (kind == null || !mounted) return;
+    if (kind == 'card') {
+      final cards = await repo.getCards();
+      if (!mounted) return;
+      final selected = await showDialog<KanbanCard>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: const Text('Select Kanban card'),
+          children: cards.isEmpty
+              ? [const Padding(padding: EdgeInsets.all(20), child: Text('No Kanban cards available yet.'))]
+              : cards.map((card) => SimpleDialogOption(
+                  onPressed: () => Navigator.pop(dialogContext, card),
+                  child: Text(card.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                )).toList(),
+        ),
+      );
+      if (selected == null || !mounted) return;
+      await repo.addLink(sourceType: 'note', sourceId: _noteId, targetType: 'card', targetId: selected.id, linkKind: 'card');
+    } else {
+      final goals = await repo.getGoals();
+      if (!mounted) return;
+      final selected = await showDialog<KanbanGoal>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: const Text('Select Kanban goal'),
+          children: goals.isEmpty
+              ? [const Padding(padding: EdgeInsets.all(20), child: Text('No Kanban goals available yet.'))]
+              : goals.map((goal) => SimpleDialogOption(
+                  onPressed: () => Navigator.pop(dialogContext, goal),
+                  child: Text(goal.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                )).toList(),
+        ),
+      );
+      if (selected == null || !mounted) return;
+      await repo.addLink(sourceType: 'note', sourceId: _noteId, targetType: 'goal', targetId: selected.id, linkKind: 'goal');
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kanban link saved.')),
+      );
+    }
+  }
+
   Future<void> _showKanbanBacklinks() async {
     final l = AppLocalizations.of(context)!;
     final repo = await openKanbanRepository();
     final links = await repo.database.query('links',
-      where: 'target_type = ? AND target_id = ? AND deleted_at IS NULL',
-      whereArgs: ['note', _noteId],
+      where: 'deleted_at IS NULL AND ((target_type = ? AND target_id = ?) OR (source_type = ? AND source_id = ?))',
+      whereArgs: ['note', _noteId, 'note', _noteId],
       orderBy: 'created_at DESC');
     if (!mounted) return;
     await showModalBottomSheet<void>(
@@ -1707,8 +1807,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               title: Text(l.kanbanOpenLinkedItem),
               subtitle: Text(link['source_id'] as String),
               onTap: () async {
-                final type = link['source_type'] as String;
-                final id = link['source_id'] as String;
+                final outbound = link['source_type'] == 'note' && link['source_id'] == _noteId;
+                final type = (outbound ? link['target_type'] : link['source_type']) as String;
+                final id = (outbound ? link['target_id'] : link['source_id']) as String;
                 final exists = type == 'goal'
                   ? await repo.database.query('goals', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1)
                   : await repo.database.query('kanban_cards', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1);
@@ -1802,20 +1903,54 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
-          if (!_isLocked)
-            IconButton(
-              tooltip: 'Link notes',
-              onPressed: _manageLinkedNotes,
-              icon: Badge(
-                isLabelVisible: _linkedNoteIds.isNotEmpty,
-                label: Text('${_linkedNoteIds.length}'),
-                child: const Icon(Icons.link_rounded),
-              ),
+          PopupMenuButton<String>(
+            tooltip: 'Link options',
+            icon: Badge(
+              isLabelVisible: _linkedNoteIds.isNotEmpty,
+              label: Text('${_linkedNoteIds.length}'),
+              child: const Icon(Icons.link_rounded),
             ),
-          IconButton(
-            tooltip: AppLocalizations.of(context)?.kanbanLinkedItems ?? 'Linked items',
-            onPressed: _showKanbanBacklinks,
-            icon: const Icon(Icons.link_outlined),
+            onSelected: (value) {
+              switch (value) {
+                case 'note':
+                  _manageLinkedNotes();
+                  break;
+                case 'kanban':
+                  _linkToKanban();
+                  break;
+                case 'view':
+                  _showKanbanBacklinks();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'note',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.note_add_outlined),
+                    title: Text('Link to note'),
+                  ),
+                ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'kanban',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.view_kanban_outlined),
+                    title: Text('Link to Kanban'),
+                  ),
+                ),
+              const PopupMenuItem(
+                value: 'view',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.link_outlined),
+                  title: Text('View linked items'),
+                ),
+              ),
+            ],
           ),
           IconButton(
             tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
@@ -2082,7 +2217,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ],
                 ),
               ),
-            if (_imagePath != null && File(_imagePath!).existsSync())
+            if (_imagePath != null && !_attachments.contains(_imagePath) && File(_imagePath!).existsSync())
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
                 child: ClipRRect(
@@ -2095,16 +2230,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ),
                 ),
               ),
-            if (_attachments.isNotEmpty)
+            final visibleAttachments = _attachments.where((path) => path != _imagePath).toList();
+            if (visibleAttachments.isNotEmpty)
               SizedBox(
                 height: 112,
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
                   scrollDirection: Axis.horizontal,
-                  itemCount: _attachments.length,
+                  itemCount: visibleAttachments.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
-                    final path = _attachments[index];
+                    final path = visibleAttachments[index];
                     final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic']
                         .contains(p.extension(path).toLowerCase());
                     return Stack(
@@ -2181,7 +2317,33 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                 ),
                           ),
                         const SizedBox(height: 12),
-                        MarkdownBody(data: _renderableContent(), selectable: true),
+                        MarkdownBody(
+                          data: _renderableContent(),
+                          selectable: true,
+                          imageBuilder: (uri, title, alt) {
+                            if (uri.scheme == 'file') {
+                              try {
+                                final file = File(uri.toFilePath());
+                                if (file.existsSync()) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.file(file, fit: BoxFit.contain),
+                                    ),
+                                  );
+                                }
+                              } catch (_) {
+                                // Invalid local image URI: render the fallback below.
+                              }
+                              return const Text('Image unavailable');
+                            }
+                            return Image.network(
+                              uri.toString(),
+                              errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+                            );
+                          },
+                        ),
                       ],
                     )
                   : ListView(
