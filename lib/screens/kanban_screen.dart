@@ -311,23 +311,57 @@ class _KanbanScreenState extends State<KanbanScreen> {
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-          child: Row(children: [
-            Expanded(child: SegmentedButton<bool>(
-              segments: [ButtonSegment(value: false, label: Text(l.kanbanAllCards)), ButtonSegment(value: true, label: Text(l.kanbanByGoal))],
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final compact = constraints.maxWidth < 520;
+            final selector = SegmentedButton<bool>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(value: false, label: Text(l.kanbanAllCards)),
+                ButtonSegment(value: true, label: Text(l.kanbanByGoal)),
+              ],
               selected: {_byGoal},
               onSelectionChanged: (v) async {
                 if (v.first && !await _pro(OrahFeature.kanbanGoals)) return;
                 if (!mounted) return;
                 setState(() { _byGoal = v.first; _goalId = null; _cards = _repo!.watchCards(); });
               },
-            )),
-            const SizedBox(width: 8),
-            FutureBuilder<int>(future: _todaySecondsFuture, builder: (context, snap) {
-              final s = snap.data ?? 0;
-              return Text('${s ~/ 3600}h ${(s % 3600) ~/ 60}m', style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant));
-            }),
-          ]),
+            );
+            final timeSummary = FutureBuilder<int>(
+              future: _todaySecondsFuture,
+              builder: (context, snap) {
+                final seconds = snap.data ?? 0;
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.65)),
+                  ),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.timer_outlined, size: 18, color: theme.colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Today  ${seconds ~/ 3600}h ${(seconds % 3600) ~/ 60}m',
+                      style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ]),
+                );
+              },
+            );
+            if (compact) {
+              return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                selector,
+                const SizedBox(height: 10),
+                Align(alignment: Alignment.centerLeft, child: timeSummary),
+              ]);
+            }
+            return Row(children: [
+              Expanded(child: selector),
+              const SizedBox(width: 12),
+              timeSummary,
+            ]);
+          }),
         ),
         if (_byGoal)
           SizedBox(height: 48, child: StreamBuilder<List<KanbanGoal>>(stream: _goals, builder: (context, snap) {
@@ -384,14 +418,30 @@ class _KanbanScreenState extends State<KanbanScreen> {
     final theme = Theme.of(context);
     final cards = all.where((c) => c.status == status).toList();
     final title = _statusTitle(status, l);
+    final statusColor = switch (status) {
+      KanbanStatus.todo => theme.colorScheme.primary,
+      KanbanStatus.inProgress => theme.colorScheme.tertiary,
+      KanbanStatus.done => theme.colorScheme.secondary,
+    };
     return Container(
-      margin: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerLowest, borderRadius: BorderRadius.circular(16), border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5))),
+      margin: const EdgeInsets.all(6),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.65)),
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Padding(padding: const EdgeInsets.fromLTRB(12, 12, 12, 8), child: Row(children: [
-          Text(title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(width: 8),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(999)), child: Text('${cards.length}', style: theme.textTheme.labelSmall)),
+        Container(height: 4, color: statusColor),
+        Padding(padding: const EdgeInsets.fromLTRB(14, 14, 14, 12), child: Row(children: [
+          Expanded(child: Text(title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700))),
+          Container(
+            constraints: const BoxConstraints(minWidth: 28),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
+            child: Text('${cards.length}', style: theme.textTheme.labelMedium?.copyWith(color: statusColor, fontWeight: FontWeight.w700)),
+          ),
         ])),
         Expanded(child: DragTarget<KanbanCard>(
           onWillAcceptWithDetails: (d) => d.data.status != status,
@@ -404,7 +454,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
               child: cards.isEmpty
                 ? Center(child: Text(l.kanbanNoCards, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)))
                 : ReorderableListView.builder(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 12),
                     itemCount: cards.length,
                     onReorder: (oldIndex, newIndex) async {
                       if (newIndex > oldIndex) newIndex -= 1;
@@ -432,7 +482,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
   Widget _cardTile(KanbanCard card, AppLocalizations l) {
     final theme = Theme.of(context);
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
       color: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6))),
@@ -441,7 +491,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
         onTap: () => _editCard(card),
         onLongPress: () => _showCardLinks(card),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+          padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Padding(padding: const EdgeInsets.only(top: 6), child: Container(width: 8, height: 8, decoration: BoxDecoration(color: _priorityColor(card.priority, theme.colorScheme), shape: BoxShape.circle))),
             const SizedBox(width: 10),
