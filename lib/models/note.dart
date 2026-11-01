@@ -52,6 +52,7 @@ class Note {
     this.isArchived = false,
     this.isLocked = false,
     this.isTrashed = false,
+    this.isInbox = false,
     this.dueAt,
     this.mood,
     this.imagePath,
@@ -76,6 +77,8 @@ class Note {
   final bool isArchived;
   final bool isLocked;
   final bool isTrashed;
+  /// True while a captured/shared note is waiting to be filed from the Inbox.
+  final bool isInbox;
   final DateTime? dueAt;
   /// Optional mood selected by the user when creating or editing this note.
   final String? mood;
@@ -101,6 +104,7 @@ class Note {
         'isArchived': isArchived,
         'isLocked': isLocked,
         'isTrashed': isTrashed,
+        'isInbox': isInbox,
         'dueAt': dueAt?.toIso8601String(),
         'mood': mood,
         'imagePath': imagePath,
@@ -130,6 +134,7 @@ class Note {
         isArchived: map['isArchived'] as bool? ?? false,
         isLocked: map['isLocked'] as bool? ?? false,
         isTrashed: map['isTrashed'] as bool? ?? false,
+        isInbox: map['isInbox'] as bool? ?? false,
         dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
         mood: map['mood'] as String?,
         imagePath: map['imagePath'] as String?,
@@ -165,6 +170,7 @@ class Note {
     bool? isArchived,
     bool? isLocked,
     bool? isTrashed,
+    bool? isInbox,
     DateTime? dueAt,
     bool clearDueAt = false,
     String? mood,
@@ -191,6 +197,7 @@ class Note {
       isArchived: isArchived ?? this.isArchived,
       isLocked: isLocked ?? this.isLocked,
       isTrashed: isTrashed ?? this.isTrashed,
+      isInbox: isInbox ?? this.isInbox,
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
       mood: clearMood ? null : (mood ?? this.mood),
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
