@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../core/widgets/nova_polish.dart';
 
 import 'package:flutter/material.dart';
 import '../core/services/nova_security_service.dart';
@@ -424,7 +425,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
-      body: SafeArea(
+      body: OrahContentFrame(child: body: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : Column(
@@ -574,7 +575,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-      ),
+      )),
     );
   }
 }
