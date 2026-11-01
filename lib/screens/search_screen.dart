@@ -431,7 +431,7 @@ class _SearchScreenState extends State<SearchScreen> {
             : Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: SearchBar(
                       controller: _controller,
                       focusNode: _focusNode,
@@ -451,7 +451,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     height: 48,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       children: [
                         _SavedSearchChip(label: 'All notes', selected: _quickChip.isEmpty, onSelected: () {
                           setState(() => _quickChip = '');
