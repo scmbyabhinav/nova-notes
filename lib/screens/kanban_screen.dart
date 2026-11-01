@@ -821,4 +821,4 @@ class _KanbanCardEditorState extends State<_KanbanCardEditor> {
       ],
     );
   }
-}}
+}
