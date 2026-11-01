@@ -49,7 +49,7 @@ class StatisticsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Your Journey')),
       body: OrahContentFrame(child: body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
             Text('Small moments add up.', style: theme.textTheme.titleLarge?.copyWith(color: StatisticsScreen.indigo, fontWeight: FontWeight.w800)),
             const SizedBox(height: 5),
