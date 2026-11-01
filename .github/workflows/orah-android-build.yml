@@ -150,12 +150,18 @@ jobs:
           }
           GRADLE
       - name: Free runner disk before release builds
+        shell: bash
         run: |
+          set -euo pipefail
           rm -rf build android/.gradle ~/.gradle/caches ~/.gradle/daemon
-          # Keep the installed NDK: deleting it here forces Gradle to redownload a large SDK package.
-          sudo rm -rf /usr/local/lib/android/sdk/cmdline-tools/latest/cache/* || true
-          sudo rm -rf /usr/local/lib/android/sdk/cmake/* || true
+          # Keep the installed NDK, platform tools, build tools, and required Android platform.
+          # Emulator images and optional SDK payloads are not used by CI builds.
+          sudo rm -rf "$ANDROID_HOME/system-images" "$ANDROID_HOME/emulator" "$ANDROID_HOME/sources" "$ANDROID_HOME/skins" "$ANDROID_HOME/patcher" "$ANDROID_HOME/extras"
+          sudo rm -rf "$ANDROID_HOME/cmdline-tools/latest/cache/"* || true
+          sudo rm -rf "$ANDROID_HOME/cmake/"* || true
+          sudo apt-get clean
           df -h /
+          df -h "$ANDROID_HOME"
       - name: Configure production signing
         if: ${{ inputs.production_release == true }}
         env:
