@@ -43,6 +43,7 @@ class Note {
     this.folderId,
     this.vaultFolderId,
     this.tags = const [],
+    this.linkedNoteIds = const [],
     this.attachments = const [],
     this.checklistItems = const [],
     this.color,
@@ -65,6 +66,8 @@ class Note {
   final String? folderId;
   final String? vaultFolderId;
   final List<String> tags;
+  /// IDs of related ordinary notes. Older records default to no links.
+  final List<String> linkedNoteIds;
   final List<String> attachments;
   final List<ChecklistItem> checklistItems;
   final int? color;
@@ -89,6 +92,7 @@ class Note {
         'folderId': folderId,
         'vaultFolderId': vaultFolderId,
         'tags': tags,
+        'linkedNoteIds': linkedNoteIds,
         'attachments': attachments,
         'checklistItems': checklistItems.map((item) => item.toMap()).toList(),
         'color': color,
@@ -115,6 +119,7 @@ class Note {
         folderId: map['folderId'] as String?,
         vaultFolderId: map['vaultFolderId'] as String?,
         tags: List<String>.from(map['tags'] as List? ?? const []),
+        linkedNoteIds: List<String>.from(map['linkedNoteIds'] as List? ?? const []),
         attachments: List<String>.from(map['attachments'] as List? ?? const []),
         checklistItems: (map['checklistItems'] as List? ?? const [])
             .map((item) => ChecklistItem.fromMap(Map<String, dynamic>.from(item as Map)))
@@ -150,6 +155,7 @@ class Note {
     String? vaultFolderId,
     bool clearVaultFolder = false,
     List<String>? tags,
+    List<String>? linkedNoteIds,
     List<String>? attachments,
     List<ChecklistItem>? checklistItems,
     int? color,
@@ -176,6 +182,7 @@ class Note {
       folderId: clearFolder ? null : (folderId ?? this.folderId),
       vaultFolderId: clearVaultFolder ? null : (vaultFolderId ?? this.vaultFolderId),
       tags: tags ?? this.tags,
+      linkedNoteIds: linkedNoteIds ?? this.linkedNoteIds,
       attachments: attachments ?? this.attachments,
       checklistItems: checklistItems ?? this.checklistItems,
       color: clearColor ? null : (color ?? this.color),
