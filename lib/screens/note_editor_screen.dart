@@ -2230,17 +2230,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ),
                 ),
               ),
-            final visibleAttachments = _attachments.toList();
-            if (visibleAttachments.isNotEmpty)
+            if (_attachments.isNotEmpty)
               SizedBox(
                 height: 112,
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
                   scrollDirection: Axis.horizontal,
-                  itemCount: visibleAttachments.length,
+                  itemCount: _attachments.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
-                    final path = visibleAttachments[index];
+                    final path = _attachments[index];
                     final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic']
                         .contains(p.extension(path).toLowerCase());
                     return Stack(
