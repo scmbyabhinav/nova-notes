@@ -96,7 +96,7 @@ class OrahFeaturesScreen extends StatelessWidget {
     final colors = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Orah Features')),
-      body: OrahContentFrame(child: body: ListView(
+      body: OrahContentFrame(child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           Container(
