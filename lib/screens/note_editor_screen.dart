@@ -1528,7 +1528,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
-  void _insertImageIntoBody(String path) {
+  Future<void> _insertImageIntoBody(String path) async {
     if (_isLocked || !File(path).existsSync()) return;
     final value = _contentController.value;
     final selection = value.selection;
@@ -1544,7 +1544,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
     _contentFocus.requestFocus();
     _hasChanges = true;
-    _scheduleSave();
+    await _save();
   }
 
   void _showAttachmentActions(String path) {
