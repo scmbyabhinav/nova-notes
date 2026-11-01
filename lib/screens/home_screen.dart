@@ -304,6 +304,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
+              leading: const Icon(Icons.merge_type_rounded),
+              title: const Text('Merge with…'),
+              subtitle: const Text('Combine this note with another'),
+              onTap: () => Navigator.pop(context, 'merge'),
+            ),
+            ListTile(
               leading: const Icon(Icons.copy_outlined),
               title: const Text('Duplicate note'),
               onTap: () => Navigator.pop(context, 'duplicate'),
@@ -326,6 +332,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (!mounted || action == null) return;
 
     switch (action) {
+      case 'merge':
+        await _mergeNoteWithAnother(note);
+        return;
       case 'duplicate':
         final repository = await NoteRepositoryProvider.instance();
         final duplicate = note.copyWith(
@@ -428,6 +437,124 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           if (mounted) trashSnackBar.close();
         });
         return;
+    }
+  }
+
+  Future<void> _mergeNoteWithAnother(Note target) async {
+    if (target.isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unlock private notes before merging.')),
+      );
+      return;
+    }
+    final repository = await NoteRepositoryProvider.instance();
+    final notes = (await repository.getNotes())
+      .where((note) => note.id != target.id && !note.isTrashed && !note.isLocked)
+      .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    if (!mounted) return;
+    if (notes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Create another note before merging.')),
+      );
+      return;
+    }
+    final source = await showDialog<Note>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Merge with…'),
+        content: SizedBox(
+          width: 440,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              const Text('The selected note will be combined into this note and removed after confirmation.'),
+              const SizedBox(height: 8),
+              for (final candidate in notes)
+                ListTile(
+                  leading: const Icon(Icons.note_alt_outlined),
+                  title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
+                  subtitle: Text(candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  onTap: () => Navigator.pop(dialogContext, candidate),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+        ],
+      ),
+    );
+    if (!mounted || source == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm merge'),
+        content: Text('Merge "${source.title.isEmpty ? 'Untitled note' : source.title}" into "${target.title.isEmpty ? 'Untitled note' : target.title}"? The source note will be removed.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Merge notes')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final now = DateTime.now();
+    final sections = <String>[];
+    if (target.content.trim().isNotEmpty) {
+      sections.add(target.content.trim());
+    }
+    if (source.content.trim().isNotEmpty) {
+      sections.add('---\nMerged from: ${source.title.trim().isEmpty ? 'Untitled note' : source.title.trim()}\n\n${source.content.trim()}');
+    }
+    final mergedChecklist = <ChecklistItem>[
+      ...target.checklistItems,
+      ...source.checklistItems.map((item) => ChecklistItem(
+        id: '${target.id}_merged_${now.microsecondsSinceEpoch}_${item.id}',
+        text: item.text,
+        isDone: item.isDone,
+        dueAt: item.dueAt,
+      )),
+    ];
+    final linkedIds = <String>{
+      ...target.linkedNoteIds,
+      ...source.linkedNoteIds,
+      source.id,
+    }..remove(target.id)..remove(source.id);
+    final merged = target.copyWith(
+      title: target.title.trim().isNotEmpty ? target.title : source.title,
+      content: sections.join('\n\n'),
+      type: target.type == NoteType.checklist && source.type == NoteType.checklist
+          ? NoteType.checklist
+          : NoteType.text,
+      updatedAt: now,
+      tags: {...target.tags, ...source.tags}.toList(),
+      attachments: {...target.attachments, ...source.attachments}.toList(),
+      checklistItems: mergedChecklist,
+      linkedNoteIds: linkedIds.toList(),
+      dueAt: target.dueAt ?? source.dueAt,
+    );
+
+    try {
+      await repository.saveNote(merged);
+      // Redirect other notes' links to the surviving note before removing the source.
+      final allNotes = await repository.getNotes();
+      for (final note in allNotes) {
+        if (note.id == target.id || note.id == source.id || !note.linkedNoteIds.contains(source.id)) continue;
+        final updatedLinks = <String>{...note.linkedNoteIds, target.id}..remove(source.id);
+        await repository.saveNote(note.copyWith(linkedNoteIds: updatedLinks.toList(), updatedAt: now));
+      }
+      await repository.deleteNote(source.id);
+      if (!mounted) return;
+      await _loadNotes();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Notes merged successfully.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not merge notes: $error')),
+      );
     }
   }
 

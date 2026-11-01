@@ -95,6 +95,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String? _folderId;
   String? _vaultFolderId;
   List<String> _tags = const [];
+  List<String> _linkedNoteIds = const [];
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
@@ -151,6 +152,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _folderId = existing?.folderId;
     _vaultFolderId = existing?.vaultFolderId ?? widget.initialVaultFolderId;
     _tags = locked ? const [] : [...(existing?.tags ?? const [])];
+    _linkedNoteIds = locked ? const [] : [...(existing?.linkedNoteIds ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
     _checklistItems = locked ? [] : [...(existing?.checklistItems ?? const [])];
     if (!locked && _noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
@@ -806,6 +808,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             folderId: _folderId,
             vaultFolderId: _vaultFolderId,
             tags: storedTags,
+            linkedNoteIds: _isLocked ? const [] : _linkedNoteIds,
             attachments: _attachments,
             checklistItems: storedChecklistItems,
             isPinned: _isPinned,
@@ -825,6 +828,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             folderId: _folderId,
             vaultFolderId: _vaultFolderId,
             tags: storedTags,
+            linkedNoteIds: _isLocked ? const [] : _linkedNoteIds,
             attachments: _attachments,
             checklistItems: storedChecklistItems,
             isPinned: _isPinned,
@@ -1407,6 +1411,64 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     super.dispose();
   }
 
+  Future<void> _manageLinkedNotes() async {
+    if (_isLocked) return;
+    final allNotes = await widget.repository.getNotes();
+    if (!mounted) return;
+    final candidates = allNotes.where((note) =>
+      note.id != _noteId && !note.isTrashed && !note.isLocked
+    ).toList()..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    final selected = Set<String>.from(_linkedNoteIds);
+    final result = await showDialog<Set<String>>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Linked notes'),
+          content: SizedBox(
+            width: 440,
+            child: candidates.isEmpty
+              ? const Text('Create another note first, then you can link it here.')
+              : ListView(
+                  shrinkWrap: true,
+                  children: [
+                    const Text('Select notes related to this one. Links are saved with your note.'),
+                    const SizedBox(height: 12),
+                    for (final candidate in candidates)
+                      CheckboxListTile(
+                        value: selected.contains(candidate.id),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
+                        subtitle: Text(candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                        onChanged: (checked) => setDialogState(() {
+                          if (checked == true) {
+                            selected.add(candidate.id);
+                          } else {
+                            selected.remove(candidate.id);
+                          }
+                        }),
+                      ),
+                  ],
+                ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, selected), child: const Text('Save links')),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      _linkedNoteIds = result.toList();
+      _hasChanges = true;
+    });
+    await _save();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Saved ${_linkedNoteIds.length} linked note(s).')),
+    );
+  }
+
   Future<void> _showKanbanBacklinks() async {
     final l = AppLocalizations.of(context)!;
     final repo = await openKanbanRepository();
@@ -1524,6 +1586,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          if (!_isLocked)
+            IconButton(
+              tooltip: 'Link notes',
+              onPressed: _manageLinkedNotes,
+              icon: Badge(
+                isLabelVisible: _linkedNoteIds.isNotEmpty,
+                label: Text('${_linkedNoteIds.length}'),
+                child: const Icon(Icons.link_rounded),
+              ),
+            ),
           IconButton(
             tooltip: AppLocalizations.of(context)?.kanbanLinkedItems ?? 'Linked items',
             onPressed: _showKanbanBacklinks,
