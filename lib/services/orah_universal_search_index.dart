@@ -43,7 +43,7 @@ class OrahUniversalSearchIndex {
         note.imagePath!,
     ];
     return paths
-        .map((path) => path.replaceAll(RegExp(r'\\\\'), '/').split('/').last.trim().toLowerCase())
+        .map((path) => path.replaceAll(RegExp(r'\\'), '/').split('/').last.trim().toLowerCase())
         .where((name) => name.isNotEmpty)
         .toSet()
         .toList(growable: false);
