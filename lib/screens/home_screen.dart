@@ -644,7 +644,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         case 'daily_reflection':
           return reflection;
         default:
-          return !note.isArchived && !reflection;
+          // Pinned notes already have their own section above Recent Notes.
+          // Keep them out of the default recent feed to avoid duplicate-looking cards.
+          return !note.isArchived && !note.isPinned && !reflection;
       }
     }).toList()
       ..sort((a, b) {
