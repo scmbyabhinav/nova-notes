@@ -18,6 +18,23 @@ class LocalNoteRepository implements NoteRepository {
   final NovaSecurityService _security = NovaSecurityService();
   final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
 
+  // Serialize read-modify-write operations. Without this queue, two rapid
+  // autosaves can both read the same snapshot and the later full-table write
+  // can silently erase the earlier edit.
+  Future<void> _mutationQueue = Future<void>.value();
+
+  Future<T> _serializeMutation<T>(Future<T> Function() operation) {
+    final result = Completer<T>();
+    _mutationQueue = _mutationQueue.then((_) async {
+      try {
+        result.complete(await operation());
+      } catch (error, stackTrace) {
+        result.completeError(error, stackTrace);
+      }
+    });
+    return result.future;
+  }
+
   static const _storageKey = 'nova_notes_v1';
   static const _vaultStorageKey = 'orah_vault_notes_v1';
 
@@ -121,7 +138,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<void> saveNote(Note note) => _trackOperation(() async {
+  Future<void> saveNote(Note note) => _serializeMutation(() => _trackOperation(() async {
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
 
@@ -138,7 +155,7 @@ class LocalNoteRepository implements NoteRepository {
     // Publish the persisted snapshot, not the pre-write working list. This
     // guarantees every subscriber receives exactly what is now on disk.
     _publish(await getNotes());
-  });
+  }));
 
   /// Returns up to 50 prior snapshots, newest first. Vault notes are excluded.
   Future<List<NoteVersion>> getNoteVersions(String noteId) async {
@@ -194,12 +211,12 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<void> deleteNote(String id) => _trackOperation(() async {
+  Future<void> deleteNote(String id) => _serializeMutation(() => _trackOperation(() async {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
     _publish(notes);
-  });
+  }));
 
   @override
   Future<List<Note>> searchNotes(String query) => search(query);
@@ -323,7 +340,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Moves an authenticated Vault note back into ordinary note storage.
-  Future<void> unlockVaultNote(String id) => _trackOperation(() async {
+  Future<void> unlockVaultNote(String id) => _serializeMutation(() => _trackOperation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
@@ -358,7 +375,7 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
     await _write(ordinary);
     _publish(await getNotes());
-  });
+  }));
 
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
