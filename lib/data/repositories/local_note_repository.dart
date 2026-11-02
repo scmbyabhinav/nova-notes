@@ -380,18 +380,18 @@ class LocalNoteRepository implements NoteRepository {
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
   /// that the old Vault cannot be recovered.
-  Future<void> resetVaultNotes() async {
+  Future<void> resetVaultNotes() => _serializeMutation(() async {
     await _preferences.remove(_vaultStorageKey);
-  }
+  });
 
-  Future<void> deleteVaultNote(String id) async {
+  Future<void> deleteVaultNote(String id) => _serializeMutation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
     if (decoded is! List) return;
     decoded.removeWhere((item) => item is Map && item['id'] == id);
     await _preferences.setString(_vaultStorageKey, jsonEncode(decoded));
-  }
+  });
 
   void _publish(List<Note> notes) {
     final snapshot = [...notes]..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -557,7 +557,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Imports a NOVA backup and merges notes by stable ID.
-  Future<int> importJson(String raw) => _trackOperation(() async {
+  Future<int> importJson(String raw) => _serializeMutation(() => _trackOperation(() async {
     final decoded = jsonDecode(raw);
     if (decoded is! Map || decoded['format'] != 'nova_notes_backup') {
       throw const FormatException('Invalid NOVA Notes backup.');
@@ -601,6 +601,6 @@ class LocalNoteRepository implements NoteRepository {
     await _write(merged);
     _publish(merged);
     return imported.length;
-  });
+  }));
 
 }
