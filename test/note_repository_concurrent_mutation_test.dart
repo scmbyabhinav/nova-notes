@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,4 +61,23 @@ void main() {
     expect(persisted.map((note) => note.id).toSet(), {'keep-a', 'keep-b'});
     expect(await repository.getNote(existing.id), isNull);
   });
+  test('backup import and live save do not lose either set of notes', () async {
+    final imported = makeNote('imported-note');
+    final backup = {
+      'format': 'nova_notes_backup',
+      'version': 1,
+      'exportedAt': DateTime.utc(2026, 1, 1).toIso8601String(),
+      'notes': [imported.toMap()],
+    };
+
+    await Future.wait([
+      repository.importJson(jsonEncode(backup)),
+      repository.saveNote(makeNote('live-note')),
+    ]);
+
+    final persisted = await repository.getNotes();
+    expect(persisted.map((note) => note.id).toSet(),
+        {'imported-note', 'live-note'});
+  });
+
 }
