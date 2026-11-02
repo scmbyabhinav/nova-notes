@@ -1892,6 +1892,21 @@ String _formatDate(DateTime date) {
   return '$month/$day/${local.year}';
 }
 
+String _cleanNotePreview(String content) {
+  var text = content.trim();
+  if (text.isEmpty) return '';
+
+  // Render a clean text excerpt instead of exposing Markdown image tokens.
+  text = text.replaceAll(RegExp(r'!\[[^\]]*\]\([^)]*\)'), ' ');
+  text = text.replaceAll(RegExp(r'!\[[^\]]*'), ' ');
+  text = text.replaceAll(RegExp(r'\[([^\]]+)\]\([^)]*\)'), r'$1');
+  text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+  text = text.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
+  text = text.replaceAll(RegExp(r'[*_~]{1,3}'), '');
+  text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+  return text;
+}
+
 class _NoteCard extends StatelessWidget {
   const _NoteCard({
     required this.note,
@@ -1911,12 +1926,17 @@ class _NoteCard extends StatelessWidget {
         : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
     final contentPreview = note.isLocked
         ? 'Locked content'
-        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+        : _cleanNotePreview(note.content);
+    final checklistPreview = note.type == NoteType.checklist
+        ? note.checklistItems.take(2).map((item) => item.text.trim()).where((item) => item.isNotEmpty).join(' · ')
+        : '';
     final body = contentPreview.isNotEmpty
         ? contentPreview
-        : (note.type == NoteType.checklist
-            ? note.checklistItems.take(2).map((item) => item.text).join(' · ')
-            : '');
+        : (checklistPreview.isNotEmpty
+            ? checklistPreview
+            : (note.imagePath != null || note.attachments.isNotEmpty
+                ? (note.imagePath != null ? 'Image attachment' : 'Attachment')
+                : 'No additional text'));
     final cardColor = note.color == null
         ? theme.colorScheme.surface
         : Color(note.color!);
