@@ -1898,7 +1898,7 @@ String _cleanNotePreview(String content) {
 
   // Render a clean text excerpt instead of exposing Markdown image tokens.
   text = text.replaceAll(RegExp(r'!\[[^\]]*\]\([^)]*\)'), ' ');
-  text = text.replaceAll(RegExp(r'!\[[^\]]*'), ' ');
+  text = text.replaceAll(RegExp(r'!\[[^\]\r\n]*'), ' ');
   text = text.replaceAll(RegExp(r'\[([^\]]+)\]\([^)]*\)'), r'$1');
   text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
   text = text.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
