@@ -601,7 +601,19 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (selected == null) return;
     final repository = await NoteRepositoryProvider.instance();
     final color = selected == -1 ? null : selected;
-    await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
+    final updated = note.copyWith(
+      color: color,
+      clearColor: selected == -1,
+      updatedAt: DateTime.now(),
+    );
+    await repository.saveNote(updated);
+    if (!mounted) return;
+    // Update the visible cards immediately; don't make the user leave Home
+    // just to see the new colour.
+    setState(() {
+      _notes = _notes.map((item) => item.id == updated.id ? updated : item).toList();
+    });
+    await repository.refresh();
   }
 
   @override
@@ -632,7 +644,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         case 'daily_reflection':
           return reflection;
         default:
-          return !note.isArchived && !reflection;
+          // Pinned notes already have their own section above Recent Notes.
+          // Keep them out of the default recent feed to avoid duplicate-looking cards.
+          return !note.isArchived && !note.isPinned && !reflection;
       }
     }).toList()
       ..sort((a, b) {
@@ -644,6 +658,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final compactHeader = constraints.maxWidth < 600;
         if (constraints.maxWidth >= 1100) {
           return _DesktopNotesLayout(
             notes: tagFilteredNotes,
@@ -697,9 +712,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const OrahWordmark(fontSize: 34),
+                          OrahWordmark(fontSize: compactHeader ? 27 : 34, fontWeight: FontWeight.w700),
                           const SizedBox(height: 2),
-                          Text(
+                          if (!compactHeader) Text(
                             'Think it. Write it. Keep it.',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
@@ -715,17 +730,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                       icon: const Icon(Icons.security_rounded, size: 24),
                     ),
-                    IconButton.filledTonal(
+                    if (!compactHeader) IconButton.filledTonal(
                       tooltip: 'Calendar & history',
                       onPressed: widget.onCalendarHistory,
                       icon: const Icon(Icons.calendar_month_rounded, size: 24),
                     ),
-                    IconButton.filledTonal(
-                      tooltip: 'Statistics & insights',
+                    if (!compactHeader) IconButton.filledTonal(
+                      tooltip: 'Mood & insights',
                       onPressed: widget.onStatistics,
-                      icon: const Icon(Icons.bar_chart_rounded, size: 24),
+                      icon: const Icon(Icons.mood_rounded, size: 24),
                     ),
-                    IconButton.filledTonal(
+                    if (!compactHeader) IconButton.filledTonal(
                       tooltip: 'Daily Reflection',
                       onPressed: _openReflection,
                       icon: SvgPicture.asset(
@@ -735,6 +750,53 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         semanticsLabel: 'Daily Reflection',
                       ),
                     ),
+                    if (compactHeader)
+                      PopupMenuButton<String>(
+                        tooltip: 'Quick actions',
+                        icon: const Icon(Icons.more_horiz_rounded, size: 26),
+                        onSelected: (action) {
+                          switch (action) {
+                            case 'calendar':
+                              widget.onCalendarHistory?.call();
+                              break;
+                            case 'mood':
+                              widget.onStatistics?.call();
+                              break;
+                            case 'reflection':
+                              _openReflection();
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem<String>(
+                            value: 'calendar',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.calendar_month_rounded),
+                              title: Text('Calendar & history'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'mood',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.mood_rounded),
+                              title: Text('Mood & insights'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'reflection',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.auto_awesome_rounded),
+                              title: Text('Daily Reflection'),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (_showFeatures)
                       IconButton.filledTonal(
                         tooltip: 'Appearance',
@@ -780,87 +842,33 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    ActionChip(
-                                      avatar: const Icon(Icons.view_kanban_outlined, size: 18),
-                                      label: Text(AppLocalizations.of(context)!.kanban),
-                                      onPressed: widget.onKanban,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.note_alt_outlined, size: 18),
-                                      label: const Text('Notes'),
-                                      onPressed: widget.onNotes,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.folder_outlined, size: 18),
-                                      label: const Text('Folders'),
-                                      onPressed: widget.onFolders,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.star_outline_rounded, size: 18),
-                                      label: const Text('Favorites'),
-                                      onPressed: widget.onFavorites,
-                                    ),
-                                    ActionChip(
-                                      visualDensity: VisualDensity.compact,
-                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-                                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                                      avatar: const Icon(Icons.archive_outlined, size: 16),
-                                      label: const Text('Archived Notes'),
-                                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
-                                    ),
-                                    ActionChip(
-                                      avatar: SvgPicture.asset(
-                                        'assets/daily_reflection_icon.svg',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                      label: const Text('Daily Reflection'),
-                                      onPressed: _openReflection,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.mic_none_rounded, size: 18),
-                                      label: const Text('Voice Capture'),
-                                      onPressed: widget.onVoiceCapture,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.checklist_rounded, size: 18),
-                                      label: const Text('Checklists'),
-                                      onPressed: widget.onChecklist,
-                                    ),
-                                    ActionChip(
-                                      avatar: SvgPicture.asset(
-                                        'assets/appearance_icon.svg',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                      label: const Text('Appearance'),
-                                      onPressed: widget.onSettings,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.search_rounded, size: 18),
-                                      label: const Text('Search'),
-                                      onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (_) => const SearchScreen()),
-                                      ),
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.cloud_off_outlined, size: 18),
-                                      label: const Text('Offline access'),
-                                      onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
-                                      ),
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.ios_share_rounded, size: 18),
-                                      label: const Text('Backup & Export'),
-                                      onPressed: widget.onSettings,
-                                    ),
-                                  ],
+                                LayoutBuilder(
+                                  builder: (context, panelConstraints) {
+                                    final columns = panelConstraints.maxWidth >= 520 ? 3 : 2;
+                                    final actions = <Widget>[
+                                      _ExploreAction(icon: Icons.access_time_rounded, label: 'Recent Notes', onTap: widget.onNotes),
+                                      _ExploreAction(icon: Icons.star_outline_rounded, label: 'Favorites', onTap: widget.onFavorites),
+                                      _ExploreAction(icon: Icons.folder_outlined, label: 'Folders', onTap: widget.onFolders),
+                                      _ExploreAction(icon: Icons.view_kanban_outlined, label: AppLocalizations.of(context)!.kanban, onTap: widget.onKanban),
+                                      _ExploreAction(icon: Icons.archive_outlined, label: 'Archived Notes', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen()))),
+                                      _ExploreAction(icon: Icons.palette_outlined, label: 'Appearance', onTap: widget.onSettings),
+                                      _ExploreAction(icon: Icons.ios_share_rounded, label: 'Backup & Export', onTap: widget.onSettings),
+                                      _ExploreAction(icon: Icons.checklist_rounded, label: 'Checklists', onTap: widget.onChecklist),
+                                      _ExploreAction(icon: Icons.auto_awesome_outlined, label: 'Daily Reflection', onTap: _openReflection),
+                                      _ExploreAction(icon: Icons.cloud_off_outlined, label: 'Offline access', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()))),
+                                      _ExploreAction(icon: Icons.search_rounded, label: 'Search', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SearchScreen()))),
+                                      _ExploreAction(icon: Icons.mic_none_rounded, label: 'Voice Capture', onTap: widget.onVoiceCapture),
+                                    ];
+                                    return GridView.count(
+                                      crossAxisCount: columns,
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      crossAxisSpacing: 8,
+                                      mainAxisSpacing: 8,
+                                      childAspectRatio: 3.2,
+                                      children: actions,
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -1200,7 +1208,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                             crossAxisCount: 2,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
-                            childAspectRatio: 0.90,
+                            childAspectRatio: 1.04,
                           ),
                         )
                       : SliverList.builder(
@@ -1471,6 +1479,32 @@ class _DesktopNotesLayout extends StatelessWidget {
         onTap: () {},
       );
     }).toList();
+  }
+}
+
+class _ExploreAction extends StatelessWidget {
+  const _ExploreAction({required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: .7)),
+      ),
+      child: Row(children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: 8),
+        Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+      ]),
+    );
   }
 }
 
@@ -1858,6 +1892,21 @@ String _formatDate(DateTime date) {
   return '$month/$day/${local.year}';
 }
 
+String _cleanNotePreview(String content) {
+  var text = content.trim();
+  if (text.isEmpty) return '';
+
+  // Render a clean text excerpt instead of exposing Markdown image tokens.
+  text = text.replaceAll(RegExp(r'!\[[^\]]*\]\([^)]*\)'), ' ');
+  text = text.replaceAll(RegExp(r'!\[[^\]\r\n]*'), ' ');
+  text = text.replaceAll(RegExp(r'\[([^\]]+)\]\([^)]*\)'), r'$1');
+  text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+  text = text.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
+  text = text.replaceAll(RegExp(r'[*_~]{1,3}'), '');
+  text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+  return text;
+}
+
 class _NoteCard extends StatelessWidget {
   const _NoteCard({
     required this.note,
@@ -1877,12 +1926,17 @@ class _NoteCard extends StatelessWidget {
         : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
     final contentPreview = note.isLocked
         ? 'Locked content'
-        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+        : _cleanNotePreview(note.content);
+    final checklistPreview = note.type == NoteType.checklist
+        ? note.checklistItems.take(2).map((item) => item.text.trim()).where((item) => item.isNotEmpty).join(' · ')
+        : '';
     final body = contentPreview.isNotEmpty
         ? contentPreview
-        : (note.type == NoteType.checklist
-            ? note.checklistItems.take(2).map((item) => item.text).join(' · ')
-            : '');
+        : (checklistPreview.isNotEmpty
+            ? checklistPreview
+            : (note.imagePath != null || note.attachments.isNotEmpty
+                ? (note.imagePath != null ? 'Image attachment' : 'Attachment')
+                : 'No additional text'));
     final cardColor = note.color == null
         ? theme.colorScheme.surface
         : Color(note.color!);
@@ -1903,7 +1957,7 @@ class _NoteCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(compact ? 14 : 15),
+          padding: EdgeInsets.all(compact ? 11 : 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

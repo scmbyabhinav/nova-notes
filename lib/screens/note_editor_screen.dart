@@ -1292,6 +1292,26 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
 
+  Future<void> _addImageToBody(ImageSource source) async {
+    try {
+      final picked = await ImagePicker().pickImage(source: source, imageQuality: 92);
+      if (picked == null) return;
+      final path = await const NovaAttachmentService().importXFile(picked);
+      if (!mounted) return;
+      setState(() {
+        if (!_attachments.contains(path)) _attachments = [..._attachments, path];
+        _hasChanges = true;
+      });
+      await _insertImageIntoBody(path);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not insert image into note body: $error')),
+        );
+      }
+    }
+  }
+
   Future<void> _addImage(ImageSource source) async {
     try {
       final picked = await ImagePicker().pickImage(
@@ -1543,8 +1563,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       selection: TextSelection.collapsed(offset: start + prefix.length + imageMarkdown.length + suffix.length),
       composing: TextRange.empty,
     );
-    _contentFocus.requestFocus();
     _hasChanges = true;
+    if (mounted) setState(() => _previewMode = true);
     await _save();
   }
 
@@ -1586,6 +1606,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ListTile(
+              leading: const Icon(Icons.add_photo_alternate_outlined),
+              title: const Text('Choose image to insert into note body'),
+              subtitle: const Text('Adds the image and opens a preview of the note body'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addImageToBody(ImageSource.gallery);
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
               title: const Text('Choose from gallery'),
@@ -2499,6 +2528,11 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         assetIcon: 'tag',
                         label: 'Folder & tags',
                         onPressed: _organize,
+                      ),
+                      _ToolButton(
+                        icon: Icons.add_photo_alternate_outlined,
+                        label: 'Insert image in body',
+                        onPressed: () => _addImageToBody(ImageSource.gallery),
                       ),
                       _ToolButton(
                         icon: Icons.attach_file_rounded,

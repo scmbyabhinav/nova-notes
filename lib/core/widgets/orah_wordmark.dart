@@ -20,12 +20,15 @@ class OrahWordmark extends StatelessWidget {
       child: Text(
         'orah',
         textAlign: textAlign,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.clip,
         style: TextStyle(
           fontFamily: 'Inter',
           fontSize: fontSize,
           fontWeight: fontWeight,
-          letterSpacing: -fontSize * 0.055,
-          height: 1.05,
+          letterSpacing: -fontSize * 0.025,
+          height: 1.0,
           color: Colors.white,
         ),
       ),
