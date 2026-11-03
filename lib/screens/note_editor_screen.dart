@@ -89,6 +89,7 @@ class _MarkdownTocSection {
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final Map<int, GlobalKey> _previewHeadingKeys = <int, GlobalKey>{};
+  int _focusMinutes = 0;
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
@@ -159,6 +160,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
     final existing = widget.note;
     _reviewCounted = existing != null;
+    _focusMinutes = existing?.focusMinutes ?? 0;
     _noteId = existing?.id ?? _newId();
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
@@ -975,6 +977,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            focusMinutes: _focusMinutes,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -995,6 +998,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            focusMinutes: _focusMinutes,
           );
 
     await _saveTimeout.run(widget.repository.saveNote(note), const Duration(seconds: 10));
@@ -2026,6 +2030,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     return widgets;
   }
 
+  Future<void> _startFocusSession() async {
+    if (_isLocked) return;
+    final minutes = await showDialog<int>(
+      context: context,
+      builder: (context) => const _FocusSessionDialog(),
+    );
+    if (!mounted || minutes == null || minutes <= 0) return;
+    setState(() {
+      _focusMinutes += minutes;
+      _hasChanges = true;
+    });
+    await _save();
+    if (mounted && !_saveFailed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Saved $minutes focus minutes to this note · Total \$_focusMinutes min')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -2102,6 +2125,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Focus session · $_focusMinutes min recorded',
+            onPressed: _isLocked ? null : _startFocusSession,
+            icon: Badge(
+              isLabelVisible: _focusMinutes > 0,
+              label: Text('$_focusMinutes'),
+              child: const Icon(Icons.timer_outlined),
+            ),
+          ),
           PopupMenuButton<String>(
             tooltip: 'Link options',
             icon: Badge(
@@ -2944,6 +2976,95 @@ class _ToolButton extends StatelessWidget {
         onPressed: onPressed,
         icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
       ),
+    );
+  }
+}
+
+class _FocusSessionDialog extends StatefulWidget {
+  const _FocusSessionDialog();
+
+  @override
+  State<_FocusSessionDialog> createState() => _FocusSessionDialogState();
+}
+
+class _FocusSessionDialogState extends State<_FocusSessionDialog> {
+  static const int _sessionLengthSeconds = 25 * 60;
+  Timer? _timer;
+  int _elapsedSeconds = 0;
+  bool _running = false;
+
+  int get _remainingSeconds => _sessionLengthSeconds - _elapsedSeconds;
+
+  String _formatDuration(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final remainder = (seconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$remainder';
+  }
+
+  void _startOrPause() {
+    if (_running) {
+      _timer?.cancel();
+      setState(() => _running = false);
+      return;
+    }
+    if (_remainingSeconds <= 0) return;
+    setState(() => _running = true);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_remainingSeconds <= 1) {
+        timer.cancel();
+        Navigator.of(context).pop(25);
+        return;
+      }
+      setState(() => _elapsedSeconds++);
+    });
+  }
+
+  void _finish() {
+    _timer?.cancel();
+    final minutes = _elapsedSeconds ~/ 60;
+    Navigator.of(context).pop(minutes);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: const Text('Focus session'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.timer_outlined, size: 42),
+          const SizedBox(height: 12),
+          Text(
+            _formatDuration(_remainingSeconds),
+            style: theme.textTheme.displaySmall,
+          ),
+          const SizedBox(height: 8),
+          const Text('25-minute Pomodoro · focus on this note'),
+          const SizedBox(height: 8),
+          Text('Elapsed: \${_elapsedSeconds ~/ 60} min'),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _finish,
+          child: const Text('Finish & save'),
+        ),
+        FilledButton(
+          onPressed: _startOrPause,
+          child: Text(_running ? 'Pause' : 'Start'),
+        ),
+      ],
     );
   }
 }
