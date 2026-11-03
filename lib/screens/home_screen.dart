@@ -1091,8 +1091,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                           : SliverList.builder(
                               itemCount: recent.length,
                               itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom:  _noteView == 'compact' ? 4 : 12,
+                                padding: EdgeInsets.only(
+                                  bottom: _noteView == 'compact' ? 4 : 12,
                                 ),
                                 child: GestureDetector(
                                   onLongPress: () =>
