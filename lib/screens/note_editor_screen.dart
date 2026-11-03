@@ -2457,8 +2457,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * widthPercent / 100),
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width * widthPercent / 100,
                                   child: Stack(
                                     children: [
                                       ClipRRect(borderRadius: BorderRadius.circular(12), child: image),
