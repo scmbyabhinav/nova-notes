@@ -338,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             ),
             ListTile(
               leading: const OrahAssetIcon('trash'),
-              title: const Text('Move to Trash'),
+              title: const Text('Delete note (move to Trash)'),
               onTap: () => Navigator.pop(context, 'delete'),
             ),
           ],
