@@ -148,7 +148,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _voiceTranscript = '';
   Timer? _voiceDurationTimer;
   int _voiceElapsedSeconds = 0;
-  final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
   final ScreenshotController _noteCardScreenshotController = ScreenshotController();
 
   static const _voiceHintShownKey = 'orah_voice_hint_shown';
@@ -256,17 +255,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleVoiceFabTap() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    if (_isListening) {
-      await _stopAndSaveVoiceInput();
-    } else {
-      await _toggleVoiceInput();
-    }
   }
 
   Future<void> _toggleVoiceInput() async {
