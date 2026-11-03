@@ -44,6 +44,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
   bool _gridView = true;
+  bool _compactView = false;
+  int _pinnedViewMode = 0; // 0 compact list, 1 comfortable list, 2 grid
   bool _showFeatures = false;
   bool _hideDailyPrompt = false;
   bool _loading = true;
@@ -115,6 +117,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (!mounted) return;
     setState(() {
       _gridView = prefs.getBool('orah_grid_view') ?? true;
+      _compactView = prefs.getBool('orah_compact_view') ?? false;
+      _pinnedViewMode = (prefs.getInt('orah_pinned_view_mode') ?? 0).clamp(0, 2).toInt();
       _sort = prefs.getString('orah_note_sort') ?? 'updated';
       _hideDailyPrompt = prefs.getBool('orah_hide_daily_prompt') ?? false;
     });
@@ -131,6 +135,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   Future<void> _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('orah_grid_view', _gridView);
+    await prefs.setBool('orah_compact_view', _compactView);
+    await prefs.setInt('orah_pinned_view_mode', _pinnedViewMode);
     await prefs.setString('orah_note_sort', _sort);
   }
 
@@ -1113,30 +1119,57 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                   sliver: SliverToBoxAdapter(
-                    child: Text(
-                      l10n.pinned,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(l10n.pinned, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800))),
+                        PopupMenuButton<int>(
+                          tooltip: 'Pinned note layout',
+                          initialValue: _pinnedViewMode,
+                          onSelected: (mode) async {
+                            setState(() => _pinnedViewMode = mode);
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setInt('orah_pinned_view_mode', mode);
+                          },
+                          itemBuilder: (_) => const [
+                            PopupMenuItem(value: 0, child: ListTile(dense: true, leading: Icon(Icons.view_agenda_outlined), title: Text('Compact list'))),
+                            PopupMenuItem(value: 1, child: ListTile(dense: true, leading: Icon(Icons.view_stream_outlined), title: Text('Comfortable list'))),
+                            PopupMenuItem(value: 2, child: ListTile(dense: true, leading: Icon(Icons.grid_view_rounded), title: Text('Grid'))),
+                          ],
+                          icon: const Icon(Icons.tune_rounded),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverList.builder(
-                    itemCount: pinned.length,
-                    itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: GestureDetector(
-                        onLongPress: () => _showNoteMenu(pinned[index]),
-                        child: _NoteCard(
-                          note: pinned[index],
-                          compact: true,
-                          onTap: () => _openNote(pinned[index]),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  sliver: _pinnedViewMode == 2
+                      ? SliverGrid(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => GestureDetector(
+                              onLongPress: () => _showNoteMenu(pinned[index]),
+                              child: _NoteCard(note: pinned[index], onTap: () => _openNote(pinned[index])),
+                            ),
+                            childCount: pinned.length,
+                          ),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.04,
+                          ),
+                        )
+                      : SliverList.builder(
+                          itemCount: pinned.length,
+                          itemBuilder: (context, index) => Padding(
+                            padding: EdgeInsets.only(bottom: _pinnedViewMode == 0 ? 6 : 12),
+                            child: GestureDetector(
+                              onLongPress: () => _showNoteMenu(pinned[index]),
+                              child: _NoteCard(
+                                note: pinned[index],
+                                compact: _pinnedViewMode == 0,
+                                onTap: () => _openNote(pinned[index]),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
               ],
               SliverPadding(
@@ -1167,17 +1200,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         ],
                         icon: const Icon(Icons.sort_rounded),
                       ),
-                      IconButton(
-                        tooltip: _gridView ? 'List view' : 'Grid view',
-                        onPressed: () async {
-                          setState(() => _gridView = !_gridView);
+                      PopupMenuButton<String>(
+                        tooltip: 'Note display options',
+                        onSelected: (mode) async {
+                          setState(() {
+                            _gridView = mode == 'grid';
+                            _compactView = mode == 'compact';
+                          });
                           await _savePreferences();
                         },
-                        icon: Icon(
-                          _gridView
-                              ? Icons.view_list_rounded
-                              : Icons.grid_view_rounded,
-                        ),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(value: 'grid', child: ListTile(dense: true, leading: const Icon(Icons.grid_view_rounded), title: const Text('Grid'), trailing: _gridView && !_compactView ? const Icon(Icons.check_rounded) : null)),
+                          PopupMenuItem(value: 'list', child: ListTile(dense: true, leading: const Icon(Icons.view_list_rounded), title: const Text('Comfortable list'), trailing: !_gridView && !_compactView ? const Icon(Icons.check_rounded) : null)),
+                          PopupMenuItem(value: 'compact', child: ListTile(dense: true, leading: const Icon(Icons.view_agenda_outlined), title: const Text('Compact list'), trailing: _compactView ? const Icon(Icons.check_rounded) : null)),
+                        ],
+                        icon: const Icon(Icons.dashboard_customize_outlined),
                       ),
                     ],
                   ),
@@ -1220,7 +1257,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   _showNoteMenu(recent[index]),
                               child: _NoteCard(
                                 note: recent[index],
-                                compact: true,
+                                compact: _compactView,
                                 onTap: () => _openNote(recent[index]),
                               ),
                             ),
