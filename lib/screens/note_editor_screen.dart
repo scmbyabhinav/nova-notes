@@ -1555,7 +1555,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final selection = value.selection;
     final start = selection.isValid ? selection.start : value.text.length;
     final end = selection.isValid ? selection.end : value.text.length;
-    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ')';
+    final imageMarkdown = '![' + p.basename(path) + '|w=100](' + Uri.file(path).toString() + ')';
     final prefix = start > 0 && value.text[start - 1] != '\n' ? '\n\n' : '';
     final suffix = end < value.text.length && value.text.substring(end).startsWith('\n') ? '' : '\n\n';
     _contentController.value = value.copyWith(
@@ -1566,6 +1566,71 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _hasChanges = true;
     if (mounted) setState(() => _previewMode = true);
     await _save();
+  }
+
+  Future<void> _updateInlineImage(String uri, String? alt, {int? width, bool remove = false}) async {
+    final text = _contentController.text;
+    final escapedUri = RegExp.escape(uri);
+    final imagePattern = RegExp(r'!\[([^\]]*)\]\(' + escapedUri + r'\)');
+    final match = imagePattern.firstMatch(text);
+    if (match == null) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not find this image in the note body.')));
+      return;
+    }
+    var replacement = '';
+    if (!remove) {
+      final currentAlt = match.group(1) ?? alt ?? 'Image';
+      final cleanAlt = currentAlt.replaceAll(RegExp(r'\|w=\d+'), '');
+      replacement = '![' + cleanAlt + (width == null ? '' : '|w=$width') + '](' + uri + ')';
+    }
+    _contentController.value = _contentController.value.copyWith(
+      text: text.replaceRange(match.start, match.end, replacement),
+      selection: TextSelection.collapsed(offset: match.start + replacement.length),
+      composing: TextRange.empty,
+    );
+    _hasChanges = true;
+    await _save();
+    if (mounted) setState(() => _previewMode = true);
+  }
+
+  Future<void> _resizeInlineImage(String uri, String? alt) async {
+    final match = RegExp(r'\|w=(\d{1,3})').firstMatch(alt ?? '');
+    var width = (match == null ? 100 : int.tryParse(match.group(1)!) ?? 100).clamp(25, 100).toDouble();
+    final selected = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: const Text('Resize image'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('${width.round()}% of the note width'),
+              Slider(value: width, min: 25, max: 100, divisions: 15, label: '${width.round()}%', onChanged: (value) => setDialogState(() => width = value)),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, width.round()), child: const Text('Apply')),
+          ],
+        ),
+      ),
+    );
+    if (selected != null) await _updateInlineImage(uri, alt, width: selected);
+  }
+
+  Future<void> _deleteInlineImage(String uri, String? alt) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Remove image from body?'),
+        content: const Text('This removes the image from the note body. The original attachment remains available in the attachments strip.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Remove')),
+        ],
+      ),
+    );
+    if (confirmed == true) await _updateInlineImage(uri, alt, remove: true);
   }
 
   void _showAttachmentActions(String path) {
@@ -2360,30 +2425,69 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                 ),
                           ),
                         const SizedBox(height: 12),
+                        if (!_isLocked && _noteType != NoteType.checklist)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: () => setState(() => _previewMode = false),
+                              icon: const Icon(Icons.edit_outlined, size: 18),
+                              label: const Text('Edit text'),
+                            ),
+                          ),
                         MarkdownBody(
                           data: _renderableContent(),
                           selectable: true,
                           imageBuilder: (uri, title, alt) {
+                            final widthMatch = RegExp(r'\|w=(\d{1,3})').firstMatch(alt ?? '');
+                            final widthPercent = (widthMatch == null ? 100 : int.tryParse(widthMatch.group(1)!) ?? 100).clamp(25, 100);
+                            Widget image;
                             if (uri.scheme == 'file') {
                               try {
                                 final file = File(uri.toFilePath());
-                                if (file.existsSync()) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.file(file, fit: BoxFit.contain),
-                                    ),
-                                  );
-                                }
+                                if (!file.existsSync()) return const Text('Image unavailable');
+                                image = Image.file(file, fit: BoxFit.contain);
                               } catch (_) {
-                                // Invalid local image URI: render the fallback below.
+                                return const Text('Image unavailable');
                               }
-                              return const Text('Image unavailable');
+                            } else {
+                              image = Image.network(uri.toString(), fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => const Text('Image unavailable'));
                             }
-                            return Image.network(
-                              uri.toString(),
-                              errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * widthPercent / 100),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(borderRadius: BorderRadius.circular(12), child: image),
+                                      if (!_isLocked)
+                                        Positioned(
+                                          top: 4, right: 4,
+                                          child: Material(
+                                            color: theme.colorScheme.surface.withValues(alpha: 0.92),
+                                            borderRadius: BorderRadius.circular(12),
+                                            child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                              IconButton(
+                                                tooltip: 'Resize image',
+                                                visualDensity: VisualDensity.compact,
+                                                onPressed: () => _resizeInlineImage(uri.toString(), alt),
+                                                icon: const Icon(Icons.photo_size_select_large_rounded, size: 18),
+                                              ),
+                                              IconButton(
+                                                tooltip: 'Remove image from body',
+                                                visualDensity: VisualDensity.compact,
+                                                onPressed: () => _deleteInlineImage(uri.toString(), alt),
+                                                icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                                              ),
+                                            ]),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           },
                         ),
