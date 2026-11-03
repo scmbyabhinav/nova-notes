@@ -1439,8 +1439,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         final path = file.path;
         if (path != null && path.isNotEmpty) {
           imported.add(await const NovaAttachmentService().importFile(path));
-        } else if (file.bytes != null && file.bytes!.isNotEmpty) {
-          imported.add(await const NovaAttachmentService().importBytes(file.bytes!, file.name));
+        } else {
+          // file_picker v13 removed the public bytes property. Read on demand.
+          final bytes = await file.readAsBytes();
+          if (bytes.isNotEmpty) {
+            imported.add(await const NovaAttachmentService().importBytes(bytes, file.name));
+          }
         }
       }
       if (imported.isEmpty) return;
