@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,17 @@ class NovaAttachmentService {
     final name = _uniqueName(root.path, p.basename(source.path));
     final target = File(p.join(root.path, name));
     await File(source.path).copy(target.path);
+    return target.path;
+  }
+
+  Future<String> importBytes(Uint8List bytes, String originalName) async {
+    if (bytes.length > maxAttachmentBytes) {
+      throw const FileSystemException('Attachment is too large');
+    }
+    final root = await _attachmentDirectory();
+    final name = _uniqueName(root.path, originalName);
+    final target = File(p.join(root.path, name));
+    await target.writeAsBytes(bytes, flush: true);
     return target.path;
   }
 
