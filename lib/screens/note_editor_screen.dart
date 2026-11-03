@@ -493,6 +493,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<void> _setChecklistItemReminder(int index) async {
+    final item = _checklistItems[index];
+    final now = DateTime.now();
+    final initial = item.dueAt ?? now.add(const Duration(hours: 1));
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isBefore(now) ? now : initial,
+      firstDate: now,
+      lastDate: DateTime(9999, 12, 31),
+    );
+    if (picked == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
+    if (time == null || !mounted) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(
+        dueAt: DateTime(picked.year, picked.month, picked.day, time.hour, time.minute),
+      );
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _clearChecklistItemReminder(int index) async {
+    final item = _checklistItems[index];
+    await OrahReminderService.instance.cancel('checklist:${item.id}');
+    if (!mounted) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(clearDueAt: true);
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
   Future<void> _removeChecklistItem(int index) async {
     final removed = _checklistItems[index];
     await OrahReminderService.instance.cancel('checklist:${removed.id}');
@@ -2605,7 +2641,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
                           _buildSlashCommandMenu(theme),
                         if (_noteType == NoteType.checklist)
-                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onSetReminder: _setChecklistItemReminder, onClearReminder: _clearChecklistItemReminder, onReorder: _reorderChecklist)
                         else
                           TextField(
                             controller: _contentController,
@@ -2804,6 +2840,8 @@ class _ChecklistEditor extends StatelessWidget {
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetReminder,
+    required this.onClearReminder,
     required this.onReorder,
   });
 
@@ -2812,6 +2850,8 @@ class _ChecklistEditor extends StatelessWidget {
   final Future<void> Function(int, bool) onToggle;
   final Future<void> Function(int) onEdit;
   final Future<void> Function(int) onDelete;
+  final Future<void> Function(int) onSetReminder;
+  final Future<void> Function(int) onClearReminder;
   final Future<void> Function(int, int) onReorder;
 
   @override
@@ -2860,6 +2900,8 @@ class _ChecklistEditor extends StatelessWidget {
                   onToggle: (value) => onToggle(index, value),
                   onEdit: () => onEdit(index),
                   onDelete: () => onDelete(index),
+                  onSetReminder: () => onSetReminder(index),
+                  onClearReminder: () => onClearReminder(index),
                   onMoveUp: index > 0
                       ? () => onReorder(index, index - 1)
                       : null,
@@ -2892,6 +2934,8 @@ class _ChecklistRow extends StatelessWidget {
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetReminder,
+    required this.onClearReminder,
     required this.onMoveUp,
     required this.onMoveDown,
   });
@@ -2902,6 +2946,8 @@ class _ChecklistRow extends StatelessWidget {
   final ValueChanged<bool> onToggle;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onSetReminder;
+  final VoidCallback onClearReminder;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
 
@@ -2935,6 +2981,12 @@ class _ChecklistRow extends StatelessWidget {
               tooltip: 'Move down',
               onPressed: canMoveDown ? onMoveDown : null,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            IconButton(
+              tooltip: item.dueAt == null ? 'Set task reminder' : 'Edit task reminder (long-press to clear)',
+              onPressed: onSetReminder,
+              onLongPress: item.dueAt == null ? null : onClearReminder,
+              icon: Icon(item.dueAt == null ? Icons.notifications_none_rounded : Icons.notifications_active_rounded),
             ),
             IconButton(
               tooltip: 'Delete task',
