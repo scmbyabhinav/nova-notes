@@ -501,7 +501,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                     leading: const Icon(Icons.note_alt_outlined),
                     title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
                     subtitle: Text(
-                      candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '),
+                      candidate.content.trim().replaceAll(RegExp(r'\s+'), ' '),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -546,7 +546,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final sections = <String>[
       if (target.content.trim().isNotEmpty) target.content.trim(),
       if (source.content.trim().isNotEmpty)
-        '---\\nMerged from: ${source.title.trim().isEmpty ? 'Untitled note' : source.title.trim()}\\n\\n${source.content.trim()}',
+        '---\nMerged from: ${source.title.trim().isEmpty ? 'Untitled note' : source.title.trim()}\n\n${source.content.trim()}',
     ];
     final mergedChecklist = <ChecklistItem>[
       ...target.checklistItems,
@@ -561,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     ];
     final merged = target.copyWith(
       title: target.title.trim().isNotEmpty ? target.title : source.title,
-      content: sections.join('\\n\\n'),
+      content: sections.join('\n\n'),
       type: target.type == NoteType.checklist && source.type == NoteType.checklist
           ? NoteType.checklist
           : NoteType.text,
