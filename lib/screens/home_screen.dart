@@ -303,6 +303,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'copy_folder'),
             ),
             ListTile(
+              leading: Icon(note.isInbox ? Icons.inbox_rounded : Icons.inbox_outlined),
+              title: Text(note.isInbox ? 'Remove from Inbox' : 'Send to Inbox'),
+              subtitle: Text(note.isInbox ? 'File this capture into your notes' : 'Keep this note in your triage inbox'),
+              onTap: () => Navigator.pop(context, 'inbox'),
+            ),
+            ListTile(
               leading: const OrahAssetIcon('pin'),
               title: Text(note.isPinned ? 'Unpin note' : 'Pin note'),
               onTap: () => Navigator.pop(context, 'pin'),
@@ -400,6 +406,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         return;
       case 'color':
         await _showColorPicker(note);
+        return;
+      case 'inbox':
+        await _updateNote(
+          note,
+          note.copyWith(isInbox: !note.isInbox, updatedAt: DateTime.now()),
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(note.isInbox ? 'Removed from Inbox' : 'Sent to Inbox'),
+            action: SnackBarAction(
+              label: 'View Inbox',
+              onPressed: () => setState(() => _activeFilter = 'inbox'),
+            ),
+          ));
+        }
         return;
       case 'pin':
         await _updateNote(
