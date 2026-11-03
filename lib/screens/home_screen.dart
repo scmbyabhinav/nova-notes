@@ -46,6 +46,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
   bool _gridView = true;
   bool _showFeatures = false;
+  static const List<String> _allExploreActionLabels = [
+    'Recent Notes', 'Favorites', 'Folders', 'Kanban', 'Archived Notes',
+    'Appearance', 'Backup & Export', 'Checklists', 'Daily Reflection',
+    'Offline access', 'Search', 'Voice Capture',
+  ];
+  Set<String> _visibleExploreActions = {..._allExploreActionLabels};
   bool _hideDailyPrompt = false;
   bool _loading = true;
   String? _loadError;
@@ -118,7 +124,74 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       _gridView = prefs.getBool('orah_grid_view') ?? true;
       _sort = prefs.getString('orah_note_sort') ?? 'updated';
       _hideDailyPrompt = prefs.getBool('orah_hide_daily_prompt') ?? false;
+      _visibleExploreActions = (prefs.getStringList('orah_explore_actions') ?? _allExploreActionLabels)
+          .where(_allExploreActionLabels.contains).toSet();
     });
+  }
+
+  Future<void> _customizeExploreActions() async {
+    final selected = Set<String>.from(_visibleExploreActions);
+    final result = await showModalBottomSheet<Set<String>>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) => SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 8,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const ListTile(
+                  leading: Icon(Icons.tune_rounded),
+                  title: Text('Customize Explore Orah'),
+                  subtitle: Text('Use + to add a shortcut or − to remove one.'),
+                ),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final label in _allExploreActionLabels)
+                        ListTile(
+                          title: Text(label),
+                          trailing: IconButton.filledTonal(
+                            tooltip: selected.contains(label) ? 'Remove $label' : 'Add $label',
+                            onPressed: () => setSheetState(() {
+                              if (selected.contains(label)) {
+                                selected.remove(label);
+                              } else {
+                                selected.add(label);
+                              }
+                            }),
+                            icon: Icon(selected.contains(label) ? Icons.remove_rounded : Icons.add_rounded),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(sheetContext, selected),
+                    child: const Text('Save shortcuts'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (result == null || !mounted) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('orah_explore_actions', _allExploreActionLabels.where(result.contains).toList());
+    setState(() => _visibleExploreActions = result);
   }
 
   Future<void> _setDailyPromptHidden(bool hidden) async {
@@ -981,11 +1054,20 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Explore Orah',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'Explore Orah',
+                                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                                      ),
+                                    ),
+                                    IconButton.filledTonal(
+                                      tooltip: 'Add or remove Explore shortcuts',
+                                      onPressed: _customizeExploreActions,
+                                      icon: const Icon(Icons.add_rounded),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -998,20 +1080,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                 LayoutBuilder(
                                   builder: (context, panelConstraints) {
                                     final columns = panelConstraints.maxWidth >= 520 ? 3 : 2;
-                                    final actions = <Widget>[
-                                      _ExploreAction(icon: Icons.access_time_rounded, label: 'Recent Notes', onTap: widget.onNotes),
-                                      _ExploreAction(icon: Icons.star_outline_rounded, label: 'Favorites', onTap: widget.onFavorites),
-                                      _ExploreAction(icon: Icons.folder_outlined, label: 'Folders', onTap: widget.onFolders),
-                                      _ExploreAction(icon: Icons.view_kanban_outlined, label: AppLocalizations.of(context)!.kanban, onTap: widget.onKanban),
-                                      _ExploreAction(icon: Icons.archive_outlined, label: 'Archived Notes', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen()))),
-                                      _ExploreAction(icon: Icons.palette_outlined, label: 'Appearance', onTap: widget.onSettings),
-                                      _ExploreAction(icon: Icons.ios_share_rounded, label: 'Backup & Export', onTap: widget.onSettings),
-                                      _ExploreAction(icon: Icons.checklist_rounded, label: 'Checklists', onTap: widget.onChecklist),
-                                      _ExploreAction(icon: Icons.auto_awesome_outlined, label: 'Daily Reflection', onTap: _openReflection),
-                                      _ExploreAction(icon: Icons.cloud_off_outlined, label: 'Offline access', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()))),
-                                      _ExploreAction(icon: Icons.search_rounded, label: 'Search', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SearchScreen()))),
-                                      _ExploreAction(icon: Icons.mic_none_rounded, label: 'Voice Capture', onTap: widget.onVoiceCapture),
+                                    final actions = <({String label, Widget widget})>[
+                                      (label: 'Recent Notes', widget: _ExploreAction(icon: Icons.access_time_rounded, label: 'Recent Notes', onTap: widget.onNotes)),
+                                      (label: 'Favorites', widget: _ExploreAction(icon: Icons.star_outline_rounded, label: 'Favorites', onTap: widget.onFavorites)),
+                                      (label: 'Folders', widget: _ExploreAction(icon: Icons.folder_outlined, label: 'Folders', onTap: widget.onFolders)),
+                                      (label: 'Kanban', widget: _ExploreAction(icon: Icons.view_kanban_outlined, label: AppLocalizations.of(context)!.kanban, onTap: widget.onKanban)),
+                                      (label: 'Archived Notes', widget: _ExploreAction(icon: Icons.archive_outlined, label: 'Archived Notes', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())))),
+                                      (label: 'Appearance', widget: _ExploreAction(icon: Icons.palette_outlined, label: 'Appearance', onTap: widget.onSettings)),
+                                      (label: 'Backup & Export', widget: _ExploreAction(icon: Icons.ios_share_rounded, label: 'Backup & Export', onTap: widget.onSettings)),
+                                      (label: 'Checklists', widget: _ExploreAction(icon: Icons.checklist_rounded, label: 'Checklists', onTap: widget.onChecklist)),
+                                      (label: 'Daily Reflection', widget: _ExploreAction(icon: Icons.auto_awesome_outlined, label: 'Daily Reflection', onTap: _openReflection)),
+                                      (label: 'Offline access', widget: _ExploreAction(icon: Icons.cloud_off_outlined, label: 'Offline access', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahFeaturesScreen())))),
+                                      (label: 'Search', widget: _ExploreAction(icon: Icons.search_rounded, label: 'Search', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SearchScreen())))),
+                                      (label: 'Voice Capture', widget: _ExploreAction(icon: Icons.mic_none_rounded, label: 'Voice Capture', onTap: widget.onVoiceCapture)),
                                     ];
+                                    final visibleActions = actions.where((action) => _visibleExploreActions.contains(action.label)).toList();
                                     return GridView.count(
                                       crossAxisCount: columns,
                                       shrinkWrap: true,
@@ -1019,7 +1102,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       crossAxisSpacing: 8,
                                       mainAxisSpacing: 8,
                                       childAspectRatio: 3.2,
-                                      children: actions,
+                                      children: visibleActions.map((action) => action.widget).toList(),
                                     );
                                   },
                                 ),
