@@ -150,8 +150,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   int _voiceElapsedSeconds = 0;
   final ScreenshotController _noteCardScreenshotController = ScreenshotController();
 
-  static const _voiceHintShownKey = 'orah_voice_hint_shown';
-
   @override
   void initState() {
     super.initState();
@@ -193,19 +191,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _maybeShowVoiceHint();
       if (widget.autoStartVoice) _toggleVoiceInput();
       if (widget.autoOpenReminder) _setDueDate();
-    });
-  }
-
-  Future<void> _maybeShowVoiceHint() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_voiceHintShownKey) == true || !mounted) return;
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _voiceHintKey.currentState?.ensureTooltipVisible();
     });
   }
 
