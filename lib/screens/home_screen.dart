@@ -2255,33 +2255,38 @@ class _DeadlineCountdownRibbon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final dueDay = DateTime(dueAt.year, dueAt.month, dueAt.day);
-    final days = dueDay.difference(today).inDays;
+    final remaining = dueAt.difference(now);
     final Color color;
     final IconData icon;
     final String label;
-    if (days < 0) {
-      color = Colors.red;
+
+    if (remaining.isNegative) {
+      color = Colors.red.shade700;
       icon = Icons.warning_amber_rounded;
-      label = 'Overdue by ${days.abs()} day${days.abs() == 1 ? '' : 's'}';
-    } else if (days == 0) {
-      color = Colors.red;
+      final overdue = remaining.abs();
+      if (overdue.inDays >= 1) {
+        label = 'Overdue by \${overdue.inDays} day\${overdue.inDays == 1 ? '' : 's'}';
+      } else if (overdue.inHours >= 1) {
+        label = 'Overdue by \${overdue.inHours} hour\${overdue.inHours == 1 ? '' : 's'}';
+      } else {
+        label = 'Deadline passed';
+      }
+    } else if (remaining.inHours < 24) {
+      color = Colors.red.shade700;
       icon = Icons.timer_outlined;
-      label = 'Due today';
-    } else if (days <= 2) {
-      color = Colors.deepOrange;
-      icon = Icons.hourglass_bottom_rounded;
-      label = 'Due in ${days} day${days == 1 ? '' : 's'}';
-    } else if (days <= 7) {
+      label = remaining.inHours < 1
+          ? 'Due in \${remaining.inMinutes.clamp(1, 59)} min'
+          : 'Due in \${remaining.inHours} hour\${remaining.inHours == 1 ? '' : 's'}';
+    } else if (remaining.inDays <= 3) {
       color = Colors.amber.shade800;
-      icon = Icons.hourglass_top_rounded;
-      label = 'Due in ${days} days';
+      icon = Icons.hourglass_bottom_rounded;
+      label = remaining.inDays == 1 ? 'Due tomorrow' : 'Due in \${remaining.inDays} days';
     } else {
       color = Colors.green.shade700;
       icon = Icons.event_available_rounded;
-      label = 'Due in ${days} days';
+      label = 'Due in \${remaining.inDays} days';
     }
+
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -2296,7 +2301,13 @@ class _DeadlineCountdownRibbon extends StatelessWidget {
           children: [
             Icon(icon, size: 14, color: color),
             const SizedBox(width: 5),
-            Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w800)),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
           ],
         ),
       ),
