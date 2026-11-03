@@ -469,6 +469,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
               ],
               const SizedBox(height: 6),
               Wrap(spacing: 6, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                if (_studyMode) _metaChip(Icons.school_outlined, 'state: ${card.state}'),
                 if (card.dueDate != null) _metaChip(Icons.event_outlined, '${card.dueDate!.day}/${card.dueDate!.month}'),
                 if (card.colorLabel != null && card.colorLabel!.isNotEmpty) _metaChip(Icons.label_outline, card.colorLabel!),
                 FutureBuilder<int>(future: _secondsForCard(card.id), builder: (context, snap) {
@@ -501,9 +502,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
                 PopupMenuItem(value: 'edit', child: Text(l.kanbanEditCard)),
                 PopupMenuItem(value: 'links', child: Text(l.kanbanLinks)),
                 const PopupMenuDivider(),
-                PopupMenuItem(value: 'todo', child: Text(l.kanbanTodo)),
-                PopupMenuItem(value: 'progress', child: Text(l.kanbanInProgress)),
-                PopupMenuItem(value: 'done', child: Text(l.kanbanDone)),
+                PopupMenuItem(value: 'todo', child: Text(_statusTitle(KanbanStatus.todo, l))),
+                PopupMenuItem(value: 'progress', child: Text(_statusTitle(KanbanStatus.inProgress, l))),
+                PopupMenuItem(value: 'done', child: Text(_statusTitle(KanbanStatus.done, l))),
                 const PopupMenuDivider(),
                 PopupMenuItem(value: 'timer', child: Text(l.kanbanStartPauseTimer)),
                 PopupMenuItem(value: 'archive', child: Text(l.kanbanArchive)),
