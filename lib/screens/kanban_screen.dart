@@ -31,6 +31,7 @@ class _KanbanScreenState extends State<KanbanScreen> {
   Stream<List<KanbanGoal>>? _goals;
   String? _goalId;
   bool _byGoal = false;
+  bool _studyMode = false;
   bool _allowMultipleTimers = false;
   bool _ownsRepo = false;
   Future<int>? _todaySecondsFuture;
@@ -281,8 +282,13 @@ class _KanbanScreenState extends State<KanbanScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.kanbanBoard),
+        title: Text(_studyMode ? 'Study Kanban' : l.kanbanBoard),
         actions: [
+          IconButton(
+            tooltip: _studyMode ? 'Exit Study Kanban' : 'Study Kanban',
+            onPressed: () => setState(() => _studyMode = !_studyMode),
+            icon: Icon(_studyMode ? Icons.school : Icons.school_outlined),
+          ),
           IconButton(tooltip: l.kanbanAddCard, onPressed: _byGoal && _goalId == null ? null : _addCard, icon: const Icon(Icons.add_rounded)),
           PopupMenuButton<String>(
             onSelected: (value) async {
@@ -355,9 +361,9 @@ class _KanbanScreenState extends State<KanbanScreen> {
           }
           return DefaultTabController(length: 3, child: Column(children: [
             TabBar(tabs: [
-              Tab(text: '${l.kanbanTodo} (${_count(cards, KanbanStatus.todo)})'),
-              Tab(text: '${l.kanbanInProgress} (${_count(cards, KanbanStatus.inProgress)})'),
-              Tab(text: '${l.kanbanDone} (${_count(cards, KanbanStatus.done)})'),
+              Tab(text: '${_statusTitle(KanbanStatus.todo, l)} (${_count(cards, KanbanStatus.todo)})'),
+              Tab(text: '${_statusTitle(KanbanStatus.inProgress, l)} (${_count(cards, KanbanStatus.inProgress)})'),
+              Tab(text: '${_statusTitle(KanbanStatus.done, l)} (${_count(cards, KanbanStatus.done)})'),
             ]),
             Expanded(child: TabBarView(children: [for (final s in statuses) _column(s, cards, l)])),
           ]));
@@ -369,11 +375,20 @@ class _KanbanScreenState extends State<KanbanScreen> {
 
   int _count(List<KanbanCard> cards, KanbanStatus s) => cards.where((c) => c.status == s).length;
 
-  String _statusTitle(KanbanStatus status, AppLocalizations l) => switch (status) {
-    KanbanStatus.todo => l.kanbanTodo,
-    KanbanStatus.inProgress => l.kanbanInProgress,
-    KanbanStatus.done => l.kanbanDone,
-  };
+  String _statusTitle(KanbanStatus status, AppLocalizations l) {
+    if (_studyMode) {
+      return switch (status) {
+        KanbanStatus.todo => 'New',
+        KanbanStatus.inProgress => 'Learning',
+        KanbanStatus.done => 'Mastered',
+      };
+    }
+    return switch (status) {
+      KanbanStatus.todo => l.kanbanTodo,
+      KanbanStatus.inProgress => l.kanbanInProgress,
+      KanbanStatus.done => l.kanbanDone,
+    };
+  }
 
   Color _priorityColor(KanbanPriority p, ColorScheme cs) => switch (p) {
     KanbanPriority.high => cs.error,
