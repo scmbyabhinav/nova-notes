@@ -1728,7 +1728,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         value: selected.contains(candidate.id),
                         controlAffinity: ListTileControlAffinity.leading,
                         title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
-                        subtitle: Text(candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                        subtitle: Text(candidate.content.trim().replaceAll(RegExp(r'\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
                         onChanged: (checked) => setDialogState(() {
                           if (checked == true) {
                             selected.add(candidate.id);
@@ -2817,7 +2817,7 @@ class _ToolButton extends StatelessWidget {
       if (match != null) {
         flush();
         currentLines = <String>[line];
-        currentTitle = match.group(2)!.replaceAll(RegExp(r'\\s+#+\\s*
+        currentTitle = match.group(2)!.replaceAll(RegExp(r'\s+#+\\s*
     final theme = Theme.of(context);
     if (_isLocked && !_privateUnlocked) {
       return Scaffold(
@@ -3775,7 +3775,7 @@ class _ToolButton extends StatelessWidget {
     return sections;
   }
 
-  Widget _buildMarkdownBody(String content, ThemeData theme) {
+  Widget _buildMarkdownBody(String content) {
     return MarkdownBody(
       data: content,
       selectable: true,
@@ -3810,7 +3810,7 @@ class _ToolButton extends StatelessWidget {
     final sections = _buildMarkdownSections(markdown);
     final headings = sections.where((section) => section.title != null).toList();
     if (headings.length < 2) {
-      return <Widget>[_buildMarkdownBody(markdown, theme)];
+      return <Widget>[_buildMarkdownBody(markdown)];
     }
 
     final widgets = <Widget>[
@@ -3870,7 +3870,7 @@ class _ToolButton extends StatelessWidget {
 
     for (final section in sections) {
       if (section.content.trim().isEmpty) continue;
-      final body = _buildMarkdownBody(section.content, theme);
+      final body = _buildMarkdownBody(section.content);
       if (section.anchorKey != null) {
         widgets.add(KeyedSubtree(key: section.anchorKey, child: body));
       } else {
