@@ -1395,7 +1395,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _addFiles() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.any,
         allowMultiple: true,
         withData: true,
