@@ -94,6 +94,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
+  final TextEditingController _previewAppendController = TextEditingController();
   Timer? _saveTimer;
   late final DateTime _createdAt;
   late String _noteId;
@@ -1682,6 +1683,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _saveTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
+    _previewAppendController.dispose();
     _contentFocus.dispose();
     super.dispose();
   }
@@ -1855,6 +1857,22 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ],
       )),
     );
+  }
+
+  Future<void> _appendPreviewText() async {
+    final addition = _previewAppendController.text.trim();
+    if (addition.isEmpty || _isLocked) return;
+    final current = _contentController.text.trimRight();
+    final next = current.isEmpty ? addition : '$current\n\n$addition';
+    _contentController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: next.length),
+      composing: TextRange.empty,
+    );
+    _previewAppendController.clear();
+    _hasChanges = true;
+    if (mounted) setState(() {});
+    await _save();
   }
 
   Future<void> _updateInlineImageWidth(Uri uri, double width) async {
@@ -2533,6 +2551,24 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           ),
                         const SizedBox(height: 12),
                         ..._buildPreviewMarkdownWidgets(theme),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _previewAppendController,
+                          minLines: 2,
+                          maxLines: 5,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            labelText: 'Continue writing',
+                            hintText: 'Type more text without hiding your images…',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                            suffixIcon: IconButton(
+                              tooltip: 'Add text to note',
+                              onPressed: _appendPreviewText,
+                              icon: const Icon(Icons.send_rounded),
+                            ),
+                          ),
+                          onSubmitted: (_) => _appendPreviewText(),
+                        ),
                       ],
                     )
                   : ListView(
