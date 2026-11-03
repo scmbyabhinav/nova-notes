@@ -1099,8 +1099,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       _showNoteMenu(recent[index]),
                                   child: _NoteCard(
                                     note: recent[index],
-                                    compact: _noteView == 'compact' ||
-                                        _noteView == 'list',
+                                    compact: _noteView == 'compact',
                                     onTap: () => _openNote(recent[index]),
                                   ),
                                 ),
