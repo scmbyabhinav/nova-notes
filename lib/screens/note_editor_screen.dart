@@ -73,11 +73,28 @@ class NoteEditorScreen extends StatefulWidget {
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
 }
 
+class _MarkdownTocSection {
+  const _MarkdownTocSection({
+    required this.content,
+    this.title,
+    this.level = 0,
+    this.anchorKey,
+  });
+
+  final String content;
+  final String? title;
+  final int level;
+  final GlobalKey? anchorKey;
+}
+
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
+  final Map<int, GlobalKey> _previewHeadingKeys = <int, GlobalKey>{};
+  int _focusMinutes = 0;
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
+  final TextEditingController _previewAppendController = TextEditingController();
   Timer? _saveTimer;
   late final DateTime _createdAt;
   late String _noteId;
@@ -132,10 +149,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _voiceTranscript = '';
   Timer? _voiceDurationTimer;
   int _voiceElapsedSeconds = 0;
-  final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
   final ScreenshotController _noteCardScreenshotController = ScreenshotController();
-
-  static const _voiceHintShownKey = 'orah_voice_hint_shown';
 
   @override
   void initState() {
@@ -144,6 +158,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
     final existing = widget.note;
     _reviewCounted = existing != null;
+    _focusMinutes = existing?.focusMinutes ?? 0;
     _noteId = existing?.id ?? _newId();
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
@@ -177,19 +192,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _maybeShowVoiceHint();
       if (widget.autoStartVoice) _toggleVoiceInput();
       if (widget.autoOpenReminder) _setDueDate();
-    });
-  }
-
-  Future<void> _maybeShowVoiceHint() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_voiceHintShownKey) == true || !mounted) return;
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _voiceHintKey.currentState?.ensureTooltipVisible();
     });
   }
 
@@ -239,17 +243,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleVoiceFabTap() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    if (_isListening) {
-      await _stopAndSaveVoiceInput();
-    } else {
-      await _toggleVoiceInput();
-    }
   }
 
   Future<void> _toggleVoiceInput() async {
@@ -497,6 +490,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _toggleChecklistItem(int index, bool value) async {
     setState(() { _checklistItems[index] = _checklistItems[index].copyWith(isDone: value); _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _setChecklistItemReminder(int index) async {
+    final item = _checklistItems[index];
+    final now = DateTime.now();
+    final initial = item.dueAt ?? now.add(const Duration(hours: 1));
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isBefore(now) ? now : initial,
+      firstDate: now,
+      lastDate: DateTime(9999, 12, 31),
+    );
+    if (picked == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
+    if (time == null || !mounted) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(
+        dueAt: DateTime(picked.year, picked.month, picked.day, time.hour, time.minute),
+      );
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _clearChecklistItemReminder(int index) async {
+    final item = _checklistItems[index];
+    await OrahReminderService.instance.cancel('checklist:${item.id}');
+    if (!mounted) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(clearDueAt: true);
+      _hasChanges = true;
+    });
     await _save();
   }
 
@@ -960,6 +989,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            focusMinutes: _focusMinutes,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -980,6 +1010,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            focusMinutes: _focusMinutes,
           );
 
     await _saveTimeout.run(widget.repository.saveNote(note), const Duration(seconds: 10));
@@ -1405,10 +1436,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       if (result.isEmpty) return;
       final imported = <String>[];
       for (final file in result) {
-        if (file.path == null) continue;
-        imported.add(
-          await const NovaAttachmentService().importFile(file.path!),
-        );
+        final path = file.path;
+        if (path != null && path.isNotEmpty) {
+          imported.add(await const NovaAttachmentService().importFile(path));
+        } else {
+          // file_picker v13 removed the public bytes property. Read on demand.
+          final bytes = await file.readAsBytes();
+          if (bytes.isNotEmpty) {
+            imported.add(await const NovaAttachmentService().importBytes(bytes, file.name));
+          }
+        }
       }
       if (imported.isEmpty) return;
       setState(() {
@@ -1555,7 +1592,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final selection = value.selection;
     final start = selection.isValid ? selection.start : value.text.length;
     final end = selection.isValid ? selection.end : value.text.length;
-    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ')';
+    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ' "width=320")';
     final prefix = start > 0 && value.text[start - 1] != '\n' ? '\n\n' : '';
     final suffix = end < value.text.length && value.text.substring(end).startsWith('\n') ? '' : '\n\n';
     _contentController.value = value.copyWith(
@@ -1682,6 +1719,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _saveTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
+    _previewAppendController.dispose();
     _contentFocus.dispose();
     super.dispose();
   }
@@ -1857,6 +1895,216 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
+  Future<void> _appendPreviewText() async {
+    final addition = _previewAppendController.text.trim();
+    if (addition.isEmpty || _isLocked) return;
+    final current = _contentController.text.trimRight();
+    final next = current.isEmpty ? addition : '$current\n\n$addition';
+    _contentController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: next.length),
+      composing: TextRange.empty,
+    );
+    _previewAppendController.clear();
+    _hasChanges = true;
+    if (mounted) setState(() {});
+    await _save();
+  }
+
+  Future<void> _updateInlineImageWidth(Uri uri, double width) async {
+    final expression = RegExp(
+      r'(!\[[^\]]*\]\(' + RegExp.escape(uri.toString()) + r') "width=\d+"\)',
+    );
+    final updated = _contentController.text.replaceAllMapped(
+      expression,
+      (match) => match.group(0)!.replaceFirst(
+        RegExp(r'width=\d+'),
+        'width=${width.round()}',
+      ),
+    );
+    if (updated == _contentController.text) return;
+    _contentController.value = _contentController.value.copyWith(
+      text: updated,
+      selection: TextSelection.collapsed(offset: updated.length),
+      composing: TextRange.empty,
+    );
+    _hasChanges = true;
+    await _save();
+  }
+
+  List<_MarkdownTocSection> _buildMarkdownSections(String markdown) {
+    final sections = <_MarkdownTocSection>[];
+    var currentLines = <String>[];
+    String? currentTitle;
+    var currentLevel = 0;
+    GlobalKey? currentKey;
+    var headingIndex = 0;
+
+    void flush() {
+      if (currentLines.isEmpty) return;
+      sections.add(_MarkdownTocSection(
+        content: currentLines.join('\n'),
+        title: currentTitle,
+        level: currentLevel,
+        anchorKey: currentKey,
+      ));
+    }
+
+    for (final line in markdown.split('\n')) {
+      final trimmed = line.trimLeft();
+      var level = 0;
+      while (level < trimmed.length && level < 4 && trimmed[level] == '#') {
+        level++;
+      }
+      final isHeading = level >= 1 &&
+          level <= 3 &&
+          trimmed.length > level &&
+          trimmed[level].trim().isEmpty &&
+          trimmed.substring(level).trim().isNotEmpty;
+      if (isHeading) {
+        flush();
+        currentLines = <String>[line];
+        var title = trimmed.substring(level).trim();
+        while (title.endsWith('#')) {
+          title = title.substring(0, title.length - 1).trimRight();
+        }
+        currentTitle = title;
+        currentLevel = level;
+        currentKey = _previewHeadingKeys.putIfAbsent(headingIndex, () => GlobalKey());
+        headingIndex++;
+      } else {
+        currentLines.add(line);
+      }
+    }
+    flush();
+    return sections;
+  }
+
+  Widget _buildMarkdownBody(String content) {
+    return MarkdownBody(
+      data: content,
+      selectable: true,
+      imageBuilder: (uri, title, alt) {
+        if (uri.scheme == 'file') {
+          try {
+            final file = File(uri.toFilePath());
+            if (file.existsSync()) {
+              final match = RegExp(r'width=(\d+)').firstMatch(title ?? '');
+              final width = match == null ? 320.0 : double.parse(match.group(1)!);
+              return _ResizableInlineImage(
+                file: file,
+                width: width,
+                onWidthChanged: (nextWidth) => _updateInlineImageWidth(uri, nextWidth),
+              );
+            }
+          } catch (_) {
+            // Invalid local image URI: render the fallback below.
+          }
+          return const Text('Image unavailable');
+        }
+        return Image.network(
+          uri.toString(),
+          errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildPreviewMarkdownWidgets(ThemeData theme) {
+    final markdown = _renderableContent();
+    final sections = _buildMarkdownSections(markdown);
+    final headings = sections.where((section) => section.title != null).toList();
+    if (headings.length < 2) {
+      return <Widget>[_buildMarkdownBody(markdown)];
+    }
+
+    final widgets = <Widget>[
+      Card(
+        margin: const EdgeInsets.only(bottom: 18),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.list_alt_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Table of contents',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              for (final heading in headings)
+                Padding(
+                  padding: EdgeInsets.only(left: (heading.level - 1) * 16.0),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+                      minimumSize: const Size.fromHeight(36),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      final targetContext = heading.anchorKey?.currentContext;
+                      if (targetContext != null) {
+                        Scrollable.ensureVisible(
+                          targetContext,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          alignment: 0.04,
+                        );
+                      }
+                    },
+                    child: Text(
+                      heading.title!,
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ];
+
+    for (final section in sections) {
+      if (section.content.trim().isEmpty) continue;
+      final body = _buildMarkdownBody(section.content);
+      if (section.anchorKey != null) {
+        widgets.add(KeyedSubtree(key: section.anchorKey, child: body));
+      } else {
+        widgets.add(body);
+      }
+      widgets.add(const SizedBox(height: 8));
+    }
+    return widgets;
+  }
+
+  Future<void> _startFocusSession() async {
+    if (_isLocked) return;
+    final minutes = await showDialog<int>(
+      context: context,
+      builder: (context) => const _FocusSessionDialog(),
+    );
+    if (!mounted || minutes == null || minutes <= 0) return;
+    setState(() {
+      _focusMinutes += minutes;
+      _hasChanges = true;
+    });
+    await _save();
+    if (mounted && !_saveFailed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Saved $minutes focus minutes to this note · Total $_focusMinutes min')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1883,37 +2131,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       child: Scaffold(
         backgroundColor: _isZenMode ? const Color(0xFFF2FBF7) : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // Keep the writing area unobstructed. Voice capture lives in the
+      // formatting toolbar, not in a floating button over the note text.
       floatingActionButton: _isZenMode
           ? FloatingActionButton.small(
               tooltip: 'Exit Zen Mode',
               onPressed: () => setState(() => _isZenMode = false),
               child: const Icon(Icons.center_focus_strong),
             )
-          : Tooltip(
-        key: _voiceHintKey,
-        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
-        triggerMode: TooltipTriggerMode.manual,
-        child: FloatingActionButton.extended(
-          onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
-          backgroundColor: _isListening ? Colors.red.shade600 : const Color(0xFFF97316),
-          foregroundColor: Colors.white,
-          icon: _speechInitializing || _voiceProcessing
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Icon(_isListening ? Icons.stop_rounded : Icons.mic_rounded, size: 26),
-          label: Text(
-            _isListening
-                ? _formatVoiceDuration()
-                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
-          ),
-        ),
-      ),
+          : null,
       appBar: _isZenMode ? null : AppBar(
         leading: IconButton(
           tooltip: 'Back',
@@ -2360,32 +2586,24 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                 ),
                           ),
                         const SizedBox(height: 12),
-                        MarkdownBody(
-                          data: _renderableContent(),
-                          selectable: true,
-                          imageBuilder: (uri, title, alt) {
-                            if (uri.scheme == 'file') {
-                              try {
-                                final file = File(uri.toFilePath());
-                                if (file.existsSync()) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.file(file, fit: BoxFit.contain),
-                                    ),
-                                  );
-                                }
-                              } catch (_) {
-                                // Invalid local image URI: render the fallback below.
-                              }
-                              return const Text('Image unavailable');
-                            }
-                            return Image.network(
-                              uri.toString(),
-                              errorBuilder: (_, __, ___) => const Text('Image unavailable'),
-                            );
-                          },
+                        ..._buildPreviewMarkdownWidgets(theme),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _previewAppendController,
+                          minLines: 2,
+                          maxLines: 5,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            labelText: 'Continue writing',
+                            hintText: 'Type more text without hiding your images…',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                            suffixIcon: IconButton(
+                              tooltip: 'Add text to note',
+                              onPressed: _appendPreviewText,
+                              icon: const Icon(Icons.send_rounded),
+                            ),
+                          ),
+                          onSubmitted: (_) => _appendPreviewText(),
                         ),
                       ],
                     )
@@ -2423,7 +2641,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
                           _buildSlashCommandMenu(theme),
                         if (_noteType == NoteType.checklist)
-                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onSetReminder: _setChecklistItemReminder, onClearReminder: _clearChecklistItemReminder, onReorder: _reorderChecklist)
                         else
                           TextField(
                             controller: _contentController,
@@ -2459,14 +2677,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 top: false,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  // Reserve trailing space for the endFloat voice FAB above this
-                  // row so the last toolbar controls can scroll clear of its hit area.
-                  padding: EdgeInsets.fromLTRB(
-                    14,
-                    8,
-                    MediaQuery.sizeOf(context).width < 500 ? 260 : 116,
-                    8,
-                  ),
+                  // The voice control is part of this toolbar, so controls
+                  // use normal edge padding and never sit beneath a floating mic.
+                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
                   child: Row(
                     children: [
                       _ToolButton(
@@ -2538,6 +2751,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         icon: Icons.attach_file_rounded,
                         label: 'Add image or file',
                         onPressed: _showAttachmentMenu,
+                      ),
+                      _ToolButton(
+                        icon: Icons.timer_outlined,
+                        label: _focusMinutes > 0 ? 'Focus session · $_focusMinutes min' : 'Focus session',
+                        onPressed: _startFocusSession,
+                      ),
+                      _ToolButton(
+                        icon: Icons.notifications_active_outlined,
+                        label: _dueAt == null ? 'Set reminder' : 'Edit reminder',
+                        onPressed: _setDueDate,
                       ),
                       _ToolButton(
                         icon: _isListening ? Icons.stop_circle_outlined : null,
@@ -2617,6 +2840,8 @@ class _ChecklistEditor extends StatelessWidget {
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetReminder,
+    required this.onClearReminder,
     required this.onReorder,
   });
 
@@ -2625,6 +2850,8 @@ class _ChecklistEditor extends StatelessWidget {
   final Future<void> Function(int, bool) onToggle;
   final Future<void> Function(int) onEdit;
   final Future<void> Function(int) onDelete;
+  final Future<void> Function(int) onSetReminder;
+  final Future<void> Function(int) onClearReminder;
   final Future<void> Function(int, int) onReorder;
 
   @override
@@ -2673,6 +2900,8 @@ class _ChecklistEditor extends StatelessWidget {
                   onToggle: (value) => onToggle(index, value),
                   onEdit: () => onEdit(index),
                   onDelete: () => onDelete(index),
+                  onSetReminder: () => onSetReminder(index),
+                  onClearReminder: () => onClearReminder(index),
                   onMoveUp: index > 0
                       ? () => onReorder(index, index - 1)
                       : null,
@@ -2705,6 +2934,8 @@ class _ChecklistRow extends StatelessWidget {
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetReminder,
+    required this.onClearReminder,
     required this.onMoveUp,
     required this.onMoveDown,
   });
@@ -2715,6 +2946,8 @@ class _ChecklistRow extends StatelessWidget {
   final ValueChanged<bool> onToggle;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onSetReminder;
+  final VoidCallback onClearReminder;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
 
@@ -2748,6 +2981,12 @@ class _ChecklistRow extends StatelessWidget {
               tooltip: 'Move down',
               onPressed: canMoveDown ? onMoveDown : null,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            IconButton(
+              tooltip: item.dueAt == null ? 'Set task reminder' : 'Edit task reminder (long-press to clear)',
+              onPressed: onSetReminder,
+              onLongPress: item.dueAt == null ? null : onClearReminder,
+              icon: Icon(item.dueAt == null ? Icons.notifications_none_rounded : Icons.notifications_active_rounded),
             ),
             IconButton(
               tooltip: 'Delete task',
@@ -2794,13 +3033,203 @@ class _ToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isVoice = label == 'Voice input' || label == 'Stop voice input';
+    final isStoppingVoice = label == 'Stop voice input';
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
+      child: IconButton.filledTonal(
         tooltip: label,
+        visualDensity: VisualDensity.compact,
+        style: isVoice
+            ? IconButton.styleFrom(
+                backgroundColor: isStoppingVoice
+                    ? theme.colorScheme.errorContainer
+                    : const Color(0xFFFFE8D6),
+                foregroundColor: isStoppingVoice
+                    ? theme.colorScheme.onErrorContainer
+                    : const Color(0xFFB54708),
+              )
+            : null,
         onPressed: onPressed,
-        icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
+        icon: assetIcon != null ? OrahAssetIcon(assetIcon!, size: 20) : Icon(icon!, size: 21),
       ),
+    );
+  }
+}
+
+class _ResizableInlineImage extends StatefulWidget {
+  const _ResizableInlineImage({
+    required this.file,
+    required this.width,
+    required this.onWidthChanged,
+  });
+
+  final File file;
+  final double width;
+  final ValueChanged<double> onWidthChanged;
+
+  @override
+  State<_ResizableInlineImage> createState() => _ResizableInlineImageState();
+}
+
+class _ResizableInlineImageState extends State<_ResizableInlineImage> {
+  late double _width;
+
+  @override
+  void initState() {
+    super.initState();
+    _width = widget.width;
+  }
+
+  @override
+  void didUpdateWidget(covariant _ResizableInlineImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.width != widget.width) _width = widget.width;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxWidth = constraints.maxWidth.isFinite ? constraints.maxWidth : 600.0;
+          final displayWidth = _width.clamp(120.0, maxWidth).toDouble();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  widget.file,
+                  width: displayWidth,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  IconButton(
+                    tooltip: 'Make image smaller',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      final next = (_width - 40).clamp(120.0, maxWidth).toDouble();
+                      setState(() => _width = next);
+                      widget.onWidthChanged(next);
+                    },
+                    icon: const Icon(Icons.remove_circle_outline_rounded),
+                  ),
+                  Text('${displayWidth.round()} px', style: theme.textTheme.labelSmall),
+                  IconButton(
+                    tooltip: 'Make image larger',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      final next = (_width + 40).clamp(120.0, maxWidth).toDouble();
+                      setState(() => _width = next);
+                      widget.onWidthChanged(next);
+                    },
+                    icon: const Icon(Icons.add_circle_outline_rounded),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _FocusSessionDialog extends StatefulWidget {
+  const _FocusSessionDialog();
+
+  @override
+  State<_FocusSessionDialog> createState() => _FocusSessionDialogState();
+}
+
+class _FocusSessionDialogState extends State<_FocusSessionDialog> {
+  static const int _sessionLengthSeconds = 25 * 60;
+  Timer? _timer;
+  int _elapsedSeconds = 0;
+  bool _running = false;
+
+  int get _remainingSeconds => _sessionLengthSeconds - _elapsedSeconds;
+
+  String _formatDuration(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final remainder = (seconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$remainder';
+  }
+
+  void _startOrPause() {
+    if (_running) {
+      _timer?.cancel();
+      setState(() => _running = false);
+      return;
+    }
+    if (_remainingSeconds <= 0) return;
+    setState(() => _running = true);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_remainingSeconds <= 1) {
+        timer.cancel();
+        Navigator.of(context).pop(25);
+        return;
+      }
+      setState(() => _elapsedSeconds++);
+    });
+  }
+
+  void _finish() {
+    _timer?.cancel();
+    final minutes = _elapsedSeconds ~/ 60;
+    Navigator.of(context).pop(minutes);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: const Text('Focus session'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.timer_outlined, size: 42),
+          const SizedBox(height: 12),
+          Text(
+            _formatDuration(_remainingSeconds),
+            style: theme.textTheme.displaySmall,
+          ),
+          const SizedBox(height: 8),
+          const Text('25-minute Pomodoro · focus on this note'),
+          const SizedBox(height: 8),
+          Text('Elapsed: ${_formatDuration(_elapsedSeconds)}', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _finish,
+          child: const Text('Finish & save'),
+        ),
+        FilledButton(
+          onPressed: _startOrPause,
+          child: Text(_running ? 'Pause' : 'Start'),
+        ),
+      ],
     );
   }
 }

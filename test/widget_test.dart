@@ -118,9 +118,13 @@ void main() {
     expect(find.text('Reactive note test'), findsAtLeastNWidgets(1));
   });
 
-  testWidgets('voice FAB invokes speech service and shows one-time hint', (tester) async {
+  testWidgets('voice input starts from the editor toolbar without a floating mic', (tester) async {
     final speech = _FakeSpeechService();
-    await tester.pumpWidget(OrahApp(speechService: speech, requestMicrophonePermission: () async => PermissionStatus.granted, skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(
+      speechService: speech,
+      requestMicrophonePermission: () async => PermissionStatus.granted,
+      skipRegistrationForTesting: true,
+    ));
     await tester.pump();
 
     final quickCaptureFab = find.byTooltip(
@@ -129,25 +133,26 @@ void main() {
     await tester.tap(quickCaptureFab);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    await tester.pump(const Duration(milliseconds: 500));
 
-    final voiceHint = find.byWidgetPredicate(
-      (widget) => widget is Tooltip && widget.message == 'Tap the mic to speak your note',
+    final voiceButton = find.byTooltip('Voice input');
+    expect(voiceButton, findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is FloatingActionButton &&
+            (widget.tooltip?.toLowerCase().contains('voice') ?? false),
+      ),
+      findsNothing,
     );
-    expect(voiceHint, findsOneWidget);
-    tester.state<TooltipState>(voiceHint).ensureTooltipVisible();
-    await tester.pump();
-    expect(find.text('Tap the mic to speak your note'), findsOneWidget);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
 
-    await tester.tap(find.byType(FloatingActionButton));
+    await tester.ensureVisible(voiceButton);
+    await tester.tap(voiceButton);
     await tester.pump();
 
     expect(speech.startCount, 1);
     expect(find.text('Hello from voice'), findsAtLeastNWidgets(1));
-
-    final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getBool('orah_voice_hint_shown'), isTrue);
+    // The fake speech service emits a completed result, so listening may stop
+    // immediately after inserting the transcript. Starting capture and
+    // inserting the transcript are the stable behaviours to assert here.
   });
 
   testWidgets('templates list all starter templates and inserts selected content', (tester) async {

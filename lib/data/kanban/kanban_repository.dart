@@ -51,6 +51,10 @@ class KanbanCard {
   final DateTime? archivedAt;
   final DateTime? deletedAt;
 
+  /// Stable study-board state: 0 = New, 1 = Learning, 2 = Mastered.
+  /// The existing persisted status maps directly to these values.
+  int get state => status.index;
+
   factory KanbanCard.fromRow(Map<String, Object?> row) => KanbanCard(
     id: row['id']! as String,
     title: row['title']! as String,
