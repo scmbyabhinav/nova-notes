@@ -2075,37 +2075,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       child: Scaffold(
         backgroundColor: _isZenMode ? const Color(0xFFF2FBF7) : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // Keep the writing area unobstructed. Voice capture lives in the
+      // formatting toolbar, not in a floating button over the note text.
       floatingActionButton: _isZenMode
           ? FloatingActionButton.small(
               tooltip: 'Exit Zen Mode',
               onPressed: () => setState(() => _isZenMode = false),
               child: const Icon(Icons.center_focus_strong),
             )
-          : Tooltip(
-        key: _voiceHintKey,
-        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
-        triggerMode: TooltipTriggerMode.manual,
-        child: FloatingActionButton.extended(
-          onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
-          backgroundColor: _isListening ? Colors.red.shade600 : const Color(0xFFF97316),
-          foregroundColor: Colors.white,
-          icon: _speechInitializing || _voiceProcessing
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Icon(_isListening ? Icons.stop_rounded : Icons.mic_rounded, size: 26),
-          label: Text(
-            _isListening
-                ? _formatVoiceDuration()
-                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
-          ),
-        ),
-      ),
+          : null,
       appBar: _isZenMode ? null : AppBar(
         leading: IconButton(
           tooltip: 'Back',
@@ -2634,14 +2612,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 top: false,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  // Reserve trailing space for the endFloat voice FAB above this
-                  // row so the last toolbar controls can scroll clear of its hit area.
-                  padding: EdgeInsets.fromLTRB(
-                    14,
-                    8,
-                    MediaQuery.sizeOf(context).width < 500 ? 260 : 116,
-                    8,
-                  ),
+                  // The voice control is part of this toolbar, so controls
+                  // use normal edge padding and never sit beneath a floating mic.
+                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
                   child: Row(
                     children: [
                       _ToolButton(
@@ -2969,12 +2942,26 @@ class _ToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isVoice = label == 'Voice input' || label == 'Stop voice input';
+    final isStoppingVoice = label == 'Stop voice input';
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
+      child: IconButton.filledTonal(
         tooltip: label,
+        visualDensity: VisualDensity.compact,
+        style: isVoice
+            ? IconButton.styleFrom(
+                backgroundColor: isStoppingVoice
+                    ? theme.colorScheme.errorContainer
+                    : const Color(0xFFFFE8D6),
+                foregroundColor: isStoppingVoice
+                    ? theme.colorScheme.onErrorContainer
+                    : const Color(0xFFB54708),
+              )
+            : null,
         onPressed: onPressed,
-        icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
+        icon: assetIcon != null ? OrahAssetIcon(assetIcon!, size: 20) : Icon(icon!, size: 21),
       ),
     );
   }
