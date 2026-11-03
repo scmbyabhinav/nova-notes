@@ -296,6 +296,18 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
+              leading: const Icon(Icons.merge_type_rounded),
+              title: const Text('Merge with…'),
+              subtitle: const Text('Combine this note with another'),
+              onTap: () => Navigator.pop(context, 'merge'),
+            ),
+            ListTile(
+              leading: Icon(note.isInbox ? Icons.inbox_rounded : Icons.inbox_outlined),
+              title: Text(note.isInbox ? 'Remove from Triage Inbox' : 'Send to Triage Inbox'),
+              subtitle: Text(note.isInbox ? 'File this note back with your notes' : 'Keep this note in your triage inbox'),
+              onTap: () => Navigator.pop(context, 'inbox'),
+            ),
+            ListTile(
               leading: const Icon(Icons.copy_outlined),
               title: const Text('Duplicate note'),
               onTap: () => Navigator.pop(context, 'duplicate'),
@@ -318,6 +330,29 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (!mounted || action == null) return;
 
     switch (action) {
+      case 'merge':
+        await _mergeNoteWithAnother(note);
+        return;
+      case 'inbox':
+        final sendToInbox = !note.isInbox;
+        await _updateNote(
+          note,
+          note.copyWith(isInbox: sendToInbox, updatedAt: DateTime.now()),
+        );
+        if (!mounted) return;
+        if (sendToInbox) {
+          setState(() => _activeFilter = 'inbox');
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(sendToInbox ? 'Moved to Triage Inbox' : 'Removed from Triage Inbox'),
+            action: SnackBarAction(
+              label: 'View Inbox',
+              onPressed: () => setState(() => _activeFilter = 'inbox'),
+            ),
+          ),
+        );
+        return;
       case 'duplicate':
         final repository = await NoteRepositoryProvider.instance();
         final duplicate = note.copyWith(
@@ -423,6 +458,139 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     }
   }
 
+
+  Future<void> _mergeNoteWithAnother(Note target) async {
+    if (target.isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unlock private notes before merging.')),
+      );
+      return;
+    }
+
+    final repository = await NoteRepositoryProvider.instance();
+    final candidates = (await repository.getNotes())
+        .where((note) => note.id != target.id && !note.isTrashed && !note.isLocked)
+        .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    if (!mounted) return;
+    if (candidates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Create another note before merging.')),
+      );
+      return;
+    }
+
+    final source = await showDialog<Note>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Merge with…'),
+        content: SizedBox(
+          width: 440,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 360),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text('Choose a note to combine into this one. The source note will be removed after confirmation.'),
+                ),
+                for (final candidate in candidates)
+                  ListTile(
+                    leading: const Icon(Icons.note_alt_outlined),
+                    title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
+                    subtitle: Text(
+                      candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onTap: () => Navigator.pop(dialogContext, candidate),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || source == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm merge'),
+        content: Text(
+          'Merge "${source.title.trim().isEmpty ? 'Untitled note' : source.title}" into "${target.title.trim().isEmpty ? 'Untitled note' : target.title}"? The source note will be removed.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Merge notes'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final now = DateTime.now();
+    final sections = <String>[
+      if (target.content.trim().isNotEmpty) target.content.trim(),
+      if (source.content.trim().isNotEmpty)
+        '---\\nMerged from: ${source.title.trim().isEmpty ? 'Untitled note' : source.title.trim()}\\n\\n${source.content.trim()}',
+    ];
+    final mergedChecklist = <ChecklistItem>[
+      ...target.checklistItems,
+      ...source.checklistItems.map(
+        (item) => ChecklistItem(
+          id: '${target.id}_merged_${now.microsecondsSinceEpoch}_${item.id}',
+          text: item.text,
+          isDone: item.isDone,
+          dueAt: item.dueAt,
+        ),
+      ),
+    ];
+    final merged = target.copyWith(
+      title: target.title.trim().isNotEmpty ? target.title : source.title,
+      content: sections.join('\\n\\n'),
+      type: target.type == NoteType.checklist && source.type == NoteType.checklist
+          ? NoteType.checklist
+          : NoteType.text,
+      updatedAt: now,
+      tags: {...target.tags, ...source.tags}.toList(),
+      attachments: {...target.attachments, ...source.attachments}.toList(),
+      checklistItems: mergedChecklist,
+      dueAt: target.dueAt ?? source.dueAt,
+      imagePath: target.imagePath ?? source.imagePath,
+    );
+
+    try {
+      await repository.saveNote(merged);
+      await repository.deleteNote(source.id);
+      await repository.refresh();
+      if (!mounted) return;
+      await _loadNotes();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Notes merged successfully.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not merge notes: $error')),
+      );
+    }
+  }
+
   Future<void> _showColorPicker(Note note) async {
     const colors = <Color>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
     final selected = await showModalBottomSheet<int>(
@@ -483,6 +651,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final recent = _notes.where((note) {
       final reflection = isDailyReflection(note);
       switch (_activeFilter) {
+        case 'inbox':
+          return note.isInbox && !note.isArchived && !reflection;
         case 'pinned':
           return note.isPinned && !note.isArchived && !reflection;
         case 'favorites':
@@ -851,6 +1021,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   children: [
                     for (final filter in const [
                       ('all', 'All', Icons.notes_rounded),
+                      ('inbox', 'Triage Inbox', Icons.inbox_outlined),
                       ('pinned', 'Pinned', Icons.push_pin_outlined),
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
                       ('checklists', 'Checklists', Icons.checklist_rounded),
