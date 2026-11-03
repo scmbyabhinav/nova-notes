@@ -73,7 +73,22 @@ class NoteEditorScreen extends StatefulWidget {
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
 }
 
+class _MarkdownTocSection {
+  const _MarkdownTocSection({
+    required this.content,
+    this.title,
+    this.level = 0,
+    this.anchorKey,
+  });
+
+  final String content;
+  final String? title;
+  final int level;
+  final GlobalKey? anchorKey;
+}
+
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
+  final Map<int, GlobalKey> _previewHeadingKeys = <int, GlobalKey>{};
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
@@ -1855,6 +1870,2015 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ],
       )),
     );
+  }
+
+  List<_MarkdownTocSection> _buildMarkdownSections(String markdown) {
+    final lines = markdown.split('\n');
+    final headingPattern = RegExp(r'^(#{1,3})\\s+(.+?)\\s*#*\\s*
+    final theme = Theme.of(context);
+    if (_isLocked && !_privateUnlocked) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Private note')),
+        body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.security_rounded, size: 56),
+          const SizedBox(height: 16),
+          Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
+          const Text('Unlock with your biometric or PIN to view it.', textAlign: TextAlign.center),
+          const SizedBox(height: 20),
+          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? 'Unlocking…' : 'Unlock note')),
+        ]))),
+      );
+    }
+
+    return PopScope<void>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _close();
+      },
+      child: Scaffold(
+        backgroundColor: _isZenMode ? const Color(0xFFF2FBF7) : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: _isZenMode
+          ? FloatingActionButton.small(
+              tooltip: 'Exit Zen Mode',
+              onPressed: () => setState(() => _isZenMode = false),
+              child: const Icon(Icons.center_focus_strong),
+            )
+          : Tooltip(
+        key: _voiceHintKey,
+        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
+        triggerMode: TooltipTriggerMode.manual,
+        child: FloatingActionButton.extended(
+          onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
+          backgroundColor: _isListening ? Colors.red.shade600 : const Color(0xFFF97316),
+          foregroundColor: Colors.white,
+          icon: _speechInitializing || _voiceProcessing
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Icon(_isListening ? Icons.stop_rounded : Icons.mic_rounded, size: 26),
+          label: Text(
+            _isListening
+                ? _formatVoiceDuration()
+                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
+          ),
+        ),
+      ),
+      appBar: _isZenMode ? null : AppBar(
+        leading: IconButton(
+          tooltip: 'Back',
+          onPressed: _close,
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+        title: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 150),
+          child: Text(
+            _saving
+                ? 'Saving…'
+                : (_hasChanges ? 'Unsaved changes' : 'Saved'),
+            key: ValueKey('$_saving-$_hasChanges'),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Link options',
+            icon: Badge(
+              isLabelVisible: _linkedNoteIds.isNotEmpty,
+              label: Text('${_linkedNoteIds.length}'),
+              child: const Icon(Icons.link_rounded),
+            ),
+            onSelected: (value) {
+              switch (value) {
+                case 'note':
+                  _manageLinkedNotes();
+                  break;
+                case 'kanban':
+                  _linkToKanban();
+                  break;
+                case 'view':
+                  _showKanbanBacklinks();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'note',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.note_add_outlined),
+                    title: Text('Link to note'),
+                  ),
+                ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'kanban',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.view_kanban_outlined),
+                    title: Text('Link to Kanban'),
+                  ),
+                ),
+              const PopupMenuItem(
+                value: 'view',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.link_outlined),
+                  title: Text('View linked items'),
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
+            onPressed: () => setState(() => _isZenMode = !_isZenMode),
+            icon: const Icon(Icons.center_focus_strong),
+          ),
+          IconButton(
+            tooltip: _previewMode ? 'Edit' : 'Preview',
+            onPressed: () => setState(() => _previewMode = !_previewMode),
+            icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
+          ),
+          IconButton(
+            tooltip: 'Add Image',
+            onPressed: () => _addImage(ImageSource.gallery),
+            icon: const Icon(Icons.image_outlined),
+          ),
+          if (widget.note != null && !_isLocked && widget.repository is LocalNoteRepository)
+            IconButton(
+              tooltip: 'Version history',
+              onPressed: _showVersionHistory,
+              icon: const Icon(Icons.history_rounded),
+            ),
+          IconButton(
+            tooltip: _isPinned ? 'Unpin' : 'Pin',
+            onPressed: () => _setFlag(pinned: !_isPinned),
+            icon: const OrahAssetIcon('pin'),
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.document_scanner_outlined),
+            onSelected: (value) async {
+              switch (value) {
+                case 'add_image': await _addImage(ImageSource.gallery); return;
+                case 'scan_document': await _scanDocumentToJpg(); return;
+                case 'ocr': await _scanTextFromImage(); return;
+                case 'template': await _showTemplates(); return;
+                case 'reminder': await _setDueDate(); return;
+                case 'clear_reminder': await _clearDueDate(); return;
+                case 'color':
+                  await _showNoteColorPicker();
+                  return;
+                case 'share_card':
+                  await _shareNoteCard();
+                  return;
+                case 'export':
+                  await _save();
+                  if (!mounted) return;
+                  await showModalBottomSheet<void>(
+                    context: context,
+                    showDragHandle: true,
+                    isScrollControlled: true,
+                    builder: (_) => ExportNoteSheet(
+                      note: Note(
+                        id: _noteId,
+                        title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
+                        content: _contentController.text,
+                        type: _noteType,
+                        attachments: _attachments,
+                        checklistItems: _checklistItems,
+                        createdAt: _createdAt,
+                        updatedAt: DateTime.now(),
+                        folderId: _folderId,
+                        tags: _tags,
+                        isPinned: _isPinned,
+                        isFavorite: _isFavorite,
+                        isArchived: _isArchived,
+                        isTrashed: false,
+                        dueAt: _dueAt,
+                        mood: _mood,
+                      ),
+                    ),
+                  );
+                  return;
+                case 'favorite':
+                  await _setFlag(favorite: !_isFavorite);
+                  return;
+                case 'organize':
+                  await _organize();
+                  return;
+                case 'archive':
+                  await _setFlag(archived: !_isArchived);
+                  return;
+                case 'lock':
+                  await _lockNote();
+                  return;
+                case 'unlock_note':
+                  await _unlockNotePermanently();
+                  return;
+                case 'delete':
+                  await _delete();
+                  return;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'share_card',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.image_outlined),
+                  title: Text('Export as Card'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'export',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: OrahAssetIcon('share'),
+                  title: Text('Export'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'favorite',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const OrahAssetIcon('star'),
+                  title: Text(
+                    _isFavorite ? 'Remove favorite' : 'Add to favorites',
+                  ),
+                ),
+              ),
+              const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
+              if (Platform.isAndroid) const PopupMenuItem(value: 'scan_document', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan document (JPG)'))),
+              const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
+              const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
+              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
+              if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
+              const PopupMenuItem(
+                value: 'color',
+                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
+              ),
+              const PopupMenuItem(
+                value: 'organize',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: OrahAssetIcon('tag'),
+                  title: Text('Folder & tags'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'archive',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    _isArchived
+                        ? Icons.unarchive_outlined
+                        : Icons.archive_outlined,
+                  ),
+                  title: Text(_isArchived ? 'Unarchive' : 'Archive'),
+                ),
+              ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'lock',
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text('Lock note')),
+                ),
+              if (_isLocked && _privateUnlocked)
+                const PopupMenuItem(
+                  value: 'unlock_note',
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text('Unlock and move to Notes')),
+                ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: OrahAssetIcon('trash'),
+                  title: Text('Delete'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: OrahContentFrame(child: SafeArea(
+        child: Column(
+          children: [
+            if (_isListening || _speechInitializing || _voiceProcessing)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: (_isListening ? Colors.red : const Color(0xFFF97316))
+                        .withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: (_isListening ? Colors.red : const Color(0xFFF97316))
+                          .withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (_speechInitializing || _voiceProcessing)
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          else
+                            const Icon(Icons.fiber_manual_record_rounded, color: Colors.red, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _isListening
+                                  ? 'Recording • ${_formatVoiceDuration()}'
+                                  : (_voiceProcessing ? 'Saving voice text…' : 'Preparing microphone…'),
+                              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_speechInitializing || _voiceProcessing) ...[
+                        const SizedBox(height: 8),
+                        const LinearProgressIndicator(),
+                      ],
+                      if (_isListening) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          alignment: WrapAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              onPressed: _cancelVoiceInput,
+                              icon: const Icon(Icons.close_rounded, size: 18),
+                              label: const Text('Cancel'),
+                            ),
+                            TextButton.icon(
+                              onPressed: _retryVoiceInput,
+                              icon: const Icon(Icons.refresh_rounded, size: 18),
+                              label: const Text('Retry'),
+                            ),
+                            FilledButton.icon(
+                              onPressed: _stopAndSaveVoiceInput,
+                              icon: const Icon(Icons.check_rounded, size: 18),
+                              label: const Text('Stop & Save'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            if (_folderId != null || _tags.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
+                child: Row(
+                  children: [
+                    if (_folderId != null)
+                      _MetaChip(
+                        icon: const OrahAssetIcon('folder', size: 16),
+                        label: _folderId!,
+                      ),
+                    ..._tags.map(
+                      (tag) => _MetaChip(
+                        icon: const OrahAssetIcon('tag', size: 16),
+                        label: tag,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_imagePath != null && !_attachments.contains(_imagePath) && File(_imagePath!).existsSync())
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(_imagePath!),
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    if (!_isLocked)
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: IconButton.filledTonal(
+                          tooltip: 'Insert image into note body',
+                          onPressed: () => _insertImageIntoBody(_imagePath!),
+                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (_attachments.isNotEmpty)
+              SizedBox(
+                height: 112,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _attachments.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final path = _attachments[index];
+                    final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic']
+                        .contains(p.extension(path).toLowerCase());
+                    return Stack(
+                      children: [
+                        Container(
+                          width: 104,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: theme.colorScheme.surfaceContainerHighest,
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: isImage
+                              ? GestureDetector(onTap: () => _previewAttachment(path), child: Image.file(File(path), fit: BoxFit.cover))
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.insert_drive_file_outlined, size: 26),
+                                    const SizedBox(height: 6),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: Text(
+                                        p.basename(path),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.labelSmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: IconButton.filledTonal(
+                            tooltip: 'Remove',
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => _showAttachmentActions(path),
+                            icon: const OrahAssetIcon('menu', size: 16),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            Expanded(
+              child: Screenshot(
+                controller: _noteCardScreenshotController,
+                child: Theme(
+                  data: _isCapturingNoteCard ? ThemeData.light() : theme,
+                  child: Container(
+                    color: _isCapturingNoteCard
+                        ? const Color(0xFFFAFAFA)
+                        : theme.colorScheme.surface,
+                    child: RepaintBoundary(
+                  child: _previewMode
+                  ? ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        if (_titleController.text.trim().isNotEmpty)
+                          Text(
+                            _titleController.text.trim(),
+                            style: (_isCapturingNoteCard
+                                    ? ThemeData.light().textTheme
+                                    : theme.textTheme)
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: _isCapturingNoteCard
+                                      ? const Color(0xFF202124)
+                                      : null,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                        const SizedBox(height: 12),
+                        ..._buildPreviewMarkdownWidgets(theme),
+                      ],
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        if (!_previewMode) _MoodSelector(
+                          selectedMood: _mood,
+                          onSelected: (mood) async {
+                            setState(() {
+                              _mood = mood;
+                              _hasChanges = true;
+                            });
+                            await _save();
+                          },
+                        ),
+                        TextField(
+                          controller: _titleController,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: (_isCapturingNoteCard
+                                  ? ThemeData.light().textTheme
+                                  : theme.textTheme)
+                              .headlineSmall
+                              ?.copyWith(
+                                color: _isCapturingNoteCard
+                                    ? const Color(0xFF202124)
+                                    : null,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
+                          decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
+                          _buildSlashCommandMenu(theme),
+                        if (_noteType == NoteType.checklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                        else
+                          TextField(
+                            controller: _contentController,
+                            textCapitalization: TextCapitalization.sentences,
+                            keyboardType: TextInputType.multiline,
+                            focusNode: _contentFocus,
+                            textInputAction: TextInputAction.newline,
+                            minLines: 18,
+                            maxLines: null,
+                            style: (_isCapturingNoteCard
+                                    ? ThemeData.light().textTheme
+                                    : theme.textTheme)
+                                .bodyLarge
+                                ?.copyWith(
+                                  color: _isCapturingNoteCard
+                                      ? const Color(0xFF202124)
+                                      : null,
+                                  height: 1.55,
+                                ),
+                            decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          ),
+                      ],
+                    ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Material(
+              elevation: 4,
+              color: theme.colorScheme.surface,
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  // Reserve trailing space for the endFloat voice FAB above this
+                  // row so the last toolbar controls can scroll clear of its hit area.
+                  padding: EdgeInsets.fromLTRB(
+                    14,
+                    8,
+                    MediaQuery.sizeOf(context).width < 500 ? 260 : 116,
+                    8,
+                  ),
+                  child: Row(
+                    children: [
+                      _ToolButton(
+                        icon: Icons.format_bold_rounded,
+                        label: 'Bold',
+                        onPressed: () => _wrapSelection('**', '**'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_italic_rounded,
+                        label: 'Italic',
+                        onPressed: () => _wrapSelection('*', '*'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.strikethrough_s_rounded,
+                        label: 'Strikethrough',
+                        onPressed: () => _wrapSelection('~~', '~~'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.title_rounded,
+                        label: 'Heading',
+                        onPressed: () => _insertPrefix('## '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_bulleted_rounded,
+                        label: 'Bullets',
+                        onPressed: () => _insertPrefix('- '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_numbered_rounded,
+                        label: 'Numbered list',
+                        onPressed: () => _insertPrefix('1. '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_quote_rounded,
+                        label: 'Quote',
+                        onPressed: () => _insertPrefix('> '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.insert_link_rounded,
+                        label: 'Insert web link',
+                        onPressed: _insertLink,
+                      ),
+                      _ToolButton(
+                        assetIcon: _noteType == NoteType.checklist ? 'notes' : 'checklist',
+                        label: _noteType == NoteType.checklist
+                            ? 'Text note'
+                            : 'Checklist',
+                        onPressed: () {
+                          setState(() {
+                            _noteType = _noteType == NoteType.checklist
+                                ? NoteType.text
+                                : NoteType.checklist;
+                            _hasChanges = true;
+                          });
+                          _save();
+                        },
+                      ),
+                      _ToolButton(
+                        assetIcon: 'tag',
+                        label: 'Folder & tags',
+                        onPressed: _organize,
+                      ),
+                      _ToolButton(
+                        icon: Icons.add_photo_alternate_outlined,
+                        label: 'Insert image in body',
+                        onPressed: () => _addImageToBody(ImageSource.gallery),
+                      ),
+                      _ToolButton(
+                        icon: Icons.attach_file_rounded,
+                        label: 'Add image or file',
+                        onPressed: _showAttachmentMenu,
+                      ),
+                      _ToolButton(
+                        icon: _isListening ? Icons.stop_circle_outlined : null,
+                        assetIcon: _isListening ? null : 'microphone',
+                        label: _isListening ? 'Stop voice input' : 'Voice input',
+                        onPressed: _toggleVoiceInput,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        )),
+      ),
+    );
+  }
+}
+
+class _MoodSelector extends StatelessWidget {
+  const _MoodSelector({
+    required this.selectedMood,
+    required this.onSelected,
+  });
+
+  final String? selectedMood;
+  final ValueChanged<String?> onSelected;
+
+  static const moods = <(String, String, String)>[
+    ('happy', '😊', 'Happy'),
+    ('neutral', '😐', 'Neutral'),
+    ('sad', '😢', 'Sad'),
+    ('angry', '😡', 'Angry'),
+    ('thoughtful', '🤔', 'Thoughtful'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('How are you feeling?', style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          )),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final mood in moods)
+                Tooltip(
+                  message: mood.$3,
+                  child: ChoiceChip(
+                    label: Text(mood.$2, style: const TextStyle(fontSize: 18)),
+                    selected: selectedMood == mood.$1,
+                    onSelected: (_) => onSelected(selectedMood == mood.$1 ? null : mood.$1),
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChecklistEditor extends StatelessWidget {
+  const _ChecklistEditor({
+    required this.items,
+    required this.onAdd,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onReorder,
+  });
+
+  final List<ChecklistItem> items;
+  final VoidCallback onAdd;
+  final Future<void> Function(int, bool) onToggle;
+  final Future<void> Function(int) onEdit;
+  final Future<void> Function(int) onDelete;
+  final Future<void> Function(int, int) onReorder;
+
+  @override
+  Widget build(BuildContext context) {
+    final done = items.where((item) => item.isDone).length;
+    final progress = items.isEmpty ? 0.0 : done / items.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (items.isNotEmpty)
+          Row(
+            children: [
+              Expanded(child: LinearProgressIndicator(value: progress)),
+              const SizedBox(width: 12),
+              Text('$done/${items.length}'),
+            ],
+          ),
+        if (items.isNotEmpty) const SizedBox(height: 12),
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 36),
+            child: Column(
+              children: [
+                OrahAssetIcon('checklist', size: 44, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(height: 12),
+                const Text('Your checklist is empty'),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: onAdd,
+                  icon: const OrahAssetIcon('plus'),
+                  label: const Text('Add first task'),
+                ),
+              ],
+            ),
+          )
+        else
+          Column(
+            children: [
+              for (var index = 0; index < items.length; index++)
+                _ChecklistRow(
+                  key: ValueKey(items[index].id),
+                  item: items[index],
+                  canMoveUp: index > 0,
+                  canMoveDown: index < items.length - 1,
+                  onToggle: (value) => onToggle(index, value),
+                  onEdit: () => onEdit(index),
+                  onDelete: () => onDelete(index),
+                  onMoveUp: index > 0
+                      ? () => onReorder(index, index - 1)
+                      : null,
+                  onMoveDown: index < items.length - 1
+                      ? () => onReorder(index, index + 1)
+                      : null,
+                ),
+            ],
+          ),
+        if (items.isNotEmpty)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: onAdd,
+              icon: const OrahAssetIcon('plus'),
+              label: const Text('Add task'),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ChecklistRow extends StatelessWidget {
+  const _ChecklistRow({
+    super.key,
+    required this.item,
+    required this.canMoveUp,
+    required this.canMoveDown,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onMoveUp,
+    required this.onMoveDown,
+  });
+
+  final ChecklistItem item;
+  final bool canMoveUp;
+  final bool canMoveDown;
+  final ValueChanged<bool> onToggle;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback? onMoveUp;
+  final VoidCallback? onMoveDown;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 6),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        leading: Checkbox(
+          value: item.isDone,
+          onChanged: (value) => onToggle(value ?? false),
+        ),
+        title: Text(
+          item.text,
+          style: TextStyle(
+            decoration: item.isDone ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        onTap: () => onToggle(!item.isDone),
+        onLongPress: onEdit,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'Move up',
+              onPressed: canMoveUp ? onMoveUp : null,
+              icon: const Icon(Icons.keyboard_arrow_up_rounded),
+            ),
+            IconButton(
+              tooltip: 'Move down',
+              onPressed: canMoveDown ? onMoveDown : null,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            IconButton(
+              tooltip: 'Delete task',
+              onPressed: onDelete,
+              icon: const OrahAssetIcon('trash'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+
+  final Widget icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: Chip(
+        avatar: SizedBox(width: 16, height: 16, child: icon),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _ToolButton extends StatelessWidget {
+  const _ToolButton({
+    this.icon,
+    this.assetIcon,
+    required this.label,
+    required this.onPressed,
+  }) : assert(icon != null || assetIcon != null);
+
+  final IconData? icon;
+  final String? assetIcon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: IconButton(
+        tooltip: label,
+        onPressed: onPressed,
+        icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
+      ),
+    );
+  }
+}
+);
+    final sections = <_MarkdownTocSection>[];
+    var currentLines = <String>[];
+    String? currentTitle;
+    var currentLevel = 0;
+    GlobalKey? currentKey;
+    var headingIndex = 0;
+
+    void flush() {
+      if (currentLines.isEmpty) return;
+      sections.add(_MarkdownTocSection(
+        content: currentLines.join('\n'),
+        title: currentTitle,
+        level: currentLevel,
+        anchorKey: currentKey,
+      ));
+    }
+
+    for (final line in lines) {
+      final match = headingPattern.firstMatch(line.trimRight());
+      if (match != null) {
+        flush();
+        currentLines = <String>[line];
+        currentTitle = match.group(2)!.replaceAll(RegExp(r'\\s+#+\\s*
+    final theme = Theme.of(context);
+    if (_isLocked && !_privateUnlocked) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Private note')),
+        body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.security_rounded, size: 56),
+          const SizedBox(height: 16),
+          Text('This note is private', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
+          const Text('Unlock with your biometric or PIN to view it.', textAlign: TextAlign.center),
+          const SizedBox(height: 20),
+          FilledButton.icon(onPressed: _unlocking ? null : _unlockPrivateNote, icon: const Icon(Icons.lock_open_rounded), label: Text(_unlocking ? 'Unlocking…' : 'Unlock note')),
+        ]))),
+      );
+    }
+
+    return PopScope<void>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _close();
+      },
+      child: Scaffold(
+        backgroundColor: _isZenMode ? const Color(0xFFF2FBF7) : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: _isZenMode
+          ? FloatingActionButton.small(
+              tooltip: 'Exit Zen Mode',
+              onPressed: () => setState(() => _isZenMode = false),
+              child: const Icon(Icons.center_focus_strong),
+            )
+          : Tooltip(
+        key: _voiceHintKey,
+        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
+        triggerMode: TooltipTriggerMode.manual,
+        child: FloatingActionButton.extended(
+          onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
+          backgroundColor: _isListening ? Colors.red.shade600 : const Color(0xFFF97316),
+          foregroundColor: Colors.white,
+          icon: _speechInitializing || _voiceProcessing
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Icon(_isListening ? Icons.stop_rounded : Icons.mic_rounded, size: 26),
+          label: Text(
+            _isListening
+                ? _formatVoiceDuration()
+                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
+          ),
+        ),
+      ),
+      appBar: _isZenMode ? null : AppBar(
+        leading: IconButton(
+          tooltip: 'Back',
+          onPressed: _close,
+          icon: const Icon(Icons.arrow_back_rounded),
+        ),
+        title: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 150),
+          child: Text(
+            _saving
+                ? 'Saving…'
+                : (_hasChanges ? 'Unsaved changes' : 'Saved'),
+            key: ValueKey('$_saving-$_hasChanges'),
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Link options',
+            icon: Badge(
+              isLabelVisible: _linkedNoteIds.isNotEmpty,
+              label: Text('${_linkedNoteIds.length}'),
+              child: const Icon(Icons.link_rounded),
+            ),
+            onSelected: (value) {
+              switch (value) {
+                case 'note':
+                  _manageLinkedNotes();
+                  break;
+                case 'kanban':
+                  _linkToKanban();
+                  break;
+                case 'view':
+                  _showKanbanBacklinks();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'note',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.note_add_outlined),
+                    title: Text('Link to note'),
+                  ),
+                ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'kanban',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.view_kanban_outlined),
+                    title: Text('Link to Kanban'),
+                  ),
+                ),
+              const PopupMenuItem(
+                value: 'view',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.link_outlined),
+                  title: Text('View linked items'),
+                ),
+              ),
+            ],
+          ),
+          IconButton(
+            tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
+            onPressed: () => setState(() => _isZenMode = !_isZenMode),
+            icon: const Icon(Icons.center_focus_strong),
+          ),
+          IconButton(
+            tooltip: _previewMode ? 'Edit' : 'Preview',
+            onPressed: () => setState(() => _previewMode = !_previewMode),
+            icon: Icon(_previewMode ? Icons.edit_outlined : Icons.visibility_outlined),
+          ),
+          IconButton(
+            tooltip: 'Add Image',
+            onPressed: () => _addImage(ImageSource.gallery),
+            icon: const Icon(Icons.image_outlined),
+          ),
+          if (widget.note != null && !_isLocked && widget.repository is LocalNoteRepository)
+            IconButton(
+              tooltip: 'Version history',
+              onPressed: _showVersionHistory,
+              icon: const Icon(Icons.history_rounded),
+            ),
+          IconButton(
+            tooltip: _isPinned ? 'Unpin' : 'Pin',
+            onPressed: () => _setFlag(pinned: !_isPinned),
+            icon: const OrahAssetIcon('pin'),
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.document_scanner_outlined),
+            onSelected: (value) async {
+              switch (value) {
+                case 'add_image': await _addImage(ImageSource.gallery); return;
+                case 'scan_document': await _scanDocumentToJpg(); return;
+                case 'ocr': await _scanTextFromImage(); return;
+                case 'template': await _showTemplates(); return;
+                case 'reminder': await _setDueDate(); return;
+                case 'clear_reminder': await _clearDueDate(); return;
+                case 'color':
+                  await _showNoteColorPicker();
+                  return;
+                case 'share_card':
+                  await _shareNoteCard();
+                  return;
+                case 'export':
+                  await _save();
+                  if (!mounted) return;
+                  await showModalBottomSheet<void>(
+                    context: context,
+                    showDragHandle: true,
+                    isScrollControlled: true,
+                    builder: (_) => ExportNoteSheet(
+                      note: Note(
+                        id: _noteId,
+                        title: _titleController.text.trim().isEmpty ? 'Untitled note' : _titleController.text.trim(),
+                        content: _contentController.text,
+                        type: _noteType,
+                        attachments: _attachments,
+                        checklistItems: _checklistItems,
+                        createdAt: _createdAt,
+                        updatedAt: DateTime.now(),
+                        folderId: _folderId,
+                        tags: _tags,
+                        isPinned: _isPinned,
+                        isFavorite: _isFavorite,
+                        isArchived: _isArchived,
+                        isTrashed: false,
+                        dueAt: _dueAt,
+                        mood: _mood,
+                      ),
+                    ),
+                  );
+                  return;
+                case 'favorite':
+                  await _setFlag(favorite: !_isFavorite);
+                  return;
+                case 'organize':
+                  await _organize();
+                  return;
+                case 'archive':
+                  await _setFlag(archived: !_isArchived);
+                  return;
+                case 'lock':
+                  await _lockNote();
+                  return;
+                case 'unlock_note':
+                  await _unlockNotePermanently();
+                  return;
+                case 'delete':
+                  await _delete();
+                  return;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'share_card',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.image_outlined),
+                  title: Text('Export as Card'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'export',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: OrahAssetIcon('share'),
+                  title: Text('Export'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'favorite',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const OrahAssetIcon('star'),
+                  title: Text(
+                    _isFavorite ? 'Remove favorite' : 'Add to favorites',
+                  ),
+                ),
+              ),
+              const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
+              if (Platform.isAndroid) const PopupMenuItem(value: 'scan_document', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan document (JPG)'))),
+              const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
+              const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
+              PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
+              if (_dueAt != null) const PopupMenuItem(value: 'clear_reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.notifications_off_outlined), title: Text('Clear reminder'))),
+              const PopupMenuItem(
+                value: 'color',
+                child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.palette_outlined), title: Text('Note color')),
+              ),
+              const PopupMenuItem(
+                value: 'organize',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: OrahAssetIcon('tag'),
+                  title: Text('Folder & tags'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'archive',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    _isArchived
+                        ? Icons.unarchive_outlined
+                        : Icons.archive_outlined,
+                  ),
+                  title: Text(_isArchived ? 'Unarchive' : 'Archive'),
+                ),
+              ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'lock',
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_outline_rounded), title: Text('Lock note')),
+                ),
+              if (_isLocked && _privateUnlocked)
+                const PopupMenuItem(
+                  value: 'unlock_note',
+                  child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.lock_open_rounded), title: Text('Unlock and move to Notes')),
+                ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: OrahAssetIcon('trash'),
+                  title: Text('Delete'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      body: OrahContentFrame(child: SafeArea(
+        child: Column(
+          children: [
+            if (_isListening || _speechInitializing || _voiceProcessing)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: (_isListening ? Colors.red : const Color(0xFFF97316))
+                        .withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: (_isListening ? Colors.red : const Color(0xFFF97316))
+                          .withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (_speechInitializing || _voiceProcessing)
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          else
+                            const Icon(Icons.fiber_manual_record_rounded, color: Colors.red, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _isListening
+                                  ? 'Recording • ${_formatVoiceDuration()}'
+                                  : (_voiceProcessing ? 'Saving voice text…' : 'Preparing microphone…'),
+                              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_speechInitializing || _voiceProcessing) ...[
+                        const SizedBox(height: 8),
+                        const LinearProgressIndicator(),
+                      ],
+                      if (_isListening) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          alignment: WrapAlignment.end,
+                          children: [
+                            TextButton.icon(
+                              onPressed: _cancelVoiceInput,
+                              icon: const Icon(Icons.close_rounded, size: 18),
+                              label: const Text('Cancel'),
+                            ),
+                            TextButton.icon(
+                              onPressed: _retryVoiceInput,
+                              icon: const Icon(Icons.refresh_rounded, size: 18),
+                              label: const Text('Retry'),
+                            ),
+                            FilledButton.icon(
+                              onPressed: _stopAndSaveVoiceInput,
+                              icon: const Icon(Icons.check_rounded, size: 18),
+                              label: const Text('Stop & Save'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            if (_folderId != null || _tags.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
+                child: Row(
+                  children: [
+                    if (_folderId != null)
+                      _MetaChip(
+                        icon: const OrahAssetIcon('folder', size: 16),
+                        label: _folderId!,
+                      ),
+                    ..._tags.map(
+                      (tag) => _MetaChip(
+                        icon: const OrahAssetIcon('tag', size: 16),
+                        label: tag,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_imagePath != null && !_attachments.contains(_imagePath) && File(_imagePath!).existsSync())
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(_imagePath!),
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    if (!_isLocked)
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: IconButton.filledTonal(
+                          tooltip: 'Insert image into note body',
+                          onPressed: () => _insertImageIntoBody(_imagePath!),
+                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (_attachments.isNotEmpty)
+              SizedBox(
+                height: 112,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _attachments.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final path = _attachments[index];
+                    final isImage = ['.jpg','.jpeg','.png','.webp','.gif','.heic']
+                        .contains(p.extension(path).toLowerCase());
+                    return Stack(
+                      children: [
+                        Container(
+                          width: 104,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: theme.colorScheme.surfaceContainerHighest,
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: isImage
+                              ? GestureDetector(onTap: () => _previewAttachment(path), child: Image.file(File(path), fit: BoxFit.cover))
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.insert_drive_file_outlined, size: 26),
+                                    const SizedBox(height: 6),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      child: Text(
+                                        p.basename(path),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.labelSmall,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: IconButton.filledTonal(
+                            tooltip: 'Remove',
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => _showAttachmentActions(path),
+                            icon: const OrahAssetIcon('menu', size: 16),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            Expanded(
+              child: Screenshot(
+                controller: _noteCardScreenshotController,
+                child: Theme(
+                  data: _isCapturingNoteCard ? ThemeData.light() : theme,
+                  child: Container(
+                    color: _isCapturingNoteCard
+                        ? const Color(0xFFFAFAFA)
+                        : theme.colorScheme.surface,
+                    child: RepaintBoundary(
+                  child: _previewMode
+                  ? ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        if (_titleController.text.trim().isNotEmpty)
+                          Text(
+                            _titleController.text.trim(),
+                            style: (_isCapturingNoteCard
+                                    ? ThemeData.light().textTheme
+                                    : theme.textTheme)
+                                .headlineSmall
+                                ?.copyWith(
+                                  color: _isCapturingNoteCard
+                                      ? const Color(0xFF202124)
+                                      : null,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                        const SizedBox(height: 12),
+                        MarkdownBody(
+                          data: _renderableContent(),
+                          selectable: true,
+                          imageBuilder: (uri, title, alt) {
+                            if (uri.scheme == 'file') {
+                              try {
+                                final file = File(uri.toFilePath());
+                                if (file.existsSync()) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.file(file, fit: BoxFit.contain),
+                                    ),
+                                  );
+                                }
+                              } catch (_) {
+                                // Invalid local image URI: render the fallback below.
+                              }
+                              return const Text('Image unavailable');
+                            }
+                            return Image.network(
+                              uri.toString(),
+                              errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+                            );
+                          },
+                        ),
+                      ],
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 30),
+                      children: [
+                        if (!_previewMode) _MoodSelector(
+                          selectedMood: _mood,
+                          onSelected: (mood) async {
+                            setState(() {
+                              _mood = mood;
+                              _hasChanges = true;
+                            });
+                            await _save();
+                          },
+                        ),
+                        TextField(
+                          controller: _titleController,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: (_isCapturingNoteCard
+                                  ? ThemeData.light().textTheme
+                                  : theme.textTheme)
+                              .headlineSmall
+                              ?.copyWith(
+                                color: _isCapturingNoteCard
+                                    ? const Color(0xFF202124)
+                                    : null,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
+                          decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 8),
+                        if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
+                          _buildSlashCommandMenu(theme),
+                        if (_noteType == NoteType.checklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                        else
+                          TextField(
+                            controller: _contentController,
+                            textCapitalization: TextCapitalization.sentences,
+                            keyboardType: TextInputType.multiline,
+                            focusNode: _contentFocus,
+                            textInputAction: TextInputAction.newline,
+                            minLines: 18,
+                            maxLines: null,
+                            style: (_isCapturingNoteCard
+                                    ? ThemeData.light().textTheme
+                                    : theme.textTheme)
+                                .bodyLarge
+                                ?.copyWith(
+                                  color: _isCapturingNoteCard
+                                      ? const Color(0xFF202124)
+                                      : null,
+                                  height: 1.55,
+                                ),
+                            decoration: const InputDecoration(hintText: 'Start writing...', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
+                          ),
+                      ],
+                    ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Material(
+              elevation: 4,
+              color: theme.colorScheme.surface,
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  // Reserve trailing space for the endFloat voice FAB above this
+                  // row so the last toolbar controls can scroll clear of its hit area.
+                  padding: EdgeInsets.fromLTRB(
+                    14,
+                    8,
+                    MediaQuery.sizeOf(context).width < 500 ? 260 : 116,
+                    8,
+                  ),
+                  child: Row(
+                    children: [
+                      _ToolButton(
+                        icon: Icons.format_bold_rounded,
+                        label: 'Bold',
+                        onPressed: () => _wrapSelection('**', '**'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_italic_rounded,
+                        label: 'Italic',
+                        onPressed: () => _wrapSelection('*', '*'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.strikethrough_s_rounded,
+                        label: 'Strikethrough',
+                        onPressed: () => _wrapSelection('~~', '~~'),
+                      ),
+                      _ToolButton(
+                        icon: Icons.title_rounded,
+                        label: 'Heading',
+                        onPressed: () => _insertPrefix('## '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_bulleted_rounded,
+                        label: 'Bullets',
+                        onPressed: () => _insertPrefix('- '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_list_numbered_rounded,
+                        label: 'Numbered list',
+                        onPressed: () => _insertPrefix('1. '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.format_quote_rounded,
+                        label: 'Quote',
+                        onPressed: () => _insertPrefix('> '),
+                      ),
+                      _ToolButton(
+                        icon: Icons.insert_link_rounded,
+                        label: 'Insert web link',
+                        onPressed: _insertLink,
+                      ),
+                      _ToolButton(
+                        assetIcon: _noteType == NoteType.checklist ? 'notes' : 'checklist',
+                        label: _noteType == NoteType.checklist
+                            ? 'Text note'
+                            : 'Checklist',
+                        onPressed: () {
+                          setState(() {
+                            _noteType = _noteType == NoteType.checklist
+                                ? NoteType.text
+                                : NoteType.checklist;
+                            _hasChanges = true;
+                          });
+                          _save();
+                        },
+                      ),
+                      _ToolButton(
+                        assetIcon: 'tag',
+                        label: 'Folder & tags',
+                        onPressed: _organize,
+                      ),
+                      _ToolButton(
+                        icon: Icons.add_photo_alternate_outlined,
+                        label: 'Insert image in body',
+                        onPressed: () => _addImageToBody(ImageSource.gallery),
+                      ),
+                      _ToolButton(
+                        icon: Icons.attach_file_rounded,
+                        label: 'Add image or file',
+                        onPressed: _showAttachmentMenu,
+                      ),
+                      _ToolButton(
+                        icon: _isListening ? Icons.stop_circle_outlined : null,
+                        assetIcon: _isListening ? null : 'microphone',
+                        label: _isListening ? 'Stop voice input' : 'Voice input',
+                        onPressed: _toggleVoiceInput,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        )),
+      ),
+    );
+  }
+}
+
+class _MoodSelector extends StatelessWidget {
+  const _MoodSelector({
+    required this.selectedMood,
+    required this.onSelected,
+  });
+
+  final String? selectedMood;
+  final ValueChanged<String?> onSelected;
+
+  static const moods = <(String, String, String)>[
+    ('happy', '😊', 'Happy'),
+    ('neutral', '😐', 'Neutral'),
+    ('sad', '😢', 'Sad'),
+    ('angry', '😡', 'Angry'),
+    ('thoughtful', '🤔', 'Thoughtful'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('How are you feeling?', style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          )),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final mood in moods)
+                Tooltip(
+                  message: mood.$3,
+                  child: ChoiceChip(
+                    label: Text(mood.$2, style: const TextStyle(fontSize: 18)),
+                    selected: selectedMood == mood.$1,
+                    onSelected: (_) => onSelected(selectedMood == mood.$1 ? null : mood.$1),
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChecklistEditor extends StatelessWidget {
+  const _ChecklistEditor({
+    required this.items,
+    required this.onAdd,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onReorder,
+  });
+
+  final List<ChecklistItem> items;
+  final VoidCallback onAdd;
+  final Future<void> Function(int, bool) onToggle;
+  final Future<void> Function(int) onEdit;
+  final Future<void> Function(int) onDelete;
+  final Future<void> Function(int, int) onReorder;
+
+  @override
+  Widget build(BuildContext context) {
+    final done = items.where((item) => item.isDone).length;
+    final progress = items.isEmpty ? 0.0 : done / items.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (items.isNotEmpty)
+          Row(
+            children: [
+              Expanded(child: LinearProgressIndicator(value: progress)),
+              const SizedBox(width: 12),
+              Text('$done/${items.length}'),
+            ],
+          ),
+        if (items.isNotEmpty) const SizedBox(height: 12),
+        if (items.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 36),
+            child: Column(
+              children: [
+                OrahAssetIcon('checklist', size: 44, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(height: 12),
+                const Text('Your checklist is empty'),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: onAdd,
+                  icon: const OrahAssetIcon('plus'),
+                  label: const Text('Add first task'),
+                ),
+              ],
+            ),
+          )
+        else
+          Column(
+            children: [
+              for (var index = 0; index < items.length; index++)
+                _ChecklistRow(
+                  key: ValueKey(items[index].id),
+                  item: items[index],
+                  canMoveUp: index > 0,
+                  canMoveDown: index < items.length - 1,
+                  onToggle: (value) => onToggle(index, value),
+                  onEdit: () => onEdit(index),
+                  onDelete: () => onDelete(index),
+                  onMoveUp: index > 0
+                      ? () => onReorder(index, index - 1)
+                      : null,
+                  onMoveDown: index < items.length - 1
+                      ? () => onReorder(index, index + 1)
+                      : null,
+                ),
+            ],
+          ),
+        if (items.isNotEmpty)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: onAdd,
+              icon: const OrahAssetIcon('plus'),
+              label: const Text('Add task'),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ChecklistRow extends StatelessWidget {
+  const _ChecklistRow({
+    super.key,
+    required this.item,
+    required this.canMoveUp,
+    required this.canMoveDown,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onMoveUp,
+    required this.onMoveDown,
+  });
+
+  final ChecklistItem item;
+  final bool canMoveUp;
+  final bool canMoveDown;
+  final ValueChanged<bool> onToggle;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final VoidCallback? onMoveUp;
+  final VoidCallback? onMoveDown;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 6),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        leading: Checkbox(
+          value: item.isDone,
+          onChanged: (value) => onToggle(value ?? false),
+        ),
+        title: Text(
+          item.text,
+          style: TextStyle(
+            decoration: item.isDone ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        onTap: () => onToggle(!item.isDone),
+        onLongPress: onEdit,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'Move up',
+              onPressed: canMoveUp ? onMoveUp : null,
+              icon: const Icon(Icons.keyboard_arrow_up_rounded),
+            ),
+            IconButton(
+              tooltip: 'Move down',
+              onPressed: canMoveDown ? onMoveDown : null,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            IconButton(
+              tooltip: 'Delete task',
+              onPressed: onDelete,
+              icon: const OrahAssetIcon('trash'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.label});
+
+  final Widget icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: Chip(
+        avatar: SizedBox(width: 16, height: 16, child: icon),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _ToolButton extends StatelessWidget {
+  const _ToolButton({
+    this.icon,
+    this.assetIcon,
+    required this.label,
+    required this.onPressed,
+  }) : assert(icon != null || assetIcon != null);
+
+  final IconData? icon;
+  final String? assetIcon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: IconButton(
+        tooltip: label,
+        onPressed: onPressed,
+        icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
+      ),
+    );
+  }
+}
+), '').trim();
+        currentLevel = match.group(1)!.length;
+        currentKey = _previewHeadingKeys.putIfAbsent(headingIndex, GlobalKey.new);
+        headingIndex++;
+      } else {
+        currentLines.add(line);
+      }
+    }
+    flush();
+    return sections;
+  }
+
+  Widget _buildMarkdownBody(String content, ThemeData theme) {
+    return MarkdownBody(
+      data: content,
+      selectable: true,
+      imageBuilder: (uri, title, alt) {
+        if (uri.scheme == 'file') {
+          try {
+            final file = File(uri.toFilePath());
+            if (file.existsSync()) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(file, fit: BoxFit.contain),
+                ),
+              );
+            }
+          } catch (_) {
+            // Invalid local image URI: render the fallback below.
+          }
+          return const Text('Image unavailable');
+        }
+        return Image.network(
+          uri.toString(),
+          errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildPreviewMarkdownWidgets(ThemeData theme) {
+    final markdown = _renderableContent();
+    final sections = _buildMarkdownSections(markdown);
+    final headings = sections.where((section) => section.title != null).toList();
+    if (headings.length < 2) {
+      return <Widget>[_buildMarkdownBody(markdown, theme)];
+    }
+
+    final widgets = <Widget>[
+      Card(
+        margin: const EdgeInsets.only(bottom: 18),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.list_alt_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Table of contents',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              for (final heading in headings)
+                Padding(
+                  padding: EdgeInsets.only(left: (heading.level - 1) * 16.0),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+                      minimumSize: const Size.fromHeight(36),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      final targetContext = heading.anchorKey?.currentContext;
+                      if (targetContext != null) {
+                        Scrollable.ensureVisible(
+                          targetContext,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          alignment: 0.04,
+                        );
+                      }
+                    },
+                    child: Text(
+                      heading.title!,
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ];
+
+    for (final section in sections) {
+      if (section.content.trim().isEmpty) continue;
+      final body = _buildMarkdownBody(section.content, theme);
+      if (section.anchorKey != null) {
+        widgets.add(KeyedSubtree(key: section.anchorKey, child: body));
+      } else {
+        widgets.add(body);
+      }
+      widgets.add(const SizedBox(height: 8));
+    }
+    return widgets;
   }
 
   @override
