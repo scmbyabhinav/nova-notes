@@ -88,6 +88,7 @@ class _MarkdownTocSection {
 }
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
+  final Map<int, GlobalKey> _previewHeadingKeys = <int, GlobalKey>{};
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
