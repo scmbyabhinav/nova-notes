@@ -15,7 +15,6 @@ import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository_provider.dart';
 import '../data/repositories/folder_repository_provider.dart';
-import '../models/folder.dart';
 import '../models/note.dart';
 import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
@@ -294,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'rename'),
             ),
             ListTile(
-              leading: const Icon(Icons.drive_file_move_outline_rounded),
+              leading: const Icon(Icons.folder_open_rounded),
               title: const Text('Move to folder'),
               onTap: () => Navigator.pop(context, 'move_folder'),
             ),
