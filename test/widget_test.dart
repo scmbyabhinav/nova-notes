@@ -136,7 +136,13 @@ void main() {
 
     final voiceButton = find.byTooltip('Voice input');
     expect(voiceButton, findsOneWidget);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is FloatingActionButton &&
+            (widget.tooltip?.toLowerCase().contains('voice') ?? false),
+      ),
+      findsNothing,
+    );
 
     await tester.ensureVisible(voiceButton);
     await tester.tap(voiceButton);
