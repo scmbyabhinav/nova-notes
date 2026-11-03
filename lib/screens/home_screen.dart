@@ -14,6 +14,8 @@ import '../core/widgets/orah_asset_icon.dart';
 import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository_provider.dart';
+import '../data/repositories/folder_repository_provider.dart';
+import '../models/folder.dart';
 import '../models/note.dart';
 import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
@@ -287,6 +289,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.drive_file_rename_outline_rounded),
+              title: const Text('Rename'),
+              onTap: () => Navigator.pop(context, 'rename'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.drive_file_move_outline_rounded),
+              title: const Text('Move to folder'),
+              onTap: () => Navigator.pop(context, 'move_folder'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.copy_all_outlined),
+              title: const Text('Copy to folder'),
+              onTap: () => Navigator.pop(context, 'copy_folder'),
+            ),
+            ListTile(
               leading: const OrahAssetIcon('pin'),
               title: Text(note.isPinned ? 'Unpin note' : 'Pin note'),
               onTap: () => Navigator.pop(context, 'pin'),
@@ -332,6 +349,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (!mounted || action == null) return;
 
     switch (action) {
+      case 'rename':
+        await _renameNote(note);
+        return;
+      case 'move_folder':
+        await _moveOrCopyNoteToFolder(note, copy: false);
+        return;
+      case 'copy_folder':
+        await _moveOrCopyNoteToFolder(note, copy: true);
+        return;
       case 'merge':
         await _mergeNoteWithAnother(note);
         return;
@@ -438,6 +464,113 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         });
         return;
     }
+  }
+
+  Future<void> _renameNote(Note note) async {
+    final controller = TextEditingController(text: note.title);
+    final title = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rename note'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(labelText: 'Note title', hintText: 'Enter a title'),
+          onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text.trim()), child: const Text('Save')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (!mounted || title == null) return;
+    if (title.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('A note title cannot be empty.')));
+      return;
+    }
+    if (title == note.title) return;
+    await _updateNote(note, note.copyWith(title: title, updatedAt: DateTime.now()));
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Note renamed.')));
+  }
+
+  Future<void> _moveOrCopyNoteToFolder(Note note, {required bool copy}) async {
+    final folderRepository = await FolderRepositoryProvider.instance();
+    final folders = await folderRepository.getFolders();
+    if (!mounted) return;
+    if (folders.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Create a folder first, then you can file notes in it.')));
+      return;
+    }
+    final selectedFolderId = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(copy ? 'Copy note to folder' : 'Move note to folder'),
+        content: SizedBox(
+          width: 360,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final folder in folders)
+                ListTile(
+                  leading: const Icon(Icons.folder_outlined),
+                  title: Text(folder.name),
+                  subtitle: folder.id == note.folderId ? const Text('Current folder') : null,
+                  onTap: () => Navigator.pop(dialogContext, folder.id),
+                ),
+            ],
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel'))],
+      ),
+    );
+    if (!mounted || selectedFolderId == null) return;
+    if (!copy && selectedFolderId == note.folderId) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This note is already in that folder.')));
+      return;
+    }
+    final now = DateTime.now();
+    if (!copy) {
+      await _updateNote(note, note.copyWith(folderId: selectedFolderId, updatedAt: now));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Note moved to folder.')));
+      return;
+    }
+    final duplicateId = 'orah_copy_${now.microsecondsSinceEpoch}';
+    final copiedChecklist = note.checklistItems.map((item) => ChecklistItem(
+      id: '${duplicateId}_${item.id}',
+      text: item.text,
+      isDone: item.isDone,
+      dueAt: item.dueAt,
+    )).toList();
+    final duplicate = Note(
+      id: duplicateId,
+      title: note.title.trim().isEmpty ? 'Untitled note (Copy)' : '${note.title} (Copy)',
+      content: note.content,
+      type: note.type,
+      createdAt: now,
+      updatedAt: now,
+      folderId: selectedFolderId,
+      tags: note.tags,
+      linkedNoteIds: note.linkedNoteIds,
+      attachments: note.attachments,
+      checklistItems: copiedChecklist,
+      color: note.color,
+      isPinned: false,
+      isFavorite: false,
+      isArchived: false,
+      isLocked: false,
+      isTrashed: false,
+      isInbox: false,
+      dueAt: note.dueAt,
+      mood: note.mood,
+      imagePath: note.imagePath,
+    );
+    final repository = await NoteRepositoryProvider.instance();
+    await repository.saveNote(duplicate);
+    await _loadNotes();
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copy saved to folder.')));
   }
 
   Future<void> _mergeNoteWithAnother(Note target) async {
@@ -1190,7 +1323,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 160 + MediaQuery.of(context).padding.bottom),
                   sliver: _gridView
                       ? SliverGrid(
                           delegate: SliverChildBuilderDelegate(
