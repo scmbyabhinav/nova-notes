@@ -86,8 +86,8 @@ Future<void> _tapMicrophone(WidgetTester tester) async {
   expect(micButton, findsOneWidget);
   expect(tester.widget<IconButton>(micButton).onPressed, isNotNull);
 
-  // Give the editor a realistic phone viewport; the toolbar must be
-  // interactable without overlapping its independent voice FAB.
+  // Give the editor a realistic phone viewport and ensure the toolbar mic
+  // remains interactable without a floating voice button covering content.
   tester.view.physicalSize = const Size(400, 900);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
@@ -107,7 +107,8 @@ void main() {
   testWidgets('voice input starts from the editor microphone control', (tester) async {
     final state = await _pumpEditor(tester);
 
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
+    expect(find.byTooltip('Voice input'), findsOneWidget);
 
     await _tapMicrophone(tester);
 
