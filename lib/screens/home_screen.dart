@@ -2265,9 +2265,9 @@ class _DeadlineCountdownRibbon extends StatelessWidget {
       icon = Icons.warning_amber_rounded;
       final overdue = remaining.abs();
       if (overdue.inDays >= 1) {
-        label = 'Overdue by \${overdue.inDays} day\${overdue.inDays == 1 ? '' : 's'}';
+        label = 'Overdue by ${overdue.inDays} day${overdue.inDays == 1 ? '' : 's'}';
       } else if (overdue.inHours >= 1) {
-        label = 'Overdue by \${overdue.inHours} hour\${overdue.inHours == 1 ? '' : 's'}';
+        label = 'Overdue by ${overdue.inHours} hour${overdue.inHours == 1 ? '' : 's'}';
       } else {
         label = 'Deadline passed';
       }
@@ -2275,16 +2275,16 @@ class _DeadlineCountdownRibbon extends StatelessWidget {
       color = Colors.red.shade700;
       icon = Icons.timer_outlined;
       label = remaining.inHours < 1
-          ? 'Due in \${remaining.inMinutes.clamp(1, 59)} min'
-          : 'Due in \${remaining.inHours} hour\${remaining.inHours == 1 ? '' : 's'}';
+          ? 'Due in ${remaining.inMinutes.clamp(1, 59)} min'
+          : 'Due in ${remaining.inHours} hour${remaining.inHours == 1 ? '' : 's'}';
     } else if (remaining.inDays <= 3) {
       color = Colors.amber.shade800;
       icon = Icons.hourglass_bottom_rounded;
-      label = remaining.inDays == 1 ? 'Due tomorrow' : 'Due in \${remaining.inDays} days';
+      label = remaining.inDays == 1 ? 'Due tomorrow' : 'Due in ${remaining.inDays} days';
     } else {
       color = Colors.green.shade700;
       icon = Icons.event_available_rounded;
-      label = 'Due in \${remaining.inDays} days';
+      label = 'Due in ${remaining.inDays} days';
     }
 
     return Align(
