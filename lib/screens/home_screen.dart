@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     setState(() {
       _gridView = prefs.getBool('orah_grid_view') ?? true;
       _compactView = prefs.getBool('orah_compact_view') ?? false;
-      _pinnedViewMode = (prefs.getInt('orah_pinned_view_mode') ?? 0).clamp(0, 2);
+      _pinnedViewMode = (prefs.getInt('orah_pinned_view_mode') ?? 0).clamp(0, 2).toInt();
       _sort = prefs.getString('orah_note_sort') ?? 'updated';
       _hideDailyPrompt = prefs.getBool('orah_hide_daily_prompt') ?? false;
     });
