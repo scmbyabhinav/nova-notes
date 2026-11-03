@@ -2044,7 +2044,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
     if (mounted && !_saveFailed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Saved $minutes focus minutes to this note · Total \$_focusMinutes min')),
+        SnackBar(content: Text('Saved $minutes focus minutes to this note · Total $_focusMinutes min')),
       );
     }
   }
@@ -3052,7 +3052,7 @@ class _FocusSessionDialogState extends State<_FocusSessionDialog> {
           const SizedBox(height: 8),
           const Text('25-minute Pomodoro · focus on this note'),
           const SizedBox(height: 8),
-          Text('Elapsed: \${_elapsedSeconds ~/ 60} min'),
+          Text('Elapsed: ${_elapsedSeconds ~/ 60} min'),
         ],
       ),
       actions: [
