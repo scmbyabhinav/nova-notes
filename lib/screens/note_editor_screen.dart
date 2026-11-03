@@ -1857,6 +1857,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
+  Future<void> _updateInlineImageWidth(Uri uri, double width) async {
+    final expression = RegExp(
+      r'(!\[[^\]]*\]\(' + RegExp.escape(uri.toString()) + r') "width=\d+"\)',
+    );
+    final updated = _contentController.text.replaceAllMapped(
+      expression,
+      (match) => match.group(0)!.replaceFirst(
+        RegExp(r'width=\d+'),
+        'width=${width.round()}',
+      ),
+    );
+    if (updated == _contentController.text) return;
+    _contentController.value = _contentController.value.copyWith(
+      text: updated,
+      selection: TextSelection.collapsed(offset: updated.length),
+      composing: TextRange.empty,
+    );
+    _hasChanges = true;
+    await _save();
+  }
+
   List<_MarkdownTocSection> _buildMarkdownSections(String markdown) {
     final sections = <_MarkdownTocSection>[];
     var currentLines = <String>[];
@@ -1914,12 +1935,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           try {
             final file = File(uri.toFilePath());
             if (file.existsSync()) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.file(file, fit: BoxFit.contain),
-                ),
+              final match = RegExp(r'width=(\d+)').firstMatch(title ?? '');
+              final width = match == null ? 320.0 : double.parse(match.group(1)!);
+              return _ResizableInlineImage(
+                file: file,
+                width: width,
+                onWidthChanged: (nextWidth) => _updateInlineImageWidth(uri, nextWidth),
               );
             }
           } catch (_) {
@@ -2944,6 +2965,93 @@ class _ToolButton extends StatelessWidget {
             : null,
         onPressed: onPressed,
         icon: assetIcon != null ? OrahAssetIcon(assetIcon!, size: 20) : Icon(icon!, size: 21),
+      ),
+    );
+  }
+}
+
+class _ResizableInlineImage extends StatefulWidget {
+  const _ResizableInlineImage({
+    required this.file,
+    required this.width,
+    required this.onWidthChanged,
+  });
+
+  final File file;
+  final double width;
+  final ValueChanged<double> onWidthChanged;
+
+  @override
+  State<_ResizableInlineImage> createState() => _ResizableInlineImageState();
+}
+
+class _ResizableInlineImageState extends State<_ResizableInlineImage> {
+  late double _width;
+
+  @override
+  void initState() {
+    super.initState();
+    _width = widget.width;
+  }
+
+  @override
+  void didUpdateWidget(covariant _ResizableInlineImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.width != widget.width) _width = widget.width;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxWidth = constraints.maxWidth.isFinite ? constraints.maxWidth : 600.0;
+          final displayWidth = _width.clamp(120.0, maxWidth).toDouble();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  widget.file,
+                  width: displayWidth,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  IconButton(
+                    tooltip: 'Make image smaller',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      final next = (_width - 40).clamp(120.0, maxWidth).toDouble();
+                      setState(() => _width = next);
+                      widget.onWidthChanged(next);
+                    },
+                    icon: const Icon(Icons.remove_circle_outline_rounded),
+                  ),
+                  Text('${displayWidth.round()} px', style: theme.textTheme.labelSmall),
+                  IconButton(
+                    tooltip: 'Make image larger',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      final next = (_width + 40).clamp(120.0, maxWidth).toDouble();
+                      setState(() => _width = next);
+                      widget.onWidthChanged(next);
+                    },
+                    icon: const Icon(Icons.add_circle_outline_rounded),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
