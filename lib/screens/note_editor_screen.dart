@@ -1395,14 +1395,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _addFiles() async {
     try {
-      final result = await FilePicker.pickFiles();
-      if (result.isEmpty) return;
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: true,
+        withData: true,
+      );
+      if (result == null || result.files.isEmpty) return;
       final imported = <String>[];
-      for (final file in result) {
-        if (file.path == null) continue;
-        imported.add(
-          await const NovaAttachmentService().importFile(file.path!),
-        );
+      for (final file in result.files) {
+        final path = file.path;
+        if (path != null && path.isNotEmpty) {
+          imported.add(await const NovaAttachmentService().importFile(path));
+        } else if (file.bytes != null && file.bytes!.isNotEmpty) {
+          imported.add(await const NovaAttachmentService().importBytes(file.bytes!, file.name));
+        }
       }
       if (imported.isEmpty) return;
       setState(() {
@@ -1549,7 +1555,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final selection = value.selection;
     final start = selection.isValid ? selection.start : value.text.length;
     final end = selection.isValid ? selection.end : value.text.length;
-    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ')';
+    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ' "width=320")';
     final prefix = start > 0 && value.text[start - 1] != '\n' ? '\n\n' : '';
     final suffix = end < value.text.length && value.text.substring(end).startsWith('\n') ? '' : '\n\n';
     _contentController.value = value.copyWith(
@@ -2078,15 +2084,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Focus session · $_focusMinutes min recorded',
-            onPressed: _isLocked ? null : _startFocusSession,
-            icon: Badge(
-              isLabelVisible: _focusMinutes > 0,
-              label: Text('$_focusMinutes'),
-              child: const Icon(Icons.timer_outlined),
-            ),
-          ),
           PopupMenuButton<String>(
             tooltip: 'Link options',
             icon: Badge(
@@ -2663,6 +2660,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: _showAttachmentMenu,
                       ),
                       _ToolButton(
+                        icon: Icons.timer_outlined,
+                        label: _focusMinutes > 0 ? 'Focus session · $_focusMinutes min' : 'Focus session',
+                        onPressed: _startFocusSession,
+                      ),
+                      _ToolButton(
+                        icon: Icons.notifications_active_outlined,
+                        label: _dueAt == null ? 'Set reminder' : 'Edit reminder',
+                        onPressed: _setDueDate,
+                      ),
+                      _ToolButton(
                         icon: _isListening ? Icons.stop_circle_outlined : null,
                         assetIcon: _isListening ? null : 'microphone',
                         label: _isListening ? 'Stop voice input' : 'Voice input',
@@ -3014,7 +3021,7 @@ class _FocusSessionDialogState extends State<_FocusSessionDialog> {
           const SizedBox(height: 8),
           const Text('25-minute Pomodoro · focus on this note'),
           const SizedBox(height: 8),
-          Text('Elapsed: ${_elapsedSeconds ~/ 60} min'),
+          Text('Elapsed: ${_formatDuration(_elapsedSeconds)}', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
         ],
       ),
       actions: [
