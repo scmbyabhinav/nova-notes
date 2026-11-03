@@ -41,7 +41,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
-  bool _gridView = true;
+  String _noteView = 'grid';
   bool _showFeatures = false;
   bool _hideDailyPrompt = false;
   bool _loading = true;
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      _gridView = prefs.getBool('orah_grid_view') ?? true;
+      _noteView = prefs.getString('orah_note_view') ?? ((prefs.getBool('orah_grid_view') ?? true) ? 'grid' : 'list');
       _sort = prefs.getString('orah_note_sort') ?? 'updated';
       _hideDailyPrompt = prefs.getBool('orah_hide_daily_prompt') ?? false;
     });
@@ -127,7 +127,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
   Future<void> _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('orah_grid_view', _gridView);
+    await prefs.setString('orah_note_view', _noteView);
+    // Keep the legacy preference in sync for compatibility with older builds.
+    await prefs.setBool('orah_grid_view', _noteView == 'grid');
     await prefs.setString('orah_note_sort', _sort);
   }
 
@@ -294,6 +296,18 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
+              leading: const Icon(Icons.merge_type_rounded),
+              title: const Text('Merge with…'),
+              subtitle: const Text('Combine this note with another'),
+              onTap: () => Navigator.pop(context, 'merge'),
+            ),
+            ListTile(
+              leading: Icon(note.isInbox ? Icons.inbox_rounded : Icons.inbox_outlined),
+              title: Text(note.isInbox ? 'Remove from Triage Inbox' : 'Send to Triage Inbox'),
+              subtitle: Text(note.isInbox ? 'File this note back with your notes' : 'Keep this note in your triage inbox'),
+              onTap: () => Navigator.pop(context, 'inbox'),
+            ),
+            ListTile(
               leading: const Icon(Icons.copy_outlined),
               title: const Text('Duplicate note'),
               onTap: () => Navigator.pop(context, 'duplicate'),
@@ -316,6 +330,29 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (!mounted || action == null) return;
 
     switch (action) {
+      case 'merge':
+        await _mergeNoteWithAnother(note);
+        return;
+      case 'inbox':
+        final sendToInbox = !note.isInbox;
+        await _updateNote(
+          note,
+          note.copyWith(isInbox: sendToInbox, updatedAt: DateTime.now()),
+        );
+        if (!mounted) return;
+        if (sendToInbox) {
+          setState(() => _activeFilter = 'inbox');
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(sendToInbox ? 'Moved to Triage Inbox' : 'Removed from Triage Inbox'),
+            action: SnackBarAction(
+              label: 'View Inbox',
+              onPressed: () => setState(() => _activeFilter = 'inbox'),
+            ),
+          ),
+        );
+        return;
       case 'duplicate':
         final repository = await NoteRepositoryProvider.instance();
         final duplicate = note.copyWith(
@@ -421,6 +458,139 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     }
   }
 
+
+  Future<void> _mergeNoteWithAnother(Note target) async {
+    if (target.isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unlock private notes before merging.')),
+      );
+      return;
+    }
+
+    final repository = await NoteRepositoryProvider.instance();
+    final candidates = (await repository.getNotes())
+        .where((note) => note.id != target.id && !note.isTrashed && !note.isLocked)
+        .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    if (!mounted) return;
+    if (candidates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Create another note before merging.')),
+      );
+      return;
+    }
+
+    final source = await showDialog<Note>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Merge with…'),
+        content: SizedBox(
+          width: 440,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 360),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text('Choose a note to combine into this one. The source note will be removed after confirmation.'),
+                ),
+                for (final candidate in candidates)
+                  ListTile(
+                    leading: const Icon(Icons.note_alt_outlined),
+                    title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
+                    subtitle: Text(
+                      candidate.content.trim().replaceAll(RegExp(r'\s+'), ' '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onTap: () => Navigator.pop(dialogContext, candidate),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted || source == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm merge'),
+        content: Text(
+          'Merge "${source.title.trim().isEmpty ? 'Untitled note' : source.title}" into "${target.title.trim().isEmpty ? 'Untitled note' : target.title}"? The source note will be removed.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Merge notes'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final now = DateTime.now();
+    final sections = <String>[
+      if (target.content.trim().isNotEmpty) target.content.trim(),
+      if (source.content.trim().isNotEmpty)
+        '---\nMerged from: ${source.title.trim().isEmpty ? 'Untitled note' : source.title.trim()}\n\n${source.content.trim()}',
+    ];
+    final mergedChecklist = <ChecklistItem>[
+      ...target.checklistItems,
+      ...source.checklistItems.map(
+        (item) => ChecklistItem(
+          id: '${target.id}_merged_${now.microsecondsSinceEpoch}_${item.id}',
+          text: item.text,
+          isDone: item.isDone,
+          dueAt: item.dueAt,
+        ),
+      ),
+    ];
+    final merged = target.copyWith(
+      title: target.title.trim().isNotEmpty ? target.title : source.title,
+      content: sections.join('\n\n'),
+      type: target.type == NoteType.checklist && source.type == NoteType.checklist
+          ? NoteType.checklist
+          : NoteType.text,
+      updatedAt: now,
+      tags: {...target.tags, ...source.tags}.toList(),
+      attachments: {...target.attachments, ...source.attachments}.toList(),
+      checklistItems: mergedChecklist,
+      dueAt: target.dueAt ?? source.dueAt,
+      imagePath: target.imagePath ?? source.imagePath,
+    );
+
+    try {
+      await repository.saveNote(merged);
+      await repository.deleteNote(source.id);
+      await repository.refresh();
+      if (!mounted) return;
+      await _loadNotes();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Notes merged successfully.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not merge notes: $error')),
+      );
+    }
+  }
+
   Future<void> _showColorPicker(Note note) async {
     const colors = <Color>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
     final selected = await showModalBottomSheet<int>(
@@ -481,6 +651,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     final recent = _notes.where((note) {
       final reflection = isDailyReflection(note);
       switch (_activeFilter) {
+        case 'inbox':
+          return note.isInbox && !note.isArchived && !reflection;
         case 'pinned':
           return note.isPinned && !note.isArchived && !reflection;
         case 'favorites':
@@ -849,6 +1021,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   children: [
                     for (final filter in const [
                       ('all', 'All', Icons.notes_rounded),
+                      ('inbox', 'Triage Inbox', Icons.inbox_outlined),
                       ('pinned', 'Pinned', Icons.push_pin_outlined),
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
                       ('checklists', 'Checklists', Icons.checklist_rounded),
@@ -981,16 +1154,69 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         ],
                         icon: const Icon(Icons.sort_rounded),
                       ),
-                      IconButton(
-                        tooltip: _gridView ? 'List view' : 'Grid view',
-                        onPressed: () async {
-                          setState(() => _gridView = !_gridView);
+                      PopupMenuButton<String>(
+                        tooltip: 'Choose notes view',
+                        initialValue: _noteView,
+                        onSelected: (value) async {
+                          setState(() => _noteView = value);
                           await _savePreferences();
                         },
-                        icon: Icon(
-                          _gridView
-                              ? Icons.view_list_rounded
-                              : Icons.grid_view_rounded,
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(
+                            value: 'list',
+                            child: Row(
+                              children: [
+                                Icon(Icons.view_list_rounded),
+                                SizedBox(width: 12),
+                                Text('List'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'grid',
+                            child: Row(
+                              children: [
+                                Icon(Icons.grid_view_rounded),
+                                SizedBox(width: 12),
+                                Text('Grid'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'compact',
+                            child: Row(
+                              children: [
+                                Icon(Icons.view_agenda_outlined),
+                                SizedBox(width: 12),
+                                Text('Compact'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'board',
+                            child: Row(
+                              children: [
+                                Icon(Icons.view_kanban_outlined),
+                                SizedBox(width: 12),
+                                Text('Board'),
+                              ],
+                            ),
+                          ),
+                        ],
+                        icon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _noteView == 'grid'
+                                  ? Icons.grid_view_rounded
+                                  : _noteView == 'list'
+                                      ? Icons.view_list_rounded
+                                      : _noteView == 'compact'
+                                          ? Icons.view_agenda_outlined
+                                          : Icons.view_kanban_outlined,
+                            ),
+                            const Icon(Icons.arrow_drop_down_rounded),
+                          ],
                         ),
                       ),
                     ],
@@ -1005,7 +1231,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               else
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                  sliver: _gridView
+                  sliver: _noteView == 'grid'
                       ? SliverGrid(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) => GestureDetector(
@@ -1025,21 +1251,31 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                             childAspectRatio: 0.90,
                           ),
                         )
-                      : SliverList.builder(
-                          itemCount: recent.length,
-                          itemBuilder: (context, index) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: GestureDetector(
-                              onLongPress: () =>
-                                  _showNoteMenu(recent[index]),
-                              child: _NoteCard(
-                                note: recent[index],
-                                compact: true,
-                                onTap: () => _openNote(recent[index]),
+                      : _noteView == 'board'
+                          ? SliverToBoxAdapter(
+                              child: _NotesBoard(
+                                notes: recent,
+                                onOpen: _openNote,
+                                onLongPress: _showNoteMenu,
+                              ),
+                            )
+                          : SliverList.builder(
+                              itemCount: recent.length,
+                              itemBuilder: (context, index) => Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: _noteView == 'compact' ? 4 : 12,
+                                ),
+                                child: GestureDetector(
+                                  onLongPress: () =>
+                                      _showNoteMenu(recent[index]),
+                                  child: _NoteCard(
+                                    note: recent[index],
+                                    compact: _noteView == 'compact',
+                                    onTap: () => _openNote(recent[index]),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
                 ),
             ],
           ],
@@ -1047,6 +1283,96 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       ),
         );
       },
+    );
+  }
+}
+
+class _NotesBoard extends StatelessWidget {
+  const _NotesBoard({
+    required this.notes,
+    required this.onOpen,
+    required this.onLongPress,
+  });
+
+  final List<Note> notes;
+  final ValueChanged<Note> onOpen;
+  final ValueChanged<Note> onLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final columns = <String, List<Note>>{};
+    for (final note in notes) {
+      final folder = note.folderId?.trim();
+      final column = folder == null || folder.isEmpty ? 'Notes' : folder;
+      columns.putIfAbsent(column, () => <Note>[]).add(note);
+    }
+
+    return SizedBox(
+      height: 430,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: columns.entries.map((entry) {
+          return Container(
+            width: 250,
+            margin: const EdgeInsets.only(right: 12, bottom: 8),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: theme.colorScheme.outlineVariant),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 2, 4, 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          entry.key,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${entry.value.length}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: entry.value.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final note = entry.value[index];
+                      return GestureDetector(
+                        onLongPress: () => onLongPress(note),
+                        child: _NoteCard(
+                          note: note,
+                          compact: true,
+                          onTap: () => onOpen(note),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }
