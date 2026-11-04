@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:orah_notes/data/repositories/local_note_repository.dart';
 import 'package:orah_notes/data/kanban/kanban_repository.dart';
-import 'package:orah_notes/data/database/orah_database.dart';
 import 'package:orah_notes/models/note.dart';
 import 'support/isolated_sqlite_test_setup.dart';
 
