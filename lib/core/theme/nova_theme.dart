@@ -70,6 +70,7 @@ class NovaTheme {
         toolbarHeight: 60,
         titleSpacing: 16,
       ),
+      iconTheme: IconThemeData(size: 22, color: scheme.onSurfaceVariant),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
           minimumSize: const Size(44, 44),
@@ -83,6 +84,11 @@ class NovaTheme {
         minLeadingWidth: 24,
         minVerticalPadding: 8,
         visualDensity: VisualDensity.standard,
+      ),
+      chipTheme: ChipThemeData(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.55)),
       ),
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant.withValues(alpha: 0.55),
@@ -101,13 +107,14 @@ class NovaTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 2,
+        elevation: 1,
         shadowColor: Colors.black.withValues(alpha: 0.05),
         surfaceTintColor: Colors.transparent,
         color: _lightSurface,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.35)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -124,6 +131,21 @@ class NovaTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(0, 44),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          side: BorderSide(color: scheme.outlineVariant),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -204,6 +226,7 @@ class NovaTheme {
         toolbarHeight: 60,
         titleSpacing: 16,
       ),
+      iconTheme: IconThemeData(size: 22, color: scheme.onSurfaceVariant),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
           minimumSize: const Size(44, 44),
@@ -217,6 +240,11 @@ class NovaTheme {
         minLeadingWidth: 24,
         minVerticalPadding: 8,
         visualDensity: VisualDensity.standard,
+      ),
+      chipTheme: ChipThemeData(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.55)),
       ),
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant.withValues(alpha: 0.55),
@@ -235,13 +263,14 @@ class NovaTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 2,
+        elevation: 1,
         shadowColor: Colors.black.withValues(alpha: 0.18),
         surfaceTintColor: Colors.transparent,
         color: _darkSurface,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.35)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -258,6 +287,21 @@ class NovaTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(0, 44),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          side: BorderSide(color: scheme.outlineVariant),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
