@@ -483,6 +483,7 @@ class LocalNoteRepository implements NoteRepository {
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
       'mood': note.mood,
       'imagePath': note.imagePath,
+      'focusMinutes': note.focusMinutes,
     };
   }
 
@@ -513,6 +514,7 @@ class LocalNoteRepository implements NoteRepository {
       checklistItems: _checklistItemsFromMap(map),
       mood: map['mood'] as String?,
       imagePath: map['imagePath'] as String?,
+      focusMinutes: (map['focusMinutes'] as num?)?.toInt() ?? 0,
     );
   }
 
