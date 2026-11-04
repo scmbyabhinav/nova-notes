@@ -3045,10 +3045,10 @@ class _ToolButton extends StatelessWidget {
             ? IconButton.styleFrom(
                 backgroundColor: isStoppingVoice
                     ? theme.colorScheme.errorContainer
-                    : const Color(0xFFFFE8D6),
+                    : theme.colorScheme.secondaryContainer,
                 foregroundColor: isStoppingVoice
                     ? theme.colorScheme.onErrorContainer
-                    : const Color(0xFFB54708),
+                    : theme.colorScheme.onSecondaryContainer,
               )
             : null,
         onPressed: onPressed,
