@@ -493,6 +493,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<bool> _requestReminderPermission() async {
+    final status = await Permission.notification.request();
+    if (status.isGranted) return true;
+    if (!mounted) return false;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Note saved, but notifications are disabled. Enable notification permission to receive reminders.',
+        ),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: 'Settings',
+          onPressed: () => openAppSettings(),
+        ),
+      ),
+    );
+    return false;
+  }
+
   Future<void> _setChecklistItemReminder(int index) async {
     final item = _checklistItems[index];
     final now = DateTime.now();
@@ -509,6 +528,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       initialTime: TimeOfDay.fromDateTime(initial),
     );
     if (time == null || !mounted) return;
+    final notificationsAllowed = await _requestReminderPermission();
+    if (!mounted) return;
     setState(() {
       _checklistItems[index] = item.copyWith(
         dueAt: DateTime(picked.year, picked.month, picked.day, time.hour, time.minute),
@@ -516,6 +537,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _hasChanges = true;
     });
     await _save();
+    if (!notificationsAllowed && mounted) {
+      // The checklist due date remains saved even when Android blocks alerts.
+    }
   }
 
   Future<void> _clearChecklistItemReminder(int index) async {
@@ -1213,7 +1237,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final picked = await showDatePicker(context: context, initialDate: initial.isBefore(now) ? now : initial, firstDate: now, lastDate: DateTime(9999, 12, 31));
     if (picked == null || !mounted) return;
     final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
-    if (time == null) return;
+    if (time == null || !mounted) return;
+    await _requestReminderPermission();
+    if (!mounted) return;
     setState(() { _dueAt = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute); _hasChanges = true; });
     await _save();
   }
