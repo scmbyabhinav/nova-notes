@@ -2193,48 +2193,22 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           onPressed: _close,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
-        title: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: _saveFailed ? _save : null,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_saving)
-                  const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                else
-                  Icon(
-                    _saveFailed
-                        ? Icons.error_outline_rounded
-                        : (_hasChanges ? Icons.edit_outlined : Icons.cloud_done_outlined),
-                    size: 17,
-                    color: _saveFailed
-                        ? theme.colorScheme.error
-                        : theme.colorScheme.onSurfaceVariant,
-                  ),
-                const SizedBox(width: 7),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 150),
-                  child: Text(
-                    _saving
-                        ? 'Saving…'
-                        : (_saveFailed
-                            ? 'Save failed · Retry'
-                            : (_hasChanges ? 'Unsaved changes' : 'Saved')),
-                    key: ValueKey('$_saving-$_hasChanges-$_saveFailed'),
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: _saveFailed
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
+        title: Tooltip(
+          message: _saving
+              ? 'Saving…'
+              : (_saveFailed
+                  ? 'Save failed. Tap to retry.'
+                  : (_hasChanges ? 'Unsaved changes' : 'Saved')),
+          child: GestureDetector(
+            onTap: _saveFailed ? _save : null,
+            child: Icon(
+              _saveFailed
+                  ? Icons.error_outline_rounded
+                  : (_hasChanges ? Icons.edit_outlined : Icons.cloud_done_outlined),
+              size: 19,
+              color: _saveFailed
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ),
