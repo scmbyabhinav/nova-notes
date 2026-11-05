@@ -2146,15 +2146,48 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           onPressed: _close,
           icon: const Icon(Icons.arrow_back_rounded),
         ),
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
-          child: Text(
-            _saving
-                ? 'Saving…'
-                : (_hasChanges ? 'Unsaved changes' : 'Saved'),
-            key: ValueKey('$_saving-$_hasChanges'),
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+        title: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: _saveFailed ? _save : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_saving)
+                  const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else
+                  Icon(
+                    _saveFailed
+                        ? Icons.error_outline_rounded
+                        : (_hasChanges ? Icons.edit_outlined : Icons.cloud_done_outlined),
+                    size: 17,
+                    color: _saveFailed
+                        ? theme.colorScheme.error
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                const SizedBox(width: 7),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 150),
+                  child: Text(
+                    _saving
+                        ? 'Saving…'
+                        : (_saveFailed
+                            ? 'Save failed · Retry'
+                            : (_hasChanges ? 'Unsaved changes' : 'Saved')),
+                    key: ValueKey('$_saving-$_hasChanges-$_saveFailed'),
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: _saveFailed
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -3040,17 +3073,21 @@ class _ToolButton extends StatelessWidget {
       padding: const EdgeInsets.only(right: 4),
       child: IconButton.filledTonal(
         tooltip: label,
-        visualDensity: VisualDensity.compact,
-        style: isVoice
-            ? IconButton.styleFrom(
-                backgroundColor: isStoppingVoice
-                    ? theme.colorScheme.errorContainer
-                    : theme.colorScheme.secondaryContainer,
-                foregroundColor: isStoppingVoice
-                    ? theme.colorScheme.onErrorContainer
-                    : theme.colorScheme.onSecondaryContainer,
-              )
-            : null,
+        style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          padding: const EdgeInsets.all(12),
+          tapTargetSize: MaterialTapTargetSize.padded,
+          backgroundColor: isVoice
+              ? (isStoppingVoice
+                  ? theme.colorScheme.errorContainer
+                  : theme.colorScheme.secondaryContainer)
+              : theme.colorScheme.surfaceContainerHighest,
+          foregroundColor: isVoice
+              ? (isStoppingVoice
+                  ? theme.colorScheme.onErrorContainer
+                  : theme.colorScheme.onSecondaryContainer)
+              : theme.colorScheme.onSurface,
+        ),
         onPressed: onPressed,
         icon: assetIcon != null ? OrahAssetIcon(assetIcon!, size: 20) : Icon(icon!, size: 21),
       ),
