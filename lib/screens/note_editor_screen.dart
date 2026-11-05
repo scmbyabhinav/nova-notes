@@ -528,7 +528,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       initialTime: TimeOfDay.fromDateTime(initial),
     );
     if (time == null || !mounted) return;
-    final notificationsAllowed = await _requestReminderPermission();
+    await _requestReminderPermission();
     if (!mounted) return;
     setState(() {
       _checklistItems[index] = item.copyWith(
@@ -537,9 +537,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _hasChanges = true;
     });
     await _save();
-    if (!notificationsAllowed && mounted) {
-      // The checklist due date remains saved even when Android blocks alerts.
-    }
   }
 
   Future<void> _clearChecklistItemReminder(int index) async {
