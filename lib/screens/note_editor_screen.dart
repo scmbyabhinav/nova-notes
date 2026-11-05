@@ -1932,6 +1932,28 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     await _save();
   }
 
+  Future<void> _updateInlineImageCaption(Uri uri, String caption) async {
+    final expression = RegExp(
+      r'!\[([^\]]*)\]\(' + RegExp.escape(uri.toString()) + r'(?: "width=(\d+)")?\)',
+    );
+    final escapedCaption = caption.replaceAll(']', r'\]');
+    final updated = _contentController.text.replaceAllMapped(
+      expression,
+      (match) {
+        final width = match.group(2) ?? '320';
+        return '![' + escapedCaption + '](' + uri.toString() + ' "width=' + width + '")';
+      },
+    );
+    if (updated == _contentController.text) return;
+    _contentController.value = _contentController.value.copyWith(
+      text: updated,
+      selection: TextSelection.collapsed(offset: updated.length),
+      composing: TextRange.empty,
+    );
+    _hasChanges = true;
+    await _save();
+  }
+
   List<_MarkdownTocSection> _buildMarkdownSections(String markdown) {
     final sections = <_MarkdownTocSection>[];
     var currentLines = <String>[];
@@ -1994,7 +2016,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               return _ResizableInlineImage(
                 file: file,
                 width: width,
+                caption: alt ?? '',
                 onWidthChanged: (nextWidth) => _updateInlineImageWidth(uri, nextWidth),
+                onCaptionChanged: (caption) => _updateInlineImageCaption(uri, caption),
               );
             }
           } catch (_) {
@@ -3099,12 +3123,16 @@ class _ResizableInlineImage extends StatefulWidget {
   const _ResizableInlineImage({
     required this.file,
     required this.width,
+    required this.caption,
     required this.onWidthChanged,
+    required this.onCaptionChanged,
   });
 
   final File file;
   final double width;
+  final String caption;
   final ValueChanged<double> onWidthChanged;
+  final Future<void> Function(String) onCaptionChanged;
 
   @override
   State<_ResizableInlineImage> createState() => _ResizableInlineImageState();
@@ -3147,13 +3175,27 @@ class _ResizableInlineImageState extends State<_ResizableInlineImage> {
                 ),
               ),
               const SizedBox(height: 4),
+              if (widget.caption.trim().isNotEmpty &&
+                  widget.caption.trim() != p.basename(widget.file.path))
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    widget.caption,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
               Wrap(
                 spacing: 4,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   IconButton(
                     tooltip: 'Make image smaller',
-                    visualDensity: VisualDensity.compact,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                      tapTargetSize: MaterialTapTargetSize.padded,
+                    ),
                     onPressed: () {
                       final next = (_width - 40).clamp(120.0, maxWidth).toDouble();
                       setState(() => _width = next);
@@ -3161,10 +3203,58 @@ class _ResizableInlineImageState extends State<_ResizableInlineImage> {
                     },
                     icon: const Icon(Icons.remove_circle_outline_rounded),
                   ),
-                  Text('${displayWidth.round()} px', style: theme.textTheme.labelSmall),
+                  Text(displayWidth.round().toString() + ' px', style: theme.textTheme.labelSmall),
+                  TextButton.icon(
+                    onPressed: () async {
+                      final controller = TextEditingController(
+                        text: widget.caption == p.basename(widget.file.path)
+                            ? ''
+                            : widget.caption,
+                      );
+                      final value = await showDialog<String>(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          title: const Text('Image caption'),
+                          content: TextField(
+                            controller: controller,
+                            autofocus: true,
+                            maxLines: 2,
+                            decoration: const InputDecoration(
+                              hintText: 'Add a short caption',
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogContext),
+                              child: const Text('Cancel'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(
+                                dialogContext,
+                                controller.text.trim(),
+                              ),
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        ),
+                      );
+                      controller.dispose();
+                      if (value != null) await widget.onCaptionChanged(value);
+                    },
+                    icon: const Icon(Icons.edit_note_rounded, size: 18),
+                    label: Text(
+                      widget.caption.trim().isNotEmpty &&
+                              widget.caption.trim() != p.basename(widget.file.path)
+                          ? 'Edit caption'
+                          : 'Add caption',
+                    ),
+                  ),
                   IconButton(
                     tooltip: 'Make image larger',
-                    visualDensity: VisualDensity.compact,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                      tapTargetSize: MaterialTapTargetSize.padded,
+                    ),
                     onPressed: () {
                       final next = (_width + 40).clamp(120.0, maxWidth).toDouble();
                       setState(() => _width = next);
