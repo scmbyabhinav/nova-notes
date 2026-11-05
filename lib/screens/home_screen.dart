@@ -458,15 +458,20 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           updatedAt: DateTime.now(),
           folderId: duplicate.folderId,
           tags: duplicate.tags,
-          attachments: const [],
+          attachments: duplicate.attachments,
           checklistItems: duplicateItems,
+          linkedNoteIds: duplicate.linkedNoteIds,
           color: duplicate.color,
           isPinned: false,
           isFavorite: false,
           isArchived: false,
           isLocked: false,
           isTrashed: false,
+          isInbox: false,
           dueAt: duplicate.dueAt,
+          mood: duplicate.mood,
+          imagePath: duplicate.imagePath,
+          focusMinutes: duplicate.focusMinutes,
         ));
         if (duplicate.dueAt != null) {
           await OrahReminderService.instance.schedule(noteId: duplicateId, title: duplicate.title, when: duplicate.dueAt!);
