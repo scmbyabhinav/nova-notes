@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../services/orah_reminder_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Local-first timer; it does not modify notes, folders, attachments or Kanban.
@@ -52,8 +54,20 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     _loaded = true;
     if (_running && _deadline != null) {
       _syncClock();
+      unawaited(_syncCompletionAlert());
     } else {
       setState(() {});
+    }
+  }
+
+  Future<void> _syncCompletionAlert() async {
+    if (_running && _deadline != null) {
+      await OrahReminderService.instance.schedulePomodoroCompletion(
+        when: _deadline!,
+        mode: _mode,
+      );
+    } else {
+      await OrahReminderService.instance.cancelPomodoroCompletion();
     }
   }
 
@@ -104,6 +118,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
       _syncClock();
     }
     await _save();
+    await _syncCompletionAlert();
     if (mounted) setState(() {});
   }
 
@@ -113,6 +128,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     _deadline = null;
     _remaining = _duration;
     await _save();
+    await _syncCompletionAlert();
     if (mounted) setState(() {});
   }
 
@@ -140,6 +156,11 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     _deadline = null;
     _remaining = _duration;
     await _save();
+    await OrahReminderService.instance.cancelPomodoroCompletion();
+    // Audible system alert and haptic feedback for foreground completion;
+    // the scheduled notification provides the background-device alert.
+    unawaited(SystemSound.play(SystemSoundType.alert));
+    unawaited(HapticFeedback.vibrate());
     if (!mounted) return;
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -176,7 +197,43 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                 constraints: const BoxConstraints(maxWidth: 480),
                 child: Column(children: [
                   Text('Make room for deep work', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 14),
+                  Card(
+                    color: theme.colorScheme.primaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      child: Row(
+                        children: [
+                          Icon(Icons.timer_rounded, color: theme.colorScheme.onPrimaryContainer, size: 28),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('TIME REMAINING',
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: theme.colorScheme.onPrimaryContainer,
+                                    letterSpacing: 1.2,
+                                    fontWeight: FontWeight.w700,
+                                  )),
+                                Text(_clock(_remaining),
+                                  style: theme.textTheme.headlineMedium?.copyWith(
+                                    color: theme.colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.w900,
+                                  )),
+                              ],
+                            ),
+                          ),
+                          Text(_running ? 'RUNNING' : 'PAUSED',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w800,
+                            )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(value: 'focus', label: Text('Focus')),
