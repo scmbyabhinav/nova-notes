@@ -812,7 +812,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
   bool _containsInlineImage(String content) => RegExp(
-        r'!\\[[^\\]]*\\]\\((?:file|https?|content):[^)]+\\)',
+        r'!\[[^\]]*\]\((?:file|https?|content):[^)]+\)',
         caseSensitive: false,
       ).hasMatch(content);
 
@@ -822,7 +822,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     // image URL. Keep image payloads out of the subject and move them into
     // the note body, where the existing Markdown renderer displays them.
     final imagePattern = RegExp(
-      r'!\\[[^\\]]*\\]\\((?:file|https?|content):[^)]+\\)|(?:file|https?|content)://[^\\s)]+\\.(?:png|jpe?g|gif|webp|heic)(?:\\?[^\\s)]*)?',
+      r'!\[[^\]]*\]\((?:file|https?|content):[^)]+\)|(?:file|https?|content)://[^\s)]+\.(?:png|jpe?g|gif|webp|heic)(?:\?[^\s)]*)?',
       caseSensitive: false,
     );
     final matches = imagePattern.allMatches(value).toList();
@@ -831,14 +831,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final imageBlocks = matches.map((match) {
       final pasted = match.group(0)!;
       if (pasted.startsWith('![')) return pasted;
-      final filename = Uri.tryParse(pasted)?.pathSegments.lastOrNull ?? 'Pasted image';
+      final segments = Uri.tryParse(pasted)?.pathSegments ?? const <String>[];
+      final filename = segments.isEmpty ? 'Pasted image' : segments.last;
       return '![$filename]($pasted "width=320")';
-    }).join('\\n\\n');
-    final cleanTitle = value.replaceAll(imagePattern, '').replaceAll(RegExp(r'\\s{2,}'), ' ').trim();
+    }).join('\n\n');
+    final cleanTitle = value.replaceAll(imagePattern, '').replaceAll(RegExp(r'\s{2,}'), ' ').trim();
     final currentBody = _contentController.text.trimRight();
     final nextBody = currentBody.isEmpty
         ? imageBlocks
-        : '$currentBody\\n\\n$imageBlocks';
+        : '$currentBody\n\n$imageBlocks';
     _contentController.value = TextEditingValue(
       text: nextBody,
       selection: TextSelection.collapsed(offset: nextBody.length),
