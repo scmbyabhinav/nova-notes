@@ -840,12 +840,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final nextBody = currentBody.isEmpty
         ? imageBlocks
         : '$currentBody\n\n$imageBlocks';
+    _movingPastedImageFromTitle = true;
     _contentController.value = TextEditingValue(
       text: nextBody,
       selection: TextSelection.collapsed(offset: nextBody.length),
       composing: TextRange.empty,
     );
-    _movingPastedImageFromTitle = true;
     _titleController.value = TextEditingValue(
       text: cleanTitle,
       selection: TextSelection.collapsed(offset: cleanTitle.length),
@@ -858,6 +858,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   void _onChanged() {
+    if (_movingPastedImageFromTitle) return;
     _updateSlashCommandMenu();
     _hasChanges = true;
     _save();
