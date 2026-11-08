@@ -23,9 +23,10 @@ import 'archived_notes_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
 import 'vault_screen.dart';
+import 'pomodoro_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onKanban});
+  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onKanban, this.onPomodoro});
 
   final bool isActive;
   final Future<void> Function()? onNewNote;
@@ -38,6 +39,7 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback? onStatistics;
   final VoidCallback? onCalendarHistory;
   final VoidCallback? onKanban;
+  final VoidCallback? onPomodoro;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -47,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
   bool _gridView = true;
   bool _showFeatures = false;
   static const List<String> _allExploreActionLabels = [
-    'Recent Notes', 'Favorites', 'Folders', 'Kanban', 'Archived Notes',
+    'Recent Notes', 'Favorites', 'Folders', 'Kanban', 'Pomodoro', 'Archived Notes',
     'Appearance', 'Backup & Export', 'Checklists', 'Daily Reflection',
     'Offline access', 'Search', 'Voice Capture',
   ];
@@ -1085,6 +1087,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       (label: 'Favorites', widget: _ExploreAction(icon: Icons.star_outline_rounded, label: 'Favorites', onTap: widget.onFavorites)),
                                       (label: 'Folders', widget: _ExploreAction(icon: Icons.folder_outlined, label: 'Folders', onTap: widget.onFolders)),
                                       (label: 'Kanban', widget: _ExploreAction(icon: Icons.view_kanban_outlined, label: AppLocalizations.of(context)!.kanban, onTap: widget.onKanban)),
+                                      (label: 'Pomodoro', widget: _ExploreAction(icon: Icons.timer_outlined, label: 'Pomodoro Focus', onTap: widget.onPomodoro)),
                                       (label: 'Archived Notes', widget: _ExploreAction(icon: Icons.archive_outlined, label: 'Archived Notes', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())))),
                                       (label: 'Appearance', widget: _ExploreAction(icon: Icons.palette_outlined, label: 'Appearance', onTap: widget.onSettings)),
                                       (label: 'Backup & Export', widget: _ExploreAction(icon: Icons.ios_share_rounded, label: 'Backup & Export', onTap: widget.onSettings)),
