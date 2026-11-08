@@ -118,6 +118,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
+  bool _movingPastedImageFromTitle = false;
   bool _showSlashCommandMenu = false;
   String _slashCommandQuery = '';
   int? _slashCommandStart;
@@ -170,6 +171,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _contentController = TextEditingController(
       text: locked ? '' : (existing?.content ?? widget.initialContent ?? ''),
     );
+    // Reopen notes containing inline images in rendered mode so users see
+    // the actual images rather than raw Markdown file links.
+    _previewMode = !locked && _containsInlineImage(_contentController.text);
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
@@ -806,6 +810,51 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
+
+  bool _containsInlineImage(String content) => RegExp(
+        r'!\\[[^\\]]*\\]\\((?:file|https?|content):[^)]+\\)',
+        caseSensitive: false,
+      ).hasMatch(content);
+
+  void _handleTitleInput(String value) {
+    if (_movingPastedImageFromTitle || _isLocked) return;
+    // Some Android keyboards paste copied images as Markdown or as a direct
+    // image URL. Keep image payloads out of the subject and move them into
+    // the note body, where the existing Markdown renderer displays them.
+    final imagePattern = RegExp(
+      r'!\\[[^\\]]*\\]\\((?:file|https?|content):[^)]+\\)|(?:file|https?|content)://[^\\s)]+\\.(?:png|jpe?g|gif|webp|heic)(?:\\?[^\\s)]*)?',
+      caseSensitive: false,
+    );
+    final matches = imagePattern.allMatches(value).toList();
+    if (matches.isEmpty) return;
+
+    final imageBlocks = matches.map((match) {
+      final pasted = match.group(0)!;
+      if (pasted.startsWith('![')) return pasted;
+      final filename = Uri.tryParse(pasted)?.pathSegments.lastOrNull ?? 'Pasted image';
+      return '![$filename]($pasted "width=320")';
+    }).join('\\n\\n');
+    final cleanTitle = value.replaceAll(imagePattern, '').replaceAll(RegExp(r'\\s{2,}'), ' ').trim();
+    final currentBody = _contentController.text.trimRight();
+    final nextBody = currentBody.isEmpty
+        ? imageBlocks
+        : '$currentBody\\n\\n$imageBlocks';
+    _contentController.value = TextEditingValue(
+      text: nextBody,
+      selection: TextSelection.collapsed(offset: nextBody.length),
+      composing: TextRange.empty,
+    );
+    _movingPastedImageFromTitle = true;
+    _titleController.value = TextEditingValue(
+      text: cleanTitle,
+      selection: TextSelection.collapsed(offset: cleanTitle.length),
+      composing: TextRange.empty,
+    );
+    _movingPastedImageFromTitle = false;
+    _hasChanges = true;
+    if (mounted) setState(() => _previewMode = true);
+    _save();
+  }
 
   void _onChanged() {
     _updateSlashCommandMenu();
@@ -2636,6 +2685,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               ),
                           decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           maxLines: 2,
+                          onChanged: _handleTitleInput,
                         ),
                         const SizedBox(height: 8),
                         if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
