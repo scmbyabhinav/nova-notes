@@ -165,7 +165,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = _isFocus ? theme.colorScheme.primary : theme.colorScheme.tertiary;
-    final progress = 1 - (_remaining.inSeconds / _duration.inSeconds).clamp(0.0, 1.0);
+    final progress = (1 - (_remaining.inSeconds / _duration.inSeconds).clamp(0.0, 1.0)).toDouble();
     return Scaffold(
       appBar: AppBar(title: const Text('ORAH Focus')),
       body: SafeArea(
