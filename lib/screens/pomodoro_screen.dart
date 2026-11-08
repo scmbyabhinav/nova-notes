@@ -188,7 +188,45 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     final color = _isFocus ? theme.colorScheme.primary : theme.colorScheme.tertiary;
     final progress = (1 - (_remaining.inSeconds / _duration.inSeconds).clamp(0.0, 1.0)).toDouble();
     return Scaffold(
-      appBar: AppBar(title: const Text('ORAH Focus')),
+      appBar: AppBar(
+        title: const Text('ORAH Focus'),
+        // Keep the live countdown pinned below the app bar so it cannot
+        // scroll out of view while the timer is running.
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(46),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            color: theme.colorScheme.primaryContainer,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.timer_outlined,
+                    size: 19, color: theme.colorScheme.onPrimaryContainer),
+                const SizedBox(width: 9),
+                Text(
+                  'TIME LEFT  ${_clock(_remaining)}',
+                  key: const ValueKey('pomodoro_pinned_countdown'),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w900,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  _running ? 'RUNNING' : 'PAUSED',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: !_loaded ? const Center(child: CircularProgressIndicator())
             : Center(child: SingleChildScrollView(
