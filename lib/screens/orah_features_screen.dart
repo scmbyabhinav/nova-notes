@@ -17,6 +17,7 @@ class OrahFeaturesScreen extends StatelessWidget {
         _Feature('Document Scanner', 'Scan pages, auto-crop and enhance them, then save as JPG.', Icons.document_scanner_outlined, detail: 'Android'),
         _Feature('OCR', 'Extract readable text from supported images.', Icons.document_scanner_rounded),
         _Feature('Share to ORAH', 'Send supported text and files from other apps into your inbox.', Icons.share_outlined),
+        _Feature('Import Documents', 'Import one PDF, Word, text or Markdown file, or combine up to four supported documents into one note.', Icons.file_open_rounded),
       ],
     ),
     _FeatureCategory(

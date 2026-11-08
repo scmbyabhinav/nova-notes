@@ -24,6 +24,7 @@ dependencies:
   screenshot: ^3.0.0
   http: ^1.6.0
   pdf: ^3.11.3
+  syncfusion_flutter_pdf: ^32.1.23
   archive: ^4.0.7
   flutter_markdown_plus: ^1.0.12
   flutter_svg: ^2.2.0

@@ -21,6 +21,7 @@ import 'reflection_prompt_screen.dart';
 import 'archived_notes_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
+import 'import_documents_screen.dart';
 import 'vault_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -558,6 +559,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     }
   }
 
+  Future<void> _importDocuments() async {
+    final imported = await Navigator.of(context).push<Note>(
+      MaterialPageRoute(builder: (_) => const ImportDocumentsScreen()),
+    );
+    if (!mounted || imported == null) return;
+    final repository = await NoteRepositoryProvider.instance();
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NoteEditorScreen(repository: repository, note: imported),
+      ),
+    );
+    if (mounted) await _loadNotes();
+  }
+
   Future<void> _showColorPicker(Note note) async {
     const colors = <Color>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
     final selected = await showModalBottomSheet<int>(
@@ -853,6 +869,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                       _ExploreAction(icon: Icons.archive_outlined, label: 'Archived Notes', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen()))),
                                       _ExploreAction(icon: Icons.palette_outlined, label: 'Appearance', onTap: widget.onSettings),
                                       _ExploreAction(icon: Icons.ios_share_rounded, label: 'Backup & Export', onTap: widget.onSettings),
+                                      _ExploreAction(icon: Icons.file_open_rounded, label: 'Import documents', onTap: _importDocuments),
                                       _ExploreAction(icon: Icons.checklist_rounded, label: 'Checklists', onTap: widget.onChecklist),
                                       _ExploreAction(icon: Icons.auto_awesome_outlined, label: 'Daily Reflection', onTap: _openReflection),
                                       _ExploreAction(icon: Icons.cloud_off_outlined, label: 'Offline access', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()))),
