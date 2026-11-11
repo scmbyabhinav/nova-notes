@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -15,6 +17,7 @@ class OrahReminderService {
   OrahReminderService._();
   static final instance = OrahReminderService._();
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  static const MethodChannel _nativeAlarm = MethodChannel('orah_notes/alarm');
   static const doneAction = 'orah_done';
   static const snooze10Action = 'orah_snooze_10';
   static const snooze60Action = 'orah_snooze_60';
@@ -192,6 +195,25 @@ class OrahReminderService {
       'noteId': payloadNoteId ?? noteId,
       if (payloadChecklistId != null) 'checklistId': payloadChecklistId,
     });
+
+    if (Platform.isAndroid) {
+      try {
+        final scheduled = await _nativeAlarm.invokeMethod<bool>('scheduleAlarm', {
+          'id': noteId,
+          'title': safeTitle,
+          'triggerAtMillis': when.millisecondsSinceEpoch,
+        });
+        if (scheduled == true) return;
+        throw PlatformException(
+          code: 'exact_alarm_permission_required',
+          message: 'Allow ORAH to schedule exact alarms, then set this reminder again.',
+        );
+      } on MissingPluginException {
+        // Unit tests and older hosts can still exercise the notification fallback below.
+      }
+    }
+
+
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
         'orah_reminders',
@@ -218,6 +240,13 @@ class OrahReminderService {
   }
 
   Future<void> cancel(String noteId) async {
+    if (Platform.isAndroid) {
+      try {
+        await _nativeAlarm.invokeMethod<bool>('cancelAlarm', {'id': noteId});
+      } on MissingPluginException {
+        // Continue with the Flutter notification plugin fallback.
+      }
+    }
     if (!_initialized) await initialize();
     await Future.wait([
       _plugin.cancel(id: _notificationId('note:$noteId')),
