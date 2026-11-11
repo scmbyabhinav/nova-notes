@@ -43,3 +43,6 @@ CI build trigger: Orah Android validation and APK packaging.
 - Create and securely store the production upload/release keystore; never commit signing material.
 - Configure Play Console Data safety, content rating, target audience, privacy policy, and app access declarations.
 - QA clean install, upgrade, backup/restore, reminders, checklist reminders, OCR, export/share, app lock, Trash, themes, and offline behavior on physical Android devices.
+
+
+<!-- Final Orah integration validation marker -->
