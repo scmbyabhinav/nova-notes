@@ -1521,12 +1521,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     }
   }
 
+  bool _bodyReferencesImage(String path) {
+    final fileUri = Uri.file(path).toString();
+    return _contentController.text.contains(fileUri) ||
+        _contentController.text.contains(path);
+  }
+
   Future<void> _removeAttachment(String path) async {
-    await const NovaAttachmentService().delete(path);
+    // A single imported file may be referenced independently by the cover
+    // image and/or inline body Markdown. Removing its attachment chip must not
+    // delete the underlying file while either reference still exists.
+    final isUsedAsCover = _imagePath == path;
+    final isUsedInBody = _bodyReferencesImage(path);
+    if (!isUsedAsCover && !isUsedInBody) {
+      await const NovaAttachmentService().delete(path);
+    }
+    if (!mounted) return;
     setState(() {
       _attachments = _attachments.where((item) => item != path).toList();
       _hasChanges = true;
     });
+    await _save();
+  }
+
+  Future<void> _removeCoverImage() async {
+    final path = _imagePath;
+    if (path == null) return;
+    // Clear only the cover reference. Keep the file if inline body Markdown
+    // still uses it, and leave the body untouched.
+    setState(() {
+      _imagePath = null;
+      _hasChanges = true;
+    });
+    if (!_attachments.contains(path) && !_bodyReferencesImage(path)) {
+      await const NovaAttachmentService().delete(path);
+    }
     await _save();
   }
 
@@ -2685,10 +2714,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                     if (!_isLocked)
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: IconButton.filledTonal(
-                          tooltip: 'Insert image into note body',
-                          onPressed: () => _insertImageIntoBody(_imagePath!),
-                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton.filledTonal(
+                              tooltip: 'Insert a copy into note body',
+                              onPressed: () => _insertImageIntoBody(_imagePath!),
+                              icon: const Icon(Icons.add_photo_alternate_outlined),
+                            ),
+                            const SizedBox(width: 6),
+                            IconButton.filledTonal(
+                              tooltip: 'Remove cover image only',
+                              onPressed: _removeCoverImage,
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                          ],
                         ),
                       ),
                   ],
