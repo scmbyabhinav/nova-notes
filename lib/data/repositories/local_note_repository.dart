@@ -367,6 +367,7 @@ class LocalNoteRepository implements NoteRepository {
       'tags': payload['tags'] ?? const <String>[],
       'checklistItems': payload['checklistItems'] ?? const <Map<String, dynamic>>[],
       'imagePath': payload['imagePath'] ?? record['imagePath'],
+      'focusMinutes': payload['focusMinutes'] ?? record['focusMinutes'] ?? 0,
     };
     final restored = _fromMap(restoredMap);
     final ordinary = await getNotes();
@@ -436,6 +437,7 @@ class LocalNoteRepository implements NoteRepository {
         'checklistItems':
             note.checklistItems.map((item) => item.toMap()).toList(),
         'imagePath': note.imagePath,
+        'focusMinutes': note.focusMinutes,
       });
       final ciphertext = await _security.encryptPrivatePayload(payload);
       return {
@@ -483,6 +485,7 @@ class LocalNoteRepository implements NoteRepository {
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
       'mood': note.mood,
       'imagePath': note.imagePath,
+      'focusMinutes': note.focusMinutes,
     };
   }
 
@@ -513,6 +516,7 @@ class LocalNoteRepository implements NoteRepository {
       checklistItems: _checklistItemsFromMap(map),
       mood: map['mood'] as String?,
       imagePath: map['imagePath'] as String?,
+      focusMinutes: (map['focusMinutes'] as num?)?.toInt() ?? 0,
     );
   }
 
