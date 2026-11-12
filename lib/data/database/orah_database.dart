@@ -15,7 +15,9 @@ class _LegacyMigrationPlan {
 class OrahDatabase {
   OrahDatabase._();
 
-  static const schemaVersion = 3;
+  static const schemaVersion = 5;
+  static bool _fts5Available = false;
+  static bool get fts5Available => _fts5Available;
   static const legacyNotesKey = 'nova_notes_v1';
   static const legacyBackupKey = 'orah_legacy_notes_backup_v1';
   static const vaultNotesKey = 'orah_vault_notes_v1';
@@ -81,6 +83,9 @@ class OrahDatabase {
           }
         } else if (state != 'complete' && state != 'vault_pending') {
           throw StateError('Unknown legacy migration state: $state');
+        }
+        if (currentVersion < 5 && _fts5Available) {
+          await txn.execute("INSERT INTO note_search(note_search) VALUES('rebuild')");
         }
         if (currentVersion < schemaVersion) await txn.execute('PRAGMA user_version = $schemaVersion');
       });
@@ -169,6 +174,46 @@ class OrahDatabase {
       )
     ''');
     await db.execute('CREATE INDEX IF NOT EXISTS idx_note_versions_note_saved ON note_versions(note_id, saved_at)');
+
+    // FTS5 is an additive search index. Notes remain the source of truth;
+    // if the platform SQLite build lacks FTS5, the app keeps its Dart search.
+    try {
+      await db.execute("""
+        CREATE VIRTUAL TABLE IF NOT EXISTS note_search USING fts5(
+          note_id UNINDEXED,
+          title,
+          content,
+          tags,
+          tokenize = 'unicode61 remove_diacritics 2'
+        )
+      """);
+      _fts5Available = true;
+      // Recreate triggers so fixes to their SQL are applied to existing local
+      // databases as well as fresh installations.
+      await db.execute('DROP TRIGGER IF EXISTS notes_search_insert');
+      await db.execute('DROP TRIGGER IF EXISTS notes_search_delete');
+      await db.execute('DROP TRIGGER IF EXISTS notes_search_update');
+      await db.execute('''
+        CREATE TRIGGER IF NOT EXISTS notes_search_insert AFTER INSERT ON notes BEGIN
+          INSERT INTO note_search(rowid, note_id, title, content, tags)
+          VALUES (new.rowid, new.id, new.title, new.content, new.tags);
+        END
+      ''');
+      await db.execute('''
+        CREATE TRIGGER IF NOT EXISTS notes_search_delete AFTER DELETE ON notes BEGIN
+          DELETE FROM note_search WHERE rowid = old.rowid;
+        END
+      ''');
+      await db.execute('''
+        CREATE TRIGGER IF NOT EXISTS notes_search_update AFTER UPDATE ON notes BEGIN
+          DELETE FROM note_search WHERE rowid = old.rowid;
+          INSERT INTO note_search(rowid, note_id, title, content, tags)
+          VALUES (new.rowid, new.id, new.title, new.content, new.tags);
+        END
+      ''');
+    } catch (_) {
+      _fts5Available = false;
+    }
     await db.execute('''
       CREATE TABLE IF NOT EXISTS habits (
         id TEXT PRIMARY KEY NOT NULL,

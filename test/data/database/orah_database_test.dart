@@ -128,6 +128,34 @@ void main() {
     expect(await dao.count(), 0);
   });
 
+  test('FTS5 indexes migrated notes and stays synchronized with note writes', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final legacy = jsonEncode([
+      note(title: 'Quarterly Planning'),
+      note(id: 'note-2', title: 'Meeting notes'),
+    ]);
+    await prefs.setString(OrahDatabase.legacyNotesKey, legacy);
+
+    final db = await OrahDatabase.open(prefs);
+    final dao = NoteDao(db);
+    if (!OrahDatabase.fts5Available) {
+      // Some Android/system SQLite builds may not ship the FTS5 module.
+      expect(await dao.searchIds('planning'), isNull);
+      return;
+    }
+
+    expect(await dao.searchIds('plan'), contains('note-1'));
+    expect(await dao.searchIds('meeting'), contains('note-2'));
+    expect(await dao.searchIds('work'), contains('note-1'));
+
+    await dao.upsert(note(title: 'Updated Roadmap'));
+    expect(await dao.searchIds('quarterly'), isEmpty);
+    expect(await dao.searchIds('road'), contains('note-1'));
+
+    await dao.delete('note-1');
+    expect(await dao.searchIds('road'), isEmpty);
+  });
+
   test('recovers a committed pending Vault migration on next initialization', () async {
     final prefs = await SharedPreferences.getInstance();
     final seed = await databaseFactoryFfi.openDatabase('${databaseDirectory.path}/orah_notes.db');
