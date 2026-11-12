@@ -237,6 +237,15 @@ class LocalNoteRepository implements NoteRepository {
         .split(RegExp(r'\s+'))
         .where((term) => term.isNotEmpty)
         .toList();
+    // Use the persistent FTS5 index for token/prefix searches. Preserve the
+    // current in-memory substring search as a fallback for unsupported SQLite
+    // builds and queries that do not match an indexed token.
+    Set<String>? indexedIds;
+    if (terms.isNotEmpty) {
+      final db = await OrahDatabase.open(_preferences);
+      final ids = await NoteDao(db).searchIds(normalized);
+      if (ids != null && ids.isNotEmpty) indexedIds = ids.toSet();
+    }
     if (terms.length > 200) {
       throw const FormatException('Search query contains too many terms.');
     }
@@ -244,6 +253,7 @@ class LocalNoteRepository implements NoteRepository {
     final ranked = <({Note note, int score})>[];
 
     for (final note in notes) {
+      if (indexedIds != null && !indexedIds.contains(note.id)) continue;
       if (note.isTrashed) continue;
       if (!filter.archivedOnly && note.isArchived) continue;
       if (filter.archivedOnly && !note.isArchived) continue;
