@@ -96,6 +96,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
   int _noteFocusDurationSeconds = 0;
   int _noteFocusRemainingSeconds = 0;
   bool _noteFocusRunning = false;
+  bool _noteFocusCompleting = false;
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
@@ -2224,17 +2225,29 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     if (startedMs == null) {
       await prefs.setInt(_noteFocusPrefsKey('startedAt'), deadlineMs - duration * 1000);
     }
+
+    // Restore from the persisted absolute deadline, not from the original
+    // duration. This keeps the clock accurate after leaving the editor,
+    // backgrounding the app, or reopening the note later.
     _noteFocusRunning = true;
-    _updateNoteFocusRemaining();
-    if (_noteFocusRunning && mounted) {
-      await OrahReminderService.instance.scheduleNoteFocusCompletion(
-        noteId: _noteId,
-        minutes: (_noteFocusDurationSeconds / 60).round(),
-        when: _noteFocusDeadline!,
-      );
-      setState(() {});
-      _noteFocusTicker = Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
+    final remaining = _noteFocusDeadline!.difference(DateTime.now()).inSeconds;
+    if (remaining <= 0) {
+      await _completeNoteFocusTimer();
+      return;
     }
+    _noteFocusRemainingSeconds = remaining;
+    if (mounted) setState(() {});
+    await OrahReminderService.instance.scheduleNoteFocusCompletion(
+      noteId: _noteId,
+      minutes: (_noteFocusDurationSeconds / 60).round(),
+      when: _noteFocusDeadline!,
+    );
+    if (!mounted || !_noteFocusRunning) return;
+    _noteFocusTicker?.cancel();
+    _noteFocusTicker = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _updateNoteFocusRemaining(),
+    );
   }
 
   Future<void> _beginNoteFocusTimer(int minutes) async {
@@ -2268,7 +2281,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
   }
 
   Future<void> _completeNoteFocusTimer() async {
-    if (!_noteFocusRunning) return;
+    if (!_noteFocusRunning || _noteFocusCompleting) return;
+    _noteFocusCompleting = true;
     _noteFocusTicker?.cancel();
     _noteFocusRunning = false;
     _noteFocusRemainingSeconds = 0;
@@ -2303,6 +2317,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
         SnackBar(content: Text('Time is up! $completedMinutes-minute focus session completed for this note.')),
       );
     }
+    _noteFocusCompleting = false;
   }
 
   Future<void> _cancelNoteFocusTimer() async {
