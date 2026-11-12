@@ -88,23 +88,33 @@ class OrahLocalTextAnalyzer {
       add(reference.add(Duration(days: delta)));
     }
 
-    final pattern = RegExp(r'\b(\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)(?:\s+\d{4})?|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}(?:,?\s+\d{4})?)\b', caseSensitive: false);
+    final monthNames = <String, int>{
+      'jan': 1, 'january': 1, 'feb': 2, 'february': 2,
+      'mar': 3, 'march': 3, 'apr': 4, 'april': 4,
+      'may': 5, 'jun': 6, 'june': 6, 'jul': 7, 'july': 7,
+      'aug': 8, 'august': 8, 'sep': 9, 'sept': 9, 'september': 9,
+      'oct': 10, 'october': 10, 'nov': 11, 'november': 11,
+      'dec': 12, 'december': 12,
+    };
+    final pattern = RegExp(
+      r'\\b(\\d{1,2})\\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)(?:\\s+(\\d{4}))?\\b|\\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\s+(\\d{1,2})(?:,?\\s+(\\d{4}))?\\b',
+      caseSensitive: false,
+    );
     for (final match in pattern.allMatches(text)) {
-      final raw = match.group(0)!;
-      DateTime? parsed;
-      for (final format in ['d MMMM yyyy', 'd MMM yyyy', 'd MMMM', 'd MMM', 'MMMM d yyyy', 'MMM d yyyy', 'MMMM d', 'MMM d']) {
-        try {
-          parsed = DateFormat(format, 'en').parseStrict(raw);
-          if (!RegExp(r'\d{4}').hasMatch(raw)) {
-            parsed = DateTime(reference.year, parsed.month, parsed.day);
-            if (DateTime(parsed.year, parsed.month, parsed.day).isBefore(DateTime(reference.year, reference.month, reference.day))) {
-              parsed = DateTime(reference.year + 1, parsed.month, parsed.day);
-            }
-          }
-          break;
-        } catch (_) {}
+      final day = int.tryParse(match.group(1) ?? match.group(5) ?? '');
+      final monthName = (match.group(2) ?? match.group(4) ?? '').toLowerCase();
+      final explicitYear = int.tryParse(match.group(3) ?? match.group(6) ?? '');
+      final month = monthNames[monthName];
+      if (day == null || month == null) continue;
+      var year = explicitYear ?? reference.year;
+      final lastDay = DateTime(year, month + 1, 0).day;
+      if (day < 1 || day > lastDay) continue;
+      var parsed = DateTime(year, month, day);
+      if (explicitYear == null && parsed.isBefore(DateTime(reference.year, reference.month, reference.day))) {
+        year++;
+        if (day <= DateTime(year, month + 1, 0).day) parsed = DateTime(year, month, day);
       }
-      if (parsed != null) add(parsed);
+      add(parsed);
     }
     results.sort((a, b) => a.compareTo(b));
     return results;
