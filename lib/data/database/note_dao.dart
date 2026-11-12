@@ -57,7 +57,7 @@ class NoteDao {
   /// use the existing local search implementation as a compatibility fallback.
   Future<List<String>?> searchIds(String query) async {
     if (!OrahDatabase.fts5Available) return null;
-    final terms = query.trim().split(RegExp(r'\\s+')).where((term) => term.isNotEmpty).toList();
+    final terms = query.trim().split(RegExp(r'\s+')).where((term) => term.isNotEmpty).toList();
     if (terms.isEmpty) return const [];
     // Quoting each token prevents FTS operators or punctuation in user input
     // from becoming executable MATCH syntax. Prefix matching supports typing
