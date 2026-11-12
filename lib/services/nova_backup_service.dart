@@ -278,9 +278,31 @@ class NovaBackupService {
       }).toList();
     }
 
-    if (validatedVaultRecords != null &&
-        (vaultPassphrase == null || vaultPassphrase.trim().length < 12)) {
-      throw const FormatException('Enter the backup passphrase to restore Vault notes.');
+    List<Map<String, dynamic>>? portableVaultPayloads;
+    if (validatedVaultRecords != null) {
+      if (vaultPassphrase == null || vaultPassphrase.trim().length < 12) {
+        throw const FormatException('Enter the backup passphrase to restore Vault notes.');
+      }
+      // Authenticate and parse every Vault payload before importing ordinary
+      // notes or extracting attachments. A wrong passphrase must be a no-op.
+      final security = NovaSecurityService();
+      portableVaultPayloads = <Map<String, dynamic>>[];
+      for (final record in validatedVaultRecords) {
+        final clear = await security.decryptPortableVaultPayload(
+          record['content'] as String, vaultPassphrase,
+        );
+        final decoded = jsonDecode(clear);
+        if (decoded is! Map) {
+          throw const FormatException('A decrypted portable Vault payload is malformed.');
+        }
+        final payload = Map<String, dynamic>.from(decoded);
+        final imagePath = payload['imagePath'];
+        if (imagePath != null &&
+            (imagePath is! String || !imagePath.startsWith('attachments/'))) {
+          throw const FormatException('A Vault image reference is invalid.');
+        }
+        portableVaultPayloads.add(payload);
+      }
     }
     final extracted = <String, String>{};
     final createdPaths = <String>[];
@@ -350,7 +372,8 @@ class NovaBackupService {
 
       if (validatedVaultRecords != null) {
         final security = NovaSecurityService();
-        for (final record in validatedVaultRecords!) {
+        for (var index = 0; index < validatedVaultRecords!.length; index++) {
+          final record = validatedVaultRecords[index];
           record['attachments'] = (record['attachments'] as List).map((path) {
             final restoredPath = extracted[path];
             if (restoredPath == null) {
@@ -359,14 +382,7 @@ class NovaBackupService {
             return restoredPath;
           }).toList();
           // Re-encrypt under this device's own Keystore-backed Vault key.
-          final portableClear = await security.decryptPortableVaultPayload(
-            record['content'] as String, vaultPassphrase!,
-          );
-          final payloadValue = jsonDecode(portableClear);
-          if (payloadValue is! Map) {
-            throw const FormatException('A decrypted portable Vault payload is malformed.');
-          }
-          final payload = Map<String, dynamic>.from(payloadValue);
+          final payload = portableVaultPayloads![index];
           final imagePath = payload['imagePath'];
           if (imagePath is String && imagePath.startsWith('attachments/')) {
             final restoredImage = extracted[imagePath];
