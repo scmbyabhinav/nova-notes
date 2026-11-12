@@ -87,9 +87,14 @@ class _MarkdownTocSection {
   final GlobalKey? anchorKey;
 }
 
-class _NoteEditorScreenState extends State<NoteEditorScreen> {
+class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBindingObserver {
   final Map<int, GlobalKey> _previewHeadingKeys = <int, GlobalKey>{};
   int _focusMinutes = 0;
+  Timer? _noteFocusTicker;
+  DateTime? _noteFocusDeadline;
+  int _noteFocusDurationSeconds = 0;
+  int _noteFocusRemainingSeconds = 0;
+  bool _noteFocusRunning = false;
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
@@ -155,6 +160,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _speechService = widget.speechService ?? SpeechToTextService();
 
     final existing = widget.note;
@@ -195,6 +201,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
+    unawaited(_restoreNoteFocusTimer());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.autoStartVoice) _toggleVoiceInput();
       if (widget.autoOpenReminder) _setDueDate();
@@ -1764,6 +1771,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _noteFocusTicker?.cancel();
     _saveTimeout.dispose();
     _speechService.dispose();
     _voiceDurationTimer?.cancel();
@@ -2137,22 +2146,129 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     return widgets;
   }
 
+  Widget _buildNoteFocusTimerCard(ThemeData theme) {
+    final total = _noteFocusDurationSeconds.clamp(1, 3600);
+    final progress = (1 - (_noteFocusRemainingSeconds / total)).clamp(0.0, 1.0);
+    return Card(
+      color: theme.colorScheme.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(children: [
+          SizedBox(width: 42, height: 42, child: CircularProgressIndicator(
+            value: progress, strokeWidth: 4,
+            backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.35),
+          )),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('FOCUS SESSION IN PROGRESS', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.7)),
+            Text(_formatNoteFocusTime(_noteFocusRemainingSeconds), style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+            Text('Keep writing — this countdown stays with your note', style: theme.textTheme.bodySmall),
+          ])),
+          IconButton(tooltip: 'Stop focus session', onPressed: _cancelNoteFocusTimer, icon: const Icon(Icons.stop_circle_outlined)),
+        ]),
+      ),
+    );
+  }
+
   Future<void> _startFocusSession() async {
-    if (_isLocked) return;
+    if (_isLocked || _noteFocusRunning) return;
     final minutes = await showDialog<int>(
       context: context,
       builder: (context) => const _FocusSessionDialog(),
     );
     if (!mounted || minutes == null || minutes <= 0) return;
+    await _beginNoteFocusTimer(minutes);
+  }
+
+  String _noteFocusPrefsKey(String suffix) => 'orah_note_focus_${_noteId}_$suffix';
+
+  Future<void> _restoreNoteFocusTimer() async {
+    if (_isLocked) return;
+    final prefs = await SharedPreferences.getInstance();
+    final deadlineMs = prefs.getInt(_noteFocusPrefsKey('deadline'));
+    final duration = prefs.getInt(_noteFocusPrefsKey('duration')) ?? 0;
+    if (!mounted || deadlineMs == null || duration <= 0) return;
+    _noteFocusDeadline = DateTime.fromMillisecondsSinceEpoch(deadlineMs);
+    _noteFocusDurationSeconds = duration;
+    _noteFocusRunning = true;
+    _updateNoteFocusRemaining();
+    if (_noteFocusRunning && mounted) setState(() {});
+  }
+
+  Future<void> _beginNoteFocusTimer(int minutes) async {
+    _noteFocusTicker?.cancel();
+    _noteFocusDurationSeconds = minutes * 60;
+    _noteFocusDeadline = DateTime.now().add(Duration(minutes: minutes));
+    _noteFocusRemainingSeconds = _noteFocusDurationSeconds;
+    _noteFocusRunning = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_noteFocusPrefsKey('deadline'), _noteFocusDeadline!.millisecondsSinceEpoch);
+    await prefs.setInt(_noteFocusPrefsKey('duration'), _noteFocusDurationSeconds);
+    await OrahReminderService.instance.scheduleNoteFocusCompletion(
+      noteId: _noteId,
+      minutes: minutes,
+      when: _noteFocusDeadline!,
+    );
+    if (!mounted) return;
+    setState(() {});
+    _noteFocusTicker = Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
+  }
+
+  void _updateNoteFocusRemaining() {
+    if (!_noteFocusRunning || _noteFocusDeadline == null) return;
+    final seconds = _noteFocusDeadline!.difference(DateTime.now()).inSeconds;
+    if (seconds <= 0) {
+      unawaited(_completeNoteFocusTimer());
+      return;
+    }
+    if (mounted) setState(() => _noteFocusRemainingSeconds = seconds);
+  }
+
+  Future<void> _completeNoteFocusTimer() async {
+    if (!_noteFocusRunning) return;
+    _noteFocusTicker?.cancel();
+    _noteFocusRunning = false;
+    _noteFocusRemainingSeconds = 0;
+    final completedMinutes = (_noteFocusDurationSeconds / 60).round();
+    _noteFocusDeadline = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_noteFocusPrefsKey('deadline'));
+    await prefs.remove(_noteFocusPrefsKey('duration'));
+    await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
+    if (!mounted) return;
     setState(() {
-      _focusMinutes += minutes;
+      _focusMinutes += completedMinutes;
       _hasChanges = true;
     });
     await _save();
-    if (mounted && !_saveFailed) {
+    unawaited(SystemSound.play(SystemSoundType.alert));
+    unawaited(HapticFeedback.vibrate());
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Saved $minutes focus minutes to this note · Total $_focusMinutes min')),
+        SnackBar(content: Text('Time is up! $completedMinutes-minute focus session completed for this note.')),
       );
+    }
+  }
+
+  Future<void> _cancelNoteFocusTimer() async {
+    _noteFocusTicker?.cancel();
+    _noteFocusRunning = false;
+    _noteFocusDeadline = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_noteFocusPrefsKey('deadline'));
+    await prefs.remove(_noteFocusPrefsKey('duration'));
+    await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
+    if (mounted) setState(() => _noteFocusRemainingSeconds = 0);
+  }
+
+  String _formatNoteFocusTime(int seconds) =>
+      '${(seconds ~/ 60).toString().padLeft(2, '0')}:${(seconds % 60).toString().padLeft(2, '0')}';
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _noteFocusRunning) {
+      _updateNoteFocusRemaining();
+      _noteFocusTicker ??= Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
     }
   }
 
@@ -2690,6 +2806,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           onChanged: _handleTitleInput,
                         ),
                         const SizedBox(height: 8),
+                        if (_noteFocusRunning) _buildNoteFocusTimerCard(theme),
                         if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
                           _buildSlashCommandMenu(theme),
                         if (_noteType == NoteType.checklist)
