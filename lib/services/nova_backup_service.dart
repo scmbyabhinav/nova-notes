@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 import '../data/repositories/local_note_repository.dart';
 import '../data/database/orah_database.dart';
 import '../services/focus_session_service.dart';
+import '../core/services/nova_security_service.dart';
 
 class NovaBackupService {
   const NovaBackupService(this.preferences);
@@ -20,7 +21,7 @@ class NovaBackupService {
   static const _portablePreferenceKeys = <String>['nova_folders_v1', 'orah_vault_notes_v1', 'orah_focus_sessions_v1', 'orah_theme_mode_v1', 'orah_accent_color_v1', 'orah_view_mode_v1', 'orah_vault_folders_v1', 'orah_vault_auto_lock_minutes'];
   static const maxBackupBytes = 512 * 1024 * 1024;
 
-  Future<File> createBackup() async {
+  Future<File> createBackup({String? vaultPassphrase}) async {
     final notes = LocalNoteRepository(preferences);
     final rawNotes = jsonDecode(await notes.exportJson()) as Map<String, dynamic>;
     final files = <String, List<int>>{};
@@ -50,6 +51,10 @@ class NovaBackupService {
     // attachment paths must be rewritten to archive-relative names too.
     final vaultRaw = preferences.getString('orah_vault_notes_v1');
     if (vaultRaw != null && vaultRaw.isNotEmpty) {
+      if (vaultPassphrase == null || vaultPassphrase.trim().length < 12) {
+        throw const FormatException('Set a backup passphrase of at least 12 characters to include Vault notes.');
+      }
+      final security = NovaSecurityService();
       final decodedVault = jsonDecode(vaultRaw);
       if (decodedVault is! List) {
         throw const FormatException('Vault storage is malformed; backup was not created.');
@@ -60,6 +65,32 @@ class NovaBackupService {
           throw const FormatException('A Vault record is malformed; backup was not created.');
         }
         final vaultNote = Map<String, dynamic>.from(rawVaultNote);
+        if (vaultNote['content'] is! String) {
+          throw const FormatException('A Vault record has no encrypted content.');
+        }
+        // Convert the device-bound ciphertext into a passphrase-protected
+        // envelope. The device Keystore key itself never leaves this device.
+        final clearPayload = await security.decryptPrivatePayload(vaultNote['content'] as String);
+        final payloadValue = jsonDecode(clearPayload);
+        if (payloadValue is! Map) {
+          throw const FormatException('A decrypted Vault payload is malformed.');
+        }
+        final portablePayload = Map<String, dynamic>.from(payloadValue);
+        final embeddedImage = portablePayload['imagePath'];
+        if (embeddedImage is String && embeddedImage.isNotEmpty) {
+          final imageFile = File(embeddedImage);
+          final imageAbsolute = imageFile.absolute.path;
+          if (!await imageFile.exists() || (imageAbsolute != rootPath && !p.isWithin(rootPath, imageAbsolute))) {
+            throw FormatException('A Vault image is missing or outside ORAH storage: ${p.basename(embeddedImage)}.');
+          }
+          final imageArchiveName = 'attachments/vault-${vaultNote['id']}-image-${p.basename(embeddedImage)}';
+          files[imageArchiveName] = await imageFile.readAsBytes();
+          portablePayload['imagePath'] = imageArchiveName;
+          manifest.add({'source': embeddedImage, 'archive': imageArchiveName});
+        }
+        vaultNote['content'] = await security.encryptPortableVaultPayload(
+          jsonEncode(portablePayload), vaultPassphrase,
+        );
         final attachments = vaultNote['attachments'];
         if (attachments != null && attachments is! List) {
           throw const FormatException('Vault attachment metadata is malformed.');
@@ -128,7 +159,7 @@ class NovaBackupService {
     return file;
   }
 
-  Future<int> restoreBackup(File backup) async {
+  Future<int> restoreBackup(File backup, {String? vaultPassphrase}) async {
     final bytes = await backup.readAsBytes();
     if (bytes.length > maxBackupBytes) throw const FormatException('Backup is too large to restore safely.');
     final archive = ZipDecoder().decodeBytes(bytes);
@@ -247,6 +278,10 @@ class NovaBackupService {
       }).toList();
     }
 
+    if (validatedVaultRecords != null &&
+        (vaultPassphrase == null || vaultPassphrase.trim().length < 12)) {
+      throw const FormatException('Enter the backup passphrase to restore Vault notes.');
+    }
     final extracted = <String, String>{};
     final createdPaths = <String>[];
     final archiveAttachmentNames = <String>{};
@@ -314,6 +349,7 @@ class NovaBackupService {
       }
 
       if (validatedVaultRecords != null) {
+        final security = NovaSecurityService();
         for (final record in validatedVaultRecords!) {
           record['attachments'] = (record['attachments'] as List).map((path) {
             final restoredPath = extracted[path];
@@ -322,6 +358,24 @@ class NovaBackupService {
             }
             return restoredPath;
           }).toList();
+          // Re-encrypt under this device's own Keystore-backed Vault key.
+          final portableClear = await security.decryptPortableVaultPayload(
+            record['content'] as String, vaultPassphrase!,
+          );
+          final payloadValue = jsonDecode(portableClear);
+          if (payloadValue is! Map) {
+            throw const FormatException('A decrypted portable Vault payload is malformed.');
+          }
+          final payload = Map<String, dynamic>.from(payloadValue);
+          final imagePath = payload['imagePath'];
+          if (imagePath is String && imagePath.startsWith('attachments/')) {
+            final restoredImage = extracted[imagePath];
+            if (restoredImage == null) {
+              throw const FormatException('A Vault image is missing from the backup archive.');
+            }
+            payload['imagePath'] = restoredImage;
+          }
+          record['content'] = await security.encryptPrivatePayload(jsonEncode(payload));
         }
         await preferences.setString('orah_vault_notes_v1', jsonEncode(validatedVaultRecords));
       }
