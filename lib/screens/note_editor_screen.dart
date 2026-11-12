@@ -30,6 +30,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/focus_session_service.dart';
 import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
@@ -2187,9 +2188,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     final deadlineMs = prefs.getInt(_noteFocusPrefsKey('deadline'));
     final duration = prefs.getInt(_noteFocusPrefsKey('duration')) ?? 0;
+    final startedMs = prefs.getInt(_noteFocusPrefsKey('startedAt'));
     if (!mounted || deadlineMs == null || duration <= 0) return;
     _noteFocusDeadline = DateTime.fromMillisecondsSinceEpoch(deadlineMs);
     _noteFocusDurationSeconds = duration;
+    if (startedMs == null) {
+      await prefs.setInt(_noteFocusPrefsKey('startedAt'), deadlineMs - duration * 1000);
+    }
     _noteFocusRunning = true;
     _updateNoteFocusRemaining();
     if (_noteFocusRunning && mounted) {
@@ -2212,6 +2217,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_noteFocusPrefsKey('deadline'), _noteFocusDeadline!.millisecondsSinceEpoch);
     await prefs.setInt(_noteFocusPrefsKey('duration'), _noteFocusDurationSeconds);
+    await prefs.setInt(_noteFocusPrefsKey('startedAt'), DateTime.now().millisecondsSinceEpoch);
     await OrahReminderService.instance.scheduleNoteFocusCompletion(
       noteId: _noteId,
       minutes: minutes,
@@ -2240,8 +2246,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final completedMinutes = (_noteFocusDurationSeconds / 60).round();
     _noteFocusDeadline = null;
     final prefs = await SharedPreferences.getInstance();
+    final startedMs = prefs.getInt(_noteFocusPrefsKey('startedAt'));
+    final startedAt = startedMs == null
+        ? DateTime.now().subtract(Duration(minutes: completedMinutes))
+        : DateTime.fromMillisecondsSinceEpoch(startedMs);
+    await FocusSessionService(prefs).recordCompleted(
+      id: 'note-${_noteId}-${startedAt.microsecondsSinceEpoch}',
+      startedAt: startedAt,
+      completedAt: DateTime.now(),
+      durationMinutes: completedMinutes,
+      noteId: _noteId,
+    );
     await prefs.remove(_noteFocusPrefsKey('deadline'));
     await prefs.remove(_noteFocusPrefsKey('duration'));
+    await prefs.remove(_noteFocusPrefsKey('startedAt'));
     await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
     if (!mounted) return;
     setState(() {
@@ -2265,6 +2283,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_noteFocusPrefsKey('deadline'));
     await prefs.remove(_noteFocusPrefsKey('duration'));
+    await prefs.remove(_noteFocusPrefsKey('startedAt'));
     await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
     if (mounted) setState(() => _noteFocusRemainingSeconds = 0);
   }
