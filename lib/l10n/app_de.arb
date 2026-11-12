@@ -58,5 +58,13 @@
   "yesterday": "Gestern",
   "emptyTimeline": "Keine Notizen vorhanden",
   "currentDay": "Ausgewählter Tag",
-  "total": "Gesamt"
+  "total": "Gesamt",
+  "smartSuggestionsTitle": "ORAH-Smart-Vorschläge",
+  "closeSmartSuggestions": "Vorschläge schließen",
+  "suggestedCategory": "Vorgeschlagene Kategorie: {category}",
+  "suggestedTags": "Vorgeschlagene Tags",
+  "detectedDatesSetReminder": "Erkannte Daten · antippen, um eine Erinnerung festzulegen",
+  "detectedAmounts": "Erkannte Beträge",
+  "smartSuggestionsPrivacyNote": "Vorschläge werden auf diesem Gerät berechnet. Ohne Zustimmung wird nichts hinzugefügt.",
+  "useCategoryAsTag": "Als Tag verwenden"
 }
