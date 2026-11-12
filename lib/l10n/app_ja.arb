@@ -58,5 +58,13 @@
   "yesterday": "昨日",
   "emptyTimeline": "表示するノートはありません",
   "currentDay": "選択した日",
-  "total": "合計"
+  "total": "合計",
+  "smartSuggestionsTitle": "ORAHスマート提案",
+  "closeSmartSuggestions": "提案を閉じる",
+  "suggestedCategory": "おすすめカテゴリ：{category}",
+  "suggestedTags": "おすすめタグ",
+  "detectedDatesSetReminder": "検出した日付 · タップしてリマインダーを設定",
+  "detectedAmounts": "検出した金額",
+  "smartSuggestionsPrivacyNote": "提案はこの端末内で処理されます。承認するまで何も追加されません。",
+  "useCategoryAsTag": "タグとして使用"
 }
