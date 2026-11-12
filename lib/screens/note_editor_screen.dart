@@ -3322,81 +3322,42 @@ class _FocusSessionDialog extends StatefulWidget {
 }
 
 class _FocusSessionDialogState extends State<_FocusSessionDialog> {
-  static const int _sessionLengthSeconds = 25 * 60;
-  Timer? _timer;
-  int _elapsedSeconds = 0;
-  bool _running = false;
-
-  int get _remainingSeconds => _sessionLengthSeconds - _elapsedSeconds;
-
-  String _formatDuration(int seconds) {
-    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
-    final remainder = (seconds % 60).toString().padLeft(2, '0');
-    return '$minutes:$remainder';
-  }
-
-  void _startOrPause() {
-    if (_running) {
-      _timer?.cancel();
-      setState(() => _running = false);
-      return;
-    }
-    if (_remainingSeconds <= 0) return;
-    setState(() => _running = true);
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      if (_remainingSeconds <= 1) {
-        timer.cancel();
-        Navigator.of(context).pop(25);
-        return;
-      }
-      setState(() => _elapsedSeconds++);
-    });
-  }
-
-  void _finish() {
-    _timer?.cancel();
-    final minutes = _elapsedSeconds ~/ 60;
-    Navigator.of(context).pop(minutes);
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
+  static const List<int> _choices = [10, 25, 50, 60];
+  int _selectedMinutes = 25;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AlertDialog(
-      title: const Text('Focus session'),
+      title: const Text('Start a focus session'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.timer_outlined, size: 42),
-          const SizedBox(height: 12),
-          Text(
-            _formatDuration(_remainingSeconds),
-            style: theme.textTheme.displaySmall,
+          const Text('Choose how long you want to focus on this note.'),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final minutes in _choices)
+                ChoiceChip(
+                  label: Text('$minutes min'),
+                  selected: _selectedMinutes == minutes,
+                  onSelected: (_) => setState(() => _selectedMinutes = minutes),
+                ),
+            ],
           ),
-          const SizedBox(height: 8),
-          const Text('25-minute Pomodoro · focus on this note'),
-          const SizedBox(height: 8),
-          Text('Elapsed: ${_formatDuration(_elapsedSeconds)}', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 12),
+          Text('The countdown will remain visible inside your note after you close this window.', style: theme.textTheme.bodySmall),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: _finish,
-          child: const Text('Finish & save'),
-        ),
-        FilledButton(
-          onPressed: _startOrPause,
-          child: Text(_running ? 'Pause' : 'Start'),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        FilledButton.icon(
+          onPressed: () => Navigator.of(context).pop(_selectedMinutes),
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: const Text('Start focus'),
         ),
       ],
     );
