@@ -18,11 +18,17 @@ class NoteDao {
     if (id is! String || id.trim().isEmpty) {
       throw const FormatException('Note ID cannot be empty.');
     }
-    await _database.insert(
-      'notes',
-      OrahDatabase.rowFor(payload),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await _database.transaction((txn) async {
+      // Use an explicit DELETE before INSERT so the FTS5 delete trigger runs
+      // reliably. SQLite REPLACE's implicit delete does not always fire
+      // delete triggers unless recursive_triggers is enabled.
+      await txn.delete('notes', where: 'id = ?', whereArgs: [id]);
+      await txn.insert(
+        'notes',
+        OrahDatabase.rowFor(payload),
+        conflictAlgorithm: ConflictAlgorithm.abort,
+      );
+    });
   }
 
   Future<void> replaceAll(Iterable<Map<String, dynamic>> payloads) async {
