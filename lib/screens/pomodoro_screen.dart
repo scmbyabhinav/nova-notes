@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/focus_session_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Local-first timer; it does not modify notes, folders, attachments or Kanban.
@@ -13,20 +14,25 @@ class PomodoroScreen extends StatefulWidget {
 
 class _PomodoroScreenState extends State<PomodoroScreen>
     with WidgetsBindingObserver {
-  static const _focus = Duration(minutes: 25);
+  int _focusMinutes = 25;
   static const _short = Duration(minutes: 5);
   static const _long = Duration(minutes: 15);
   Timer? _ticker;
   String _mode = 'focus';
-  Duration _remaining = _focus;
+  Duration _remaining = const Duration(minutes: 25);
   DateTime? _deadline;
+  DateTime? _sessionStartedAt;
+  List<FocusSession> _history = const [];
+  int _todayMinutes = 0;
+  int _weekMinutes = 0;
+  int _lifetimeMinutes = 0;
   bool _running = false;
   bool _loaded = false;
   int _completed = 0;
   int _cycle = 0;
 
   Duration get _duration => _mode == 'shortBreak'
-      ? _short : _mode == 'longBreak' ? _long : _focus;
+      ? _short : _mode == 'longBreak' ? _long : Duration(minutes: _focusMinutes);
   bool get _isFocus => _mode == 'focus';
 
   @override
@@ -45,19 +51,40 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     final p = await SharedPreferences.getInstance();
     if (!mounted) return;
     _mode = p.getString('orah_pomodoro_mode') ?? 'focus';
+    final savedFocusMinutes = p.getInt('orah_pomodoro_focus_minutes') ?? 25;
+    _focusMinutes = const [10, 25, 50, 60].contains(savedFocusMinutes) ? savedFocusMinutes : 25;
     _remaining = Duration(seconds: p.getInt('orah_pomodoro_remaining') ?? 1500);
     _completed = p.getInt('orah_pomodoro_completed') ?? 0;
     _cycle = p.getInt('orah_pomodoro_cycle') ?? 0;
     _running = p.getBool('orah_pomodoro_running') ?? false;
     final ms = p.getInt('orah_pomodoro_deadline');
     _deadline = ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms);
+    final startedMs = p.getInt('orah_pomodoro_started_at');
+    _sessionStartedAt = startedMs == null ? null : DateTime.fromMillisecondsSinceEpoch(startedMs);
     _loaded = true;
+    await _loadHistory();
     if (_running && _deadline != null) {
       _syncClock();
       unawaited(_syncCompletionAlert());
     } else {
       setState(() {});
     }
+  }
+
+  Future<void> _loadHistory() async {
+    final p = await SharedPreferences.getInstance();
+    final service = FocusSessionService(p);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final week = today.subtract(Duration(days: today.weekday - 1));
+    final sessions = await service.getSessions();
+    if (!mounted) return;
+    setState(() {
+      _history = sessions.take(8).toList();
+      _todayMinutes = sessions.where((s) => !s.completedAt.isBefore(today)).fold(0, (n, s) => n + s.durationMinutes);
+      _weekMinutes = sessions.where((s) => !s.completedAt.isBefore(week)).fold(0, (n, s) => n + s.durationMinutes);
+      _lifetimeMinutes = sessions.fold(0, (n, s) => n + s.durationMinutes);
+    });
   }
 
   Future<void> _syncCompletionAlert() async {
@@ -74,10 +101,16 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   Future<void> _save() async {
     final p = await SharedPreferences.getInstance();
     await p.setString('orah_pomodoro_mode', _mode);
+    await p.setInt('orah_pomodoro_focus_minutes', _focusMinutes);
     await p.setInt('orah_pomodoro_remaining', _remaining.inSeconds);
     await p.setInt('orah_pomodoro_completed', _completed);
     await p.setInt('orah_pomodoro_cycle', _cycle);
     await p.setBool('orah_pomodoro_running', _running);
+    if (_sessionStartedAt == null) {
+      await p.remove('orah_pomodoro_started_at');
+    } else {
+      await p.setInt('orah_pomodoro_started_at', _sessionStartedAt!.millisecondsSinceEpoch);
+    }
     if (_deadline == null) {
       await p.remove('orah_pomodoro_deadline');
     } else {
@@ -114,6 +147,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
       _deadline = null;
     } else {
       _running = true;
+      _sessionStartedAt ??= DateTime.now();
       _deadline = DateTime.now().add(_remaining);
       _syncClock();
     }
@@ -126,6 +160,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     _ticker?.cancel();
     _running = false;
     _deadline = null;
+    _sessionStartedAt = null;
     _remaining = _duration;
     await _save();
     await _syncCompletionAlert();
@@ -145,7 +180,17 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     if (!_running) return;
     _ticker?.cancel();
     final wasFocus = _isFocus;
+    final completedAt = DateTime.now();
     if (wasFocus) {
+      final startedAt = _sessionStartedAt ?? completedAt.subtract(_duration);
+      final prefs = await SharedPreferences.getInstance();
+      await FocusSessionService(prefs).recordCompleted(
+        id: 'pomodoro-${startedAt.microsecondsSinceEpoch}',
+        startedAt: startedAt,
+        completedAt: completedAt,
+        durationMinutes: _duration.inMinutes,
+      );
+      _sessionStartedAt = null;
       _completed++;
       _cycle++;
       _mode = _cycle % 4 == 0 ? 'longBreak' : 'shortBreak';
@@ -154,9 +199,11 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     }
     _running = false;
     _deadline = null;
+    _sessionStartedAt = null;
     _remaining = _duration;
     await _save();
     await OrahReminderService.instance.cancelPomodoroCompletion();
+    if (wasFocus) await _loadHistory();
     // Audible system alert and haptic feedback for foreground completion;
     // the scheduled notification provides the background-device alert.
     unawaited(SystemSound.play(SystemSoundType.alert));
@@ -271,6 +318,32 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                     ),
                   ),
                   const SizedBox(height: 18),
+                  if (!_running) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Focus duration', style: theme.textTheme.titleSmall),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        for (final minutes in const [10, 25, 50, 60])
+                          ChoiceChip(
+                            label: Text('$minutes min'),
+                            selected: _focusMinutes == minutes,
+                            onSelected: _mode != 'focus' ? null : (selected) async {
+                              if (!selected) return;
+                              setState(() {
+                                _focusMinutes = minutes;
+                                _remaining = _duration;
+                              });
+                              await _save();
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                  ],
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(value: 'focus', label: Text('Focus')),
@@ -317,8 +390,40 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                       _PomodoroStat(label: 'Cycle', value: '${_cycle % 4}/4'),
                     ],
                   ))),
+                  const SizedBox(height: 18),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('Focus statistics', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 14),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                          _PomodoroStat(label: 'Today', value: '$_todayMinutes min'),
+                          _PomodoroStat(label: 'This week', value: '$_weekMinutes min'),
+                          _PomodoroStat(label: 'All time', value: '$_lifetimeMinutes min'),
+                        ]),
+                        if (_history.isNotEmpty) ...[
+                          const Divider(height: 24),
+                          Text('Recent completed sessions', style: theme.textTheme.titleSmall),
+                          const SizedBox(height: 8),
+                          for (final session in _history.take(5))
+                            ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: const Icon(Icons.check_circle_outline),
+                              title: Text('${session.durationMinutes} min focus'),
+                              subtitle: Text('${session.completedAt.toLocal()}'.split('.').first),
+                            ),
+                        ] else
+                          const Padding(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Text('Completed focus sessions will appear here.'),
+                          ),
+                      ]),
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  Text('25 min focus · 5 min short break · 15 min long break after 4 focus sessions',
+                  Text('$_focusMinutes min focus · 5 min short break · 15 min long break after 4 focus sessions',
                     textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
                 ]),
               ),

@@ -40,6 +40,15 @@ if 'android.permission.RECORD_AUDIO' not in manifest:
         1,
     )
 
+# Pomodoro timers need user-approved exact alarms to ring close to the
+# selected deadline while the app is backgrounded or the device is idle.
+if 'android.permission.SCHEDULE_EXACT_ALARM' not in manifest:
+    manifest = manifest.replace(
+        '<application',
+        '    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\\n    <application',
+        1,
+    )
+
 # Android 11+ package visibility requires the speech recognition service
 # query so speech_to_text can discover the platform recognizer.
 if 'android.speech.RecognitionService' not in manifest:

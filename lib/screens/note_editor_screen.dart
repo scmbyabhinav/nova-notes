@@ -30,6 +30,7 @@ import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/focus_session_service.dart';
 import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
@@ -95,6 +96,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
   int _noteFocusDurationSeconds = 0;
   int _noteFocusRemainingSeconds = 0;
   bool _noteFocusRunning = false;
+  bool _noteFocusCompleting = false;
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
@@ -1520,12 +1522,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     }
   }
 
+  bool _bodyReferencesImage(String path) {
+    final fileUri = Uri.file(path).toString();
+    return _contentController.text.contains(fileUri) ||
+        _contentController.text.contains(path);
+  }
+
   Future<void> _removeAttachment(String path) async {
-    await const NovaAttachmentService().delete(path);
+    // A single imported file may be referenced independently by the cover
+    // image and/or inline body Markdown. Removing its attachment chip must not
+    // delete the underlying file while either reference still exists.
+    final isUsedAsCover = _imagePath == path;
+    final isUsedInBody = _bodyReferencesImage(path);
+    if (!isUsedAsCover && !isUsedInBody) {
+      await const NovaAttachmentService().delete(path);
+    }
+    if (!mounted) return;
     setState(() {
       _attachments = _attachments.where((item) => item != path).toList();
       _hasChanges = true;
     });
+    await _save();
+  }
+
+  Future<void> _removeCoverImage() async {
+    final path = _imagePath;
+    if (path == null) return;
+    // Clear only the cover reference. Keep the file if inline body Markdown
+    // still uses it, and leave the body untouched.
+    setState(() {
+      _imagePath = null;
+      _hasChanges = true;
+    });
+    if (!_attachments.contains(path) && !_bodyReferencesImage(path)) {
+      await const NovaAttachmentService().delete(path);
+    }
     await _save();
   }
 
@@ -2187,20 +2218,36 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     final deadlineMs = prefs.getInt(_noteFocusPrefsKey('deadline'));
     final duration = prefs.getInt(_noteFocusPrefsKey('duration')) ?? 0;
+    final startedMs = prefs.getInt(_noteFocusPrefsKey('startedAt'));
     if (!mounted || deadlineMs == null || duration <= 0) return;
     _noteFocusDeadline = DateTime.fromMillisecondsSinceEpoch(deadlineMs);
     _noteFocusDurationSeconds = duration;
-    _noteFocusRunning = true;
-    _updateNoteFocusRemaining();
-    if (_noteFocusRunning && mounted) {
-      await OrahReminderService.instance.scheduleNoteFocusCompletion(
-        noteId: _noteId,
-        minutes: (_noteFocusDurationSeconds / 60).round(),
-        when: _noteFocusDeadline!,
-      );
-      setState(() {});
-      _noteFocusTicker = Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
+    if (startedMs == null) {
+      await prefs.setInt(_noteFocusPrefsKey('startedAt'), deadlineMs - duration * 1000);
     }
+
+    // Restore from the persisted absolute deadline, not from the original
+    // duration. This keeps the clock accurate after leaving the editor,
+    // backgrounding the app, or reopening the note later.
+    _noteFocusRunning = true;
+    final remaining = _noteFocusDeadline!.difference(DateTime.now()).inSeconds;
+    if (remaining <= 0) {
+      await _completeNoteFocusTimer();
+      return;
+    }
+    _noteFocusRemainingSeconds = remaining;
+    if (mounted) setState(() {});
+    await OrahReminderService.instance.scheduleNoteFocusCompletion(
+      noteId: _noteId,
+      minutes: (_noteFocusDurationSeconds / 60).round(),
+      when: _noteFocusDeadline!,
+    );
+    if (!mounted || !_noteFocusRunning) return;
+    _noteFocusTicker?.cancel();
+    _noteFocusTicker = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _updateNoteFocusRemaining(),
+    );
   }
 
   Future<void> _beginNoteFocusTimer(int minutes) async {
@@ -2212,6 +2259,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_noteFocusPrefsKey('deadline'), _noteFocusDeadline!.millisecondsSinceEpoch);
     await prefs.setInt(_noteFocusPrefsKey('duration'), _noteFocusDurationSeconds);
+    await prefs.setInt(_noteFocusPrefsKey('startedAt'), DateTime.now().millisecondsSinceEpoch);
     await OrahReminderService.instance.scheduleNoteFocusCompletion(
       noteId: _noteId,
       minutes: minutes,
@@ -2233,15 +2281,28 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
   }
 
   Future<void> _completeNoteFocusTimer() async {
-    if (!_noteFocusRunning) return;
+    if (!_noteFocusRunning || _noteFocusCompleting) return;
+    _noteFocusCompleting = true;
     _noteFocusTicker?.cancel();
     _noteFocusRunning = false;
     _noteFocusRemainingSeconds = 0;
     final completedMinutes = (_noteFocusDurationSeconds / 60).round();
     _noteFocusDeadline = null;
     final prefs = await SharedPreferences.getInstance();
+    final startedMs = prefs.getInt(_noteFocusPrefsKey('startedAt'));
+    final startedAt = startedMs == null
+        ? DateTime.now().subtract(Duration(minutes: completedMinutes))
+        : DateTime.fromMillisecondsSinceEpoch(startedMs);
+    await FocusSessionService(prefs).recordCompleted(
+      id: 'note-${_noteId}-${startedAt.microsecondsSinceEpoch}',
+      startedAt: startedAt,
+      completedAt: DateTime.now(),
+      durationMinutes: completedMinutes,
+      noteId: _noteId,
+    );
     await prefs.remove(_noteFocusPrefsKey('deadline'));
     await prefs.remove(_noteFocusPrefsKey('duration'));
+    await prefs.remove(_noteFocusPrefsKey('startedAt'));
     await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
     if (!mounted) return;
     setState(() {
@@ -2256,6 +2317,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
         SnackBar(content: Text('Time is up! $completedMinutes-minute focus session completed for this note.')),
       );
     }
+    _noteFocusCompleting = false;
   }
 
   Future<void> _cancelNoteFocusTimer() async {
@@ -2265,6 +2327,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_noteFocusPrefsKey('deadline'));
     await prefs.remove(_noteFocusPrefsKey('duration'));
+    await prefs.remove(_noteFocusPrefsKey('startedAt'));
     await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
     if (mounted) setState(() => _noteFocusRemainingSeconds = 0);
   }
@@ -2666,10 +2729,21 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                     if (!_isLocked)
                       Padding(
                         padding: const EdgeInsets.all(8),
-                        child: IconButton.filledTonal(
-                          tooltip: 'Insert image into note body',
-                          onPressed: () => _insertImageIntoBody(_imagePath!),
-                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton.filledTonal(
+                              tooltip: 'Insert a copy into note body',
+                              onPressed: () => _insertImageIntoBody(_imagePath!),
+                              icon: const Icon(Icons.add_photo_alternate_outlined),
+                            ),
+                            const SizedBox(width: 6),
+                            IconButton.filledTonal(
+                              tooltip: 'Remove cover image only',
+                              onPressed: _removeCoverImage,
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                          ],
                         ),
                       ),
                   ],
