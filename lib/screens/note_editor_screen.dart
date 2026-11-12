@@ -37,6 +37,7 @@ import '../core/widgets/orah_asset_icon.dart';
 import '../core/utils/lifecycle_timeout.dart';
 import '../services/orah_ocr_service.dart';
 import '../services/orah_entitlement_service.dart';
+import '../services/orah_local_text_analyzer.dart';
 import '../core/services/nova_security_service.dart';
 import 'package:intl/intl.dart';
 
@@ -121,6 +122,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
   String? _folderId;
   String? _vaultFolderId;
   List<String> _tags = const [];
+  SmartNoteSuggestions? _smartSuggestions;
+  bool _smartAnalyzing = false;
   List<String> _linkedNoteIds = const [];
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
@@ -1265,6 +1268,37 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
         ),
       ),
     );
+  }
+
+  void _analyzeSmartSuggestions() {
+    if (_isLocked || !_privateUnlocked) return;
+    setState(() => _smartAnalyzing = true);
+    final text = [
+      _titleController.text,
+      _noteType == NoteType.checklist ? _checklistContent() : _contentController.text,
+    ].join('\\n');
+    final suggestions = const OrahLocalTextAnalyzer().analyze(text);
+    setState(() {
+      _smartSuggestions = suggestions;
+      _smartAnalyzing = false;
+    });
+  }
+
+  void _acceptSuggestedTag(String tag) {
+    if (_tags.any((item) => item.toLowerCase() == tag.toLowerCase())) return;
+    setState(() {
+      _tags = [..._tags, tag];
+      _hasChanges = true;
+    });
+    unawaited(_save());
+  }
+
+  Future<void> _acceptSuggestedDate(DateTime date) async {
+    setState(() {
+      _dueAt = DateTime(date.year, date.month, date.day, 9);
+      _hasChanges = true;
+    });
+    await _save();
   }
 
   Future<void> _setDueDate() async {
@@ -2711,6 +2745,78 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                   ],
                 ),
               ),
+            if (!_isLocked && _smartSuggestions != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.auto_awesome_outlined, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text('ORAH smart suggestions', style: Theme.of(context).textTheme.titleSmall)),
+                            IconButton(
+                              tooltip: 'Close suggestions',
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => setState(() => _smartSuggestions = null),
+                              icon: const Icon(Icons.close, size: 18),
+                            ),
+                          ],
+                        ),
+                        if (_smartSuggestions!.category != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text('Suggested category: ${_smartSuggestions!.category}'),
+                          ),
+                        if (_smartSuggestions!.tags.isNotEmpty) ...[
+                          const Text('Suggested tags'),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              for (final tag in _smartSuggestions!.tags)
+                                ActionChip(
+                                  label: Text(_tags.any((item) => item.toLowerCase() == tag.toLowerCase()) ? '$tag ✓' : '+ $tag'),
+                                  onPressed: _tags.any((item) => item.toLowerCase() == tag.toLowerCase()) ? null : () => _acceptSuggestedTag(tag),
+                                ),
+                            ],
+                          ),
+                        ],
+                        if (_smartSuggestions!.dates.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          const Text('Detected dates · tap to set a reminder'),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            children: [
+                              for (final date in _smartSuggestions!.dates)
+                                ActionChip(
+                                  avatar: const Icon(Icons.calendar_today_outlined, size: 15),
+                                  label: Text(DateFormat('d MMM yyyy').format(date)),
+                                  onPressed: () => _acceptSuggestedDate(date),
+                                ),
+                            ],
+                          ),
+                        ],
+                        if (_smartSuggestions!.amounts.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          const Text('Detected amounts'),
+                          const SizedBox(height: 4),
+                          for (final amount in _smartSuggestions!.amounts)
+                            Text('${amount.currency} ${NumberFormat('#,##0.##').format(amount.value)}'),
+                        ],
+                        const SizedBox(height: 6),
+                        Text('Suggestions are calculated on this device. Nothing is added until you accept it.', style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             if (_imagePath != null && !_attachments.contains(_imagePath) && File(_imagePath!).existsSync())
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
@@ -3003,6 +3109,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                         label: 'Add image or file',
                         onPressed: _showAttachmentMenu,
                       ),
+                      if (!_isLocked)
+                        _ToolButton(
+                          icon: Icons.auto_awesome_outlined,
+                          label: 'Smart suggestions',
+                          onPressed: _analyzeSmartSuggestions,
+                        ),
                       _ToolButton(
                         icon: Icons.timer_outlined,
                         label: _focusMinutes > 0 ? 'Focus session · $_focusMinutes min' : 'Focus session',
