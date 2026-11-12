@@ -14,7 +14,7 @@ class PomodoroScreen extends StatefulWidget {
 
 class _PomodoroScreenState extends State<PomodoroScreen>
     with WidgetsBindingObserver {
-  static const _focus = Duration(minutes: 25);
+  int _focusMinutes = 25;
   static const _short = Duration(minutes: 5);
   static const _long = Duration(minutes: 15);
   Timer? _ticker;
@@ -32,7 +32,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   int _cycle = 0;
 
   Duration get _duration => _mode == 'shortBreak'
-      ? _short : _mode == 'longBreak' ? _long : _focus;
+      ? _short : _mode == 'longBreak' ? _long : Duration(minutes: _focusMinutes);
   bool get _isFocus => _mode == 'focus';
 
   @override
@@ -51,6 +51,8 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     final p = await SharedPreferences.getInstance();
     if (!mounted) return;
     _mode = p.getString('orah_pomodoro_mode') ?? 'focus';
+    final savedFocusMinutes = p.getInt('orah_pomodoro_focus_minutes') ?? 25;
+    _focusMinutes = const [10, 25, 50, 60].contains(savedFocusMinutes) ? savedFocusMinutes : 25;
     _remaining = Duration(seconds: p.getInt('orah_pomodoro_remaining') ?? 1500);
     _completed = p.getInt('orah_pomodoro_completed') ?? 0;
     _cycle = p.getInt('orah_pomodoro_cycle') ?? 0;
@@ -99,6 +101,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   Future<void> _save() async {
     final p = await SharedPreferences.getInstance();
     await p.setString('orah_pomodoro_mode', _mode);
+    await p.setInt('orah_pomodoro_focus_minutes', _focusMinutes);
     await p.setInt('orah_pomodoro_remaining', _remaining.inSeconds);
     await p.setInt('orah_pomodoro_completed', _completed);
     await p.setInt('orah_pomodoro_cycle', _cycle);
@@ -315,6 +318,32 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                     ),
                   ),
                   const SizedBox(height: 18),
+                  if (!_running) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Focus duration', style: theme.textTheme.titleSmall),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        for (final minutes in const [10, 25, 50, 60])
+                          ChoiceChip(
+                            label: Text('$minutes min'),
+                            selected: _focusMinutes == minutes,
+                            onSelected: _mode != 'focus' ? null : (selected) async {
+                              if (!selected) return;
+                              setState(() {
+                                _focusMinutes = minutes;
+                                _remaining = _duration;
+                              });
+                              await _save();
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                  ],
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(value: 'focus', label: Text('Focus')),
@@ -394,7 +423,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Text('25 min focus · 5 min short break · 15 min long break after 4 focus sessions',
+                  Text('$_focusMinutes min focus · 5 min short break · 15 min long break after 4 focus sessions',
                     textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
                 ]),
               ),
