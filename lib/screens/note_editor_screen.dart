@@ -2156,7 +2156,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
         child: Row(children: [
           SizedBox(width: 42, height: 42, child: CircularProgressIndicator(
             value: progress, strokeWidth: 4,
-            backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.35),
+            backgroundColor: theme.colorScheme.surface.withOpacity(0.35),
           )),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -2192,7 +2192,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     _noteFocusDurationSeconds = duration;
     _noteFocusRunning = true;
     _updateNoteFocusRemaining();
-    if (_noteFocusRunning && mounted) setState(() {});
+    if (_noteFocusRunning && mounted) {
+      await OrahReminderService.instance.scheduleNoteFocusCompletion(
+        noteId: _noteId,
+        minutes: (_noteFocusDurationSeconds / 60).round(),
+        when: _noteFocusDeadline!,
+      );
+      setState(() {});
+      _noteFocusTicker = Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
+    }
   }
 
   Future<void> _beginNoteFocusTimer(int minutes) async {
