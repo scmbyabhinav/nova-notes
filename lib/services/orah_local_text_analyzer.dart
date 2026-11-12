@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 /// Deterministic, on-device suggestions derived from note text.
 /// Nothing is persisted or changed until the user explicitly accepts a value.
 class SmartNoteSuggestions {
