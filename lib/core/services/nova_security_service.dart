@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -274,6 +274,6 @@ class NovaSecurityService {
 
   String _hash(String pin, String salt) {
     final bytes = utf8.encode('$salt:$pin');
-    return sha256.convert(bytes).toString();
+    return crypto.sha256.convert(bytes).toString();
   }
 }
