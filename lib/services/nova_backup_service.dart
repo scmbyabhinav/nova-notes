@@ -17,7 +17,7 @@ class NovaBackupService {
   static const format = 'nova_notes_portable_backup';
   static const version = 3;
   static const _databaseTables = <String>['note_versions', 'habits', 'goals', 'kanban_cards', 'links', 'time_entries'];
-  static const _portablePreferenceKeys = <String>['nova_folders_v1', 'orah_vault_notes_v1', 'orah_focus_sessions_v1', 'orah_theme_mode_v1', 'orah_accent_color_v1', 'orah_view_mode_v1'];
+  static const _portablePreferenceKeys = <String>['nova_folders_v1', 'orah_vault_notes_v1', 'orah_focus_sessions_v1', 'orah_theme_mode_v1', 'orah_accent_color_v1', 'orah_view_mode_v1', 'orah_vault_folders_v1', 'orah_vault_auto_lock_minutes'];
   static const maxBackupBytes = 512 * 1024 * 1024;
 
   Future<File> createBackup() async {
@@ -127,6 +127,55 @@ class NovaBackupService {
       }
     }
 
+    // Validate every optional snapshot before extracting files or mutating app data.
+    Map<String, dynamic>? validatedTables;
+    final databaseFile = archive.findFile('data/database.json');
+    if (databaseFile != null) {
+      final snapshot = jsonDecode(utf8.decode(databaseFile.content as List<int>));
+      if (snapshot is! Map || snapshot['format'] != 'orah_database_snapshot' ||
+          snapshot['version'] != 1 || snapshot['tables'] is! Map) {
+        throw const FormatException('Invalid ORAH database snapshot.');
+      }
+      validatedTables = Map<String, dynamic>.from(snapshot['tables'] as Map);
+      for (final table in validatedTables.entries) {
+        if (!_databaseTables.contains(table.key)) {
+          throw FormatException('Unexpected ORAH database table: ${table.key}.');
+        }
+        final rows = table.value;
+        if (rows is! List || rows.length > 100000 || rows.any((row) => row is! Map)) {
+          throw FormatException('Invalid ORAH database table: ${table.key}.');
+        }
+        for (final rawRow in rows) {
+          final row = Map<String, Object?>.from(rawRow as Map);
+          final requiredId = table.key == 'note_versions' ? row['id'] : row['id'];
+          if (requiredId == null || (requiredId is String && requiredId.trim().isEmpty)) {
+            throw FormatException('A record in ${table.key} has no valid ID.');
+          }
+        }
+      }
+    }
+
+    Map<String, dynamic>? validatedPreferences;
+    final preferencesFile = archive.findFile('data/preferences.json');
+    if (preferencesFile != null) {
+      final snapshot = jsonDecode(utf8.decode(preferencesFile.content as List<int>));
+      if (snapshot is! Map || snapshot['format'] != 'orah_preferences_snapshot' ||
+          snapshot['version'] != 1 || snapshot['values'] is! Map) {
+        throw const FormatException('Invalid ORAH preferences snapshot.');
+      }
+      validatedPreferences = Map<String, dynamic>.from(snapshot['values'] as Map);
+      for (final entry in validatedPreferences.entries) {
+        if (!_portablePreferenceKeys.contains(entry.key)) {
+          throw FormatException('Unexpected ORAH preference key: ${entry.key}.');
+        }
+        final value = entry.value;
+        if (value is! String && value is! bool && value is! int && value is! double &&
+            !(value is List && value.every((item) => item is String))) {
+          throw FormatException('Invalid ORAH preference value: ${entry.key}.');
+        }
+      }
+    }
+
     final extracted = <String, String>{};
     final createdPaths = <String>[];
     final archiveAttachmentNames = <String>{};
@@ -179,49 +228,22 @@ class NovaBackupService {
       final count = await LocalNoteRepository(preferences).importJson(jsonEncode(payload));
       if (foldersPayload != null) await preferences.setString('nova_folders_v1', foldersPayload);
 
-      // Restore database-owned domains only after the archive has been fully
-      // parsed and validated. Rows are merged by primary key in one transaction.
-      final databaseFile = archive.findFile('data/database.json');
-      if (databaseFile != null) {
-        final snapshot = jsonDecode(utf8.decode(databaseFile.content as List<int>));
-        if (snapshot is! Map || snapshot['format'] != 'orah_database_snapshot' ||
-            snapshot['version'] != 1 || snapshot['tables'] is! Map) {
-          throw const FormatException('Invalid ORAH database snapshot.');
-        }
-        final tables = Map<String, dynamic>.from(snapshot['tables'] as Map);
-        for (final table in _databaseTables) {
-          final rows = tables[table];
-          if (rows == null) continue;
-          if (rows is! List || rows.length > 100000 ||
-              rows.any((row) => row is! Map)) {
-            throw FormatException('Invalid ORAH database table: $table.');
-          }
-        }
+      // All archive sections were validated before any app data was changed.
+      if (validatedTables != null) {
         final db = await OrahDatabase.open(preferences);
         await db.transaction((txn) async {
           for (final table in _databaseTables) {
-            final rows = tables[table] as List? ?? const [];
+            final rows = validatedTables![table] as List? ?? const [];
             for (final rawRow in rows) {
               final row = Map<String, Object?>.from(rawRow as Map);
-              if (!row.containsKey('id') && table != 'note_versions') {
-                throw FormatException('A record in $table has no ID.');
-              }
               await txn.insert(table, row, conflictAlgorithm: ConflictAlgorithm.replace);
             }
           }
         });
       }
 
-      final preferencesFile = archive.findFile('data/preferences.json');
-      if (preferencesFile != null) {
-        final snapshot = jsonDecode(utf8.decode(preferencesFile.content as List<int>));
-        if (snapshot is! Map || snapshot['format'] != 'orah_preferences_snapshot' ||
-            snapshot['version'] != 1 || snapshot['values'] is! Map) {
-          throw const FormatException('Invalid ORAH preferences snapshot.');
-        }
-        final values = Map<String, dynamic>.from(snapshot['values'] as Map);
-        for (final entry in values.entries) {
-          if (!_portablePreferenceKeys.contains(entry.key)) continue;
+      if (validatedPreferences != null) {
+        for (final entry in validatedPreferences.entries) {
           final value = entry.value;
           if (value is String) {
             await preferences.setString(entry.key, value);
@@ -231,8 +253,8 @@ class NovaBackupService {
             await preferences.setInt(entry.key, value);
           } else if (value is double) {
             await preferences.setDouble(entry.key, value);
-          } else if (value is List<String>) {
-            await preferences.setStringList(entry.key, value);
+          } else if (value is List) {
+            await preferences.setStringList(entry.key, value.cast<String>());
           }
         }
       }
