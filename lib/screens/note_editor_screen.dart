@@ -1274,7 +1274,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final text = [
       _titleController.text,
       _noteType == NoteType.checklist ? _checklistContent() : _contentController.text,
-    ].join('\\n');
+    ].join('\n');
     final suggestions = const OrahLocalTextAnalyzer().analyze(text);
     setState(() {
       _smartSuggestions = suggestions;
@@ -2755,9 +2755,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                           children: [
                             const Icon(Icons.auto_awesome_outlined, size: 18),
                             const SizedBox(width: 8),
-                            Expanded(child: Text('ORAH smart suggestions', style: Theme.of(context).textTheme.titleSmall)),
+                            Expanded(child: Text(AppLocalizations.of(context)!.smartSuggestionsTitle, style: Theme.of(context).textTheme.titleSmall)),
                             IconButton(
-                              tooltip: 'Close suggestions',
+                              tooltip: AppLocalizations.of(context)!.closeSmartSuggestions,
                               visualDensity: VisualDensity.compact,
                               onPressed: () => setState(() => _smartSuggestions = null),
                               icon: const Icon(Icons.close, size: 18),
@@ -2767,10 +2767,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                         if (_smartSuggestions!.category != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: Text('Suggested category: ${_smartSuggestions!.category}'),
+                            child: Row(children: [Expanded(child: Text(AppLocalizations.of(context)!.suggestedCategory(_smartSuggestions!.category!))), ActionChip(label: Text(AppLocalizations.of(context)!.useCategoryAsTag), onPressed: _tags.any((item) => item.toLowerCase() == _smartSuggestions!.category!.toLowerCase()) ? null : () => _acceptSuggestedTag(_smartSuggestions!.category!))]),
                           ),
                         if (_smartSuggestions!.tags.isNotEmpty) ...[
-                          const Text('Suggested tags'),
+                          Text(AppLocalizations.of(context)!.suggestedTags),
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 6,
@@ -2786,7 +2786,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                         ],
                         if (_smartSuggestions!.dates.isNotEmpty) ...[
                           const SizedBox(height: 10),
-                          const Text('Detected dates · tap to set a reminder'),
+                          Text(AppLocalizations.of(context)!.detectedDatesSetReminder),
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 6,
@@ -2802,13 +2802,13 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
                         ],
                         if (_smartSuggestions!.amounts.isNotEmpty) ...[
                           const SizedBox(height: 10),
-                          const Text('Detected amounts'),
+                          Text(AppLocalizations.of(context)!.detectedAmounts),
                           const SizedBox(height: 4),
                           for (final amount in _smartSuggestions!.amounts)
                             Text('${amount.currency} ${NumberFormat('#,##0.##').format(amount.value)}'),
                         ],
                         const SizedBox(height: 6),
-                        Text('Suggestions are calculated on this device. Nothing is added until you accept it.', style: Theme.of(context).textTheme.bodySmall),
+                        Text(AppLocalizations.of(context)!.smartSuggestionsPrivacyNote, style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
