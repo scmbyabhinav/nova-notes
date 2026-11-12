@@ -311,6 +311,17 @@ class NovaBackupService {
     const maxAttachmentBytes = 512 * 1024 * 1024;
     final root = await _attachmentDirectory();
 
+    final db = await OrahDatabase.open(preferences);
+    // Snapshot the complete mutable local state before the first write.
+    // SQLite rows are restored in one transaction if any later step fails.
+    final databaseBefore = <String, List<Map<String, Object?>>>{};
+    for (final table in ['notes', ..._databaseTables]) {
+      databaseBefore[table] = await db.query(table);
+    }
+    final preferencesBefore = <String, Object?>{
+      for (final key in preferences.getKeys()) key: preferences.get(key),
+    };
+
     try {
       for (final file in archive.files) {
         if (!file.isFile || !file.name.startsWith('attachments/')) continue;
@@ -358,7 +369,6 @@ class NovaBackupService {
 
       // All archive sections were validated before any app data was changed.
       if (validatedTables != null) {
-        final db = await OrahDatabase.open(preferences);
         await db.transaction((txn) async {
           for (final table in _databaseTables) {
             final rows = validatedTables![table] as List? ?? const [];
@@ -413,13 +423,71 @@ class NovaBackupService {
         }
       }
       return count;
-    } catch (error) {
-      for (final path in createdPaths) {
-        try {
-          await File(path).delete();
-        } catch (_) {}
+    } catch (error, stackTrace) {
+      Object? rollbackError;
+      try {
+        // Restore ordinary notes and every structured table atomically.
+        await db.transaction((txn) async {
+          for (final table in ['notes', ..._databaseTables]) {
+            await txn.delete(table);
+            for (final row in databaseBefore[table] ?? const []) {
+              await txn.insert(
+                table,
+                row,
+                conflictAlgorithm: ConflictAlgorithm.abort,
+              );
+            }
+          }
+        });
+
+        // Restore the exact SharedPreferences snapshot, including keys that
+        // were absent before restore and may have been created by importJson.
+        for (final key in preferences.getKeys().toList()) {
+          await preferences.remove(key);
+        }
+        for (final entry in preferencesBefore.entries) {
+          await _writePreference(entry.key, entry.value);
+        }
+      } catch (failure) {
+        rollbackError = failure;
       }
-      rethrow;
+
+      // Only files created by this restore are removed. Existing attachments
+      // are never overwritten because extraction always chooses a free name.
+      for (final path in createdPaths.reversed) {
+        try {
+          final file = File(path);
+          if (await file.exists()) await file.delete();
+        } catch (failure) {
+          rollbackError ??= failure;
+        }
+      }
+
+      if (rollbackError != null) {
+        Error.throwWithStackTrace(
+          StateError('Restore failed: $error. Rollback also failed: $rollbackError'),
+          stackTrace,
+        );
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+  }
+
+  Future<void> _writePreference(String key, Object? value) async {
+    if (value == null) {
+      await preferences.remove(key);
+    } else if (value is String) {
+      await preferences.setString(key, value);
+    } else if (value is bool) {
+      await preferences.setBool(key, value);
+    } else if (value is int) {
+      await preferences.setInt(key, value);
+    } else if (value is double) {
+      await preferences.setDouble(key, value);
+    } else if (value is List<String>) {
+      await preferences.setStringList(key, value);
+    } else {
+      throw FormatException('Unsupported preference value during rollback: $key.');
     }
   }
 
