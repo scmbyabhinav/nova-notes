@@ -58,5 +58,13 @@
   "yesterday": "Dün",
   "emptyTimeline": "Gösterilecek not yok",
   "currentDay": "Seçili gün",
-  "total": "Toplam"
+  "total": "Toplam",
+  "smartSuggestionsTitle": "ORAH akıllı önerileri",
+  "closeSmartSuggestions": "Önerileri kapat",
+  "suggestedCategory": "Önerilen kategori: {category}",
+  "suggestedTags": "Önerilen etiketler",
+  "detectedDatesSetReminder": "Algılanan tarihler · hatırlatıcı ayarlamak için dokunun",
+  "detectedAmounts": "Algılanan tutarlar",
+  "smartSuggestionsPrivacyNote": "Öneriler bu cihazda hesaplanır. Onayınız olmadan hiçbir şey eklenmez.",
+  "useCategoryAsTag": "Etiket olarak kullan"
 }

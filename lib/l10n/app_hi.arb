@@ -58,5 +58,13 @@
   "yesterday": "कल",
   "emptyTimeline": "दिखाने के लिए कोई नोट नहीं",
   "currentDay": "चुना गया दिन",
-  "total": "कुल"
+  "total": "कुल",
+  "smartSuggestionsTitle": "ORAH स्मार्ट सुझाव",
+  "closeSmartSuggestions": "सुझाव बंद करें",
+  "suggestedCategory": "सुझाई गई श्रेणी: {category}",
+  "suggestedTags": "सुझाए गए टैग",
+  "detectedDatesSetReminder": "पहचानी गई तारीखें · रिमाइंडर सेट करने के लिए टैप करें",
+  "detectedAmounts": "पहचानी गई राशियाँ",
+  "smartSuggestionsPrivacyNote": "सुझाव इसी डिवाइस पर तैयार होते हैं। आपकी स्वीकृति के बिना कुछ भी नहीं जोड़ा जाएगा।",
+  "useCategoryAsTag": "टैग के रूप में उपयोग करें"
 }

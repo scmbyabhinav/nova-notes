@@ -116,5 +116,13 @@
   "kanbanCardMoved": "Card moved",
   "kanbanGoalDescription": "Goal description (optional)",
   "kanbanChooseGoal": "Choose a goal to see its cards",
-  "kanbanStartPauseTimer": "Start / pause timer"
+  "kanbanStartPauseTimer": "Start / pause timer",
+  "smartSuggestionsTitle": "ORAH smart suggestions",
+  "closeSmartSuggestions": "Close suggestions",
+  "suggestedCategory": "Suggested category: {category}",
+  "suggestedTags": "Suggested tags",
+  "detectedDatesSetReminder": "Detected dates · tap to set a reminder",
+  "detectedAmounts": "Detected amounts",
+  "smartSuggestionsPrivacyNote": "Suggestions are calculated on this device. Nothing is added until you accept it.",
+  "useCategoryAsTag": "Use as tag"
 }

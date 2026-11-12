@@ -73,5 +73,13 @@
   "kanbanCardMoved": "卡片已移动",
   "kanbanGoalDescription": "目标描述（可选）",
   "kanbanChooseGoal": "选择一个目标以查看其卡片",
-  "kanbanStartPauseTimer": "开始/暂停计时器"
+  "kanbanStartPauseTimer": "开始/暂停计时器",
+  "smartSuggestionsTitle": "ORAH 智能建议",
+  "closeSmartSuggestions": "关闭建议",
+  "suggestedCategory": "建议类别：{category}",
+  "suggestedTags": "建议标签",
+  "detectedDatesSetReminder": "检测到的日期 · 点击设置提醒",
+  "detectedAmounts": "检测到的金额",
+  "smartSuggestionsPrivacyNote": "建议仅在此设备上计算。未经确认不会添加任何内容。",
+  "useCategoryAsTag": "用作标签"
 }

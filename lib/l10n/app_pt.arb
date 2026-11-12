@@ -58,5 +58,13 @@
   "yesterday": "Ontem",
   "emptyTimeline": "Nenhuma nota para mostrar",
   "currentDay": "Dia selecionado",
-  "total": "Total"
+  "total": "Total",
+  "smartSuggestionsTitle": "Sugestões inteligentes ORAH",
+  "closeSmartSuggestions": "Fechar sugestões",
+  "suggestedCategory": "Categoria sugerida: {category}",
+  "suggestedTags": "Tags sugeridas",
+  "detectedDatesSetReminder": "Datas detetadas · toque para definir um lembrete",
+  "detectedAmounts": "Valores detetados",
+  "smartSuggestionsPrivacyNote": "As sugestões são calculadas neste dispositivo. Nada é adicionado sem a sua aprovação.",
+  "useCategoryAsTag": "Usar como tag"
 }
