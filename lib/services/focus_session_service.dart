@@ -74,7 +74,7 @@ class FocusSessionService {
     if (id.isEmpty || durationMinutes <= 0 || !completedAt.isAfter(startedAt)) {
       return false;
     }
-    final sessions = await getSessions();
+    final sessions = (await getSessions()).toList();
     if (sessions.any((session) => session.id == id)) return false;
     sessions.add(FocusSession(
       id: id,
