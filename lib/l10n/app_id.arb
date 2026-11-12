@@ -58,5 +58,13 @@
   "yesterday": "Kemarin",
   "emptyTimeline": "Tidak ada catatan untuk ditampilkan",
   "currentDay": "Hari yang dipilih",
-  "total": "Total"
+  "total": "Total",
+  "smartSuggestionsTitle": "Saran cerdas ORAH",
+  "closeSmartSuggestions": "Tutup saran",
+  "suggestedCategory": "Kategori yang disarankan: {category}",
+  "suggestedTags": "Tag yang disarankan",
+  "detectedDatesSetReminder": "Tanggal terdeteksi · ketuk untuk mengatur pengingat",
+  "detectedAmounts": "Jumlah yang terdeteksi",
+  "smartSuggestionsPrivacyNote": "Saran dihitung di perangkat ini. Tidak ada yang ditambahkan sebelum Anda menyetujuinya.",
+  "useCategoryAsTag": "Gunakan sebagai tag"
 }
