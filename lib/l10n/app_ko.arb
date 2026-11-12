@@ -58,5 +58,13 @@
   "yesterday": "어제",
   "emptyTimeline": "표시할 노트가 없습니다",
   "currentDay": "선택한 날짜",
-  "total": "합계"
+  "total": "합계",
+  "smartSuggestionsTitle": "ORAH 스마트 제안",
+  "closeSmartSuggestions": "제안 닫기",
+  "suggestedCategory": "추천 카테고리: {category}",
+  "suggestedTags": "추천 태그",
+  "detectedDatesSetReminder": "감지된 날짜 · 탭하여 알림 설정",
+  "detectedAmounts": "감지된 금액",
+  "smartSuggestionsPrivacyNote": "제안은 이 기기에서 처리됩니다. 승인하기 전에는 아무것도 추가되지 않습니다.",
+  "useCategoryAsTag": "태그로 사용"
 }
