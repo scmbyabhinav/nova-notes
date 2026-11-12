@@ -174,6 +174,22 @@ class OrahReminderService {
   int _notificationId(String key) =>
       ByteData.view(Uint8List.fromList(sha256.convert(utf8.encode(key)).bytes).buffer).getInt32(0) & 0x7fffffff;
 
+  Future<AndroidScheduleMode> _focusTimerScheduleMode() async {
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    if (android == null) return AndroidScheduleMode.inexactAllowWhileIdle;
+
+    var allowed = await android.canScheduleExactNotifications() ?? false;
+    if (!allowed) {
+      // Android 14+ may require the user to grant exact-alarm access in
+      // system settings. If declined, retain a best-effort inexact alert.
+      allowed = await android.requestExactAlarmsPermission() ?? false;
+    }
+    return allowed
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+  }
+
   static const _pomodoroNotificationKey = 'orah-pomodoro-completion';
 
   /// Schedules a sound-enabled system notification so the timer can alert
@@ -198,6 +214,7 @@ class OrahReminderService {
         enableVibration: true,
       ),
     );
+    final scheduleMode = await _focusTimerScheduleMode();
     await _plugin.zonedSchedule(
       id: _notificationId(_pomodoroNotificationKey),
       title: 'ORAH timer finished',
@@ -206,7 +223,7 @@ class OrahReminderService {
           : 'Break complete. Ready for another focus session?',
       scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
       notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: scheduleMode,
       payload: jsonEncode({'type': 'pomodoro'}),
     );
   }
@@ -235,13 +252,14 @@ class OrahReminderService {
         enableVibration: true,
       ),
     );
+    final scheduleMode = await _focusTimerScheduleMode();
     await _plugin.zonedSchedule(
       id: _notificationId('note-focus:$noteId'),
       title: 'Focus time is up',
       body: 'Your $minutes-minute focus session for this note is complete.',
       scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
       notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: scheduleMode,
       payload: jsonEncode({'type': 'note_focus', 'noteId': noteId}),
     );
   }
