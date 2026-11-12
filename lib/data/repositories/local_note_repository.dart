@@ -9,6 +9,7 @@ import '../../models/note.dart';
 import '../../models/note_version.dart';
 import '../../core/services/nova_security_service.dart';
 import '../../models/search_filter.dart';
+import '../../services/focus_session_service.dart';
 import 'note_repository.dart';
 
 class LocalNoteRepository implements NoteRepository {
@@ -557,6 +558,7 @@ class LocalNoteRepository implements NoteRepository {
       'version': 1,
       'exportedAt': DateTime.now().toIso8601String(),
       'notes': [for (final note in notes) await _toMap(note)],
+      'focusHistory': jsonDecode(await FocusSessionService(_preferences).exportJson()),
     });
   }
 
@@ -603,6 +605,10 @@ class LocalNoteRepository implements NoteRepository {
 
     final merged = byId.values.toList();
     await _write(merged);
+    final focusHistory = decoded['focusHistory'];
+    if (focusHistory is Map) {
+      await FocusSessionService(_preferences).importJson(jsonEncode(focusHistory));
+    }
     _publish(merged);
     return imported.length;
   }));
