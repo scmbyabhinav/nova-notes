@@ -196,14 +196,12 @@ class OrahDatabase {
       ''');
       await db.execute('''
         CREATE TRIGGER IF NOT EXISTS notes_search_delete AFTER DELETE ON notes BEGIN
-          INSERT INTO note_search(note_search, rowid, note_id, title, content, tags)
-          VALUES ('delete', old.rowid, old.id, old.title, old.content, old.tags);
+          DELETE FROM note_search WHERE rowid = old.rowid;
         END
       ''');
       await db.execute('''
         CREATE TRIGGER IF NOT EXISTS notes_search_update AFTER UPDATE ON notes BEGIN
-          INSERT INTO note_search(note_search, rowid, note_id, title, content, tags)
-          VALUES ('delete', old.rowid, old.id, old.title, old.content, old.tags);
+          DELETE FROM note_search WHERE rowid = old.rowid;
           INSERT INTO note_search(rowid, note_id, title, content, tags)
           VALUES (new.rowid, new.id, new.title, new.content, new.tags);
         END
