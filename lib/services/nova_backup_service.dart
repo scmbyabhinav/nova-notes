@@ -5,14 +5,19 @@ import 'package:archive/archive.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../data/repositories/local_note_repository.dart';
+import '../data/database/orah_database.dart';
+import '../services/focus_session_service.dart';
 
 class NovaBackupService {
   const NovaBackupService(this.preferences);
   final SharedPreferences preferences;
   static const format = 'nova_notes_portable_backup';
-  static const version = 2;
+  static const version = 3;
+  static const _databaseTables = <String>['note_versions', 'habits', 'goals', 'kanban_cards', 'links', 'time_entries'];
+  static const _portablePreferenceKeys = <String>['nova_folders_v1', 'orah_vault_notes_v1', 'orah_focus_sessions_v1', 'orah_theme_mode_v1', 'orah_accent_color_v1', 'orah_view_mode_v1'];
   static const maxBackupBytes = 512 * 1024 * 1024;
 
   Future<File> createBackup() async {
@@ -45,6 +50,30 @@ class NovaBackupService {
     rawNotes['version'] = version;
     rawNotes['attachments'] = manifest;
     files['data/notes.json'] = utf8.encode(jsonEncode(rawNotes));
+
+    // Snapshot every structured local data domain that is not already inside
+    // notes.json. Keep the table list explicit: never export SQLite internals,
+    // FTS virtual tables, migration state, or credentials.
+    final db = await OrahDatabase.open(preferences);
+    final databaseSnapshot = <String, dynamic>{
+      'format': 'orah_database_snapshot',
+      'version': 1,
+      'tables': <String, dynamic>{
+        for (final table in _databaseTables) table: await db.query(table),
+      },
+    };
+    files['data/database.json'] = utf8.encode(jsonEncode(databaseSnapshot));
+
+    final portablePreferences = <String, dynamic>{};
+    for (final key in _portablePreferenceKeys) {
+      final value = preferences.get(key);
+      if (value != null) portablePreferences[key] = value;
+    }
+    files['data/preferences.json'] = utf8.encode(jsonEncode({
+      'format': 'orah_preferences_snapshot',
+      'version': 1,
+      'values': portablePreferences,
+    }));
     if (files.isEmpty) throw const FormatException('Nothing available to back up.');
     final archive = Archive();
     for (final e in files.entries) archive.addFile(ArchiveFile(e.key, e.value.length, e.value));
@@ -149,6 +178,64 @@ class NovaBackupService {
       final payload = {'format': 'nova_notes_backup', 'version': 1, 'exportedAt': raw['exportedAt'] ?? DateTime.now().toIso8601String(), 'notes': noteList};
       final count = await LocalNoteRepository(preferences).importJson(jsonEncode(payload));
       if (foldersPayload != null) await preferences.setString('nova_folders_v1', foldersPayload);
+
+      // Restore database-owned domains only after the archive has been fully
+      // parsed and validated. Rows are merged by primary key in one transaction.
+      final databaseFile = archive.findFile('data/database.json');
+      if (databaseFile != null) {
+        final snapshot = jsonDecode(utf8.decode(databaseFile.content as List<int>));
+        if (snapshot is! Map || snapshot['format'] != 'orah_database_snapshot' ||
+            snapshot['version'] != 1 || snapshot['tables'] is! Map) {
+          throw const FormatException('Invalid ORAH database snapshot.');
+        }
+        final tables = Map<String, dynamic>.from(snapshot['tables'] as Map);
+        for (final table in _databaseTables) {
+          final rows = tables[table];
+          if (rows == null) continue;
+          if (rows is! List || rows.length > 100000 ||
+              rows.any((row) => row is! Map)) {
+            throw FormatException('Invalid ORAH database table: $table.');
+          }
+        }
+        final db = await OrahDatabase.open(preferences);
+        await db.transaction((txn) async {
+          for (final table in _databaseTables) {
+            final rows = tables[table] as List? ?? const [];
+            for (final rawRow in rows) {
+              final row = Map<String, Object?>.from(rawRow as Map);
+              if (!row.containsKey('id') && table != 'note_versions') {
+                throw FormatException('A record in $table has no ID.');
+              }
+              await txn.insert(table, row, conflictAlgorithm: ConflictAlgorithm.replace);
+            }
+          }
+        });
+      }
+
+      final preferencesFile = archive.findFile('data/preferences.json');
+      if (preferencesFile != null) {
+        final snapshot = jsonDecode(utf8.decode(preferencesFile.content as List<int>));
+        if (snapshot is! Map || snapshot['format'] != 'orah_preferences_snapshot' ||
+            snapshot['version'] != 1 || snapshot['values'] is! Map) {
+          throw const FormatException('Invalid ORAH preferences snapshot.');
+        }
+        final values = Map<String, dynamic>.from(snapshot['values'] as Map);
+        for (final entry in values.entries) {
+          if (!_portablePreferenceKeys.contains(entry.key)) continue;
+          final value = entry.value;
+          if (value is String) {
+            await preferences.setString(entry.key, value);
+          } else if (value is bool) {
+            await preferences.setBool(entry.key, value);
+          } else if (value is int) {
+            await preferences.setInt(entry.key, value);
+          } else if (value is double) {
+            await preferences.setDouble(entry.key, value);
+          } else if (value is List<String>) {
+            await preferences.setStringList(entry.key, value);
+          }
+        }
+      }
       return count;
     } catch (error) {
       for (final path in createdPaths) {
