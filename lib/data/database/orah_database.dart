@@ -15,7 +15,7 @@ class _LegacyMigrationPlan {
 class OrahDatabase {
   OrahDatabase._();
 
-  static const schemaVersion = 4;
+  static const schemaVersion = 5;
   static bool _fts5Available = false;
   static bool get fts5Available => _fts5Available;
   static const legacyNotesKey = 'nova_notes_v1';
@@ -84,7 +84,7 @@ class OrahDatabase {
         } else if (state != 'complete' && state != 'vault_pending') {
           throw StateError('Unknown legacy migration state: $state');
         }
-        if (currentVersion < 4 && _fts5Available) {
+        if (currentVersion < 5 && _fts5Available) {
           await txn.execute("INSERT INTO note_search(note_search) VALUES('rebuild')");
         }
         if (currentVersion < schemaVersion) await txn.execute('PRAGMA user_version = $schemaVersion');
@@ -188,6 +188,11 @@ class OrahDatabase {
         )
       """);
       _fts5Available = true;
+      // Recreate triggers so fixes to their SQL are applied to existing local
+      // databases as well as fresh installations.
+      await db.execute('DROP TRIGGER IF EXISTS notes_search_insert');
+      await db.execute('DROP TRIGGER IF EXISTS notes_search_delete');
+      await db.execute('DROP TRIGGER IF EXISTS notes_search_update');
       await db.execute('''
         CREATE TRIGGER IF NOT EXISTS notes_search_insert AFTER INSERT ON notes BEGIN
           INSERT INTO note_search(rowid, note_id, title, content, tags)
