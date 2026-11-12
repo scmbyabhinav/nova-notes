@@ -58,5 +58,13 @@
   "yesterday": "أمس",
   "emptyTimeline": "لا توجد ملاحظات لعرضها",
   "currentDay": "اليوم المحدد",
-  "total": "الإجمالي"
+  "total": "الإجمالي",
+  "smartSuggestionsTitle": "اقتراحات ORAH الذكية",
+  "closeSmartSuggestions": "إغلاق الاقتراحات",
+  "suggestedCategory": "الفئة المقترحة: {category}",
+  "suggestedTags": "الوسوم المقترحة",
+  "detectedDatesSetReminder": "التواريخ المكتشفة · اضغط لإعداد تذكير",
+  "detectedAmounts": "المبالغ المكتشفة",
+  "smartSuggestionsPrivacyNote": "تُحسب الاقتراحات على هذا الجهاز. لن تتم إضافة أي شيء قبل موافقتك.",
+  "useCategoryAsTag": "استخدم كوسم"
 }
