@@ -336,7 +336,9 @@ class SettingsScreen extends StatelessWidget {
       final prefs = await SharedPreferences.getInstance();
       final service = NovaBackupService(prefs);
       if (action == 'create') {
-        final file = await service.createBackup();
+        final passphrase = await _promptBackupPassphrase(context, confirm: true);
+        if (passphrase == null || !context.mounted) return;
+        final file = await service.createBackup(vaultPassphrase: passphrase);
         await Share.shareXFiles([XFile(file.path)], text: 'Orah portable backup');
       } else {
         final result = await FilePicker.pickFiles(
@@ -345,7 +347,9 @@ class SettingsScreen extends StatelessWidget {
         );
         final path = result.isEmpty ? null : result.single.path;
         if (path == null) return;
-        final count = await service.restoreBackup(File(path));
+        final passphrase = await _promptBackupPassphrase(context);
+        if (passphrase == null || !context.mounted) return;
+        final count = await service.restoreBackup(File(path), vaultPassphrase: passphrase);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Restored $count notes successfully.')),
@@ -360,6 +364,72 @@ class SettingsScreen extends StatelessWidget {
       }
     }
   }
+  Future<String?> _promptBackupPassphrase(
+    BuildContext context, {
+    bool confirm = false,
+  }) async {
+    final controller = TextEditingController();
+    final confirmController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(confirm ? 'Protect backup' : 'Unlock backup'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                confirm
+                    ? 'Create a passphrase of at least 12 characters. You will need it to restore Vault notes on another device. ORAH cannot recover a forgotten passphrase.'
+                    : 'Enter the passphrase used when this backup was created. ORAH cannot recover a forgotten passphrase.',
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: controller,
+                obscureText: true,
+                autofocus: true,
+                decoration: const InputDecoration(labelText: 'Backup passphrase'),
+                validator: (value) => (value == null || value.trim().length < 12)
+                    ? 'Use at least 12 characters'
+                    : null,
+              ),
+              if (confirm) ...[
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: confirmController,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: 'Confirm passphrase'),
+                  validator: (value) => value != controller.text
+                      ? 'Passphrases do not match'
+                      : null,
+                ),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState?.validate() ?? false) {
+                Navigator.pop(dialogContext, controller.text);
+              }
+            },
+            child: Text(confirm ? 'Create backup' : 'Restore'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    confirmController.dispose();
+    return result;
+  }
+
   Future<void> _storageMaintenance(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final repo = await NoteRepositoryProvider.instance();
