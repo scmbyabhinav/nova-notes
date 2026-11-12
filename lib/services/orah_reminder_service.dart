@@ -216,6 +216,41 @@ class OrahReminderService {
     await _plugin.cancel(id: _notificationId(_pomodoroNotificationKey));
   }
 
+  /// Schedules a dedicated completion alert for a Pomodoro started inside a note.
+  Future<void> scheduleNoteFocusCompletion({
+    required String noteId,
+    required int minutes,
+    required DateTime when,
+  }) async {
+    if (!_initialized) await initialize();
+    if (!when.isAfter(DateTime.now())) return;
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'orah_note_focus',
+        'Note focus sessions',
+        channelDescription: 'Alerts when a focus session in a note is complete',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+      ),
+    );
+    await _plugin.zonedSchedule(
+      id: _notificationId('note-focus:$noteId'),
+      title: 'Focus time is up',
+      body: 'Your $minutes-minute focus session for this note is complete.',
+      scheduledDate: tz.TZDateTime.from(when.toLocal(), tz.local),
+      notificationDetails: details,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      payload: jsonEncode({'type': 'note_focus', 'noteId': noteId}),
+    );
+  }
+
+  Future<void> cancelNoteFocusCompletion(String noteId) async {
+    if (!_initialized) await initialize();
+    await _plugin.cancel(id: _notificationId('note-focus:$noteId'));
+  }
+
   Future<void> schedule({
     required String noteId,
     required String title,
