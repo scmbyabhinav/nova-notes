@@ -123,7 +123,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
   String? _vaultFolderId;
   List<String> _tags = const [];
   SmartNoteSuggestions? _smartSuggestions;
-  bool _smartAnalyzing = false;
   List<String> _linkedNoteIds = const [];
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
@@ -1272,7 +1271,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
 
   void _analyzeSmartSuggestions() {
     if (_isLocked || !_privateUnlocked) return;
-    setState(() => _smartAnalyzing = true);
     final text = [
       _titleController.text,
       _noteType == NoteType.checklist ? _checklistContent() : _contentController.text,
@@ -1280,7 +1278,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBinding
     final suggestions = const OrahLocalTextAnalyzer().analyze(text);
     setState(() {
       _smartSuggestions = suggestions;
-      _smartAnalyzing = false;
     });
   }
 
