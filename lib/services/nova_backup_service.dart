@@ -46,6 +46,49 @@ class NovaBackupService {
       }
       map['attachments'] = portable;
     }
+    // Vault records are stored separately from ordinary notes. Their
+    // attachment paths must be rewritten to archive-relative names too.
+    final vaultRaw = preferences.getString('orah_vault_notes_v1');
+    if (vaultRaw != null && vaultRaw.isNotEmpty) {
+      final decodedVault = jsonDecode(vaultRaw);
+      if (decodedVault is! List) {
+        throw const FormatException('Vault storage is malformed; backup was not created.');
+      }
+      final portableVault = <Map<String, dynamic>>[];
+      for (final rawVaultNote in decodedVault) {
+        if (rawVaultNote is! Map || rawVaultNote['id'] is! String) {
+          throw const FormatException('A Vault record is malformed; backup was not created.');
+        }
+        final vaultNote = Map<String, dynamic>.from(rawVaultNote);
+        final attachments = vaultNote['attachments'];
+        if (attachments != null && attachments is! List) {
+          throw const FormatException('Vault attachment metadata is malformed.');
+        }
+        final portableAttachments = <String>[];
+        for (final attachmentPath in (attachments as List? ?? const [])) {
+          if (attachmentPath is! String || attachmentPath.trim().isEmpty) {
+            throw const FormatException('A Vault attachment path is invalid.');
+          }
+          final attachment = File(attachmentPath);
+          final absolute = attachment.absolute.path;
+          if (!await attachment.exists() || (absolute != rootPath && !p.isWithin(rootPath, absolute))) {
+            throw FormatException('A Vault attachment is missing or outside ORAH storage: ${p.basename(attachmentPath)}.');
+          }
+          final archiveName = 'attachments/vault-${vaultNote['id']}-${p.basename(attachmentPath)}';
+          files[archiveName] = await attachment.readAsBytes();
+          portableAttachments.add(archiveName);
+          manifest.add({'source': attachmentPath, 'archive': archiveName});
+        }
+        vaultNote['attachments'] = portableAttachments;
+        portableVault.add(vaultNote);
+      }
+      files['data/vault.json'] = utf8.encode(jsonEncode({
+        'format': 'orah_vault_snapshot',
+        'version': 1,
+        'records': portableVault,
+      }));
+    }
+
     rawNotes['format'] = format;
     rawNotes['version'] = version;
     rawNotes['attachments'] = manifest;
@@ -67,7 +110,7 @@ class NovaBackupService {
     final portablePreferences = <String, dynamic>{};
     for (final key in _portablePreferenceKeys) {
       final value = preferences.get(key);
-      if (value != null) portablePreferences[key] = value;
+      if (value != null && key != 'orah_vault_notes_v1') portablePreferences[key] = value;
     }
     files['data/preferences.json'] = utf8.encode(jsonEncode({
       'format': 'orah_preferences_snapshot',
@@ -176,6 +219,34 @@ class NovaBackupService {
       }
     }
 
+    List<Map<String, dynamic>>? validatedVaultRecords;
+    final vaultFile = archive.findFile('data/vault.json');
+    if (vaultFile != null) {
+      final snapshot = jsonDecode(utf8.decode(vaultFile.content as List<int>));
+      if (snapshot is! Map || snapshot['format'] != 'orah_vault_snapshot' ||
+          snapshot['version'] != 1 || snapshot['records'] is! List) {
+        throw const FormatException('Invalid ORAH Vault snapshot.');
+      }
+      final records = snapshot['records'] as List;
+      if (records.length > 100000 || records.any((item) => item is! Map)) {
+        throw const FormatException('Invalid ORAH Vault records.');
+      }
+      validatedVaultRecords = records.map((item) {
+        final record = Map<String, dynamic>.from(item as Map);
+        if (record['id'] is! String || (record['id'] as String).trim().isEmpty ||
+            record['content'] is! String || record['isLocked'] != true ||
+            (record['attachments'] is! List)) {
+          throw const FormatException('A Vault record is malformed.');
+        }
+        for (final path in record['attachments'] as List) {
+          if (path is! String || !path.startsWith('attachments/')) {
+            throw const FormatException('A Vault attachment reference is invalid.');
+          }
+        }
+        return record;
+      }).toList();
+    }
+
     final extracted = <String, String>{};
     final createdPaths = <String>[];
     final archiveAttachmentNames = <String>{};
@@ -240,6 +311,19 @@ class NovaBackupService {
             }
           }
         });
+      }
+
+      if (validatedVaultRecords != null) {
+        for (final record in validatedVaultRecords!) {
+          record['attachments'] = (record['attachments'] as List).map((path) {
+            final restoredPath = extracted[path];
+            if (restoredPath == null) {
+              throw const FormatException('A Vault attachment is missing from the backup archive.');
+            }
+            return restoredPath;
+          }).toList();
+        }
+        await preferences.setString('orah_vault_notes_v1', jsonEncode(validatedVaultRecords));
       }
 
       if (validatedPreferences != null) {
