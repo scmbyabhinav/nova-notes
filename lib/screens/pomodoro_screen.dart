@@ -19,7 +19,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   static const _long = Duration(minutes: 15);
   Timer? _ticker;
   String _mode = 'focus';
-  Duration _remaining = _focus;
+  Duration _remaining = const Duration(minutes: 25);
   DateTime? _deadline;
   DateTime? _sessionStartedAt;
   List<FocusSession> _history = const [];
