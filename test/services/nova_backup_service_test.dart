@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../support/isolated_sqlite_test_setup.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   setUpIsolatedSqliteTestDatabase();
 
   setUp(() {
