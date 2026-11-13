@@ -25,6 +25,10 @@ void main() {
 
   test('backup and restore round-trip restores notes, structured rows and preferences', () async {
     final preferences = await SharedPreferences.getInstance();
+    // This test exercises ordinary notes and structured data only. Vault
+    // portability has dedicated encryption tests and requires a real device
+    // Vault key, so ensure no Vault fixture leaks into this round-trip case.
+    await preferences.remove('orah_vault_notes_v1');
     final temp = await Directory.systemTemp.createTemp('orah_roundtrip_');
     const channel = MethodChannel('plugins.flutter.io/path_provider');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
