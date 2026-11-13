@@ -30,9 +30,9 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
       switch (call.method) {
-        case 'getApplicationDocumentsPath':
+        case 'getApplicationDocumentsDirectory':
           return temp.path;
-        case 'getTemporaryPath':
+        case 'getTemporaryDirectory':
           return temp.path;
         default:
           return null;
