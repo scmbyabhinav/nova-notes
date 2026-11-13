@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:orah_notes/services/nova_backup_service.dart';
 import 'package:orah_notes/data/database/orah_database.dart';
+import 'package:orah_notes/data/repositories/local_note_repository.dart';
+import 'package:orah_notes/models/note.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../support/isolated_sqlite_test_setup.dart';
@@ -17,6 +20,76 @@ void main() {
       'nova_folders_v1': '[{"id":"existing","name":"Existing"}]',
       'orah_theme_mode_v1': 'dark',
     });
+  });
+
+  test('backup and restore round-trip restores notes, structured rows and preferences', () async {
+    final preferences = await SharedPreferences.getInstance();
+    final temp = await Directory.systemTemp.createTemp('orah_roundtrip_');
+    const channel = MethodChannel('plugins.flutter.io/path_provider');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      switch (call.method) {
+        case 'getApplicationDocumentsPath':
+          return temp.path;
+        case 'getTemporaryPath':
+          return temp.path;
+        default:
+          return null;
+      }
+    });
+
+    final repository = LocalNoteRepository(preferences);
+    final now = DateTime.utc(2026, 11, 13);
+    await repository.saveNote(Note(
+      id: 'roundtrip-note',
+      title: 'Backup round trip',
+      content: 'This note must survive export and restore.',
+      type: NoteType.text,
+      createdAt: now,
+      updatedAt: now,
+      tags: const ['backup', 'test'],
+    ));
+    final database = await OrahDatabase.open(preferences);
+    await database.insert('goals', {
+      'id': 'roundtrip-goal',
+      'title': 'Restore goal',
+      'description': 'Structured data',
+      'target_date': null,
+      'created_at': now.toIso8601String(),
+      'updated_at': now.toIso8601String(),
+      'deleted_at': null,
+      'archived_at': null,
+      'sort_order': 4,
+    });
+    await preferences.setString('nova_folders_v1',
+        '[{"id":"roundtrip-folder","name":"Round trip"}]');
+
+    File? backup;
+    try {
+      backup = await NovaBackupService(preferences).createBackup();
+      await repository.deleteNote('roundtrip-note');
+      await database.delete('goals', where: 'id = ?', whereArgs: ['roundtrip-goal']);
+      await preferences.remove('nova_folders_v1');
+
+      await NovaBackupService(preferences).restoreBackup(backup);
+
+      final restored = await repository.getNote('roundtrip-note');
+      expect(restored, isNotNull);
+      expect(restored!.title, 'Backup round trip');
+      expect(restored.content, 'This note must survive export and restore');
+      expect(restored.tags, ['backup', 'test']);
+      final goals = await database.query('goals',
+          where: 'id = ?', whereArgs: ['roundtrip-goal']);
+      expect(goals, hasLength(1));
+      expect(goals.single['title'], 'Restore goal');
+      expect(preferences.getString('nova_folders_v1'),
+          '[{"id":"roundtrip-folder","name":"Round trip"}]');
+    } finally {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+      if (backup != null && await backup.exists()) await backup.delete();
+      await temp.delete(recursive: true);
+    }
   });
 
   test('rolls back notes, database and preferences when a later database write fails', () async {
