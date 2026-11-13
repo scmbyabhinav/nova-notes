@@ -31,22 +31,40 @@ class NovaBackupService {
     final root = await _attachmentDirectory();
     final rootPath = root.absolute.path;
     final list = rawNotes['notes'] as List<dynamic>? ?? [];
+    final portableNotes = <Map<String, dynamic>>[];
     for (final raw in list) {
-      final map = Map<String, dynamic>.from(raw as Map);
-      final attachments = List<String>.from(map['attachments'] as List? ?? const []);
+      if (raw is! Map) {
+        throw const FormatException('A note record is malformed; backup was not created.');
+      }
+      final map = Map<String, dynamic>.from(raw);
+      final rawAttachments = map['attachments'];
+      if (rawAttachments != null && rawAttachments is! List) {
+        throw const FormatException('Note attachment metadata is malformed; backup was not created.');
+      }
+      final attachments = (rawAttachments as List? ?? const []).map((path) {
+        if (path is! String || path.trim().isEmpty) {
+          throw const FormatException('A note attachment path is invalid; backup was not created.');
+        }
+        return path;
+      }).toList();
       final portable = <String>[];
       for (final path in attachments) {
         final file = File(path);
-        if (!await file.exists()) continue;
         final absolute = file.absolute.path;
-        if (absolute != rootPath && !p.isWithin(rootPath, absolute)) continue;
+        if (!await file.exists() || (absolute != rootPath && !p.isWithin(rootPath, absolute))) {
+          throw FormatException('A note attachment is missing or outside ORAH storage: ${p.basename(path)}.');
+        }
         final archiveName = 'attachments/${map['id']}-${p.basename(path)}';
         files[archiveName] = await file.readAsBytes();
         portable.add(archiveName);
         manifest.add({'source': path, 'archive': archiveName});
       }
       map['attachments'] = portable;
+      portableNotes.add(map);
     }
+    // Map.from above creates copies, so explicitly place rewritten records
+    // back into the JSON document that will be archived.
+    rawNotes['notes'] = portableNotes;
     // Vault records are stored separately from ordinary notes. Their
     // attachment paths must be rewritten to archive-relative names too.
     final vaultRaw = preferences.getString('orah_vault_notes_v1');
