@@ -76,7 +76,7 @@ void main() {
       final restored = await repository.getNote('roundtrip-note');
       expect(restored, isNotNull);
       expect(restored!.title, 'Backup round trip');
-      expect(restored.content, 'This note must survive export and restore');
+      expect(restored.content, 'This note must survive export and restore.');
       expect(restored.tags, ['backup', 'test']);
       final goals = await database.query('goals',
           where: 'id = ?', whereArgs: ['roundtrip-goal']);
