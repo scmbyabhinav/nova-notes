@@ -8,8 +8,6 @@ import 'package:orah_notes/data/repositories/note_repository_provider.dart';
 import 'package:orah_notes/models/note.dart';
 import 'package:orah_notes/screens/trash_screen.dart';
 
-Size? testerViewSizeForPreservationTests;
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -31,11 +29,6 @@ void main() {
   }
 
   setUp(() async {
-    final binding = TestWidgetsFlutterBinding.ensureInitialized();
-    if (binding is TestWidgetsFlutterBinding) {
-      binding.platformDispatcher.views.first.physicalSize = const Size(900, 1800);
-      binding.platformDispatcher.views.first.devicePixelRatio = 1;
-    }
     SharedPreferences.setMockInitialValues({});
     preferences = await SharedPreferences.getInstance();
     repository = InMemoryNoteRepository(preferences);
@@ -43,6 +36,8 @@ void main() {
   });
 
   testWidgets('critical note menu retains Merge and Delete actions', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('preserve-target', 'Target note', 'Target content'));
     await repository.saveNote(note('preserve-source', 'Source note', 'Source content'));
 
@@ -58,6 +53,8 @@ void main() {
   });
 
   testWidgets('merge notes combines content and removes source only after confirmation', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('merge-target', 'Target', 'Target paragraph'));
     await repository.saveNote(note('merge-source', 'Source', 'Source paragraph'));
 
@@ -88,6 +85,8 @@ void main() {
   });
 
   testWidgets('delete action moves note to Trash and Undo restores it', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('delete-undo', 'Delete me', 'Keep this note'));
 
     await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
@@ -108,6 +107,8 @@ void main() {
   });
 
   testWidgets('Trash screen restores a trashed note', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
     await repository.saveNote(
       note('trash-restore', 'Restore me', 'Recover this content', trashed: true),
     );
