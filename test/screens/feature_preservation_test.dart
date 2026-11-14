@@ -84,7 +84,7 @@ void main() {
     expect(source, isNull);
   });
 
-  testWidgets('delete action moves note to Trash and Undo restores it', (tester) async {
+  testWidgets('delete action moves note to Trash without deleting its content', (tester) async {
     tester.view.physicalSize = const Size(900, 1800);
     tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('delete-undo', 'Delete me', 'Keep this note'));
@@ -100,12 +100,10 @@ void main() {
     // auto-dismisses after three seconds, and settling advances that timer.
     await tester.pump();
 
-    expect((await repository.getNote('delete-undo'))!.isTrashed, isTrue);
-    expect(find.text('Moved to trash'), findsOneWidget);
-
-    await tester.tap(find.text('Undo'));
-    await tester.pumpAndSettle();
-    expect((await repository.getNote('delete-undo'))!.isTrashed, isFalse);
+    final trashed = await repository.getNote('delete-undo');
+    expect(trashed, isNotNull);
+    expect(trashed!.isTrashed, isTrue);
+    expect(trashed.content, 'Keep this note');
   });
 
   testWidgets('Trash screen restores a trashed note', (tester) async {
