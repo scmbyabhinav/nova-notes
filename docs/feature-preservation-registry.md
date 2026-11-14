@@ -4,7 +4,7 @@ Status: initial source audit; not a complete runtime verification.
 Production target: `main`
 Comparison baseline: `orah-base-v1`
 Audit branch: `integration/feature-preservation-main`
-Last audited: 2026-11-14
+Last audited: 2026-11-14 (post-PR #143 merge)
 
 ## Status definitions
 
@@ -19,13 +19,19 @@ Source presence is not proof that a feature works on a device.
 
 | Feature | `main` | `orah-base-v1` | Evidence / next action |
 |---|---|---|---|
-| Merge Notes action in note menu | Missing | Present (source) | `lib/screens/home_screen.dart`: baseline contains menu entry, switch action, and `_mergeNoteWithAnother`; main inspected version does not. Restore with dependencies and tests. |
+| Merge Notes action in note menu | Present (source) | Present (source) | Restored to `main` by PR #143; verify merge behavior with widget and repository regression tests. |
 | Delete note to Trash from note menu | Present (source) | Present (source) | Main has “Move to Trash” action and repository save with `isTrashed: true`; verify UI behavior and undo/restore. |
 | Trash screen | Present (source) | Present (source) | `lib/screens/trash_screen.dart` exists in both; add widget/regression coverage. |
 | Note repository delete/save behavior | Present (source) | Present (source) | `lib/data/repositories/local_note_repository.dart`; audit semantic differences before reconciling. |
 | Linked-note model support | Not yet confirmed | Present (source) | Compare `lib/models/note.dart`; check serialization, migrations, and UI dependencies before porting Merge Notes. |
 | Note editor | Present (source) | Present (source) | Files differ substantially; do not replace main wholesale. Review feature-level diffs and regression tests. |
-| Backup/restore | Not audited on main | In progress on feature branch | Keep PR #142 unmerged until Vault portability, attachment round trips, rollback and full tests pass. |
+| Backup/restore | Not yet audited on main | In progress on feature branch | PR #142 remains open/draft and targets `orah-base-v1`; do not merge until it is rebased/retargeted safely and Vault portability, attachment round trips, rollback and full tests pass. |
+
+## Post-merge production baseline
+
+- `main` merge commit: `a03403e47e70c98d633bacf4cd519f19eb4a5a55` (PR #143).
+- Post-merge workflow #1908: Analyze/Test passed; Debug APK passed.
+- Merge Notes, Delete/Move to Trash, and this registry were confirmed present in the merged `main` source. Physical-device behavior remains to be tested.
 
 ## Mandatory preservation gate
 
