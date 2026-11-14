@@ -37,7 +37,7 @@ Source presence is not proof that a feature works on a device.
 
 - Dedicated test suite: `test/screens/feature_preservation_test.dart`.
 - CI step: `Feature preservation gate (critical note journeys)` in `.github/workflows/orah-android-build.yml`.
-- This gate currently covers Merge Notes, Delete-to-Trash, Undo, and Trash restore. It is not yet a full UI audit of every feature in the backlog.
+- This gate currently covers Merge Notes, Delete-to-Trash, and Trash restore. It is not yet a full UI audit of every feature in the backlog.
 
 ## Mandatory preservation gate
 
@@ -67,7 +67,7 @@ Before a feature PR can be merged into `main`:
 - [ ] Vault, PIN/app lock, biometric unlock, encryption, portable backup, and restore.
 - [ ] Premium/free entitlements, purchase flows, subscription/lifetime visibility, and paywall behavior.
 - [ ] Accessibility, localization, Android shortcuts, notifications, and deep links.
-- [x] Widget tests for Merge Notes menu, merge confirmation/data combination, Delete-to-Trash, Undo, and Trash restore (`test/screens/feature_preservation_test.dart`).
+- [x] Widget tests for Merge Notes menu, merge confirmation/data combination, Delete-to-Trash, and Trash restore (`test/screens/feature_preservation_test.dart`).
 - [x] Dedicated CI step runs the critical feature-preservation widget suite on every Android build workflow run.
 - [ ] Expand widget coverage to all remaining critical menus and journeys listed above.
 - [ ] Release APK smoke test against the exact commit intended for production.
