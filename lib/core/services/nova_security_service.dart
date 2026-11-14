@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
@@ -157,6 +157,91 @@ class NovaSecurityService {
     return _vaultCipher.decryptString(box, secretKey: key);
   }
 
+  /// Encrypts a Vault payload for portable backup using a user-held
+  /// passphrase. The device Keystore key is never exported or reused.
+  /// The envelope is self-contained so another device can derive the same
+  /// wrapping key from the passphrase and stored random salt.
+  Future<String> encryptPortableVaultPayload(
+    String clearText,
+    String passphrase,
+  ) async {
+    _validatePortablePassphrase(passphrase);
+    const iterations = 310000;
+    final salt = _randomBytes(16);
+    final nonce = _randomBytes(_vaultCipher.nonceLength);
+    final derivation = Pbkdf2(
+      macAlgorithm: Hmac.sha256(),
+      iterations: iterations,
+      bits: 256,
+    );
+    final key = await derivation.deriveKey(
+      secretKey: SecretKey(utf8.encode(passphrase)),
+      nonce: salt,
+    );
+    final box = await _vaultCipher.encrypt(
+      utf8.encode(clearText),
+      secretKey: key,
+      nonce: nonce,
+    );
+    return 'orah-vault-portable:v1:' + jsonEncode({
+      'kdf': 'pbkdf2-hmac-sha256',
+      'iterations': iterations,
+      'salt': base64UrlEncode(salt),
+      'box': base64UrlEncode(box.concatenation()),
+    });
+  }
+
+  /// Decrypts a portable Vault payload on any device with the correct
+  /// passphrase. Authentication failure is surfaced; no empty fallback.
+  Future<String> decryptPortableVaultPayload(
+    String envelope,
+    String passphrase,
+  ) async {
+    _validatePortablePassphrase(passphrase);
+    const prefix = 'orah-vault-portable:v1:';
+    if (!envelope.startsWith(prefix)) {
+      throw const FormatException('Unsupported portable Vault payload.');
+    }
+    final decoded = jsonDecode(envelope.substring(prefix.length));
+    if (decoded is! Map || decoded['kdf'] != 'pbkdf2-hmac-sha256' ||
+        decoded['iterations'] != 310000 || decoded['salt'] is! String ||
+        decoded['box'] is! String) {
+      throw const FormatException('Invalid portable Vault encryption envelope.');
+    }
+    final salt = base64Url.decode(decoded['salt'] as String);
+    if (salt.length != 16) {
+      throw const FormatException('Invalid portable Vault salt.');
+    }
+    final derivation = Pbkdf2(
+      macAlgorithm: Hmac.sha256(),
+      iterations: 310000,
+      bits: 256,
+    );
+    final key = await derivation.deriveKey(
+      secretKey: SecretKey(utf8.encode(passphrase)),
+      nonce: salt,
+    );
+    final box = SecretBox.fromConcatenation(
+      base64Url.decode(decoded['box'] as String),
+      nonceLength: _vaultCipher.nonceLength,
+      macLength: _vaultCipher.macAlgorithm.macLength,
+    );
+    return utf8.decode(await _vaultCipher.decrypt(box, secretKey: key));
+  }
+
+  void _validatePortablePassphrase(String passphrase) {
+    if (passphrase.trim().length < 12 || passphrase.length > 1024) {
+      throw const FormatException(
+        'Backup passphrase must be at least 12 characters long.',
+      );
+    }
+  }
+
+  List<int> _randomBytes(int length) {
+    final random = Random.secure();
+    return List<int>.generate(length, (_) => random.nextInt(256));
+  }
+
   Future<SecretKey> _vaultSecretKey() async {
     final encoded = await _vaultStorage.read(key: _vaultKey);
     if (encoded != null && encoded.isNotEmpty) {
@@ -189,6 +274,6 @@ class NovaSecurityService {
 
   String _hash(String pin, String salt) {
     final bytes = utf8.encode('$salt:$pin');
-    return sha256.convert(bytes).toString();
+    return crypto.sha256.convert(bytes).toString();
   }
 }

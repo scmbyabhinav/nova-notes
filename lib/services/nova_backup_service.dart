@@ -5,17 +5,23 @@ import 'package:archive/archive.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../data/repositories/local_note_repository.dart';
+import '../data/database/orah_database.dart';
+import '../services/focus_session_service.dart';
+import '../core/services/nova_security_service.dart';
 
 class NovaBackupService {
   const NovaBackupService(this.preferences);
   final SharedPreferences preferences;
   static const format = 'nova_notes_portable_backup';
-  static const version = 2;
+  static const version = 3;
+  static const _databaseTables = <String>['note_versions', 'habits', 'goals', 'kanban_cards', 'links', 'time_entries'];
+  static const _portablePreferenceKeys = <String>['nova_folders_v1', 'orah_vault_notes_v1', 'orah_focus_sessions_v1', 'orah_theme_mode_v1', 'orah_accent_color_v1', 'orah_view_mode_v1', 'orah_vault_folders_v1', 'orah_vault_auto_lock_minutes'];
   static const maxBackupBytes = 512 * 1024 * 1024;
 
-  Future<File> createBackup() async {
+  Future<File> createBackup({String? vaultPassphrase}) async {
     final notes = LocalNoteRepository(preferences);
     final rawNotes = jsonDecode(await notes.exportJson()) as Map<String, dynamic>;
     final files = <String, List<int>>{};
@@ -25,26 +31,141 @@ class NovaBackupService {
     final root = await _attachmentDirectory();
     final rootPath = root.absolute.path;
     final list = rawNotes['notes'] as List<dynamic>? ?? [];
+    final portableNotes = <Map<String, dynamic>>[];
     for (final raw in list) {
-      final map = Map<String, dynamic>.from(raw as Map);
-      final attachments = List<String>.from(map['attachments'] as List? ?? const []);
+      if (raw is! Map) {
+        throw const FormatException('A note record is malformed; backup was not created.');
+      }
+      final map = Map<String, dynamic>.from(raw);
+      final rawAttachments = map['attachments'];
+      if (rawAttachments != null && rawAttachments is! List) {
+        throw const FormatException('Note attachment metadata is malformed; backup was not created.');
+      }
+      final attachments = (rawAttachments as List? ?? const []).map((path) {
+        if (path is! String || path.trim().isEmpty) {
+          throw const FormatException('A note attachment path is invalid; backup was not created.');
+        }
+        return path;
+      }).toList();
       final portable = <String>[];
       for (final path in attachments) {
         final file = File(path);
-        if (!await file.exists()) continue;
         final absolute = file.absolute.path;
-        if (absolute != rootPath && !p.isWithin(rootPath, absolute)) continue;
+        if (!await file.exists() || (absolute != rootPath && !p.isWithin(rootPath, absolute))) {
+          throw FormatException('A note attachment is missing or outside ORAH storage: ${p.basename(path)}.');
+        }
         final archiveName = 'attachments/${map['id']}-${p.basename(path)}';
         files[archiveName] = await file.readAsBytes();
         portable.add(archiveName);
         manifest.add({'source': path, 'archive': archiveName});
       }
       map['attachments'] = portable;
+      portableNotes.add(map);
     }
+    // Map.from above creates copies, so explicitly place rewritten records
+    // back into the JSON document that will be archived.
+    rawNotes['notes'] = portableNotes;
+    // Vault records are stored separately from ordinary notes. Their
+    // attachment paths must be rewritten to archive-relative names too.
+    final vaultRaw = preferences.getString('orah_vault_notes_v1');
+    if (vaultRaw != null && vaultRaw.isNotEmpty) {
+      if (vaultPassphrase == null || vaultPassphrase.trim().length < 12) {
+        throw const FormatException('Set a backup passphrase of at least 12 characters to include Vault notes.');
+      }
+      final security = NovaSecurityService();
+      final decodedVault = jsonDecode(vaultRaw);
+      if (decodedVault is! List) {
+        throw const FormatException('Vault storage is malformed; backup was not created.');
+      }
+      final portableVault = <Map<String, dynamic>>[];
+      for (final rawVaultNote in decodedVault) {
+        if (rawVaultNote is! Map || rawVaultNote['id'] is! String) {
+          throw const FormatException('A Vault record is malformed; backup was not created.');
+        }
+        final vaultNote = Map<String, dynamic>.from(rawVaultNote);
+        if (vaultNote['content'] is! String) {
+          throw const FormatException('A Vault record has no encrypted content.');
+        }
+        // Convert the device-bound ciphertext into a passphrase-protected
+        // envelope. The device Keystore key itself never leaves this device.
+        final clearPayload = await security.decryptPrivatePayload(vaultNote['content'] as String);
+        final payloadValue = jsonDecode(clearPayload);
+        if (payloadValue is! Map) {
+          throw const FormatException('A decrypted Vault payload is malformed.');
+        }
+        final portablePayload = Map<String, dynamic>.from(payloadValue);
+        final embeddedImage = portablePayload['imagePath'];
+        if (embeddedImage is String && embeddedImage.isNotEmpty) {
+          final imageFile = File(embeddedImage);
+          final imageAbsolute = imageFile.absolute.path;
+          if (!await imageFile.exists() || (imageAbsolute != rootPath && !p.isWithin(rootPath, imageAbsolute))) {
+            throw FormatException('A Vault image is missing or outside ORAH storage: ${p.basename(embeddedImage)}.');
+          }
+          final imageArchiveName = 'attachments/vault-${vaultNote['id']}-image-${p.basename(embeddedImage)}';
+          files[imageArchiveName] = await imageFile.readAsBytes();
+          portablePayload['imagePath'] = imageArchiveName;
+          manifest.add({'source': embeddedImage, 'archive': imageArchiveName});
+        }
+        vaultNote['content'] = await security.encryptPortableVaultPayload(
+          jsonEncode(portablePayload), vaultPassphrase,
+        );
+        final attachments = vaultNote['attachments'];
+        if (attachments != null && attachments is! List) {
+          throw const FormatException('Vault attachment metadata is malformed.');
+        }
+        final portableAttachments = <String>[];
+        for (final attachmentPath in (attachments as List? ?? const [])) {
+          if (attachmentPath is! String || attachmentPath.trim().isEmpty) {
+            throw const FormatException('A Vault attachment path is invalid.');
+          }
+          final attachment = File(attachmentPath);
+          final absolute = attachment.absolute.path;
+          if (!await attachment.exists() || (absolute != rootPath && !p.isWithin(rootPath, absolute))) {
+            throw FormatException('A Vault attachment is missing or outside ORAH storage: ${p.basename(attachmentPath)}.');
+          }
+          final archiveName = 'attachments/vault-${vaultNote['id']}-${p.basename(attachmentPath)}';
+          files[archiveName] = await attachment.readAsBytes();
+          portableAttachments.add(archiveName);
+          manifest.add({'source': attachmentPath, 'archive': archiveName});
+        }
+        vaultNote['attachments'] = portableAttachments;
+        portableVault.add(vaultNote);
+      }
+      files['data/vault.json'] = utf8.encode(jsonEncode({
+        'format': 'orah_vault_snapshot',
+        'version': 1,
+        'records': portableVault,
+      }));
+    }
+
     rawNotes['format'] = format;
     rawNotes['version'] = version;
     rawNotes['attachments'] = manifest;
     files['data/notes.json'] = utf8.encode(jsonEncode(rawNotes));
+
+    // Snapshot every structured local data domain that is not already inside
+    // notes.json. Keep the table list explicit: never export SQLite internals,
+    // FTS virtual tables, migration state, or credentials.
+    final db = await OrahDatabase.open(preferences);
+    final databaseSnapshot = <String, dynamic>{
+      'format': 'orah_database_snapshot',
+      'version': 1,
+      'tables': <String, dynamic>{
+        for (final table in _databaseTables) table: await db.query(table),
+      },
+    };
+    files['data/database.json'] = utf8.encode(jsonEncode(databaseSnapshot));
+
+    final portablePreferences = <String, dynamic>{};
+    for (final key in _portablePreferenceKeys) {
+      final value = preferences.get(key);
+      if (value != null && key != 'orah_vault_notes_v1') portablePreferences[key] = value;
+    }
+    files['data/preferences.json'] = utf8.encode(jsonEncode({
+      'format': 'orah_preferences_snapshot',
+      'version': 1,
+      'values': portablePreferences,
+    }));
     if (files.isEmpty) throw const FormatException('Nothing available to back up.');
     final archive = Archive();
     for (final e in files.entries) archive.addFile(ArchiveFile(e.key, e.value.length, e.value));
@@ -56,7 +177,7 @@ class NovaBackupService {
     return file;
   }
 
-  Future<int> restoreBackup(File backup) async {
+  Future<int> restoreBackup(File backup, {String? vaultPassphrase}) async {
     final bytes = await backup.readAsBytes();
     if (bytes.length > maxBackupBytes) throw const FormatException('Backup is too large to restore safely.');
     final archive = ZipDecoder().decodeBytes(bytes);
@@ -98,12 +219,126 @@ class NovaBackupService {
       }
     }
 
+    // Validate every optional snapshot before extracting files or mutating app data.
+    Map<String, dynamic>? validatedTables;
+    final databaseFile = archive.findFile('data/database.json');
+    if (databaseFile != null) {
+      final snapshot = jsonDecode(utf8.decode(databaseFile.content as List<int>));
+      if (snapshot is! Map || snapshot['format'] != 'orah_database_snapshot' ||
+          snapshot['version'] != 1 || snapshot['tables'] is! Map) {
+        throw const FormatException('Invalid ORAH database snapshot.');
+      }
+      validatedTables = Map<String, dynamic>.from(snapshot['tables'] as Map);
+      for (final table in validatedTables.entries) {
+        if (!_databaseTables.contains(table.key)) {
+          throw FormatException('Unexpected ORAH database table: ${table.key}.');
+        }
+        final rows = table.value;
+        if (rows is! List || rows.length > 100000 || rows.any((row) => row is! Map)) {
+          throw FormatException('Invalid ORAH database table: ${table.key}.');
+        }
+        for (final rawRow in rows) {
+          final row = Map<String, Object?>.from(rawRow as Map);
+          final requiredId = table.key == 'note_versions' ? row['id'] : row['id'];
+          if (requiredId == null || (requiredId is String && requiredId.trim().isEmpty)) {
+            throw FormatException('A record in ${table.key} has no valid ID.');
+          }
+        }
+      }
+    }
+
+    Map<String, dynamic>? validatedPreferences;
+    final preferencesFile = archive.findFile('data/preferences.json');
+    if (preferencesFile != null) {
+      final snapshot = jsonDecode(utf8.decode(preferencesFile.content as List<int>));
+      if (snapshot is! Map || snapshot['format'] != 'orah_preferences_snapshot' ||
+          snapshot['version'] != 1 || snapshot['values'] is! Map) {
+        throw const FormatException('Invalid ORAH preferences snapshot.');
+      }
+      validatedPreferences = Map<String, dynamic>.from(snapshot['values'] as Map);
+      for (final entry in validatedPreferences.entries) {
+        if (!_portablePreferenceKeys.contains(entry.key)) {
+          throw FormatException('Unexpected ORAH preference key: ${entry.key}.');
+        }
+        final value = entry.value;
+        if (value is! String && value is! bool && value is! int && value is! double &&
+            !(value is List && value.every((item) => item is String))) {
+          throw FormatException('Invalid ORAH preference value: ${entry.key}.');
+        }
+      }
+    }
+
+    List<Map<String, dynamic>>? validatedVaultRecords;
+    final vaultFile = archive.findFile('data/vault.json');
+    if (vaultFile != null) {
+      final snapshot = jsonDecode(utf8.decode(vaultFile.content as List<int>));
+      if (snapshot is! Map || snapshot['format'] != 'orah_vault_snapshot' ||
+          snapshot['version'] != 1 || snapshot['records'] is! List) {
+        throw const FormatException('Invalid ORAH Vault snapshot.');
+      }
+      final records = snapshot['records'] as List;
+      if (records.length > 100000 || records.any((item) => item is! Map)) {
+        throw const FormatException('Invalid ORAH Vault records.');
+      }
+      validatedVaultRecords = records.map((item) {
+        final record = Map<String, dynamic>.from(item as Map);
+        if (record['id'] is! String || (record['id'] as String).trim().isEmpty ||
+            record['content'] is! String || record['isLocked'] != true ||
+            (record['attachments'] is! List)) {
+          throw const FormatException('A Vault record is malformed.');
+        }
+        for (final path in record['attachments'] as List) {
+          if (path is! String || !path.startsWith('attachments/')) {
+            throw const FormatException('A Vault attachment reference is invalid.');
+          }
+        }
+        return record;
+      }).toList();
+    }
+
+    List<Map<String, dynamic>>? portableVaultPayloads;
+    if (validatedVaultRecords != null) {
+      if (vaultPassphrase == null || vaultPassphrase.trim().length < 12) {
+        throw const FormatException('Enter the backup passphrase to restore Vault notes.');
+      }
+      // Authenticate and parse every Vault payload before importing ordinary
+      // notes or extracting attachments. A wrong passphrase must be a no-op.
+      final security = NovaSecurityService();
+      portableVaultPayloads = <Map<String, dynamic>>[];
+      for (final record in validatedVaultRecords) {
+        final clear = await security.decryptPortableVaultPayload(
+          record['content'] as String, vaultPassphrase,
+        );
+        final decoded = jsonDecode(clear);
+        if (decoded is! Map) {
+          throw const FormatException('A decrypted portable Vault payload is malformed.');
+        }
+        final payload = Map<String, dynamic>.from(decoded);
+        final imagePath = payload['imagePath'];
+        if (imagePath != null &&
+            (imagePath is! String || !imagePath.startsWith('attachments/'))) {
+          throw const FormatException('A Vault image reference is invalid.');
+        }
+        portableVaultPayloads.add(payload);
+      }
+    }
     final extracted = <String, String>{};
     final createdPaths = <String>[];
     final archiveAttachmentNames = <String>{};
     var extractedBytes = 0;
     const maxAttachmentBytes = 512 * 1024 * 1024;
     final root = await _attachmentDirectory();
+
+    final db = await OrahDatabase.open(preferences);
+    // Snapshot the complete mutable local state before the first write.
+    // SQLite rows are restored in one transaction if any later step fails.
+    final databaseBefore = <String, List<Map<String, Object?>>>{};
+    for (final table in ['notes', ..._databaseTables]) {
+      databaseBefore[table] = await db.query(table);
+    }
+    final preferencesBefore = <String, Object?>{
+      for (final key in preferences.getKeys()) key: preferences.get(key),
+    };
 
     try {
       for (final file in archive.files) {
@@ -149,14 +384,128 @@ class NovaBackupService {
       final payload = {'format': 'nova_notes_backup', 'version': 1, 'exportedAt': raw['exportedAt'] ?? DateTime.now().toIso8601String(), 'notes': noteList};
       final count = await LocalNoteRepository(preferences).importJson(jsonEncode(payload));
       if (foldersPayload != null) await preferences.setString('nova_folders_v1', foldersPayload);
-      return count;
-    } catch (error) {
-      for (final path in createdPaths) {
-        try {
-          await File(path).delete();
-        } catch (_) {}
+
+      // All archive sections were validated before any app data was changed.
+      if (validatedTables != null) {
+        await db.transaction((txn) async {
+          for (final table in _databaseTables) {
+            final rows = validatedTables![table] as List? ?? const [];
+            for (final rawRow in rows) {
+              final row = Map<String, Object?>.from(rawRow as Map);
+              await txn.insert(table, row, conflictAlgorithm: ConflictAlgorithm.replace);
+            }
+          }
+        });
       }
-      rethrow;
+
+      if (validatedVaultRecords != null) {
+        final security = NovaSecurityService();
+        for (var index = 0; index < validatedVaultRecords!.length; index++) {
+          final record = validatedVaultRecords[index];
+          record['attachments'] = (record['attachments'] as List).map((path) {
+            final restoredPath = extracted[path];
+            if (restoredPath == null) {
+              throw const FormatException('A Vault attachment is missing from the backup archive.');
+            }
+            return restoredPath;
+          }).toList();
+          // Re-encrypt under this device's own Keystore-backed Vault key.
+          final payload = portableVaultPayloads![index];
+          final imagePath = payload['imagePath'];
+          if (imagePath is String && imagePath.startsWith('attachments/')) {
+            final restoredImage = extracted[imagePath];
+            if (restoredImage == null) {
+              throw const FormatException('A Vault image is missing from the backup archive.');
+            }
+            payload['imagePath'] = restoredImage;
+          }
+          record['content'] = await security.encryptPrivatePayload(jsonEncode(payload));
+        }
+        await preferences.setString('orah_vault_notes_v1', jsonEncode(validatedVaultRecords));
+      }
+
+      if (validatedPreferences != null) {
+        for (final entry in validatedPreferences.entries) {
+          final value = entry.value;
+          if (value is String) {
+            await preferences.setString(entry.key, value);
+          } else if (value is bool) {
+            await preferences.setBool(entry.key, value);
+          } else if (value is int) {
+            await preferences.setInt(entry.key, value);
+          } else if (value is double) {
+            await preferences.setDouble(entry.key, value);
+          } else if (value is List) {
+            await preferences.setStringList(entry.key, value.cast<String>());
+          }
+        }
+      }
+      return count;
+    } catch (error, stackTrace) {
+      Object? rollbackError;
+      try {
+        // Restore ordinary notes and every structured table atomically.
+        await db.transaction((txn) async {
+          for (final table in ['notes', ..._databaseTables]) {
+            await txn.delete(table);
+            for (final row in databaseBefore[table] ?? const []) {
+              await txn.insert(
+                table,
+                row,
+                conflictAlgorithm: ConflictAlgorithm.abort,
+              );
+            }
+          }
+        });
+
+        // Restore the exact SharedPreferences snapshot, including keys that
+        // were absent before restore and may have been created by importJson.
+        for (final key in preferences.getKeys().toList()) {
+          await preferences.remove(key);
+        }
+        for (final entry in preferencesBefore.entries) {
+          await _writePreference(entry.key, entry.value);
+        }
+      } catch (failure) {
+        rollbackError = failure;
+      }
+
+      // Only files created by this restore are removed. Existing attachments
+      // are never overwritten because extraction always chooses a free name.
+      for (final path in createdPaths.reversed) {
+        try {
+          final file = File(path);
+          if (await file.exists()) await file.delete();
+        } catch (failure) {
+          rollbackError ??= failure;
+        }
+      }
+
+      if (rollbackError != null) {
+        Error.throwWithStackTrace(
+          StateError('Restore failed: $error. Rollback also failed: $rollbackError'),
+          stackTrace,
+        );
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+  }
+
+  Future<void> _writePreference(String key, Object? value) async {
+    if (value == null) {
+      await preferences.remove(key);
+    } else if (value is String) {
+      await preferences.setString(key, value);
+    } else if (value is bool) {
+      await preferences.setBool(key, value);
+    } else if (value is int) {
+      await preferences.setInt(key, value);
+    } else if (value is double) {
+      await preferences.setDouble(key, value);
+    } else if (value is List<String>) {
+      await preferences.setStringList(key, value);
+    } else {
+      throw FormatException('Unsupported preference value during rollback: $key.');
     }
   }
 
