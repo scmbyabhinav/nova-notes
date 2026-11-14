@@ -18,11 +18,17 @@ class NoteDao {
     if (id is! String || id.trim().isEmpty) {
       throw const FormatException('Note ID cannot be empty.');
     }
-    await _database.insert(
-      'notes',
-      OrahDatabase.rowFor(payload),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await _database.transaction((txn) async {
+      // Use an explicit DELETE before INSERT so the FTS5 delete trigger runs
+      // reliably. SQLite REPLACE's implicit delete does not always fire
+      // delete triggers unless recursive_triggers is enabled.
+      await txn.delete('notes', where: 'id = ?', whereArgs: [id]);
+      await txn.insert(
+        'notes',
+        OrahDatabase.rowFor(payload),
+        conflictAlgorithm: ConflictAlgorithm.abort,
+      );
+    });
   }
 
   Future<void> replaceAll(Iterable<Map<String, dynamic>> payloads) async {
@@ -44,6 +50,31 @@ class NoteDao {
 
   Future<void> delete(String id) async {
     await _database.delete('notes', where: 'id = ?', whereArgs: [id]);
+  }
+
+  /// Returns matching ordinary-note IDs ordered by FTS5 relevance.
+  /// Null means this SQLite build does not support FTS5, so callers should
+  /// use the existing local search implementation as a compatibility fallback.
+  Future<List<String>?> searchIds(String query) async {
+    if (!OrahDatabase.fts5Available) return null;
+    final terms = query.trim().split(RegExp(r'\s+')).where((term) => term.isNotEmpty).toList();
+    if (terms.isEmpty) return const [];
+    // Quoting each token prevents FTS operators or punctuation in user input
+    // from becoming executable MATCH syntax. Prefix matching supports typing
+    // partial words such as "plan" while entering "planning".
+    final expression = terms
+        .map((term) => '"${term.replaceAll('"', '""')}"*')
+        .join(' AND ');
+    try {
+      final rows = await _database.rawQuery(
+        'SELECT note_id FROM note_search WHERE note_search MATCH ? ORDER BY bm25(note_search)',
+        [expression],
+      );
+      return rows.map((row) => row['note_id'] as String).toList();
+    } catch (_) {
+      // Malformed/unsupported MATCH expressions must never break note search.
+      return null;
+    }
   }
 
   Future<int> count() async {

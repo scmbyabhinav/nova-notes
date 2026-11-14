@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../core/widgets/nova_polish.dart';
 
 import 'package:flutter/material.dart';
 import '../core/services/nova_security_service.dart';
@@ -10,6 +11,7 @@ import '../models/note.dart';
 import '../models/search_filter.dart';
 import 'note_editor_screen.dart' show NoteEditorScreen;
 import '../services/orah_feature_gate.dart';
+import '../services/orah_universal_search_index.dart';
 import 'orah_pro_screen.dart';
 import 'vault_screen.dart';
 
@@ -30,6 +32,8 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _loading = true;
   bool _advancedBlocked = false;
   List<NoteFolder> _folders = const [];
+  int _searchGeneration = 0;
+  String _quickChip = '';
 
   @override
   void initState() {
@@ -57,6 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _search() async {
     final rawQuery = _controller.text.trim().toLowerCase();
+    final generation = ++_searchGeneration;
     final tokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
     final hasAdvancedOperator = tokens.any((token) =>
         token.startsWith('is:') ||
@@ -83,6 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
     DateTime? before;
     DateTime? after;
     bool hasAttachment = false;
+    bool hasLinkedNote = false;
 
     final terms = <String>[];
     for (final token in tokens) {
@@ -93,6 +99,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (token == 'is:active') { archived = false; continue; }
       if (token == 'has:reminder' || token == 'has:due') { reminder = true; continue; }
       if (token == 'has:attachment' || token == 'has:image' || token == 'has:file') { hasAttachment = true; continue; }
+      if (token == 'has:linked') { hasLinkedNote = true; continue; }
       if (token.startsWith('tag:')) { tagTerm = token.substring(4); continue; }
       if (token.startsWith('folder:')) { folderTerm = token.substring(7); continue; }
       if (token.startsWith('type:')) { typeTerm = token.substring(5); continue; }
@@ -102,6 +109,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     final ranked = <({Note note, int score})>[];
+    final relatedTitles = OrahUniversalSearchIndex.relatedTitlesByNoteId(_allNotes);
 
     String folderName(String? id) {
       if (id == null) return '';
@@ -119,6 +127,23 @@ class _SearchScreenState extends State<SearchScreen> {
 
     for (final note in _allNotes) {
       if (note.isTrashed) continue;
+      if (_quickChip == 'voice' && note.type != NoteType.voice) continue;
+      if (_quickChip == 'image' &&
+          note.imagePath == null &&
+          note.type != NoteType.image &&
+          !note.attachments.any(
+            (path) => RegExp(
+              r'\.(png|jpe?g|gif|webp|heic)$',
+              caseSensitive: false,
+            ).hasMatch(path),
+          )) {
+        continue;
+      }
+      if (_quickChip == 'checklist' && note.type != NoteType.checklist) continue;
+      if (_quickChip == 'week' &&
+          note.updatedAt.isBefore(DateTime.now().subtract(const Duration(days: 7)))) {
+        continue;
+      }
       if (_filter.favoritesOnly && !note.isFavorite) continue;
       if (_filter.pinnedOnly && !note.isPinned) continue;
       if (_filter.archivedOnly && !note.isArchived) continue;
@@ -126,12 +151,14 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_filter.folderId != null && note.folderId != _filter.folderId) continue;
       if (locked == true && !note.isLocked) continue;
       if (note.isLocked && terms.isEmpty && locked != true) continue;
+      if (archived != true && !_filter.archivedOnly && note.isArchived) continue;
       if (pinned == true && !note.isPinned) continue;
       if (favorite == true && !note.isFavorite) continue;
       if (archived == true && !note.isArchived) continue;
       if (archived == false && note.isArchived) continue;
       if (reminder == true && note.dueAt == null && !note.checklistItems.any((item) => item.dueAt != null)) continue;
-      if (hasAttachment && note.attachments.isEmpty) continue;
+      if (hasAttachment && note.attachments.isEmpty && note.imagePath == null) continue;
+      if (hasLinkedNote && (note.linkedNoteIds.isEmpty && (relatedTitles[note.id]?.isEmpty ?? true))) continue;
       if (!typeMatches(note)) continue;
       if (before != null && !note.updatedAt.isBefore(before!)) continue;
       if (after != null && !note.updatedAt.isAfter(after!)) continue;
@@ -144,6 +171,8 @@ class _SearchScreenState extends State<SearchScreen> {
       var content = note.content.toLowerCase();
       var tags = note.tags.map((tag) => tag.toLowerCase()).toList();
       var checklist = note.checklistItems.map((item) => item.text.toLowerCase()).toList();
+      final linkedTitles = (relatedTitles[note.id] ?? const <String>[]).map((title) => title.toLowerCase()).toList();
+      final attachmentNames = OrahUniversalSearchIndex.attachmentNames(note);
 
       if (note.isLocked && terms.isNotEmpty) {
         try {
@@ -170,7 +199,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
       final haystack = note.isLocked && terms.isEmpty
           ? 'locked note private note'
-          : [title, content, ...tags, ...checklist, noteFolder].join(' ');
+          : [title, content, ...tags, ...checklist, ...linkedTitles, ...attachmentNames, noteFolder, note.type.name, note.mood ?? ''].join(' ');
       if (terms.isNotEmpty && !terms.every(haystack.contains)) continue;
 
       var score = 0;
@@ -184,6 +213,8 @@ class _SearchScreenState extends State<SearchScreen> {
         if (tags.any((tag) => tag.contains(term))) score += 200;
         if (content.contains(term)) score += 100;
         if (checklist.any((item) => item.contains(term))) score += 125;
+        if (linkedTitles.any((title) => title.contains(term))) score += 175;
+        if (attachmentNames.any((name) => name.contains(term))) score += 80;
       }
       if (terms.isNotEmpty && title.startsWith(terms.join(' '))) score += 250;
       ranked.add((note: note, score: score));
@@ -195,7 +226,9 @@ class _SearchScreenState extends State<SearchScreen> {
       return b.note.updatedAt.compareTo(a.note.updatedAt);
     });
 
-    if (mounted) setState(() => _results = ranked.map((item) => item.note).toList());
+    if (mounted && generation == _searchGeneration) {
+      setState(() => _results = ranked.map((item) => item.note).toList());
+    }
   }
 
   Future<void> _open(Note note) async {
@@ -392,17 +425,17 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
-      body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: SearchBar(
                       controller: _controller,
                       focusNode: _focusNode,
-                      hintText: 'Search title, content or tags...',
+                      hintText: 'Search notes, tags, folders, links, files and OCR text...',
                       leading: const OrahAssetIcon('search'),
                       trailing: [
                         if (query.isNotEmpty)
@@ -414,6 +447,40 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: 48,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        _SavedSearchChip(label: 'All notes', selected: _quickChip.isEmpty, onSelected: () {
+                          setState(() => _quickChip = '');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'Has voice', selected: _quickChip == 'voice', onSelected: () {
+                          setState(() => _quickChip = 'voice');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'Has image', selected: _quickChip == 'image', onSelected: () {
+                          setState(() => _quickChip = 'image');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'Checklist only', selected: _quickChip == 'checklist', onSelected: () {
+                          setState(() => _quickChip = 'checklist');
+                          _search();
+                        }),
+                        const SizedBox(width: 8),
+                        _SavedSearchChip(label: 'This week', selected: _quickChip == 'week', onSelected: () {
+                          setState(() => _quickChip = 'week');
+                          _search();
+                        }),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
@@ -508,7 +575,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-      ),
+      )),
     );
   }
 }
@@ -625,4 +692,29 @@ class _HighlightedText extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
   }
+}
+
+
+class _SavedSearchChip extends StatelessWidget {
+  const _SavedSearchChip({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context) => ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => onSelected(),
+        showCheckmark: false,
+        labelStyle: TextStyle(
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+      );
 }

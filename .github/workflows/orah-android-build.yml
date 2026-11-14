@@ -36,7 +36,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -150,12 +150,18 @@ jobs:
           }
           GRADLE
       - name: Free runner disk before release builds
+        shell: bash
         run: |
+          set -euo pipefail
           rm -rf build android/.gradle ~/.gradle/caches ~/.gradle/daemon
-          sudo rm -rf /usr/local/lib/android/sdk/ndk/* || true
-          sudo rm -rf /usr/local/lib/android/sdk/cmdline-tools/latest/cache/* || true
-          sudo rm -rf /usr/local/lib/android/sdk/cmake/* || true
+          # Keep the installed NDK, platform tools, build tools, and required Android platform.
+          # Emulator images and optional SDK payloads are not used by CI builds.
+          sudo rm -rf "$ANDROID_HOME/system-images" "$ANDROID_HOME/emulator" "$ANDROID_HOME/sources" "$ANDROID_HOME/skins" "$ANDROID_HOME/patcher" "$ANDROID_HOME/extras"
+          sudo rm -rf "$ANDROID_HOME/cmdline-tools/latest/cache/"* || true
+          sudo rm -rf "$ANDROID_HOME/cmake/"* || true
+          sudo apt-get clean
           df -h /
+          df -h "$ANDROID_HOME"
       - name: Configure production signing
         if: ${{ inputs.production_release == true }}
         env:
@@ -180,6 +186,35 @@ jobs:
       - name: Configure production signing in Gradle
         if: ${{ inputs.production_release == true }}
         run: python3 tool/configure_release_signing.py
+      - name: Ensure Android NDK is installed (retry transient SDK failures)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          NDK_DIR="$ANDROID_HOME/ndk/28.2.13676358"
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "sdkmanager not found at $SDKMANAGER"
+            exit 1
+          fi
+          if [ ! -f "$NDK_DIR/source.properties" ]; then
+            rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+            installed=false
+            for attempt in 1 2 3; do
+              echo "Installing NDK 28.2.13676358 (attempt $attempt/3)"
+              yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+              if "$SDKMANAGER" --install "ndk;28.2.13676358"; then
+                installed=true
+                break
+              fi
+              rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+              sleep $((attempt * 5))
+            done
+            if [ "$installed" != true ] || [ ! -f "$NDK_DIR/source.properties" ]; then
+              echo "NDK installation failed after 3 attempts"
+              exit 1
+            fi
+          fi
+          grep -E 'Pkg.Revision|Pkg.Desc' "$NDK_DIR/source.properties" || true
       - name: Build release APK
         run: flutter build apk --release --tree-shake-icons
       - name: Build release AAB
@@ -217,7 +252,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -304,6 +339,35 @@ jobs:
             }
           }
           GRADLE
+      - name: Ensure Android NDK is installed (retry transient SDK failures)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          NDK_DIR="$ANDROID_HOME/ndk/28.2.13676358"
+          if [ ! -x "$SDKMANAGER" ]; then
+            echo "sdkmanager not found at $SDKMANAGER"
+            exit 1
+          fi
+          if [ ! -f "$NDK_DIR/source.properties" ]; then
+            rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+            installed=false
+            for attempt in 1 2 3; do
+              echo "Installing NDK 28.2.13676358 (attempt $attempt/3)"
+              yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+              if "$SDKMANAGER" --install "ndk;28.2.13676358"; then
+                installed=true
+                break
+              fi
+              rm -rf "$NDK_DIR" "$ANDROID_HOME/ndk/.temp" "$HOME/.android/cache"
+              sleep $((attempt * 5))
+            done
+            if [ "$installed" != true ] || [ ! -f "$NDK_DIR/source.properties" ]; then
+              echo "NDK installation failed after 3 attempts"
+              exit 1
+            fi
+          fi
+          grep -E 'Pkg.Revision|Pkg.Desc' "$NDK_DIR/source.properties" || true
       - name: Build debug APK
         run: flutter build apk --debug
       - name: Upload debug APK

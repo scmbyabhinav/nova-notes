@@ -1,5 +1,5 @@
-
 import 'dart:io';
+import '../core/widgets/nova_polish.dart';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,124 +37,113 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return SafeArea(
+    return OrahContentFrame(child: SafeArea(
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
+          Text(l10n.settings, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+          const SizedBox(height: 6),
           Text(
-            l10n.settings,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            'Make ORAH work the way you like. Each setting explains what it changes.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
+
           _sectionHeader(theme, l10n.accountAndPro),
           Card(
             child: ListTile(
-              leading: Icon(
-                Icons.workspace_premium_rounded,
-                color: theme.colorScheme.primary,
-              ),
+              leading: Icon(Icons.workspace_premium_rounded, color: theme.colorScheme.primary),
               title: Text(l10n.orahPro),
               subtitle: Text(l10n.proSubtitle),
               trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const OrahProScreen()),
-              ),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahProScreen())),
             ),
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 20),
           _sectionHeader(theme, l10n.appearanceAndUi),
           Card(
             child: ListTile(
               leading: const OrahAssetIcon('settings'),
               title: Text(l10n.appearance),
-              subtitle: Text(_appearanceLabel()),
+              subtitle: Text('Theme: ${_appearanceLabel()} • Choose light, dark or system appearance and an accent colour.'),
+              isThreeLine: true,
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showAppearance(context),
             ),
           ),
-          const SizedBox(height: 16),
-          _sectionHeader(theme, 'Voice Preferences'),
-          const Card(
-            child: _VoiceGreetingSettingTile(),
+
+          const SizedBox(height: 20),
+          _sectionHeader(theme, 'Daily experience'),
+          Card(
+            child: Column(
+              children: [
+                const _VoiceGreetingSettingTile(),
+                const Divider(height: 1, indent: 56),
+                const _DailyInspirationSettingTile(),
+                const Divider(height: 1, indent: 56),
+                const _DailyReflectionScheduleSettingTile(),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          _sectionHeader(theme, 'Daily inspiration'),
-          const Card(
-            child: _DailyInspirationSettingTile(),
-          ),
-          const SizedBox(height: 16),
-          const SizedBox(height: 16),
-          _sectionHeader(theme, 'Daily Reflection schedule'),
-          const Card(child: _DailyReflectionScheduleSettingTile()),
+
+          const SizedBox(height: 20),
           _sectionHeader(theme, l10n.securityAndPrivacy),
-          const Card(child: _VaultAutoLockSettingTile()),
           Card(
-            child: ListTile(
-              leading: const Icon(Icons.lock_outline_rounded),
-              title: const Text('Vault / Locked Notes'),
-              subtitle: const Text('Open your private, encrypted notes'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const VaultScreen()),
-              ),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.warning_amber_rounded),
-              title: const Text('Forgot Vault PIN? Reset Vault'),
-              subtitle: const Text('No recovery is possible. Resetting permanently loses the old Vault.'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => _showVaultResetWarning(context),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.shield_outlined),
-              title: Text(l10n.securityAndPrivacy),
-              subtitle: const Text('PIN and biometric protection'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SecuritySettingsScreen(),
+            child: Column(
+              children: [
+                const _VaultAutoLockSettingTile(),
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline_rounded),
+                  title: const Text('Vault / Locked Notes'),
+                  subtitle: const Text('Open and manage notes kept in your private Vault.'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const VaultScreen())),
                 ),
-              ),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              leading: Icon(
-                Icons.privacy_tip_outlined,
-                color: theme.colorScheme.primary,
-              ),
-              title: const Text('Privacy Pledge'),
-              subtitle: const Text('Read our zero-cloud promise'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const PrivacyPledgeScreen(),
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: const Icon(Icons.warning_amber_rounded),
+                  title: const Text('Reset Vault'),
+                  subtitle: const Text('For a forgotten Vault PIN only. Permanently deletes existing Vault contents; normal notes remain.'),
+                  isThreeLine: true,
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _showVaultResetWarning(context),
                 ),
-              ),
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: const Icon(Icons.shield_outlined),
+                  title: const Text('App lock & biometrics'),
+                  subtitle: const Text('Set or change the app PIN and configure supported biometric unlock.'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SecuritySettingsScreen())),
+                ),
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: Icon(Icons.privacy_tip_outlined, color: theme.colorScheme.primary),
+                  title: const Text('Privacy Pledge'),
+                  subtitle: const Text('Learn how ORAH handles local data and privacy.'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PrivacyPledgeScreen())),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 20),
           _sectionHeader(theme, l10n.androidFeatures),
           Card(
             child: ListTile(
               leading: const Icon(Icons.android_outlined),
               title: Text(l10n.androidFeatures),
-              subtitle: const Text('Widgets, shortcuts and sharing'),
+              subtitle: const Text('Learn about home-screen widgets, quick shortcuts and sharing content into ORAH.'),
+              isThreeLine: true,
               trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const AndroidFeaturesScreen(),
-                ),
-              ),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AndroidFeaturesScreen())),
             ),
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 20),
           _sectionHeader(theme, l10n.backupAndStorage),
           Card(
             child: Column(
@@ -162,32 +151,32 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const OrahAssetIcon('folder'),
                   title: const Text('Backup & Export'),
-                  subtitle: const Text('Local backup and portable data'),
+                  subtitle: const Text('Create or restore a portable .nova backup containing notes, folders and attachments.'),
+                  isThreeLine: true,
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showBackup(context),
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, indent: 56),
                 ListTile(
                   leading: const Icon(Icons.archive_outlined),
                   title: const Text('Archived Notes'),
-                  subtitle: const Text('Open or restore notes you have archived'),
+                  subtitle: const Text('Browse archived notes and restore them to your library.'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, indent: 56),
                 ListTile(
                   leading: const OrahAssetIcon('trash'),
                   title: const Text('Trash'),
-                  subtitle: const Text('Restore or permanently delete notes'),
+                  subtitle: const Text('Recover deleted notes or permanently remove them.'),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const TrashScreen()),
-                  ),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TrashScreen())),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 20),
           _sectionHeader(theme, l10n.aboutAndFeatures),
           Card(
             child: Column(
@@ -195,46 +184,32 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.auto_awesome_outlined),
                   title: const Text('Orah Features'),
-                  subtitle: const Text('Explore what Orah can do'),
+                  subtitle: const Text('Browse capabilities by category and see what is available, in development or planned.'),
+                  isThreeLine: true,
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
-                  ),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahFeaturesScreen())),
                 ),
-                const Divider(height: 1),
+                const Divider(height: 1, indent: 56),
                 ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
-                  title: const Text('About Orah'),
-                  subtitle: const Text('Product information and privacy approach'),
+                  title: const Text('About ORAH'),
+                  subtitle: const Text('Product information, version details and our privacy approach.'),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AboutNovaScreen()),
-                  ),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutNovaScreen())),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+
+          const SizedBox(height: 28),
           const OrahWordmark(fontSize: 28, textAlign: TextAlign.center),
           const SizedBox(height: 4),
-          Text(
-            'Version 1.0.0',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          Text('Version 1.0.0', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
           const SizedBox(height: 8),
-          Text(
-            'Think it. Write it. Keep it.',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          Text('Think it. Write it. Keep it.', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
         ],
       ),
-    );
+    ));
   }
 
   Widget _sectionHeader(ThemeData theme, String title) {

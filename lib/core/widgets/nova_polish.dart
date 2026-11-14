@@ -20,12 +20,12 @@ class NovaEmptyState extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 52, color: theme.colorScheme.primary),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -63,7 +63,7 @@ class NovaSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+      padding: const EdgeInsets.fromLTRB(0, 12, 0, 8),
       child: Row(
         children: [
           Expanded(
@@ -119,6 +119,31 @@ class _NovaAnimatedPressState extends State<NovaAnimatedPress> {
               child: widget.child,
             ),
     ),
+    );
+  }
+}
+
+
+/// Keeps long-form screens comfortably readable on tablets and desktop-sized
+/// windows while remaining edge-to-edge on phones. Colors are inherited from
+/// the active theme so light/dark appearances remain unchanged.
+class OrahContentFrame extends StatelessWidget {
+  const OrahContentFrame({
+    super.key,
+    required this.child,
+    this.maxWidth = 1040,
+  });
+
+  final Widget child;
+  final double maxWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: SizedBox(width: double.infinity, child: child),
+      ),
     );
   }
 }

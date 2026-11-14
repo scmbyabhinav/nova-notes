@@ -22,6 +22,7 @@ class NovaTheme {
 
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.standard,
       colorScheme: scheme,
       scaffoldBackgroundColor: _lightBackground,
       textTheme: baseText.copyWith(
@@ -66,6 +67,38 @@ class NovaTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
+        toolbarHeight: 60,
+        titleSpacing: 16,
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(44, 44),
+          padding: const EdgeInsets.all(10),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      listTileTheme: const ListTileThemeData(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        horizontalTitleGap: 12,
+        minLeadingWidth: 24,
+        minVerticalPadding: 8,
+        visualDensity: VisualDensity.standard,
+      ),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant.withValues(alpha: 0.55),
+        space: 1,
+        thickness: 1,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        menuPadding: const EdgeInsets.symmetric(vertical: 6),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        showDragHandle: true,
+        modalElevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 2,
@@ -74,12 +107,12 @@ class NovaTheme {
         color: _lightSurface,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(18),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
@@ -87,7 +120,7 @@ class NovaTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -95,6 +128,7 @@ class NovaTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         fillColor: _lightSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -110,7 +144,7 @@ class NovaTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 68,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -137,6 +171,7 @@ class NovaTheme {
 
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.standard,
       colorScheme: scheme,
       scaffoldBackgroundColor: _darkBackground,
       textTheme: baseText.copyWith(
@@ -166,6 +201,38 @@ class NovaTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
+        toolbarHeight: 60,
+        titleSpacing: 16,
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(44, 44),
+          padding: const EdgeInsets.all(10),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      listTileTheme: const ListTileThemeData(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        horizontalTitleGap: 12,
+        minLeadingWidth: 24,
+        minVerticalPadding: 8,
+        visualDensity: VisualDensity.standard,
+      ),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant.withValues(alpha: 0.55),
+        space: 1,
+        thickness: 1,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        menuPadding: const EdgeInsets.symmetric(vertical: 6),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        showDragHandle: true,
+        modalElevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 2,
@@ -174,12 +241,12 @@ class NovaTheme {
         color: _darkSurface,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(18),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -187,7 +254,7 @@ class NovaTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size(0, 52),
+          minimumSize: const Size(0, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -195,6 +262,7 @@ class NovaTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         fillColor: _darkSurface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -210,7 +278,7 @@ class NovaTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 68,
+        height: 64,
         elevation: 0,
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),

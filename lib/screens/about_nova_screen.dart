@@ -81,16 +81,17 @@ class AboutNovaScreen extends StatelessWidget {
                     ),
                     child: SizedBox(
                       width: double.infinity,
-                      height: 100,
-                      child: Image.asset(
-                        'assets/developer_signature.png',
-                        width: double.infinity,
-                        fit: BoxFit.contain,
-                        alignment: Alignment.center,
-                        filterQuality: FilterQuality.high,
-                        semanticLabel: 'Abhinav Bajpai — Developer signature',
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Text(
+                      height: 112,
+                      child: Center(
+                        child: Image.asset(
+                          'assets/developer_signature.png',
+                          width: 320,
+                          height: 104,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.center,
+                          filterQuality: FilterQuality.high,
+                          semanticLabel: 'Abhinav Bajpai — Developer signature',
+                          errorBuilder: (context, error, stackTrace) => const Text(
                             'Abhinav Bajpai',
                             textAlign: TextAlign.center,
                             style: TextStyle(

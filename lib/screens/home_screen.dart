@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../l10n/app_localizations.dart';
 import '../core/utils/lifecycle_timeout.dart';
+import '../core/utils/note_tag_filter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/orah_reminder_service.dart';
 import '../core/widgets/orah_wordmark.dart';
@@ -13,6 +14,7 @@ import '../core/widgets/orah_asset_icon.dart';
 import '../core/navigation/orah_navigation.dart';
 
 import '../data/repositories/note_repository_provider.dart';
+import '../data/repositories/folder_repository_provider.dart';
 import '../models/note.dart';
 import '../services/prompt_service.dart';
 import 'note_editor_screen.dart';
@@ -21,9 +23,10 @@ import 'archived_notes_screen.dart';
 import 'search_screen.dart';
 import 'orah_features_screen.dart';
 import 'vault_screen.dart';
+import 'pomodoro_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory});
+  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onKanban, this.onPomodoro});
 
   final bool isActive;
   final Future<void> Function()? onNewNote;
@@ -35,6 +38,8 @@ class HomeScreen extends StatefulWidget {
   final VoidCallback? onFavorites;
   final VoidCallback? onStatistics;
   final VoidCallback? onCalendarHistory;
+  final VoidCallback? onKanban;
+  final VoidCallback? onPomodoro;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -43,11 +48,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBindingObserver {
   bool _gridView = true;
   bool _showFeatures = false;
+  static const List<String> _allExploreActionLabels = [
+    'Recent Notes', 'Favorites', 'Folders', 'Kanban', 'Pomodoro', 'Archived Notes',
+    'Appearance', 'Backup & Export', 'Checklists', 'Daily Reflection',
+    'Offline access', 'Search', 'Voice Capture',
+  ];
+  Set<String> _visibleExploreActions = {..._allExploreActionLabels};
   bool _hideDailyPrompt = false;
   bool _loading = true;
   String? _loadError;
   String _sort = 'updated';
   String _activeFilter = 'all';
+  String? _activeTagFilter;
   List<Note> _notes = const [];
   String? _selectedNoteId;
   StreamSubscription<List<Note>>? _notesSubscription;
@@ -114,7 +126,74 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       _gridView = prefs.getBool('orah_grid_view') ?? true;
       _sort = prefs.getString('orah_note_sort') ?? 'updated';
       _hideDailyPrompt = prefs.getBool('orah_hide_daily_prompt') ?? false;
+      _visibleExploreActions = (prefs.getStringList('orah_explore_actions') ?? _allExploreActionLabels)
+          .where(_allExploreActionLabels.contains).toSet();
     });
+  }
+
+  Future<void> _customizeExploreActions() async {
+    final selected = Set<String>.from(_visibleExploreActions);
+    final result = await showModalBottomSheet<Set<String>>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) => SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 8,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const ListTile(
+                  leading: Icon(Icons.tune_rounded),
+                  title: Text('Customize Explore Orah'),
+                  subtitle: Text('Use + to add a shortcut or − to remove one.'),
+                ),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final label in _allExploreActionLabels)
+                        ListTile(
+                          title: Text(label),
+                          trailing: IconButton.filledTonal(
+                            tooltip: selected.contains(label) ? 'Remove $label' : 'Add $label',
+                            onPressed: () => setSheetState(() {
+                              if (selected.contains(label)) {
+                                selected.remove(label);
+                              } else {
+                                selected.add(label);
+                              }
+                            }),
+                            icon: Icon(selected.contains(label) ? Icons.remove_rounded : Icons.add_rounded),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(sheetContext, selected),
+                    child: const Text('Save shortcuts'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (result == null || !mounted) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('orah_explore_actions', _allExploreActionLabels.where(result.contains).toList());
+    setState(() => _visibleExploreActions = result);
   }
 
   Future<void> _setDailyPromptHidden(bool hidden) async {
@@ -162,8 +241,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
   void _applyNotes(List<Note> notes) {
     if (!mounted) return;
+    final availableTags = collectNoteTags(
+      notes.where((note) => !note.isLocked && !note.isTrashed),
+    );
     setState(() {
       _notes = notes.where((note) => !note.isLocked && !note.isTrashed).toList();
+      if (_activeTagFilter != null &&
+          !availableTags.any((tag) => tag.toLowerCase() == _activeTagFilter!.trim().toLowerCase())) {
+        _activeTagFilter = null;
+      }
       _loading = false;
       if (_selectedNoteId != null && !_notes.any((note) => note.id == _selectedNoteId)) {
         _selectedNoteId = null;
@@ -277,6 +363,27 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.drive_file_rename_outline_rounded),
+              title: const Text('Rename'),
+              onTap: () => Navigator.pop(context, 'rename'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.folder_open_rounded),
+              title: const Text('Move to folder'),
+              onTap: () => Navigator.pop(context, 'move_folder'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.copy_all_outlined),
+              title: const Text('Copy to folder'),
+              onTap: () => Navigator.pop(context, 'copy_folder'),
+            ),
+            ListTile(
+              leading: Icon(note.isInbox ? Icons.inbox_rounded : Icons.inbox_outlined),
+              title: Text(note.isInbox ? 'Remove from Inbox' : 'Send to Inbox'),
+              subtitle: Text(note.isInbox ? 'File this capture into your notes' : 'Keep this note in your triage inbox'),
+              onTap: () => Navigator.pop(context, 'inbox'),
+            ),
+            ListTile(
               leading: const OrahAssetIcon('pin'),
               title: Text(note.isPinned ? 'Unpin note' : 'Pin note'),
               onTap: () => Navigator.pop(context, 'pin'),
@@ -294,6 +401,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
               onTap: () => Navigator.pop(context, 'archive'),
             ),
             ListTile(
+              leading: const Icon(Icons.merge_type_rounded),
+              title: const Text('Merge with…'),
+              subtitle: const Text('Combine this note with another'),
+              onTap: () => Navigator.pop(context, 'merge'),
+            ),
+            ListTile(
               leading: const Icon(Icons.copy_outlined),
               title: const Text('Duplicate note'),
               onTap: () => Navigator.pop(context, 'duplicate'),
@@ -305,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
             ),
             ListTile(
               leading: const OrahAssetIcon('trash'),
-              title: const Text('Move to Trash'),
+              title: const Text('Delete note (move to Trash)'),
               onTap: () => Navigator.pop(context, 'delete'),
             ),
           ],
@@ -316,6 +429,18 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (!mounted || action == null) return;
 
     switch (action) {
+      case 'rename':
+        await _renameNote(note);
+        return;
+      case 'move_folder':
+        await _moveOrCopyNoteToFolder(note, copy: false);
+        return;
+      case 'copy_folder':
+        await _moveOrCopyNoteToFolder(note, copy: true);
+        return;
+      case 'merge':
+        await _mergeNoteWithAnother(note);
+        return;
       case 'duplicate':
         final repository = await NoteRepositoryProvider.instance();
         final duplicate = note.copyWith(
@@ -356,6 +481,21 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         return;
       case 'color':
         await _showColorPicker(note);
+        return;
+      case 'inbox':
+        await _updateNote(
+          note,
+          note.copyWith(isInbox: !note.isInbox, updatedAt: DateTime.now()),
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(note.isInbox ? 'Removed from Inbox' : 'Sent to Inbox'),
+            action: SnackBarAction(
+              label: 'View Inbox',
+              onPressed: () => setState(() => _activeFilter = 'inbox'),
+            ),
+          ));
+        }
         return;
       case 'pin':
         await _updateNote(
@@ -421,6 +561,231 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     }
   }
 
+  Future<void> _renameNote(Note note) async {
+    final controller = TextEditingController(text: note.title);
+    final title = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rename note'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(labelText: 'Note title', hintText: 'Enter a title'),
+          onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text.trim()), child: const Text('Save')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (!mounted || title == null) return;
+    if (title.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('A note title cannot be empty.')));
+      return;
+    }
+    if (title == note.title) return;
+    await _updateNote(note, note.copyWith(title: title, updatedAt: DateTime.now()));
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Note renamed.')));
+  }
+
+  Future<void> _moveOrCopyNoteToFolder(Note note, {required bool copy}) async {
+    final folderRepository = await FolderRepositoryProvider.instance();
+    final folders = await folderRepository.getFolders();
+    if (!mounted) return;
+    if (folders.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Create a folder first, then you can file notes in it.')));
+      return;
+    }
+    final selectedFolderId = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(copy ? 'Copy note to folder' : 'Move note to folder'),
+        content: SizedBox(
+          width: 360,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final folder in folders)
+                ListTile(
+                  leading: const Icon(Icons.folder_outlined),
+                  title: Text(folder.name),
+                  subtitle: folder.id == note.folderId ? const Text('Current folder') : null,
+                  onTap: () => Navigator.pop(dialogContext, folder.id),
+                ),
+            ],
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel'))],
+      ),
+    );
+    if (!mounted || selectedFolderId == null) return;
+    if (!copy && selectedFolderId == note.folderId) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This note is already in that folder.')));
+      return;
+    }
+    final now = DateTime.now();
+    if (!copy) {
+      await _updateNote(note, note.copyWith(folderId: selectedFolderId, updatedAt: now));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Note moved to folder.')));
+      return;
+    }
+    final duplicateId = 'orah_copy_${now.microsecondsSinceEpoch}';
+    final copiedChecklist = note.checklistItems.map((item) => ChecklistItem(
+      id: '${duplicateId}_${item.id}',
+      text: item.text,
+      isDone: item.isDone,
+      dueAt: item.dueAt,
+    )).toList();
+    final duplicate = Note(
+      id: duplicateId,
+      title: note.title.trim().isEmpty ? 'Untitled note (Copy)' : '${note.title} (Copy)',
+      content: note.content,
+      type: note.type,
+      createdAt: now,
+      updatedAt: now,
+      folderId: selectedFolderId,
+      tags: note.tags,
+      linkedNoteIds: note.linkedNoteIds,
+      attachments: note.attachments,
+      checklistItems: copiedChecklist,
+      color: note.color,
+      isPinned: false,
+      isFavorite: false,
+      isArchived: false,
+      isLocked: false,
+      isTrashed: false,
+      isInbox: false,
+      dueAt: note.dueAt,
+      mood: note.mood,
+      imagePath: note.imagePath,
+    );
+    final repository = await NoteRepositoryProvider.instance();
+    await repository.saveNote(duplicate);
+    await _loadNotes();
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copy saved to folder.')));
+  }
+
+  Future<void> _mergeNoteWithAnother(Note target) async {
+    if (target.isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unlock private notes before merging.')),
+      );
+      return;
+    }
+    final repository = await NoteRepositoryProvider.instance();
+    final notes = (await repository.getNotes())
+      .where((note) => note.id != target.id && !note.isTrashed && !note.isLocked)
+      .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    if (!mounted) return;
+    if (notes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Create another note before merging.')),
+      );
+      return;
+    }
+    final source = await showDialog<Note>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Merge with…'),
+        content: SizedBox(
+          width: 440,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              const Text('The selected note will be combined into this note and removed after confirmation.'),
+              const SizedBox(height: 8),
+              for (final candidate in notes)
+                ListTile(
+                  leading: const Icon(Icons.note_alt_outlined),
+                  title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
+                  subtitle: Text(candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  onTap: () => Navigator.pop(dialogContext, candidate),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+        ],
+      ),
+    );
+    if (!mounted || source == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirm merge'),
+        content: Text('Merge "${source.title.isEmpty ? 'Untitled note' : source.title}" into "${target.title.isEmpty ? 'Untitled note' : target.title}"? The source note will be removed.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Merge notes')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final now = DateTime.now();
+    final sections = <String>[];
+    if (target.content.trim().isNotEmpty) {
+      sections.add(target.content.trim());
+    }
+    if (source.content.trim().isNotEmpty) {
+      sections.add('---\nMerged from: ${source.title.trim().isEmpty ? 'Untitled note' : source.title.trim()}\n\n${source.content.trim()}');
+    }
+    final mergedChecklist = <ChecklistItem>[
+      ...target.checklistItems,
+      ...source.checklistItems.map((item) => ChecklistItem(
+        id: '${target.id}_merged_${now.microsecondsSinceEpoch}_${item.id}',
+        text: item.text,
+        isDone: item.isDone,
+        dueAt: item.dueAt,
+      )),
+    ];
+    final linkedIds = <String>{
+      ...target.linkedNoteIds,
+      ...source.linkedNoteIds,
+      source.id,
+    }..remove(target.id)..remove(source.id);
+    final merged = target.copyWith(
+      title: target.title.trim().isNotEmpty ? target.title : source.title,
+      content: sections.join('\n\n'),
+      type: target.type == NoteType.checklist && source.type == NoteType.checklist
+          ? NoteType.checklist
+          : NoteType.text,
+      updatedAt: now,
+      tags: {...target.tags, ...source.tags}.toList(),
+      attachments: {...target.attachments, ...source.attachments}.toList(),
+      checklistItems: mergedChecklist,
+      linkedNoteIds: linkedIds.toList(),
+      dueAt: target.dueAt ?? source.dueAt,
+    );
+
+    try {
+      await repository.saveNote(merged);
+      // Redirect other notes' links to the surviving note before removing the source.
+      final allNotes = await repository.getNotes();
+      for (final note in allNotes) {
+        if (note.id == target.id || note.id == source.id || !note.linkedNoteIds.contains(source.id)) continue;
+        final updatedLinks = <String>{...note.linkedNoteIds, target.id}..remove(source.id);
+        await repository.saveNote(note.copyWith(linkedNoteIds: updatedLinks.toList(), updatedAt: now));
+      }
+      await repository.deleteNote(source.id);
+      if (!mounted) return;
+      await _loadNotes();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Notes merged successfully.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not merge notes: $error')),
+      );
+    }
+  }
+
   Future<void> _showColorPicker(Note note) async {
     const colors = <Color>[Color(0xFFFFF3C4), Color(0xFFDDF7E8), Color(0xFFDCEBFF), Color(0xFFF1DFFF), Color(0xFFFFE0D2)];
     final selected = await showModalBottomSheet<int>(
@@ -464,7 +829,19 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
     if (selected == null) return;
     final repository = await NoteRepositoryProvider.instance();
     final color = selected == -1 ? null : selected;
-    await repository.saveNote(note.copyWith(color: color, clearColor: selected == -1, updatedAt: DateTime.now()));
+    final updated = note.copyWith(
+      color: color,
+      clearColor: selected == -1,
+      updatedAt: DateTime.now(),
+    );
+    await repository.saveNote(updated);
+    if (!mounted) return;
+    // Update the visible cards immediately; don't make the user leave Home
+    // just to see the new colour.
+    setState(() {
+      _notes = _notes.map((item) => item.id == updated.id ? updated : item).toList();
+    });
+    await repository.refresh();
   }
 
   @override
@@ -475,12 +852,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         note.tags.any((tag) => tag.toLowerCase() == 'reflection') ||
         note.title.trim().toLowerCase() == 'daily reflection';
 
-    final pinned = _notes
+    final tagFilteredNotes = filterNotesByTag(_notes, _activeTagFilter);
+    final pinned = tagFilteredNotes
         .where((note) => note.isPinned && !note.isArchived && !isDailyReflection(note))
         .toList();
-    final recent = _notes.where((note) {
+    final recent = tagFilteredNotes.where((note) {
       final reflection = isDailyReflection(note);
       switch (_activeFilter) {
+        case 'inbox':
+          return note.isInbox && !note.isArchived && !reflection;
         case 'pinned':
           return note.isPinned && !note.isArchived && !reflection;
         case 'favorites':
@@ -492,7 +872,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         case 'daily_reflection':
           return reflection;
         default:
-          return !note.isArchived && !reflection;
+          // Pinned notes already have their own section above Recent Notes.
+          // Keep them out of the default recent feed to avoid duplicate-looking cards.
+          return !note.isArchived && !note.isPinned && !reflection;
       }
     }).toList()
       ..sort((a, b) {
@@ -504,9 +886,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final compactHeader = constraints.maxWidth < 600;
         if (constraints.maxWidth >= 1100) {
           return _DesktopNotesLayout(
-            notes: _notes,
+            notes: tagFilteredNotes,
             loading: _loading,
             selectedNoteId: _selectedNoteId,
             onSelect: _selectNote,
@@ -557,9 +940,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const OrahWordmark(fontSize: 34),
+                          OrahWordmark(fontSize: compactHeader ? 27 : 34, fontWeight: FontWeight.w700),
                           const SizedBox(height: 2),
-                          Text(
+                          if (!compactHeader) Text(
                             'Think it. Write it. Keep it.',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
@@ -575,17 +958,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                       ),
                       icon: const Icon(Icons.security_rounded, size: 24),
                     ),
-                    IconButton.filledTonal(
+                    if (!compactHeader) IconButton.filledTonal(
                       tooltip: 'Calendar & history',
                       onPressed: widget.onCalendarHistory,
                       icon: const Icon(Icons.calendar_month_rounded, size: 24),
                     ),
-                    IconButton.filledTonal(
-                      tooltip: 'Statistics & insights',
+                    if (!compactHeader) IconButton.filledTonal(
+                      tooltip: 'Mood & insights',
                       onPressed: widget.onStatistics,
-                      icon: const Icon(Icons.bar_chart_rounded, size: 24),
+                      icon: const Icon(Icons.mood_rounded, size: 24),
                     ),
-                    IconButton.filledTonal(
+                    if (!compactHeader) IconButton.filledTonal(
                       tooltip: 'Daily Reflection',
                       onPressed: _openReflection,
                       icon: SvgPicture.asset(
@@ -595,6 +978,53 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                         semanticsLabel: 'Daily Reflection',
                       ),
                     ),
+                    if (compactHeader)
+                      PopupMenuButton<String>(
+                        tooltip: 'Quick actions',
+                        icon: const Icon(Icons.more_horiz_rounded, size: 26),
+                        onSelected: (action) {
+                          switch (action) {
+                            case 'calendar':
+                              widget.onCalendarHistory?.call();
+                              break;
+                            case 'mood':
+                              widget.onStatistics?.call();
+                              break;
+                            case 'reflection':
+                              _openReflection();
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem<String>(
+                            value: 'calendar',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.calendar_month_rounded),
+                              title: Text('Calendar & history'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'mood',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.mood_rounded),
+                              title: Text('Mood & insights'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'reflection',
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(Icons.auto_awesome_rounded),
+                              title: Text('Daily Reflection'),
+                            ),
+                          ),
+                        ],
+                      ),
                     if (_showFeatures)
                       IconButton.filledTonal(
                         tooltip: 'Appearance',
@@ -626,11 +1056,20 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Explore Orah',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'Explore Orah',
+                                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+                                      ),
+                                    ),
+                                    IconButton.filledTonal(
+                                      tooltip: 'Add or remove Explore shortcuts',
+                                      onPressed: _customizeExploreActions,
+                                      icon: const Icon(Icons.add_rounded),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -640,82 +1079,35 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                                   ),
                                 ),
                                 const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    ActionChip(
-                                      avatar: const Icon(Icons.note_alt_outlined, size: 18),
-                                      label: const Text('Notes'),
-                                      onPressed: widget.onNotes,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.folder_outlined, size: 18),
-                                      label: const Text('Folders'),
-                                      onPressed: widget.onFolders,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.star_outline_rounded, size: 18),
-                                      label: const Text('Favorites'),
-                                      onPressed: widget.onFavorites,
-                                    ),
-                                    ActionChip(
-                                      visualDensity: VisualDensity.compact,
-                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-                                      padding: const EdgeInsets.symmetric(horizontal: 7),
-                                      avatar: const Icon(Icons.archive_outlined, size: 16),
-                                      label: const Text('Archived Notes'),
-                                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())),
-                                    ),
-                                    ActionChip(
-                                      avatar: SvgPicture.asset(
-                                        'assets/daily_reflection_icon.svg',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                      label: const Text('Daily Reflection'),
-                                      onPressed: _openReflection,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.mic_none_rounded, size: 18),
-                                      label: const Text('Voice Capture'),
-                                      onPressed: widget.onVoiceCapture,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.checklist_rounded, size: 18),
-                                      label: const Text('Checklists'),
-                                      onPressed: widget.onChecklist,
-                                    ),
-                                    ActionChip(
-                                      avatar: SvgPicture.asset(
-                                        'assets/appearance_icon.svg',
-                                        width: 20,
-                                        height: 20,
-                                      ),
-                                      label: const Text('Appearance'),
-                                      onPressed: widget.onSettings,
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.search_rounded, size: 18),
-                                      label: const Text('Search'),
-                                      onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (_) => const SearchScreen()),
-                                      ),
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.cloud_off_outlined, size: 18),
-                                      label: const Text('Offline access'),
-                                      onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (_) => const OrahFeaturesScreen()),
-                                      ),
-                                    ),
-                                    ActionChip(
-                                      avatar: const Icon(Icons.ios_share_rounded, size: 18),
-                                      label: const Text('Backup & Export'),
-                                      onPressed: widget.onSettings,
-                                    ),
-                                  ],
+                                LayoutBuilder(
+                                  builder: (context, panelConstraints) {
+                                    final columns = panelConstraints.maxWidth >= 520 ? 3 : 2;
+                                    final actions = <({String label, Widget widget})>[
+                                      (label: 'Recent Notes', widget: _ExploreAction(icon: Icons.access_time_rounded, label: 'Recent Notes', onTap: widget.onNotes)),
+                                      (label: 'Favorites', widget: _ExploreAction(icon: Icons.star_outline_rounded, label: 'Favorites', onTap: widget.onFavorites)),
+                                      (label: 'Folders', widget: _ExploreAction(icon: Icons.folder_outlined, label: 'Folders', onTap: widget.onFolders)),
+                                      (label: 'Kanban', widget: _ExploreAction(icon: Icons.view_kanban_outlined, label: AppLocalizations.of(context)!.kanban, onTap: widget.onKanban)),
+                                      (label: 'Pomodoro', widget: _ExploreAction(icon: Icons.timer_outlined, label: 'Pomodoro Focus', onTap: widget.onPomodoro)),
+                                      (label: 'Archived Notes', widget: _ExploreAction(icon: Icons.archive_outlined, label: 'Archived Notes', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ArchivedNotesScreen())))),
+                                      (label: 'Appearance', widget: _ExploreAction(icon: Icons.palette_outlined, label: 'Appearance', onTap: widget.onSettings)),
+                                      (label: 'Backup & Export', widget: _ExploreAction(icon: Icons.ios_share_rounded, label: 'Backup & Export', onTap: widget.onSettings)),
+                                      (label: 'Checklists', widget: _ExploreAction(icon: Icons.checklist_rounded, label: 'Checklists', onTap: widget.onChecklist)),
+                                      (label: 'Daily Reflection', widget: _ExploreAction(icon: Icons.auto_awesome_outlined, label: 'Daily Reflection', onTap: _openReflection)),
+                                      (label: 'Offline access', widget: _ExploreAction(icon: Icons.cloud_off_outlined, label: 'Offline access', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrahFeaturesScreen())))),
+                                      (label: 'Search', widget: _ExploreAction(icon: Icons.search_rounded, label: 'Search', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SearchScreen())))),
+                                      (label: 'Voice Capture', widget: _ExploreAction(icon: Icons.mic_none_rounded, label: 'Voice Capture', onTap: widget.onVoiceCapture)),
+                                    ];
+                                    final visibleActions = actions.where((action) => _visibleExploreActions.contains(action.label)).toList();
+                                    return GridView.count(
+                                      crossAxisCount: columns,
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      crossAxisSpacing: 8,
+                                      mainAxisSpacing: 8,
+                                      childAspectRatio: 3.2,
+                                      children: visibleActions.map((action) => action.widget).toList(),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -849,6 +1241,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                   children: [
                     for (final filter in const [
                       ('all', 'All', Icons.notes_rounded),
+                      ('inbox', 'Inbox', Icons.inbox_outlined),
                       ('pinned', 'Pinned', Icons.push_pin_outlined),
                       ('favorites', 'Favorites', Icons.star_outline_rounded),
                       ('checklists', 'Checklists', Icons.checklist_rounded),
@@ -892,6 +1285,38 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 ),
               ),
             ),
+            if (_notes.any((note) => note.tags.any((tag) => tag.trim().isNotEmpty)))
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 44,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: const Text('All tags'),
+                          selected: _activeTagFilter == null,
+                          onSelected: (_) => setState(() => _activeTagFilter = null),
+                        ),
+                      ),
+                      for (final tag in collectNoteTags(_notes))
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            avatar: const Icon(Icons.sell_outlined, size: 15),
+                            label: Text(tag),
+                            selected: _activeTagFilter?.toLowerCase() == tag.toLowerCase(),
+                            onSelected: (_) => setState(() {
+                              _activeTagFilter = _activeTagFilter?.toLowerCase() == tag.toLowerCase() ? null : tag;
+                            }),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
             if (_loading)
               const SliverFillRemaining(
                 hasScrollBody: false,
@@ -1004,7 +1429,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 160 + MediaQuery.of(context).padding.bottom),
                   sliver: _gridView
                       ? SliverGrid(
                           delegate: SliverChildBuilderDelegate(
@@ -1022,7 +1447,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
                             crossAxisCount: 2,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
-                            childAspectRatio: 0.90,
+                            childAspectRatio: 1.04,
                           ),
                         )
                       : SliverList.builder(
@@ -1293,6 +1718,32 @@ class _DesktopNotesLayout extends StatelessWidget {
         onTap: () {},
       );
     }).toList();
+  }
+}
+
+class _ExploreAction extends StatelessWidget {
+  const _ExploreAction({required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
+        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: .7)),
+      ),
+      child: Row(children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: 8),
+        Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+      ]),
+    );
   }
 }
 
@@ -1680,6 +2131,21 @@ String _formatDate(DateTime date) {
   return '$month/$day/${local.year}';
 }
 
+String _cleanNotePreview(String content) {
+  var text = content.trim();
+  if (text.isEmpty) return '';
+
+  // Render a clean text excerpt instead of exposing Markdown image tokens.
+  text = text.replaceAll(RegExp(r'!\[[^\]]*\]\([^)]*\)'), ' ');
+  text = text.replaceAll(RegExp(r'!\[[^\]\r\n]*'), ' ');
+  text = text.replaceAll(RegExp(r'\[([^\]]+)\]\([^)]*\)'), r'$1');
+  text = text.replaceAll(RegExp(r'^#{1,6}\s+', multiLine: true), '');
+  text = text.replaceAll(RegExp(r'^\s*[-*+]\s+', multiLine: true), '');
+  text = text.replaceAll(RegExp(r'[*_~]{1,3}'), '');
+  text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+  return text;
+}
+
 class _NoteCard extends StatelessWidget {
   const _NoteCard({
     required this.note,
@@ -1699,17 +2165,22 @@ class _NoteCard extends StatelessWidget {
         : (note.title.trim().isEmpty ? 'Untitled note' : note.title);
     final contentPreview = note.isLocked
         ? 'Locked content'
-        : note.content.trim().replaceAll(RegExp(r'\s+'), ' ');
+        : _cleanNotePreview(note.content);
+    final checklistPreview = note.type == NoteType.checklist
+        ? note.checklistItems.take(2).map((item) => item.text.trim()).where((item) => item.isNotEmpty).join(' · ')
+        : '';
     final body = contentPreview.isNotEmpty
         ? contentPreview
-        : (note.type == NoteType.checklist
-            ? note.checklistItems.take(2).map((item) => item.text).join(' · ')
-            : '');
+        : (checklistPreview.isNotEmpty
+            ? checklistPreview
+            : (note.imagePath != null || note.attachments.isNotEmpty
+                ? (note.imagePath != null ? 'Image attachment' : 'Attachment')
+                : 'No additional text'));
     final cardColor = note.color == null
         ? theme.colorScheme.surface
         : Color(note.color!);
 
-    return Card(
+    final card = Card(
       margin: EdgeInsets.zero,
       elevation: 1.5,
       shadowColor: theme.colorScheme.shadow.withValues(alpha: 0.10),
@@ -1725,7 +2196,7 @@ class _NoteCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(compact ? 14 : 15),
+          padding: EdgeInsets.all(compact ? 11 : 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1766,6 +2237,10 @@ class _NoteCard extends StatelessWidget {
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
+              ],
+              if (note.dueAt != null) ...[
+                const SizedBox(height: 9),
+                _DeadlineCountdownRibbon(dueAt: note.dueAt!),
               ],
               const SizedBox(height: 9),
               Row(
@@ -1809,6 +2284,138 @@ class _NoteCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+    if (!note.isInbox) return card;
+    return Dismissible(
+      key: ValueKey('inbox-${note.id}'),
+      direction: DismissDirection.horizontal,
+      confirmDismiss: (direction) async {
+        final repository = await NoteRepositoryProvider.instance();
+        if (direction == DismissDirection.startToEnd) {
+          await repository.saveNote(note.copyWith(isInbox: false, updatedAt: DateTime.now()));
+          return true;
+        }
+        final controller = TextEditingController();
+        final tag = await showDialog<String>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Tag this note'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Tag',
+                hintText: 'e.g. Work, Ideas, Read later',
+              ),
+              onSubmitted: (value) => Navigator.of(dialogContext).pop(value.trim()),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancel')),
+              FilledButton(onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()), child: const Text('Add tag')),
+            ],
+          ),
+        );
+        controller.dispose();
+        if (tag == null || tag.trim().isEmpty) return false;
+        final tags = [...note.tags];
+        if (!tags.any((value) => value.toLowerCase() == tag.trim().toLowerCase())) {
+          tags.add(tag.trim());
+        }
+        await repository.saveNote(note.copyWith(tags: tags, updatedAt: DateTime.now()));
+        return false;
+      },
+      onDismissed: (_) {},
+      background: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(color: Colors.green.shade700, borderRadius: BorderRadius.circular(16)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.drive_file_move_outline, color: Colors.white),
+          SizedBox(width: 8),
+          Text('File', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(16)),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.sell_outlined, color: Colors.white),
+          SizedBox(width: 8),
+          Text('Tag', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        ]),
+      ),
+      child: card,
+    );
+  }
+}
+
+
+class _DeadlineCountdownRibbon extends StatelessWidget {
+  const _DeadlineCountdownRibbon({required this.dueAt});
+
+  final DateTime dueAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final remaining = dueAt.difference(now);
+    final Color color;
+    final IconData icon;
+    final String label;
+
+    if (remaining.isNegative) {
+      color = Colors.red.shade700;
+      icon = Icons.warning_amber_rounded;
+      final overdue = remaining.abs();
+      if (overdue.inDays >= 1) {
+        label = 'Overdue by ${overdue.inDays} day${overdue.inDays == 1 ? '' : 's'}';
+      } else if (overdue.inHours >= 1) {
+        label = 'Overdue by ${overdue.inHours} hour${overdue.inHours == 1 ? '' : 's'}';
+      } else {
+        label = 'Deadline passed';
+      }
+    } else if (remaining.inHours < 24) {
+      color = Colors.red.shade700;
+      icon = Icons.timer_outlined;
+      label = remaining.inHours < 1
+          ? 'Due in ${remaining.inMinutes.clamp(1, 59)} min'
+          : 'Due in ${remaining.inHours} hour${remaining.inHours == 1 ? '' : 's'}';
+    } else if (remaining.inDays <= 3) {
+      color = Colors.amber.shade800;
+      icon = Icons.hourglass_bottom_rounded;
+      label = remaining.inDays == 1 ? 'Due tomorrow' : 'Due in ${remaining.inDays} days';
+    } else {
+      color = Colors.green.shade700;
+      icon = Icons.event_available_rounded;
+      label = 'Due in ${remaining.inDays} days';
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+          ],
         ),
       ),
     );

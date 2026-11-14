@@ -14,6 +14,8 @@ import 'data/repositories/note_repository_provider.dart';
 import 'data/repositories/local_note_repository.dart';
 import 'models/note.dart';
 import 'screens/home_screen.dart';
+import 'screens/kanban_screen.dart';
+import 'screens/pomodoro_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/folders_screen.dart';
 import 'screens/favorites_screen.dart';
@@ -300,11 +302,21 @@ class _NovaShellState extends State<NovaShell> {
           onFavorites: () => setState(() => _index = 2),
           onStatistics: _openStatistics,
           onCalendarHistory: _openCalendarHistory,
+          onKanban: _openKanban,
+          onPomodoro: _openPomodoro,
         ),
         const FoldersScreen(),
         const FavoritesScreen(),
         SettingsScreen(themeController: widget.themeController),
       ];
+
+  void _openKanban() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const KanbanScreen()));
+  }
+
+  void _openPomodoro() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PomodoroScreen()));
+  }
 
   Future<void> _openEditor(NoteType type, {bool autoStartVoice = false}) async {
     final LocalNoteRepository repository;

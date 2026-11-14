@@ -6,8 +6,10 @@ import '../database/note_dao.dart';
 import '../database/orah_database.dart';
 
 import '../../models/note.dart';
+import '../../models/note_version.dart';
 import '../../core/services/nova_security_service.dart';
 import '../../models/search_filter.dart';
+import '../../services/focus_session_service.dart';
 import 'note_repository.dart';
 
 class LocalNoteRepository implements NoteRepository {
@@ -16,6 +18,23 @@ class LocalNoteRepository implements NoteRepository {
   final SharedPreferences _preferences;
   final NovaSecurityService _security = NovaSecurityService();
   final StreamController<List<Note>> _notesController = StreamController<List<Note>>.broadcast();
+
+  // Serialize read-modify-write operations. Without this queue, two rapid
+  // autosaves can both read the same snapshot and the later full-table write
+  // can silently erase the earlier edit.
+  Future<void> _mutationQueue = Future<void>.value();
+
+  Future<T> _serializeMutation<T>(Future<T> Function() operation) {
+    final result = Completer<T>();
+    _mutationQueue = _mutationQueue.then((_) async {
+      try {
+        result.complete(await operation());
+      } catch (error, stackTrace) {
+        result.completeError(error, stackTrace);
+      }
+    });
+    return result.future;
+  }
 
   static const _storageKey = 'nova_notes_v1';
   static const _vaultStorageKey = 'orah_vault_notes_v1';
@@ -120,7 +139,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<void> saveNote(Note note) => _trackOperation(() async {
+  Future<void> saveNote(Note note) => _serializeMutation(() => _trackOperation(() async {
     final notes = await getNotes();
     final index = notes.indexWhere((item) => item.id == note.id);
 
@@ -128,6 +147,8 @@ class LocalNoteRepository implements NoteRepository {
     if (index == -1) {
       notes.add(note);
     } else {
+      final previous = notes[index];
+      await _recordVersionIfChanged(previous, note);
       notes[index] = note;
     }
 
@@ -135,15 +156,68 @@ class LocalNoteRepository implements NoteRepository {
     // Publish the persisted snapshot, not the pre-write working list. This
     // guarantees every subscriber receives exactly what is now on disk.
     _publish(await getNotes());
-  });
+  }));
+
+  /// Returns up to 50 prior snapshots, newest first. Vault notes are excluded.
+  Future<List<NoteVersion>> getNoteVersions(String noteId) async {
+    final note = await getNote(noteId);
+    if (note == null || note.isLocked) return const [];
+    final db = await OrahDatabase.open(_preferences);
+    final rows = await db.query(
+      'note_versions',
+      columns: ['id', 'content', 'saved_at'],
+      where: 'note_id = ?',
+      whereArgs: [noteId],
+      orderBy: 'saved_at DESC, id DESC',
+      limit: 50,
+    );
+    final versions = <NoteVersion>[];
+    for (final row in rows) {
+      try {
+        final decoded = jsonDecode(row['content'] as String);
+        if (decoded is! Map) continue;
+        final snapshot = Note.fromMap(Map<String, dynamic>.from(decoded));
+        if (!snapshot.isLocked) {
+          versions.add(NoteVersion(
+            id: row['id'] as int,
+            noteId: noteId,
+            savedAt: DateTime.tryParse(row['saved_at'] as String) ?? snapshot.updatedAt,
+            note: snapshot,
+          ));
+        }
+      } catch (_) {
+        // Ignore one damaged snapshot rather than hiding the remaining history.
+      }
+    }
+    return versions;
+  }
+
+  Future<void> _recordVersionIfChanged(Note previous, Note next) async {
+    if (previous.isLocked || next.isLocked) return;
+    final before = previous.toMap();
+    final after = next.toMap();
+    const fields = ['title', 'content', 'type', 'tags', 'attachments', 'checklistItems', 'imagePath'];
+    if (!fields.any((field) => jsonEncode(before[field]) != jsonEncode(after[field]))) return;
+    final db = await OrahDatabase.open(_preferences);
+    await db.insert('note_versions', {
+      'note_id': previous.id,
+      'content': jsonEncode(before),
+      'saved_at': DateTime.now().toIso8601String(),
+    });
+    await db.execute(
+      'DELETE FROM note_versions WHERE note_id = ? AND id NOT IN '
+      '(SELECT id FROM note_versions WHERE note_id = ? ORDER BY saved_at DESC, id DESC LIMIT 50)',
+      [previous.id, previous.id],
+    );
+  }
 
   @override
-  Future<void> deleteNote(String id) => _trackOperation(() async {
+  Future<void> deleteNote(String id) => _serializeMutation(() => _trackOperation(() async {
     final notes = await getNotes();
     notes.removeWhere((note) => note.id == id);
     await _write(notes);
     _publish(notes);
-  });
+  }));
 
   @override
   Future<List<Note>> searchNotes(String query) => search(query);
@@ -166,10 +240,20 @@ class LocalNoteRepository implements NoteRepository {
     if (terms.length > 200) {
       throw const FormatException('Search query contains too many terms.');
     }
+    // Use the persistent FTS5 index for token/prefix searches. Preserve the
+    // current in-memory substring search as a fallback for unsupported SQLite
+    // builds and queries that do not match an indexed token.
+    Set<String>? indexedIds;
+    if (terms.isNotEmpty) {
+      final db = await OrahDatabase.open(_preferences);
+      final ids = await NoteDao(db).searchIds(normalized);
+      if (ids != null && ids.isNotEmpty) indexedIds = ids.toSet();
+    }
 
     final ranked = <({Note note, int score})>[];
 
     for (final note in notes) {
+      if (indexedIds != null && !indexedIds.contains(note.id)) continue;
       if (note.isTrashed) continue;
       if (!filter.archivedOnly && note.isArchived) continue;
       if (filter.archivedOnly && !note.isArchived) continue;
@@ -267,7 +351,7 @@ class LocalNoteRepository implements NoteRepository {
   }
 
   /// Moves an authenticated Vault note back into ordinary note storage.
-  Future<void> unlockVaultNote(String id) => _trackOperation(() async {
+  Future<void> unlockVaultNote(String id) => _serializeMutation(() => _trackOperation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
@@ -294,6 +378,7 @@ class LocalNoteRepository implements NoteRepository {
       'tags': payload['tags'] ?? const <String>[],
       'checklistItems': payload['checklistItems'] ?? const <Map<String, dynamic>>[],
       'imagePath': payload['imagePath'] ?? record['imagePath'],
+      'focusMinutes': payload['focusMinutes'] ?? record['focusMinutes'] ?? 0,
     };
     final restored = _fromMap(restoredMap);
     final ordinary = await getNotes();
@@ -302,23 +387,23 @@ class LocalNoteRepository implements NoteRepository {
     await _preferences.setString(_vaultStorageKey, jsonEncode(remaining));
     await _write(ordinary);
     _publish(await getNotes());
-  });
+  }));
 
   /// Permanently removes every protected Vault record. This is only used
   /// by the explicit forgotten-PIN reset flow after the user acknowledges
   /// that the old Vault cannot be recovered.
-  Future<void> resetVaultNotes() async {
+  Future<void> resetVaultNotes() => _serializeMutation(() async {
     await _preferences.remove(_vaultStorageKey);
-  }
+  });
 
-  Future<void> deleteVaultNote(String id) async {
+  Future<void> deleteVaultNote(String id) => _serializeMutation(() async {
     final raw = _preferences.getString(_vaultStorageKey);
     if (raw == null || raw.isEmpty) return;
     final decoded = jsonDecode(raw);
     if (decoded is! List) return;
     decoded.removeWhere((item) => item is Map && item['id'] == id);
     await _preferences.setString(_vaultStorageKey, jsonEncode(decoded));
-  }
+  });
 
   void _publish(List<Note> notes) {
     final snapshot = [...notes]..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -363,6 +448,7 @@ class LocalNoteRepository implements NoteRepository {
         'checklistItems':
             note.checklistItems.map((item) => item.toMap()).toList(),
         'imagePath': note.imagePath,
+        'focusMinutes': note.focusMinutes,
       });
       final ciphertext = await _security.encryptPrivatePayload(payload);
       return {
@@ -410,6 +496,7 @@ class LocalNoteRepository implements NoteRepository {
       'checklistItems': note.checklistItems.map((item) => item.toMap()).toList(),
       'mood': note.mood,
       'imagePath': note.imagePath,
+      'focusMinutes': note.focusMinutes,
     };
   }
 
@@ -440,6 +527,7 @@ class LocalNoteRepository implements NoteRepository {
       checklistItems: _checklistItemsFromMap(map),
       mood: map['mood'] as String?,
       imagePath: map['imagePath'] as String?,
+      focusMinutes: (map['focusMinutes'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -480,11 +568,12 @@ class LocalNoteRepository implements NoteRepository {
       'version': 1,
       'exportedAt': DateTime.now().toIso8601String(),
       'notes': [for (final note in notes) await _toMap(note)],
+      'focusHistory': jsonDecode(await FocusSessionService(_preferences).exportJson()),
     });
   }
 
   /// Imports a NOVA backup and merges notes by stable ID.
-  Future<int> importJson(String raw) => _trackOperation(() async {
+  Future<int> importJson(String raw) => _serializeMutation(() => _trackOperation(() async {
     final decoded = jsonDecode(raw);
     if (decoded is! Map || decoded['format'] != 'nova_notes_backup') {
       throw const FormatException('Invalid NOVA Notes backup.');
@@ -526,8 +615,12 @@ class LocalNoteRepository implements NoteRepository {
 
     final merged = byId.values.toList();
     await _write(merged);
+    final focusHistory = decoded['focusHistory'];
+    if (focusHistory is Map) {
+      await FocusSessionService(_preferences).importJson(jsonEncode(focusHistory));
+    }
     _publish(merged);
     return imported.length;
-  });
+  }));
 
 }

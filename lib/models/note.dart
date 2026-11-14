@@ -43,6 +43,7 @@ class Note {
     this.folderId,
     this.vaultFolderId,
     this.tags = const [],
+    this.linkedNoteIds = const [],
     this.attachments = const [],
     this.checklistItems = const [],
     this.color,
@@ -51,9 +52,11 @@ class Note {
     this.isArchived = false,
     this.isLocked = false,
     this.isTrashed = false,
+    this.isInbox = false,
     this.dueAt,
     this.mood,
     this.imagePath,
+    this.focusMinutes = 0,
   });
 
   final String id;
@@ -65,6 +68,8 @@ class Note {
   final String? folderId;
   final String? vaultFolderId;
   final List<String> tags;
+  /// IDs of related ordinary notes. Older records default to no links.
+  final List<String> linkedNoteIds;
   final List<String> attachments;
   final List<ChecklistItem> checklistItems;
   final int? color;
@@ -73,11 +78,15 @@ class Note {
   final bool isArchived;
   final bool isLocked;
   final bool isTrashed;
+  /// True while a captured/shared note is waiting to be filed from the Inbox.
+  final bool isInbox;
   final DateTime? dueAt;
   /// Optional mood selected by the user when creating or editing this note.
   final String? mood;
   /// Primary image selected for this note, if any.
   final String? imagePath;
+  /// Total completed focus-session minutes recorded for this note.
+  final int focusMinutes;
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -89,6 +98,7 @@ class Note {
         'folderId': folderId,
         'vaultFolderId': vaultFolderId,
         'tags': tags,
+        'linkedNoteIds': linkedNoteIds,
         'attachments': attachments,
         'checklistItems': checklistItems.map((item) => item.toMap()).toList(),
         'color': color,
@@ -97,9 +107,11 @@ class Note {
         'isArchived': isArchived,
         'isLocked': isLocked,
         'isTrashed': isTrashed,
+        'isInbox': isInbox,
         'dueAt': dueAt?.toIso8601String(),
         'mood': mood,
         'imagePath': imagePath,
+        'focusMinutes': focusMinutes,
       };
 
   factory Note.fromMap(Map<String, dynamic> map) => Note(
@@ -115,6 +127,7 @@ class Note {
         folderId: map['folderId'] as String?,
         vaultFolderId: map['vaultFolderId'] as String?,
         tags: List<String>.from(map['tags'] as List? ?? const []),
+        linkedNoteIds: List<String>.from(map['linkedNoteIds'] as List? ?? const []),
         attachments: List<String>.from(map['attachments'] as List? ?? const []),
         checklistItems: (map['checklistItems'] as List? ?? const [])
             .map((item) => ChecklistItem.fromMap(Map<String, dynamic>.from(item as Map)))
@@ -125,9 +138,11 @@ class Note {
         isArchived: map['isArchived'] as bool? ?? false,
         isLocked: map['isLocked'] as bool? ?? false,
         isTrashed: map['isTrashed'] as bool? ?? false,
+        isInbox: map['isInbox'] as bool? ?? false,
         dueAt: map['dueAt'] == null ? null : DateTime.tryParse(map['dueAt'] as String),
         mood: map['mood'] as String?,
         imagePath: map['imagePath'] as String?,
+        focusMinutes: (map['focusMinutes'] as num?)?.toInt() ?? 0,
       );
 
   int get completedChecklistItems =>
@@ -150,6 +165,7 @@ class Note {
     String? vaultFolderId,
     bool clearVaultFolder = false,
     List<String>? tags,
+    List<String>? linkedNoteIds,
     List<String>? attachments,
     List<ChecklistItem>? checklistItems,
     int? color,
@@ -159,12 +175,14 @@ class Note {
     bool? isArchived,
     bool? isLocked,
     bool? isTrashed,
+    bool? isInbox,
     DateTime? dueAt,
     bool clearDueAt = false,
     String? mood,
     bool clearMood = false,
     String? imagePath,
     bool clearImagePath = false,
+    int? focusMinutes,
   }) {
     return Note(
       id: id,
@@ -176,6 +194,7 @@ class Note {
       folderId: clearFolder ? null : (folderId ?? this.folderId),
       vaultFolderId: clearVaultFolder ? null : (vaultFolderId ?? this.vaultFolderId),
       tags: tags ?? this.tags,
+      linkedNoteIds: linkedNoteIds ?? this.linkedNoteIds,
       attachments: attachments ?? this.attachments,
       checklistItems: checklistItems ?? this.checklistItems,
       color: clearColor ? null : (color ?? this.color),
@@ -184,9 +203,11 @@ class Note {
       isArchived: isArchived ?? this.isArchived,
       isLocked: isLocked ?? this.isLocked,
       isTrashed: isTrashed ?? this.isTrashed,
+      isInbox: isInbox ?? this.isInbox,
       dueAt: clearDueAt ? null : (dueAt ?? this.dueAt),
       mood: clearMood ? null : (mood ?? this.mood),
       imagePath: clearImagePath ? null : (imagePath ?? this.imagePath),
+      focusMinutes: focusMinutes ?? this.focusMinutes,
     );
   }
 }

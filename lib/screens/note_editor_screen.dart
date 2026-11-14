@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../core/widgets/nova_polish.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,17 +14,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 
 import '../data/repositories/folder_repository_provider.dart';
+import '../data/kanban/kanban_repository.dart';
+import '../l10n/app_localizations.dart';
+import 'kanban_screen.dart';
 import '../data/repositories/local_note_repository.dart';
 import '../data/repositories/note_repository.dart';
 import '../models/folder.dart';
 import '../models/note.dart';
+import 'note_version_history_sheet.dart';
 import 'organization_picker_screen.dart';
 import 'export_note_sheet.dart';
 import '../services/nova_attachment_service.dart';
 import '../services/speech_to_text_service.dart';
 import '../services/orah_reminder_service.dart';
+import '../services/focus_session_service.dart';
 import '../services/orah_in_app_review_service.dart';
 import '../services/orah_analytics_service.dart';
 import '../core/widgets/orah_asset_icon.dart';
@@ -67,11 +74,34 @@ class NoteEditorScreen extends StatefulWidget {
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
 }
 
-class _NoteEditorScreenState extends State<NoteEditorScreen> {
+class _MarkdownTocSection {
+  const _MarkdownTocSection({
+    required this.content,
+    this.title,
+    this.level = 0,
+    this.anchorKey,
+  });
+
+  final String content;
+  final String? title;
+  final int level;
+  final GlobalKey? anchorKey;
+}
+
+class _NoteEditorScreenState extends State<NoteEditorScreen> with WidgetsBindingObserver {
+  final Map<int, GlobalKey> _previewHeadingKeys = <int, GlobalKey>{};
+  int _focusMinutes = 0;
+  Timer? _noteFocusTicker;
+  DateTime? _noteFocusDeadline;
+  int _noteFocusDurationSeconds = 0;
+  int _noteFocusRemainingSeconds = 0;
+  bool _noteFocusRunning = false;
+  bool _noteFocusCompleting = false;
   final FocusNode _contentFocus = FocusNode();
   final LifecycleTimeout _saveTimeout = LifecycleTimeout();
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
+  final TextEditingController _previewAppendController = TextEditingController();
   Timer? _saveTimer;
   late final DateTime _createdAt;
   late String _noteId;
@@ -91,9 +121,26 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String? _folderId;
   String? _vaultFolderId;
   List<String> _tags = const [];
+  List<String> _linkedNoteIds = const [];
   List<String> _attachments = const [];
   List<ChecklistItem> _checklistItems = [];
   bool _previewMode = false;
+  bool _movingPastedImageFromTitle = false;
+  bool _showSlashCommandMenu = false;
+  String _slashCommandQuery = '';
+  int? _slashCommandStart;
+
+  static const List<Map<String, String>> _slashCommands = [
+    {'title': 'Heading 1', 'command': '/heading', 'description': 'Large section heading', 'insert': '# '},
+    {'title': 'Heading 2', 'command': '/heading2', 'description': 'Medium section heading', 'insert': '## '},
+    {'title': 'Heading 3', 'command': '/heading3', 'description': 'Small section heading', 'insert': '### '},
+    {'title': 'To-do list', 'command': '/todo', 'description': 'Add an unchecked task', 'insert': '- [ ] '},
+    {'title': 'Bulleted list', 'command': '/bullet', 'description': 'Start a bullet point', 'insert': '- '},
+    {'title': 'Numbered list', 'command': '/numbered', 'description': 'Start a numbered list', 'insert': '1. '},
+    {'title': 'Quote', 'command': '/quote', 'description': 'Add a quote block', 'insert': '> '},
+    {'title': 'Code block', 'command': '/code', 'description': 'Insert a fenced code block', 'insert': '\u0060\u0060\u0060\n\n\u0060\u0060\u0060'},
+    {'title': 'Divider', 'command': '/divider', 'description': 'Add a horizontal divider', 'insert': '---\n'},
+  ];
   bool _isZenMode = false;
   bool _isCapturingNoteCard = false;
   bool _isLocked = false;
@@ -110,18 +157,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   String _voiceTranscript = '';
   Timer? _voiceDurationTimer;
   int _voiceElapsedSeconds = 0;
-  final GlobalKey<TooltipState> _voiceHintKey = GlobalKey<TooltipState>();
   final ScreenshotController _noteCardScreenshotController = ScreenshotController();
-
-  static const _voiceHintShownKey = 'orah_voice_hint_shown';
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _speechService = widget.speechService ?? SpeechToTextService();
 
     final existing = widget.note;
     _reviewCounted = existing != null;
+    _focusMinutes = existing?.focusMinutes ?? 0;
     _noteId = existing?.id ?? _newId();
     _createdAt = existing?.createdAt ?? DateTime.now();
     _noteType = existing?.type ?? widget.initialType;
@@ -133,6 +179,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _contentController = TextEditingController(
       text: locked ? '' : (existing?.content ?? widget.initialContent ?? ''),
     );
+    // Reopen notes containing inline images in rendered mode so users see
+    // the actual images rather than raw Markdown file links.
+    _previewMode = !locked && _containsInlineImage(_contentController.text);
 
     _isPinned = existing?.isPinned ?? false;
     _isFavorite = existing?.isFavorite ?? false;
@@ -147,26 +196,17 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     _folderId = existing?.folderId;
     _vaultFolderId = existing?.vaultFolderId ?? widget.initialVaultFolderId;
     _tags = locked ? const [] : [...(existing?.tags ?? const [])];
+    _linkedNoteIds = locked ? const [] : [...(existing?.linkedNoteIds ?? const [])];
     _attachments = [...(existing?.attachments ?? const [])];
     _checklistItems = locked ? [] : [...(existing?.checklistItems ?? const [])];
     if (!locked && _noteType == NoteType.checklist && _checklistItems.isEmpty && (existing?.content.trim().isNotEmpty ?? false)) _checklistItems = _parseChecklistContent(existing!.content);
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
+    unawaited(_restoreNoteFocusTimer());
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _maybeShowVoiceHint();
       if (widget.autoStartVoice) _toggleVoiceInput();
       if (widget.autoOpenReminder) _setDueDate();
-    });
-  }
-
-  Future<void> _maybeShowVoiceHint() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getBool(_voiceHintShownKey) == true || !mounted) return;
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _voiceHintKey.currentState?.ensureTooltipVisible();
     });
   }
 
@@ -216,17 +256,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _handleVoiceFabTap() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_voiceHintShownKey, true);
-    if (!mounted) return;
-    if (_isListening) {
-      await _stopAndSaveVoiceInput();
-    } else {
-      await _toggleVoiceInput();
-    }
   }
 
   Future<void> _toggleVoiceInput() async {
@@ -474,6 +503,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   Future<void> _toggleChecklistItem(int index, bool value) async {
     setState(() { _checklistItems[index] = _checklistItems[index].copyWith(isDone: value); _hasChanges = true; });
+    await _save();
+  }
+
+  Future<void> _setChecklistItemReminder(int index) async {
+    final item = _checklistItems[index];
+    final now = DateTime.now();
+    final initial = item.dueAt ?? now.add(const Duration(hours: 1));
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isBefore(now) ? now : initial,
+      firstDate: now,
+      lastDate: DateTime(9999, 12, 31),
+    );
+    if (picked == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initial),
+    );
+    if (time == null || !mounted) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(
+        dueAt: DateTime(picked.year, picked.month, picked.day, time.hour, time.minute),
+      );
+      _hasChanges = true;
+    });
+    await _save();
+  }
+
+  Future<void> _clearChecklistItemReminder(int index) async {
+    final item = _checklistItems[index];
+    await OrahReminderService.instance.cancel('checklist:${item.id}');
+    if (!mounted) return;
+    setState(() {
+      _checklistItems[index] = item.copyWith(clearDueAt: true);
+      _hasChanges = true;
+    });
     await _save();
   }
 
@@ -755,8 +820,179 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${DateTime.now().millisecondsSinceEpoch}';
 
-  void _onChanged() {
+  bool _containsInlineImage(String content) => RegExp(
+        r'!\[[^\]]*\]\((?:file|https?|content):[^)]+\)',
+        caseSensitive: false,
+      ).hasMatch(content);
+
+  void _handleTitleInput(String value) {
+    if (_movingPastedImageFromTitle || _isLocked) return;
+    // Some Android keyboards paste copied images as Markdown or as a direct
+    // image URL. Keep image payloads out of the subject and move them into
+    // the note body, where the existing Markdown renderer displays them.
+    final imagePattern = RegExp(
+      r'!\[[^\]]*\]\((?:file|https?|content):[^)]+\)|(?:file|https?|content)://[^\s)]+\.(?:png|jpe?g|gif|webp|heic)(?:\?[^\s)]*)?',
+      caseSensitive: false,
+    );
+    final matches = imagePattern.allMatches(value).toList();
+    if (matches.isEmpty) return;
+
+    final imageBlocks = matches.map((match) {
+      final pasted = match.group(0)!;
+      if (pasted.startsWith('![')) return pasted;
+      final segments = Uri.tryParse(pasted)?.pathSegments ?? const <String>[];
+      final filename = segments.isEmpty ? 'Pasted image' : segments.last;
+      return '![$filename]($pasted "width=320")';
+    }).join('\n\n');
+    final cleanTitle = value.replaceAll(imagePattern, '').replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+    final currentBody = _contentController.text.trimRight();
+    final nextBody = currentBody.isEmpty
+        ? imageBlocks
+        : '$currentBody\n\n$imageBlocks';
+    _movingPastedImageFromTitle = true;
+    _contentController.value = TextEditingValue(
+      text: nextBody,
+      selection: TextSelection.collapsed(offset: nextBody.length),
+      composing: TextRange.empty,
+    );
+    _titleController.value = TextEditingValue(
+      text: cleanTitle,
+      selection: TextSelection.collapsed(offset: cleanTitle.length),
+      composing: TextRange.empty,
+    );
+    _movingPastedImageFromTitle = false;
     _hasChanges = true;
+    if (mounted) setState(() => _previewMode = true);
+    _save();
+  }
+
+  void _onChanged() {
+    if (_movingPastedImageFromTitle) return;
+    _updateSlashCommandMenu();
+    _hasChanges = true;
+    _save();
+  }
+
+  void _updateSlashCommandMenu() {
+    if (!mounted || _isLocked || _previewMode || _noteType == NoteType.checklist) {
+      if (_showSlashCommandMenu) {
+        setState(() {
+          _showSlashCommandMenu = false;
+          _slashCommandQuery = '';
+          _slashCommandStart = null;
+        });
+      }
+      return;
+    }
+    final value = _contentController.value;
+    final selection = value.selection;
+    if (!selection.isValid || !selection.isCollapsed) {
+      if (_showSlashCommandMenu) {
+        setState(() {
+          _showSlashCommandMenu = false;
+          _slashCommandQuery = '';
+          _slashCommandStart = null;
+        });
+      }
+      return;
+    }
+    final cursor = selection.baseOffset;
+    final lineStart = value.text.lastIndexOf('\n', cursor > 0 ? cursor - 1 : 0) + 1;
+    final linePrefix = value.text.substring(lineStart, cursor);
+    final match = RegExp(r'^(\s*)/([a-zA-Z-]*)$').firstMatch(linePrefix);
+    if (match == null) {
+      if (_showSlashCommandMenu) {
+        setState(() {
+          _showSlashCommandMenu = false;
+          _slashCommandQuery = '';
+          _slashCommandStart = null;
+        });
+      }
+      return;
+    }
+    final query = match.group(2)!.toLowerCase();
+    final start = lineStart + match.group(1)!.length;
+    if (!_showSlashCommandMenu || _slashCommandQuery != query || _slashCommandStart != start) {
+      setState(() {
+        _showSlashCommandMenu = true;
+        _slashCommandQuery = query;
+        _slashCommandStart = start;
+      });
+    }
+  }
+
+  List<Map<String, String>> get _filteredSlashCommands {
+    if (_slashCommandQuery.isEmpty) return _slashCommands;
+    return _slashCommands.where((item) {
+      return item['title']!.toLowerCase().contains(_slashCommandQuery) ||
+          item['command']!.substring(1).contains(_slashCommandQuery) ||
+          item['description']!.toLowerCase().contains(_slashCommandQuery);
+    }).toList();
+  }
+
+  Widget _buildSlashCommandMenu(ThemeData theme) {
+    final commands = _filteredSlashCommands;
+    if (commands.isEmpty) return const SizedBox.shrink();
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 3,
+      clipBehavior: Clip.antiAlias,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 280),
+        child: ListView.separated(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          itemCount: commands.length,
+          separatorBuilder: (_, __) => const Divider(height: 1, indent: 52),
+          itemBuilder: (context, index) {
+            final item = commands[index];
+            final icon = switch (item['title']) {
+              'Heading 1' => Icons.title_rounded,
+              'Heading 2' => Icons.format_size_rounded,
+              'Heading 3' => Icons.text_fields_rounded,
+              'To-do list' => Icons.check_box_outlined,
+              'Bulleted list' => Icons.format_list_bulleted_rounded,
+              'Numbered list' => Icons.format_list_numbered_rounded,
+              'Quote' => Icons.format_quote_rounded,
+              'Code block' => Icons.code_rounded,
+              _ => Icons.horizontal_rule_rounded,
+            };
+            return ListTile(
+              dense: true,
+              leading: Icon(icon, color: theme.colorScheme.primary),
+              title: Text(item['title']!),
+              subtitle: Text(item['description']!),
+              trailing: Text(item['command']!, style: theme.textTheme.labelSmall),
+              onTap: () => _applySlashCommand(item),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _applySlashCommand(Map<String, String> command) {
+    final value = _contentController.value;
+    final selection = value.selection;
+    final start = _slashCommandStart;
+    if (start == null || !selection.isValid) return;
+    final insertion = command['insert']!;
+    final end = selection.baseOffset;
+    final replacement = value.text.replaceRange(start, end, insertion);
+    var caret = start + insertion.length;
+    if (command['title'] == 'Code block') caret = start + 4;
+    _contentController.value = TextEditingValue(
+      text: replacement,
+      selection: TextSelection.collapsed(offset: caret.clamp(0, replacement.length)),
+      composing: TextRange.empty,
+    );
+    setState(() {
+      _showSlashCommandMenu = false;
+      _slashCommandQuery = '';
+      _slashCommandStart = null;
+      _hasChanges = true;
+    });
+    _contentFocus.requestFocus();
     _save();
   }
   Future<void> _save() async {
@@ -802,6 +1038,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             folderId: _folderId,
             vaultFolderId: _vaultFolderId,
             tags: storedTags,
+            linkedNoteIds: _isLocked ? const [] : _linkedNoteIds,
             attachments: _attachments,
             checklistItems: storedChecklistItems,
             isPinned: _isPinned,
@@ -812,6 +1049,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            focusMinutes: _focusMinutes,
           )
         : widget.note!.copyWith(
             title: storedTitle,
@@ -821,6 +1059,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             folderId: _folderId,
             vaultFolderId: _vaultFolderId,
             tags: storedTags,
+            linkedNoteIds: _isLocked ? const [] : _linkedNoteIds,
             attachments: _attachments,
             checklistItems: storedChecklistItems,
             isPinned: _isPinned,
@@ -831,6 +1070,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             dueAt: _dueAt,
             mood: _mood,
             imagePath: _imagePath,
+            focusMinutes: _focusMinutes,
           );
 
     await _saveTimeout.run(widget.repository.saveNote(note), const Duration(seconds: 10));
@@ -882,6 +1122,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         );
       }
     }
+  }
+
+  Future<void> _showVersionHistory() async {
+    if (_isLocked || widget.repository is! LocalNoteRepository) return;
+    await _save();
+    if (!mounted || _saveFailed) return;
+    final restored = await showModalBottomSheet<Note>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => NoteVersionHistorySheet(
+        repository: widget.repository as LocalNoteRepository,
+        noteId: _noteId,
+      ),
+    );
+    if (restored == null || !mounted) return;
+    setState(() {
+      _titleController.text = restored.title;
+      _contentController.text = restored.content;
+      _noteType = restored.type;
+      _tags = [...restored.tags];
+      _attachments = [...restored.attachments];
+      _checklistItems = [...restored.checklistItems];
+      _imagePath = restored.imagePath;
+      _folderId = restored.folderId;
+      _vaultFolderId = restored.vaultFolderId;
+      _isPinned = restored.isPinned;
+      _isFavorite = restored.isFavorite;
+      _isArchived = restored.isArchived;
+      _noteColor = restored.color;
+      _dueAt = restored.dueAt;
+      _mood = restored.mood;
+      _hasChanges = true;
+    });
+    await _save();
   }
 
   Future<void> _close() async {
@@ -1108,6 +1383,26 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
 
+  Future<void> _addImageToBody(ImageSource source) async {
+    try {
+      final picked = await ImagePicker().pickImage(source: source, imageQuality: 92);
+      if (picked == null) return;
+      final path = await const NovaAttachmentService().importXFile(picked);
+      if (!mounted) return;
+      setState(() {
+        if (!_attachments.contains(path)) _attachments = [..._attachments, path];
+        _hasChanges = true;
+      });
+      await _insertImageIntoBody(path);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not insert image into note body: $error')),
+        );
+      }
+    }
+  }
+
   Future<void> _addImage(ImageSource source) async {
     try {
       final picked = await ImagePicker().pickImage(
@@ -1118,7 +1413,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       final path = await const NovaAttachmentService().importXFile(picked);
       setState(() {
         _attachments = [..._attachments, path];
-        _imagePath ??= path;
         _hasChanges = true;
       });
       await _save();
@@ -1131,16 +1425,87 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  Future<void> _scanDocumentToJpg() async {
+    if (!Platform.isAndroid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Document scanning is currently available on Android.')),
+      );
+      return;
+    }
+    if (_isLocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unlock this note before adding a scanned document.')),
+      );
+      return;
+    }
+
+    final scanner = DocumentScanner(
+      options: DocumentScannerOptions(
+        documentFormats: const {DocumentFormat.jpeg},
+        mode: ScannerMode.full,
+        pageLimit: 20,
+        isGalleryImport: true,
+      ),
+    );
+
+    try {
+      final result = await scanner.scanDocument();
+      final scannedImages = result.images ?? const <String>[];
+      if (scannedImages.isEmpty) return;
+
+      final imported = <String>[];
+      for (final imagePath in scannedImages) {
+        imported.add(await const NovaAttachmentService().importFile(imagePath));
+      }
+      if (imported.isEmpty || !mounted) return;
+
+      setState(() {
+        _attachments = [..._attachments, ...imported];
+        _hasChanges = true;
+      });
+      await _save();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              imported.length == 1
+                  ? 'Scanned document saved as JPG.'
+                  : '${imported.length} scanned pages saved as JPG attachments.',
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not scan document: $error')),
+        );
+      }
+    } finally {
+      try {
+        await scanner.close();
+      } catch (_) {
+        // The scanner may already have released its native resources.
+      }
+    }
+  }
+
   Future<void> _addFiles() async {
     try {
       final result = await FilePicker.pickFiles();
       if (result.isEmpty) return;
       final imported = <String>[];
       for (final file in result) {
-        if (file.path == null) continue;
-        imported.add(
-          await const NovaAttachmentService().importFile(file.path!),
-        );
+        final path = file.path;
+        if (path != null && path.isNotEmpty) {
+          imported.add(await const NovaAttachmentService().importFile(path));
+        } else {
+          // file_picker v13 removed the public bytes property. Read on demand.
+          final bytes = await file.readAsBytes();
+          if (bytes.isNotEmpty) {
+            imported.add(await const NovaAttachmentService().importBytes(bytes, file.name));
+          }
+        }
       }
       if (imported.isEmpty) return;
       setState(() {
@@ -1157,12 +1522,41 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     }
   }
 
+  bool _bodyReferencesImage(String path) {
+    final fileUri = Uri.file(path).toString();
+    return _contentController.text.contains(fileUri) ||
+        _contentController.text.contains(path);
+  }
+
   Future<void> _removeAttachment(String path) async {
-    await const NovaAttachmentService().delete(path);
+    // A single imported file may be referenced independently by the cover
+    // image and/or inline body Markdown. Removing its attachment chip must not
+    // delete the underlying file while either reference still exists.
+    final isUsedAsCover = _imagePath == path;
+    final isUsedInBody = _bodyReferencesImage(path);
+    if (!isUsedAsCover && !isUsedInBody) {
+      await const NovaAttachmentService().delete(path);
+    }
+    if (!mounted) return;
     setState(() {
       _attachments = _attachments.where((item) => item != path).toList();
       _hasChanges = true;
     });
+    await _save();
+  }
+
+  Future<void> _removeCoverImage() async {
+    final path = _imagePath;
+    if (path == null) return;
+    // Clear only the cover reference. Keep the file if inline body Markdown
+    // still uses it, and leave the body untouched.
+    setState(() {
+      _imagePath = null;
+      _hasChanges = true;
+    });
+    if (!_attachments.contains(path) && !_bodyReferencesImage(path)) {
+      await const NovaAttachmentService().delete(path);
+    }
     await _save();
   }
 
@@ -1281,13 +1675,44 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
   }
 
+  Future<void> _insertImageIntoBody(String path) async {
+    if (_isLocked || !File(path).existsSync()) return;
+    final value = _contentController.value;
+    final selection = value.selection;
+    final start = selection.isValid ? selection.start : value.text.length;
+    final end = selection.isValid ? selection.end : value.text.length;
+    final imageMarkdown = '![' + p.basename(path) + '](' + Uri.file(path).toString() + ' "width=320")';
+    final prefix = start > 0 && value.text[start - 1] != '\n' ? '\n\n' : '';
+    final suffix = end < value.text.length && value.text.substring(end).startsWith('\n') ? '' : '\n\n';
+    _contentController.value = value.copyWith(
+      text: value.text.replaceRange(start, end, prefix + imageMarkdown + suffix),
+      selection: TextSelection.collapsed(offset: start + prefix.length + imageMarkdown.length + suffix.length),
+      composing: TextRange.empty,
+    );
+    _hasChanges = true;
+    if (mounted) setState(() => _previewMode = true);
+    await _save();
+  }
+
   void _showAttachmentActions(String path) {
+    final isImage = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.heic']
+        .contains(p.extension(path).toLowerCase());
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) => SafeArea(
         child: Wrap(
           children: [
+            if (isImage)
+              ListTile(
+                leading: const Icon(Icons.add_photo_alternate_outlined),
+                title: const Text('Insert image into note body'),
+                subtitle: const Text('Place the image at the current cursor position'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _insertImageIntoBody(path);
+                },
+              ),
             ListTile(leading: const Icon(Icons.visibility_outlined), title: const Text('Preview'), onTap: () { Navigator.pop(sheetContext); _previewAttachment(path); }),
             ListTile(leading: const OrahAssetIcon('share'), title: const Text('Share'), onTap: () { Navigator.pop(sheetContext); _shareAttachment(path); }),
             ListTile(leading: const Icon(Icons.drive_file_rename_outline), title: const Text('Rename'), onTap: () { Navigator.pop(sheetContext); _renameAttachment(path); }),
@@ -1308,6 +1733,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.add_photo_alternate_outlined),
+              title: const Text('Choose image to insert into note body'),
+              subtitle: const Text('Adds the image and opens a preview of the note body'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _addImageToBody(ImageSource.gallery);
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.photo_library_outlined),
               title: const Text('Choose from gallery'),
               onTap: () {
@@ -1315,6 +1749,16 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 _addImage(ImageSource.gallery);
               },
             ),
+            if (Platform.isAndroid)
+              ListTile(
+                leading: const Icon(Icons.document_scanner_outlined),
+                title: const Text('Scan document (save as JPG)'),
+                subtitle: const Text('Auto-detect edges, crop and enhance pages'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _scanDocumentToJpg();
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
               title: const Text('Take a photo'),
@@ -1358,14 +1802,545 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _noteFocusTicker?.cancel();
     _saveTimeout.dispose();
     _speechService.dispose();
     _voiceDurationTimer?.cancel();
     _saveTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
+    _previewAppendController.dispose();
     _contentFocus.dispose();
     super.dispose();
+  }
+
+  Future<void> _manageLinkedNotes() async {
+    if (_isLocked) return;
+    final allNotes = await widget.repository.getNotes();
+    if (!mounted) return;
+    final candidates = allNotes.where((note) =>
+      note.id != _noteId && !note.isTrashed && !note.isLocked
+    ).toList()..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    final selected = Set<String>.from(_linkedNoteIds);
+    final result = await showDialog<Set<String>>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Linked notes'),
+          content: SizedBox(
+            width: 440,
+            child: candidates.isEmpty
+              ? const Text('Create another note first, then you can link it here.')
+              : ListView(
+                  shrinkWrap: true,
+                  children: [
+                    const Text('Select notes related to this one. Links are saved with your note.'),
+                    const SizedBox(height: 12),
+                    for (final candidate in candidates)
+                      CheckboxListTile(
+                        value: selected.contains(candidate.id),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(candidate.title.trim().isEmpty ? 'Untitled note' : candidate.title),
+                        subtitle: Text(candidate.content.trim().replaceAll(RegExp(r'\\s+'), ' '), maxLines: 2, overflow: TextOverflow.ellipsis),
+                        onChanged: (checked) => setDialogState(() {
+                          if (checked == true) {
+                            selected.add(candidate.id);
+                          } else {
+                            selected.remove(candidate.id);
+                          }
+                        }),
+                      ),
+                  ],
+                ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(dialogContext, selected), child: const Text('Save links')),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      _linkedNoteIds = result.toList();
+      _hasChanges = true;
+    });
+    await _save();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Saved ${_linkedNoteIds.length} linked note(s).')),
+    );
+  }
+
+  Future<void> _linkToKanban() async {
+    if (_isLocked) return;
+    final repo = await openKanbanRepository();
+    if (!mounted) return;
+    final kind = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Text('Link this note to a Kanban item', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.view_kanban_outlined),
+            title: const Text('Kanban card'),
+            subtitle: const Text('Connect this note to a task card'),
+            onTap: () => Navigator.pop(sheetContext, 'card'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.flag_outlined),
+            title: const Text('Kanban goal'),
+            subtitle: const Text('Connect this note to a goal'),
+            onTap: () => Navigator.pop(sheetContext, 'goal'),
+          ),
+        ]),
+      ),
+    );
+    if (kind == null || !mounted) return;
+    if (kind == 'card') {
+      final cards = await repo.getCards();
+      if (!mounted) return;
+      final selected = await showDialog<KanbanCard>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: const Text('Select Kanban card'),
+          children: cards.isEmpty
+              ? [const Padding(padding: EdgeInsets.all(20), child: Text('No Kanban cards available yet.'))]
+              : cards.map((card) => SimpleDialogOption(
+                  onPressed: () => Navigator.pop(dialogContext, card),
+                  child: Text(card.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                )).toList(),
+        ),
+      );
+      if (selected == null || !mounted) return;
+      await repo.addLink(sourceType: 'card', sourceId: selected.id, targetType: 'note', targetId: _noteId);
+    } else {
+      final goals = await repo.getGoals();
+      if (!mounted) return;
+      final selected = await showDialog<KanbanGoal>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: const Text('Select Kanban goal'),
+          children: goals.isEmpty
+              ? [const Padding(padding: EdgeInsets.all(20), child: Text('No Kanban goals available yet.'))]
+              : goals.map((goal) => SimpleDialogOption(
+                  onPressed: () => Navigator.pop(dialogContext, goal),
+                  child: Text(goal.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                )).toList(),
+        ),
+      );
+      if (selected == null || !mounted) return;
+      await repo.addLink(sourceType: 'goal', sourceId: selected.id, targetType: 'note', targetId: _noteId);
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kanban link saved.')),
+      );
+    }
+  }
+
+  Future<void> _showKanbanBacklinks() async {
+    final l = AppLocalizations.of(context)!;
+    final repo = await openKanbanRepository();
+    final links = await repo.database.query('links',
+      where: 'deleted_at IS NULL AND ((target_type = ? AND target_id = ?) OR (source_type = ? AND source_id = ?))',
+      whereArgs: ['note', _noteId, 'note', _noteId],
+      orderBy: 'created_at DESC');
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(title: Text(l.kanbanLinkedItems), leading: const Icon(Icons.view_kanban_outlined)),
+          if (links.isEmpty) ListTile(title: Text(l.kanbanNoNotesToLink)),
+          for (final link in links)
+            ListTile(
+              leading: Icon(link['source_type'] == 'goal' ? Icons.flag_outlined : Icons.view_kanban_outlined),
+              title: Text(l.kanbanOpenLinkedItem),
+              subtitle: Text(link['source_id'] as String),
+              onTap: () async {
+                final outbound = link['source_type'] == 'note' && link['source_id'] == _noteId;
+                final type = (outbound ? link['target_type'] : link['source_type']) as String;
+                final id = (outbound ? link['target_id'] : link['source_id']) as String;
+                final exists = type == 'goal'
+                  ? await repo.database.query('goals', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1)
+                  : await repo.database.query('kanban_cards', where: 'id = ? AND deleted_at IS NULL AND archived_at IS NULL', whereArgs: [id], limit: 1);
+                if (!sheetContext.mounted) return;
+                Navigator.pop(sheetContext);
+                if (exists.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.kanbanUnavailable)));
+                } else {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => KanbanScreen(repository: repo, initialGoalId: type == 'goal' ? id : null)));
+                }
+              },
+            ),
+        ],
+      )),
+    );
+  }
+
+  Future<void> _appendPreviewText() async {
+    final addition = _previewAppendController.text.trim();
+    if (addition.isEmpty || _isLocked) return;
+    final current = _contentController.text.trimRight();
+    final next = current.isEmpty ? addition : '$current\n\n$addition';
+    _contentController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: next.length),
+      composing: TextRange.empty,
+    );
+    _previewAppendController.clear();
+    _hasChanges = true;
+    if (mounted) setState(() {});
+    await _save();
+  }
+
+  Future<void> _updateInlineImageWidth(Uri uri, double width) async {
+    final expression = RegExp(
+      r'(!\[[^\]]*\]\(' + RegExp.escape(uri.toString()) + r') "width=\d+"\)',
+    );
+    final updated = _contentController.text.replaceAllMapped(
+      expression,
+      (match) => match.group(0)!.replaceFirst(
+        RegExp(r'width=\d+'),
+        'width=${width.round()}',
+      ),
+    );
+    if (updated == _contentController.text) return;
+    _contentController.value = _contentController.value.copyWith(
+      text: updated,
+      selection: TextSelection.collapsed(offset: updated.length),
+      composing: TextRange.empty,
+    );
+    _hasChanges = true;
+    await _save();
+  }
+
+  List<_MarkdownTocSection> _buildMarkdownSections(String markdown) {
+    final sections = <_MarkdownTocSection>[];
+    var currentLines = <String>[];
+    String? currentTitle;
+    var currentLevel = 0;
+    GlobalKey? currentKey;
+    var headingIndex = 0;
+
+    void flush() {
+      if (currentLines.isEmpty) return;
+      sections.add(_MarkdownTocSection(
+        content: currentLines.join('\n'),
+        title: currentTitle,
+        level: currentLevel,
+        anchorKey: currentKey,
+      ));
+    }
+
+    for (final line in markdown.split('\n')) {
+      final trimmed = line.trimLeft();
+      var level = 0;
+      while (level < trimmed.length && level < 4 && trimmed[level] == '#') {
+        level++;
+      }
+      final isHeading = level >= 1 &&
+          level <= 3 &&
+          trimmed.length > level &&
+          trimmed[level].trim().isEmpty &&
+          trimmed.substring(level).trim().isNotEmpty;
+      if (isHeading) {
+        flush();
+        currentLines = <String>[line];
+        var title = trimmed.substring(level).trim();
+        while (title.endsWith('#')) {
+          title = title.substring(0, title.length - 1).trimRight();
+        }
+        currentTitle = title;
+        currentLevel = level;
+        currentKey = _previewHeadingKeys.putIfAbsent(headingIndex, () => GlobalKey());
+        headingIndex++;
+      } else {
+        currentLines.add(line);
+      }
+    }
+    flush();
+    return sections;
+  }
+
+  Widget _buildMarkdownBody(String content) {
+    return MarkdownBody(
+      data: content,
+      selectable: true,
+      imageBuilder: (uri, title, alt) {
+        if (uri.scheme == 'file') {
+          try {
+            final file = File(uri.toFilePath());
+            if (file.existsSync()) {
+              final match = RegExp(r'width=(\d+)').firstMatch(title ?? '');
+              final width = match == null ? 320.0 : double.parse(match.group(1)!);
+              return _ResizableInlineImage(
+                file: file,
+                width: width,
+                onWidthChanged: (nextWidth) => _updateInlineImageWidth(uri, nextWidth),
+              );
+            }
+          } catch (_) {
+            // Invalid local image URI: render the fallback below.
+          }
+          return const Text('Image unavailable');
+        }
+        return Image.network(
+          uri.toString(),
+          errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildPreviewMarkdownWidgets(ThemeData theme) {
+    final markdown = _renderableContent();
+    final sections = _buildMarkdownSections(markdown);
+    final headings = sections.where((section) => section.title != null).toList();
+    if (headings.length < 2) {
+      return <Widget>[_buildMarkdownBody(markdown)];
+    }
+
+    final widgets = <Widget>[
+      Card(
+        margin: const EdgeInsets.only(bottom: 18),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.list_alt_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Table of contents',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              for (final heading in headings)
+                Padding(
+                  padding: EdgeInsets.only(left: (heading.level - 1) * 16.0),
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+                      minimumSize: const Size.fromHeight(36),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      final targetContext = heading.anchorKey?.currentContext;
+                      if (targetContext != null) {
+                        Scrollable.ensureVisible(
+                          targetContext,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          alignment: 0.04,
+                        );
+                      }
+                    },
+                    child: Text(
+                      heading.title!,
+                      textAlign: TextAlign.left,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    ];
+
+    for (final section in sections) {
+      if (section.content.trim().isEmpty) continue;
+      final body = _buildMarkdownBody(section.content);
+      if (section.anchorKey != null) {
+        widgets.add(KeyedSubtree(key: section.anchorKey, child: body));
+      } else {
+        widgets.add(body);
+      }
+      widgets.add(const SizedBox(height: 8));
+    }
+    return widgets;
+  }
+
+  Widget _buildNoteFocusTimerCard(ThemeData theme) {
+    final total = _noteFocusDurationSeconds.clamp(1, 3600);
+    final progress = (1 - (_noteFocusRemainingSeconds / total)).clamp(0.0, 1.0);
+    return Card(
+      color: theme.colorScheme.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(children: [
+          SizedBox(width: 42, height: 42, child: CircularProgressIndicator(
+            value: progress, strokeWidth: 4,
+            backgroundColor: theme.colorScheme.surface.withOpacity(0.35),
+          )),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('FOCUS SESSION IN PROGRESS', style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.7)),
+            Text(_formatNoteFocusTime(_noteFocusRemainingSeconds), style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+            Text('Keep writing — this countdown stays with your note', style: theme.textTheme.bodySmall),
+          ])),
+          IconButton(tooltip: 'Stop focus session', onPressed: _cancelNoteFocusTimer, icon: const Icon(Icons.stop_circle_outlined)),
+        ]),
+      ),
+    );
+  }
+
+  Future<void> _startFocusSession() async {
+    if (_isLocked || _noteFocusRunning) return;
+    final minutes = await showDialog<int>(
+      context: context,
+      builder: (context) => const _FocusSessionDialog(),
+    );
+    if (!mounted || minutes == null || minutes <= 0) return;
+    await _beginNoteFocusTimer(minutes);
+  }
+
+  String _noteFocusPrefsKey(String suffix) => 'orah_note_focus_${_noteId}_$suffix';
+
+  Future<void> _restoreNoteFocusTimer() async {
+    if (_isLocked) return;
+    final prefs = await SharedPreferences.getInstance();
+    final deadlineMs = prefs.getInt(_noteFocusPrefsKey('deadline'));
+    final duration = prefs.getInt(_noteFocusPrefsKey('duration')) ?? 0;
+    final startedMs = prefs.getInt(_noteFocusPrefsKey('startedAt'));
+    if (!mounted || deadlineMs == null || duration <= 0) return;
+    _noteFocusDeadline = DateTime.fromMillisecondsSinceEpoch(deadlineMs);
+    _noteFocusDurationSeconds = duration;
+    if (startedMs == null) {
+      await prefs.setInt(_noteFocusPrefsKey('startedAt'), deadlineMs - duration * 1000);
+    }
+
+    // Restore from the persisted absolute deadline, not from the original
+    // duration. This keeps the clock accurate after leaving the editor,
+    // backgrounding the app, or reopening the note later.
+    _noteFocusRunning = true;
+    final remaining = _noteFocusDeadline!.difference(DateTime.now()).inSeconds;
+    if (remaining <= 0) {
+      await _completeNoteFocusTimer();
+      return;
+    }
+    _noteFocusRemainingSeconds = remaining;
+    if (mounted) setState(() {});
+    await OrahReminderService.instance.scheduleNoteFocusCompletion(
+      noteId: _noteId,
+      minutes: (_noteFocusDurationSeconds / 60).round(),
+      when: _noteFocusDeadline!,
+    );
+    if (!mounted || !_noteFocusRunning) return;
+    _noteFocusTicker?.cancel();
+    _noteFocusTicker = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _updateNoteFocusRemaining(),
+    );
+  }
+
+  Future<void> _beginNoteFocusTimer(int minutes) async {
+    _noteFocusTicker?.cancel();
+    _noteFocusDurationSeconds = minutes * 60;
+    _noteFocusDeadline = DateTime.now().add(Duration(minutes: minutes));
+    _noteFocusRemainingSeconds = _noteFocusDurationSeconds;
+    _noteFocusRunning = true;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_noteFocusPrefsKey('deadline'), _noteFocusDeadline!.millisecondsSinceEpoch);
+    await prefs.setInt(_noteFocusPrefsKey('duration'), _noteFocusDurationSeconds);
+    await prefs.setInt(_noteFocusPrefsKey('startedAt'), DateTime.now().millisecondsSinceEpoch);
+    await OrahReminderService.instance.scheduleNoteFocusCompletion(
+      noteId: _noteId,
+      minutes: minutes,
+      when: _noteFocusDeadline!,
+    );
+    if (!mounted) return;
+    setState(() {});
+    _noteFocusTicker = Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
+  }
+
+  void _updateNoteFocusRemaining() {
+    if (!_noteFocusRunning || _noteFocusDeadline == null) return;
+    final seconds = _noteFocusDeadline!.difference(DateTime.now()).inSeconds;
+    if (seconds <= 0) {
+      unawaited(_completeNoteFocusTimer());
+      return;
+    }
+    if (mounted) setState(() => _noteFocusRemainingSeconds = seconds);
+  }
+
+  Future<void> _completeNoteFocusTimer() async {
+    if (!_noteFocusRunning || _noteFocusCompleting) return;
+    _noteFocusCompleting = true;
+    _noteFocusTicker?.cancel();
+    _noteFocusRunning = false;
+    _noteFocusRemainingSeconds = 0;
+    final completedMinutes = (_noteFocusDurationSeconds / 60).round();
+    _noteFocusDeadline = null;
+    final prefs = await SharedPreferences.getInstance();
+    final startedMs = prefs.getInt(_noteFocusPrefsKey('startedAt'));
+    final startedAt = startedMs == null
+        ? DateTime.now().subtract(Duration(minutes: completedMinutes))
+        : DateTime.fromMillisecondsSinceEpoch(startedMs);
+    await FocusSessionService(prefs).recordCompleted(
+      id: 'note-${_noteId}-${startedAt.microsecondsSinceEpoch}',
+      startedAt: startedAt,
+      completedAt: DateTime.now(),
+      durationMinutes: completedMinutes,
+      noteId: _noteId,
+    );
+    await prefs.remove(_noteFocusPrefsKey('deadline'));
+    await prefs.remove(_noteFocusPrefsKey('duration'));
+    await prefs.remove(_noteFocusPrefsKey('startedAt'));
+    await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
+    if (!mounted) return;
+    setState(() {
+      _focusMinutes += completedMinutes;
+      _hasChanges = true;
+    });
+    await _save();
+    unawaited(SystemSound.play(SystemSoundType.alert));
+    unawaited(HapticFeedback.vibrate());
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Time is up! $completedMinutes-minute focus session completed for this note.')),
+      );
+    }
+    _noteFocusCompleting = false;
+  }
+
+  Future<void> _cancelNoteFocusTimer() async {
+    _noteFocusTicker?.cancel();
+    _noteFocusRunning = false;
+    _noteFocusDeadline = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_noteFocusPrefsKey('deadline'));
+    await prefs.remove(_noteFocusPrefsKey('duration'));
+    await prefs.remove(_noteFocusPrefsKey('startedAt'));
+    await OrahReminderService.instance.cancelNoteFocusCompletion(_noteId);
+    if (mounted) setState(() => _noteFocusRemainingSeconds = 0);
+  }
+
+  String _formatNoteFocusTime(int seconds) =>
+      '${(seconds ~/ 60).toString().padLeft(2, '0')}:${(seconds % 60).toString().padLeft(2, '0')}';
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _noteFocusRunning) {
+      _updateNoteFocusRemaining();
+      _noteFocusTicker ??= Timer.periodic(const Duration(seconds: 1), (_) => _updateNoteFocusRemaining());
+    }
   }
 
   @override
@@ -1394,37 +2369,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       child: Scaffold(
         backgroundColor: _isZenMode ? const Color(0xFFF2FBF7) : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // Keep the writing area unobstructed. Voice capture lives in the
+      // formatting toolbar, not in a floating button over the note text.
       floatingActionButton: _isZenMode
           ? FloatingActionButton.small(
               tooltip: 'Exit Zen Mode',
               onPressed: () => setState(() => _isZenMode = false),
               child: const Icon(Icons.center_focus_strong),
             )
-          : Tooltip(
-        key: _voiceHintKey,
-        message: _isListening ? 'Stop and save voice input' : 'Tap the mic to speak your note',
-        triggerMode: TooltipTriggerMode.manual,
-        child: FloatingActionButton.extended(
-          onPressed: _speechInitializing || _voiceProcessing ? null : _handleVoiceFabTap,
-          backgroundColor: _isListening ? Colors.red.shade600 : const Color(0xFFF97316),
-          foregroundColor: Colors.white,
-          icon: _speechInitializing || _voiceProcessing
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Icon(_isListening ? Icons.stop_rounded : Icons.mic_rounded, size: 26),
-          label: Text(
-            _isListening
-                ? _formatVoiceDuration()
-                : (_speechInitializing || _voiceProcessing ? 'Preparing…' : 'Voice note'),
-          ),
-        ),
-      ),
+          : null,
       appBar: _isZenMode ? null : AppBar(
         leading: IconButton(
           tooltip: 'Back',
@@ -1444,6 +2397,55 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ),
         actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Link options',
+            icon: Badge(
+              isLabelVisible: _linkedNoteIds.isNotEmpty,
+              label: Text('${_linkedNoteIds.length}'),
+              child: const Icon(Icons.link_rounded),
+            ),
+            onSelected: (value) {
+              switch (value) {
+                case 'note':
+                  _manageLinkedNotes();
+                  break;
+                case 'kanban':
+                  _linkToKanban();
+                  break;
+                case 'view':
+                  _showKanbanBacklinks();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'note',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.note_add_outlined),
+                    title: Text('Link to note'),
+                  ),
+                ),
+              if (!_isLocked)
+                const PopupMenuItem(
+                  value: 'kanban',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(Icons.view_kanban_outlined),
+                    title: Text('Link to Kanban'),
+                  ),
+                ),
+              const PopupMenuItem(
+                value: 'view',
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.link_outlined),
+                  title: Text('View linked items'),
+                ),
+              ),
+            ],
+          ),
           IconButton(
             tooltip: _isZenMode ? 'Exit Zen Mode' : 'Zen Mode',
             onPressed: () => setState(() => _isZenMode = !_isZenMode),
@@ -1459,6 +2461,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             onPressed: () => _addImage(ImageSource.gallery),
             icon: const Icon(Icons.image_outlined),
           ),
+          if (widget.note != null && !_isLocked && widget.repository is LocalNoteRepository)
+            IconButton(
+              tooltip: 'Version history',
+              onPressed: _showVersionHistory,
+              icon: const Icon(Icons.history_rounded),
+            ),
           IconButton(
             tooltip: _isPinned ? 'Unpin' : 'Pin',
             onPressed: () => _setFlag(pinned: !_isPinned),
@@ -1469,6 +2477,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             onSelected: (value) async {
               switch (value) {
                 case 'add_image': await _addImage(ImageSource.gallery); return;
+                case 'scan_document': await _scanDocumentToJpg(); return;
                 case 'ocr': await _scanTextFromImage(); return;
                 case 'template': await _showTemplates(); return;
                 case 'reminder': await _setDueDate(); return;
@@ -1556,6 +2565,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 ),
               ),
               const PopupMenuItem(value: 'add_image', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.image_outlined), title: Text('Add image'))),
+              if (Platform.isAndroid) const PopupMenuItem(value: 'scan_document', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan document (JPG)'))),
               const PopupMenuItem(value: 'ocr', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.document_scanner_outlined), title: Text('Scan text from image'))),
               const PopupMenuItem(value: 'template', child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(Icons.auto_awesome_outlined), title: Text('Template'))),
               PopupMenuItem(value: 'reminder', child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.notifications_outlined), title: Text(_dueAt == null ? 'Set reminder' : 'Reminder: ' + DateFormat('d MMM, h:mm a').format(_dueAt!)))),
@@ -1606,7 +2616,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           ),
         ],
       ),
-      body: SafeArea(
+      body: OrahContentFrame(child: SafeArea(
         child: Column(
           children: [
             if (_isListening || _speechInitializing || _voiceProcessing)
@@ -1701,17 +2711,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   ],
                 ),
               ),
-            if (_imagePath != null && File(_imagePath!).existsSync())
+            if (_imagePath != null && !_attachments.contains(_imagePath) && File(_imagePath!).existsSync())
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.file(
-                    File(_imagePath!),
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                child: Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(_imagePath!),
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    if (!_isLocked)
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton.filledTonal(
+                              tooltip: 'Insert a copy into note body',
+                              onPressed: () => _insertImageIntoBody(_imagePath!),
+                              icon: const Icon(Icons.add_photo_alternate_outlined),
+                            ),
+                            const SizedBox(width: 6),
+                            IconButton.filledTonal(
+                              tooltip: 'Remove cover image only',
+                              onPressed: _removeCoverImage,
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
             if (_attachments.isNotEmpty)
@@ -1800,7 +2835,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                 ),
                           ),
                         const SizedBox(height: 12),
-                        MarkdownBody(data: _renderableContent(), selectable: true),
+                        ..._buildPreviewMarkdownWidgets(theme),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _previewAppendController,
+                          minLines: 2,
+                          maxLines: 5,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: InputDecoration(
+                            labelText: 'Continue writing',
+                            hintText: 'Type more text without hiding your images…',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                            suffixIcon: IconButton(
+                              tooltip: 'Add text to note',
+                              onPressed: _appendPreviewText,
+                              icon: const Icon(Icons.send_rounded),
+                            ),
+                          ),
+                          onSubmitted: (_) => _appendPreviewText(),
+                        ),
                       ],
                     )
                   : ListView(
@@ -1832,10 +2885,14 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               ),
                           decoration: const InputDecoration(hintText: 'Title', filled: false, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                           maxLines: 2,
+                          onChanged: _handleTitleInput,
                         ),
                         const SizedBox(height: 8),
+                        if (_noteFocusRunning) _buildNoteFocusTimerCard(theme),
+                        if (_showSlashCommandMenu && !_previewMode && _noteType != NoteType.checklist)
+                          _buildSlashCommandMenu(theme),
                         if (_noteType == NoteType.checklist)
-                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onReorder: _reorderChecklist)
+                          _ChecklistEditor(items: _checklistItems, onAdd: _addChecklistItem, onToggle: _toggleChecklistItem, onEdit: _editChecklistItem, onDelete: _removeChecklistItem, onSetReminder: _setChecklistItemReminder, onClearReminder: _clearChecklistItemReminder, onReorder: _reorderChecklist)
                         else
                           TextField(
                             controller: _contentController,
@@ -1871,14 +2928,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                 top: false,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  // Reserve trailing space for the endFloat voice FAB above this
-                  // row so the last toolbar controls can scroll clear of its hit area.
-                  padding: EdgeInsets.fromLTRB(
-                    14,
-                    8,
-                    MediaQuery.sizeOf(context).width < 500 ? 260 : 116,
-                    8,
-                  ),
+                  // The voice control is part of this toolbar, so controls
+                  // use normal edge padding and never sit beneath a floating mic.
+                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
                   child: Row(
                     children: [
                       _ToolButton(
@@ -1917,8 +2969,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: () => _insertPrefix('> '),
                       ),
                       _ToolButton(
-                        icon: Icons.link_rounded,
-                        label: 'Link',
+                        icon: Icons.insert_link_rounded,
+                        label: 'Insert web link',
                         onPressed: _insertLink,
                       ),
                       _ToolButton(
@@ -1942,9 +2994,24 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         onPressed: _organize,
                       ),
                       _ToolButton(
+                        icon: Icons.add_photo_alternate_outlined,
+                        label: 'Insert image in body',
+                        onPressed: () => _addImageToBody(ImageSource.gallery),
+                      ),
+                      _ToolButton(
                         icon: Icons.attach_file_rounded,
                         label: 'Add image or file',
                         onPressed: _showAttachmentMenu,
+                      ),
+                      _ToolButton(
+                        icon: Icons.timer_outlined,
+                        label: _focusMinutes > 0 ? 'Focus session · $_focusMinutes min' : 'Focus session',
+                        onPressed: _startFocusSession,
+                      ),
+                      _ToolButton(
+                        icon: Icons.notifications_active_outlined,
+                        label: _dueAt == null ? 'Set reminder' : 'Edit reminder',
+                        onPressed: _setDueDate,
                       ),
                       _ToolButton(
                         icon: _isListening ? Icons.stop_circle_outlined : null,
@@ -1959,7 +3026,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
           ],
         ),
-        ),
+        )),
       ),
     );
   }
@@ -2024,6 +3091,8 @@ class _ChecklistEditor extends StatelessWidget {
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetReminder,
+    required this.onClearReminder,
     required this.onReorder,
   });
 
@@ -2032,6 +3101,8 @@ class _ChecklistEditor extends StatelessWidget {
   final Future<void> Function(int, bool) onToggle;
   final Future<void> Function(int) onEdit;
   final Future<void> Function(int) onDelete;
+  final Future<void> Function(int) onSetReminder;
+  final Future<void> Function(int) onClearReminder;
   final Future<void> Function(int, int) onReorder;
 
   @override
@@ -2080,6 +3151,8 @@ class _ChecklistEditor extends StatelessWidget {
                   onToggle: (value) => onToggle(index, value),
                   onEdit: () => onEdit(index),
                   onDelete: () => onDelete(index),
+                  onSetReminder: () => onSetReminder(index),
+                  onClearReminder: () => onClearReminder(index),
                   onMoveUp: index > 0
                       ? () => onReorder(index, index - 1)
                       : null,
@@ -2112,6 +3185,8 @@ class _ChecklistRow extends StatelessWidget {
     required this.onToggle,
     required this.onEdit,
     required this.onDelete,
+    required this.onSetReminder,
+    required this.onClearReminder,
     required this.onMoveUp,
     required this.onMoveDown,
   });
@@ -2122,6 +3197,8 @@ class _ChecklistRow extends StatelessWidget {
   final ValueChanged<bool> onToggle;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onSetReminder;
+  final VoidCallback onClearReminder;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
 
@@ -2155,6 +3232,12 @@ class _ChecklistRow extends StatelessWidget {
               tooltip: 'Move down',
               onPressed: canMoveDown ? onMoveDown : null,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            ),
+            IconButton(
+              tooltip: item.dueAt == null ? 'Set task reminder' : 'Edit task reminder (long-press to clear)',
+              onPressed: onSetReminder,
+              onLongPress: item.dueAt == null ? null : onClearReminder,
+              icon: Icon(item.dueAt == null ? Icons.notifications_none_rounded : Icons.notifications_active_rounded),
             ),
             IconButton(
               tooltip: 'Delete task',
@@ -2201,13 +3284,164 @@ class _ToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isVoice = label == 'Voice input' || label == 'Stop voice input';
+    final isStoppingVoice = label == 'Stop voice input';
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(right: 4),
-      child: IconButton(
+      child: IconButton.filledTonal(
         tooltip: label,
+        visualDensity: VisualDensity.compact,
+        style: isVoice
+            ? IconButton.styleFrom(
+                backgroundColor: isStoppingVoice
+                    ? theme.colorScheme.errorContainer
+                    : theme.colorScheme.secondaryContainer,
+                foregroundColor: isStoppingVoice
+                    ? theme.colorScheme.onErrorContainer
+                    : theme.colorScheme.onSecondaryContainer,
+              )
+            : null,
         onPressed: onPressed,
-        icon: assetIcon != null ? OrahAssetIcon(assetIcon!) : Icon(icon!),
+        icon: assetIcon != null ? OrahAssetIcon(assetIcon!, size: 20) : Icon(icon!, size: 21),
       ),
+    );
+  }
+}
+
+class _ResizableInlineImage extends StatefulWidget {
+  const _ResizableInlineImage({
+    required this.file,
+    required this.width,
+    required this.onWidthChanged,
+  });
+
+  final File file;
+  final double width;
+  final ValueChanged<double> onWidthChanged;
+
+  @override
+  State<_ResizableInlineImage> createState() => _ResizableInlineImageState();
+}
+
+class _ResizableInlineImageState extends State<_ResizableInlineImage> {
+  late double _width;
+
+  @override
+  void initState() {
+    super.initState();
+    _width = widget.width;
+  }
+
+  @override
+  void didUpdateWidget(covariant _ResizableInlineImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.width != widget.width) _width = widget.width;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxWidth = constraints.maxWidth.isFinite ? constraints.maxWidth : 600.0;
+          final displayWidth = _width.clamp(120.0, maxWidth).toDouble();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  widget.file,
+                  width: displayWidth,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Text('Image unavailable'),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  IconButton(
+                    tooltip: 'Make image smaller',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      final next = (_width - 40).clamp(120.0, maxWidth).toDouble();
+                      setState(() => _width = next);
+                      widget.onWidthChanged(next);
+                    },
+                    icon: const Icon(Icons.remove_circle_outline_rounded),
+                  ),
+                  Text('${displayWidth.round()} px', style: theme.textTheme.labelSmall),
+                  IconButton(
+                    tooltip: 'Make image larger',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      final next = (_width + 40).clamp(120.0, maxWidth).toDouble();
+                      setState(() => _width = next);
+                      widget.onWidthChanged(next);
+                    },
+                    icon: const Icon(Icons.add_circle_outline_rounded),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _FocusSessionDialog extends StatefulWidget {
+  const _FocusSessionDialog();
+
+  @override
+  State<_FocusSessionDialog> createState() => _FocusSessionDialogState();
+}
+
+class _FocusSessionDialogState extends State<_FocusSessionDialog> {
+  static const List<int> _choices = [10, 25, 50, 60];
+  int _selectedMinutes = 25;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: const Text('Start a focus session'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Choose how long you want to focus on this note.'),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final minutes in _choices)
+                ChoiceChip(
+                  label: Text('$minutes min'),
+                  selected: _selectedMinutes == minutes,
+                  onSelected: (_) => setState(() => _selectedMinutes = minutes),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text('The countdown will remain visible inside your note after you close this window.', style: theme.textTheme.bodySmall),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        FilledButton.icon(
+          onPressed: () => Navigator.of(context).pop(_selectedMinutes),
+          icon: const Icon(Icons.play_arrow_rounded),
+          label: const Text('Start focus'),
+        ),
+      ],
     );
   }
 }
