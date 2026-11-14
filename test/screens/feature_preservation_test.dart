@@ -8,6 +8,8 @@ import 'package:orah_notes/data/repositories/note_repository_provider.dart';
 import 'package:orah_notes/models/note.dart';
 import 'package:orah_notes/screens/trash_screen.dart';
 
+Size? testerViewSizeForPreservationTests;
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -29,6 +31,11 @@ void main() {
   }
 
   setUp(() async {
+    final binding = TestWidgetsFlutterBinding.ensureInitialized();
+    if (binding is TestWidgetsFlutterBinding) {
+      binding.platformDispatcher.views.first.physicalSize = const Size(900, 1800);
+      binding.platformDispatcher.views.first.devicePixelRatio = 1;
+    }
     SharedPreferences.setMockInitialValues({});
     preferences = await SharedPreferences.getInstance();
     repository = InMemoryNoteRepository(preferences);
@@ -109,6 +116,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Restore me'), findsOneWidget);
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Restore'));
     await tester.pumpAndSettle();
 
