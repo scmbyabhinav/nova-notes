@@ -67,8 +67,8 @@ void main() {
     await tester.tap(find.text('Merge with…'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Source'), findsOneWidget);
-    await tester.tap(find.text('Source'));
+    expect(find.widgetWithText(ListTile, 'Source'), findsOneWidget);
+    await tester.tap(find.widgetWithText(ListTile, 'Source'));
     await tester.pumpAndSettle();
 
     expect(find.text('Confirm merge'), findsOneWidget);
@@ -96,7 +96,9 @@ void main() {
     await tester.longPress(find.text('Delete me').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete note (move to Trash)'));
-    await tester.pumpAndSettle();
+    // Do not pumpAndSettle here: the production Undo snackbar intentionally
+    // auto-dismisses after three seconds, and settling advances that timer.
+    await tester.pump();
 
     expect((await repository.getNote('delete-undo'))!.isTrashed, isTrue);
     expect(find.text('Moved to trash'), findsOneWidget);
