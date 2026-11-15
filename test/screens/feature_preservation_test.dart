@@ -113,7 +113,7 @@ void main() {
       note('trash-restore', 'Restore me', 'Recover this content', trashed: true),
     );
 
-    await tester.pumpWidget(const MaterialApp(home: TrashScreen()));
+    await tester.pumpWidget(MaterialApp(home: TrashScreen(cancelReminders: (_) async {})));
     await tester.pumpAndSettle();
 
     expect(find.text('Restore me'), findsOneWidget);
@@ -139,7 +139,7 @@ void main() {
     await tester.longPress(find.text('Undo me').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete note (move to Trash)'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 350));
 
     expect((await repository.getNote('undo-delete'))!.isTrashed, isTrue);
     expect(find.text('Undo'), findsOneWidget);
