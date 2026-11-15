@@ -37,7 +37,6 @@ class OrahApp extends StatefulWidget {
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
   final Future<void> Function(String noteId)? cancelReminders;
-  final Future<void> Function(String noteId)? cancelReminders;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -76,7 +75,7 @@ class _OrahAppState extends State<OrahApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       navigatorKey: orahNavigatorKey,
       navigatorObservers: [orahRouteObserver],
-      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting),
+      home: OrahEntryGate(themeController: _theme, speechService: widget.speechService, requestMicrophonePermission: widget.requestMicrophonePermission, skipRegistrationForTesting: widget.skipRegistrationForTesting, cancelReminders: widget.cancelReminders),
     );
   }
 }
@@ -88,6 +87,7 @@ class OrahEntryGate extends StatefulWidget {
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final Future<void> Function(String noteId)? cancelReminders;
 
   @override
   State<OrahEntryGate> createState() => _OrahEntryGateState();
