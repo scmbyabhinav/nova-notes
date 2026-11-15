@@ -58,7 +58,7 @@ void main() {
     await repository.saveNote(note('merge-target', 'Target', 'Target paragraph'));
     await repository.saveNote(note('merge-source', 'Source', 'Source paragraph'));
 
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, cancelReminders: (_) async {}));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
