@@ -526,7 +526,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
       case 'delete':
         final repository = await NoteRepositoryProvider.instance();
         await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
-        await HapticFeedback.mediumImpact();
+        // Haptics are best-effort: a platform-channel failure (for example,
+        // in widget tests or on devices without haptic support) must never
+        // interrupt the delete flow before the Undo snackbar is presented.
+        unawaited(HapticFeedback.mediumImpact().catchError((_) {}));
         await _loadNotes();
         await widget.cancelReminders(note.id);
         for (final item in note.checklistItems) {
