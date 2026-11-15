@@ -30,11 +30,13 @@ import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
 
 class OrahApp extends StatefulWidget {
-  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahApp({super.key, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.cancelReminders});
 
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final bool skipRegistrationForTesting;
+  final Future<void> Function(String noteId)? cancelReminders;
+  final Future<void> Function(String noteId)? cancelReminders;
 
   @override
   State<OrahApp> createState() => _OrahAppState();
@@ -79,7 +81,7 @@ class _OrahAppState extends State<OrahApp> {
 }
 
 class OrahEntryGate extends StatefulWidget {
-  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false});
+  const OrahEntryGate({super.key, required this.themeController, this.speechService, this.requestMicrophonePermission, this.skipRegistrationForTesting = false, this.cancelReminders});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
@@ -160,6 +162,7 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
         requestMicrophonePermission: widget.requestMicrophonePermission,
         enableStartupGreeting: false,
         profile: const OrahUserProfile(fullName: 'Test User', email: 'test@example.com'),
+        cancelReminders: widget.cancelReminders,
       );
     }
     if (_loading) {
@@ -214,18 +217,20 @@ class _OrahEntryGateState extends State<OrahEntryGate> {
       themeController: widget.themeController,
       speechService: widget.speechService,
       profile: profile,
+      cancelReminders: widget.cancelReminders,
     );
   }
 }
 
 class NovaShell extends StatefulWidget {
-  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true});
+  const NovaShell({super.key, required this.themeController, required this.profile, this.speechService, this.requestMicrophonePermission, this.enableStartupGreeting = true, this.cancelReminders});
 
   final OrahThemeController themeController;
   final VoiceSpeechService? speechService;
   final Future<PermissionStatus> Function()? requestMicrophonePermission;
   final OrahUserProfile profile;
   final bool enableStartupGreeting;
+  final Future<void> Function(String noteId)? cancelReminders;
 
   @override
   State<NovaShell> createState() => _NovaShellState();
@@ -293,6 +298,7 @@ class _NovaShellState extends State<NovaShell> {
   List<Widget> get _pages => [
         HomeScreen(
           isActive: _index == 0,
+          if (widget.cancelReminders != null) cancelReminders: widget.cancelReminders!,
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
           onChecklist: () => _openEditor(NoteType.checklist),
