@@ -26,9 +26,11 @@ import 'vault_screen.dart';
 import 'pomodoro_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, this.isActive = true, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onKanban, this.onPomodoro});
+  const HomeScreen({super.key, this.isActive = true, this.cancelReminders = _cancelOrahReminders, this.onNewNote, this.onVoiceCapture, this.onChecklist, this.onSettings, this.onNotes, this.onFolders, this.onFavorites, this.onStatistics, this.onCalendarHistory, this.onKanban, this.onPomodoro});
 
   final bool isActive;
+  final Future<void> Function(String noteId) cancelReminders;
+  static Future<void> _cancelOrahReminders(String noteId) => OrahReminderService.instance.cancel(noteId);
   final Future<void> Function()? onNewNote;
   final Future<void> Function()? onVoiceCapture;
   final Future<void> Function()? onChecklist;
@@ -526,9 +528,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware, WidgetsBinding
         await repository.saveNote(note.copyWith(isTrashed: true, updatedAt: DateTime.now(), isPinned: false, isFavorite: false));
         await HapticFeedback.mediumImpact();
         await _loadNotes();
-        await OrahReminderService.instance.cancel(note.id);
+        await widget.cancelReminders(note.id);
         for (final item in note.checklistItems) {
-          await OrahReminderService.instance.cancel('checklist:${item.id}');
+          await widget.cancelReminders('checklist:${item.id}');
         }
         if (!mounted) return;
         final messenger = ScaffoldMessenger.of(context);
