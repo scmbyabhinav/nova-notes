@@ -25,6 +25,7 @@ import 'screens/statistics_screen.dart';
 import 'screens/calendar_history_screen.dart';
 import 'core/navigation/orah_navigation.dart';
 import 'services/speech_to_text_service.dart';
+import 'services/orah_reminder_service.dart';
 import 'services/orah_user_profile_service.dart';
 import 'screens/orah_registration_screen.dart' as registration;
 import 'screens/welcome_splash_screen.dart';
@@ -298,7 +299,7 @@ class _NovaShellState extends State<NovaShell> {
   List<Widget> get _pages => [
         HomeScreen(
           isActive: _index == 0,
-          if (widget.cancelReminders != null) cancelReminders: widget.cancelReminders!,
+          cancelReminders: widget.cancelReminders ?? OrahReminderService.instance.cancel,
           onNewNote: () => _openEditor(NoteType.text),
           onVoiceCapture: _openVoiceEditor,
           onChecklist: () => _openEditor(NoteType.checklist),
