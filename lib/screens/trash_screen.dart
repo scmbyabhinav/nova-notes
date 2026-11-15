@@ -6,7 +6,12 @@ import '../services/orah_reminder_service.dart';
 import '../services/nova_attachment_service.dart';
 
 class TrashScreen extends StatefulWidget {
-  const TrashScreen({super.key});
+  const TrashScreen({super.key, this.cancelReminders = _cancelOrahReminders});
+
+  final Future<void> Function(String noteId) cancelReminders;
+
+  static Future<void> _cancelOrahReminders(String noteId) =>
+      OrahReminderService.instance.cancel(noteId);
   @override
   State<TrashScreen> createState() => _TrashScreenState();
 }
@@ -53,7 +58,7 @@ class _TrashScreenState extends State<TrashScreen> {
     );
     if (confirmed != true) return;
     final repo = await NoteRepositoryProvider.instance();
-    await OrahReminderService.instance.cancel(note.id);
+    await widget.cancelReminders(note.id);
     for (final item in note.checklistItems) { await OrahReminderService.instance.cancel('checklist:${item.id}'); }
     await repo.deleteNote(note.id);
     await OrahReminderService.instance.cancel(note.id);
