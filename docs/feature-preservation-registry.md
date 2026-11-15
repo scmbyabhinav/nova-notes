@@ -23,9 +23,9 @@ Source presence is not proof that a feature works on a device.
 | Delete note to Trash from note menu | Present (source) | Present (source) | Main has “Move to Trash” action and repository save with `isTrashed: true`; verify UI behavior and undo/restore. |
 | Trash screen | Present (source) | Present (source) | `lib/screens/trash_screen.dart` exists in both; add widget/regression coverage. |
 | Note repository delete/save behavior | Present (source) | Present (source) | `lib/data/repositories/local_note_repository.dart`; audit semantic differences before reconciling. |
-| Linked-note model support | Not yet confirmed | Present (source) | Compare `lib/models/note.dart`; check serialization, migrations, and UI dependencies before porting Merge Notes. |
+| Linked-note model support | Present (source) | Present (source) | `lib/models/note.dart`, linked-note model test and search index; full navigation/link lifecycle still needs verification. |
 | Note editor | Present (source) | Present (source) | Files differ substantially; do not replace main wholesale. Review feature-level diffs and regression tests. |
-| Backup/restore | Not yet audited on main | In progress on feature branch | PR #142 remains open/draft and targets `orah-base-v1`; do not merge until it is rebased/retargeted safely and Vault portability, attachment round trips, rollback and full tests pass. |
+| Backup/restore | Present, earlier scope only | In progress on feature branch | PR #142 remains open/draft and targets `orah-base-v1`; current portable Vault/passphrase and rollback work is not yet integrated into main. Reconcile safely and verify all round trips before merge. |
 
 ## Post-merge production baseline
 
@@ -38,6 +38,10 @@ Source presence is not proof that a feature works on a device.
 - Dedicated test suite: `test/screens/feature_preservation_test.dart`.
 - CI step: `Feature preservation gate (critical note journeys)` in `.github/workflows/orah-android-build.yml`.
 - This gate currently covers Merge Notes, Delete-to-Trash, and Trash restore. It is not yet a full UI audit of every feature in the backlog.
+
+## Full feature inventory
+
+See [`docs/full-feature-inventory.md`](full-feature-inventory.md) for the source-based inventory of capture, notes, organization, writing, productivity, security, backup/export, monetization, platform features, existing tests, and outstanding verification gaps. The inventory distinguishes source presence from automated and device verification.
 
 ## Mandatory preservation gate
 
@@ -61,7 +65,7 @@ Before a feature PR can be merged into `main`:
 
 ## Audit backlog
 
-- [ ] Full inventory of note creation, editing, autosave, search, sort, filters, pin, favorite, archive, delete, trash, restore, duplicate, merge, link, and version history.
+- [x] Initial source-based feature inventory recorded in `docs/full-feature-inventory.md`; end-to-end and device verification remains outstanding.
 - [ ] Folders, tags, checklist, reminders, calendar, focus sessions, statistics, and Kanban.
 - [ ] Attachments, image handling, import, export, sharing, and email attachment flow.
 - [ ] Vault, PIN/app lock, biometric unlock, encryption, portable backup, and restore.
