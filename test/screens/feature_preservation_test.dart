@@ -41,7 +41,7 @@ void main() {
     await repository.saveNote(note('preserve-target', 'Target note', 'Target content'));
     await repository.saveNote(note('preserve-source', 'Source note', 'Source content'));
 
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, cancelReminders: (_) async {}));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
@@ -157,7 +157,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('permanent-delete', 'Delete forever', 'This will be removed', trashed: true));
 
-    await tester.pumpWidget(const MaterialApp(home: TrashScreen()));
+    await tester.pumpWidget(MaterialApp(home: TrashScreen(cancelReminders: (_) async {})));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byType(PopupMenuButton<String>));
