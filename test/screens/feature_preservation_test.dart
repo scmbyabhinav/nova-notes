@@ -127,4 +127,74 @@ void main() {
     expect(restored!.isTrashed, isFalse);
     expect(find.text('No notes yet.'), findsOneWidget);
   });
+  testWidgets('Undo restores a note immediately after moving it to Trash', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
+    await repository.saveNote(note('undo-delete', 'Undo me', 'Preserve this content'));
+
+    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await tester.longPress(find.text('Undo me').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete note (move to Trash)'));
+    await tester.pump();
+
+    expect((await repository.getNote('undo-delete'))!.isTrashed, isTrue);
+    expect(find.text('Undo'), findsOneWidget);
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+
+    final restored = await repository.getNote('undo-delete');
+    expect(restored, isNotNull);
+    expect(restored!.isTrashed, isFalse);
+    expect(restored.content, 'Preserve this content');
+  });
+
+  testWidgets('permanent deletion requires confirmation and removes the note', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
+    await repository.saveNote(note('permanent-delete', 'Delete forever', 'This will be removed', trashed: true));
+
+    await tester.pumpWidget(const MaterialApp(home: TrashScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete permanently'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Delete permanently?'), findsOneWidget);
+    expect(await repository.getNote('permanent-delete'), isNotNull);
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(await repository.getNote('permanent-delete'), isNull);
+    expect(find.text('No notes yet.'), findsOneWidget);
+  });
+
+  testWidgets('Empty Trash requires confirmation and removes all trashed notes', (tester) async {
+    tester.view.physicalSize = const Size(900, 1800);
+    tester.view.devicePixelRatio = 1;
+    await repository.saveNote(note('empty-trash-one', 'First trashed', 'First content', trashed: true));
+    await repository.saveNote(note('empty-trash-two', 'Second trashed', 'Second content', trashed: true));
+
+    await tester.pumpWidget(const MaterialApp(home: TrashScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Empty Trash'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Empty Trash?'), findsOneWidget);
+    expect(await repository.getNote('empty-trash-one'), isNotNull);
+    expect(await repository.getNote('empty-trash-two'), isNotNull);
+    await tester.tap(find.widgetWithText(FilledButton, 'Empty Trash'));
+    await tester.pumpAndSettle();
+
+    expect(await repository.getNote('empty-trash-one'), isNull);
+    expect(await repository.getNote('empty-trash-two'), isNull);
+    expect(find.text('No notes yet.'), findsOneWidget);
+  });
+
 }
