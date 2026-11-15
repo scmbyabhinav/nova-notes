@@ -89,7 +89,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('delete-undo', 'Delete me', 'Keep this note'));
 
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, cancelReminders: (_) async {}));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
@@ -132,14 +132,15 @@ void main() {
     tester.view.devicePixelRatio = 1;
     await repository.saveNote(note('undo-delete', 'Undo me', 'Preserve this content'));
 
-    await tester.pumpWidget(const OrahApp(skipRegistrationForTesting: true));
+    await tester.pumpWidget(OrahApp(skipRegistrationForTesting: true, cancelReminders: (_) async {}));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     await tester.longPress(find.text('Undo me').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete note (move to Trash)'));
-    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect((await repository.getNote('undo-delete'))!.isTrashed, isTrue);
     expect(find.text('Undo'), findsOneWidget);
@@ -180,7 +181,7 @@ void main() {
     await repository.saveNote(note('empty-trash-one', 'First trashed', 'First content', trashed: true));
     await repository.saveNote(note('empty-trash-two', 'Second trashed', 'Second content', trashed: true));
 
-    await tester.pumpWidget(const MaterialApp(home: TrashScreen()));
+    await tester.pumpWidget(MaterialApp(home: TrashScreen(cancelReminders: (_) async {})));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Empty Trash'));
