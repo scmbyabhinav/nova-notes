@@ -59,10 +59,10 @@ class _TrashScreenState extends State<TrashScreen> {
     if (confirmed != true) return;
     final repo = await NoteRepositoryProvider.instance();
     await widget.cancelReminders(note.id);
-    for (final item in note.checklistItems) { await OrahReminderService.instance.cancel('checklist:${item.id}'); }
+    for (final item in note.checklistItems) { await widget.cancelReminders('checklist:${item.id}'); }
     await repo.deleteNote(note.id);
-    await OrahReminderService.instance.cancel(note.id);
-    for (final item in note.checklistItems) { await OrahReminderService.instance.cancel('checklist:${item.id}'); }
+    await widget.cancelReminders(note.id);
+    for (final item in note.checklistItems) { await widget.cancelReminders('checklist:${item.id}'); }
     for (final path in note.attachments) { await const NovaAttachmentService().delete(path); }
     await _load();
   }
