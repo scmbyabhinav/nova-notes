@@ -139,8 +139,9 @@ void main() {
     await tester.longPress(find.text('Undo me').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete note (move to Trash)'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    for (var frame = 0; frame < 10; frame++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
 
     expect((await repository.getNote('undo-delete'))!.isTrashed, isTrue);
     expect(find.text('Undo'), findsOneWidget);
